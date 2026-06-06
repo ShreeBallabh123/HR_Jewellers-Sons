@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["http://localhost:5173", "https://hr-soni.vercel.app"],
+    "method": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"],
+    "responseHeader": ["Content-Type", "Authorization", "x-goog-meta-firebasestorage-download-tokens"],
+    "maxAgeSeconds": 3600
+  }
+]
