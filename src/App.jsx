@@ -39,6 +39,8 @@ import royalIndianBride from './assets/royal_indian_bride.png';
 import luxuryShowroom from './assets/luxury_showroom.png';
 import anilSoni from './assets/anil_soni.png';
 import hrLogo from './assets/logo.png';
+import banner1 from './assets/banner_1.png';
+import banner2 from './assets/banner_2.webp';
 import solitariesImg from './assets/solitaries.png';
 import watchJewelleryImg from './assets/watch_jewellery.png';
 import mensJewelleryImg from './assets/mens_jewellery.png';
@@ -74,6 +76,61 @@ import testimonial3 from './assets/testimonial_3.png';
 import testimonial4 from './assets/testimonial_4.png';
 import testimonial5 from './assets/testimonial_5.png';
 
+
+
+// Auto-scrolling Banner Carousel Component
+function BannerCarousel({ banners }) {
+  const [active, setActive] = React.useState(0);
+  const [paused, setPaused] = React.useState(false);
+  const len = banners.length;
+  React.useEffect(() => {
+    if (paused || len < 2) return;
+    const t = setInterval(() => setActive(p => (p + 1) % len), 3500);
+    return () => clearInterval(t);
+  }, [paused, len]);
+  return (
+    <div
+      className="relative w-full overflow-hidden select-none"
+      style={{ aspectRatio: '2400/778' }}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {banners.map((src, i) => (
+        <img
+          key={i}
+          src={src}
+          alt={`Offer Banner ${i + 1}`}
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+          style={{ opacity: active === i ? 1 : 0, zIndex: active === i ? 1 : 0 }}
+          draggable={false}
+        />
+      ))}
+      {/* Prev */}
+      <button
+        onClick={() => setActive(p => (p - 1 + len) % len)}
+        className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 text-white text-xl flex items-center justify-center backdrop-blur-sm cursor-pointer focus:outline-none transition-all"
+        aria-label="Previous"
+      >&#8249;</button>
+      {/* Next */}
+      <button
+        onClick={() => setActive(p => (p + 1) % len)}
+        className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 text-white text-xl flex items-center justify-center backdrop-blur-sm cursor-pointer focus:outline-none transition-all"
+        aria-label="Next"
+      >&#8250;</button>
+      {/* Dots */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
+        {banners.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setActive(i)}
+            className={`rounded-full transition-all duration-300 cursor-pointer focus:outline-none ${active === i ? 'w-6 h-2 bg-white' : 'w-2 h-2 bg-white/50 hover:bg-white/80'}`}
+            aria-label={`Slide ${i + 1}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 // Premium Gold Intertwined Monogram Crest Logo Component
 export function LogoCrest({ className = "w-10 h-10" }) {
@@ -1013,6 +1070,13 @@ export default function App() {
   const [maxPriceFilter, setMaxPriceFilter] = useState(1000000);
   const [sortFilter, setSortFilter] = useState('popularity');
   const [collectionsPage, setCollectionsPage] = useState(1);
+  const [priceFilter, setPriceFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [genderFilter, setGenderFilter] = useState('all');
+  const [stoneFilter, setStoneFilter] = useState('all');
+  const [occasionFilter, setOccasionFilter] = useState('all');
+  const [openFilterSections, setOpenFilterSections] = useState({ price: true, type: true, metal: true, purity: false, gender: false, stones: false, occasion: false });
+  const toggleFilterSection = (key) => setOpenFilterSections(prev => ({ ...prev, [key]: !prev[key] }));
 
   // Live Homepage Search & Suggestions States
   const [homeSearchVal, setHomeSearchVal] = useState('');
@@ -2148,12 +2212,15 @@ export default function App() {
     return result;
   }, [products, activeCategoryTab, metalFilter, purityFilter, maxPriceFilter, sortFilter, homeSearchVal]);
 
-  const ITEMS_PER_PAGE = 6;
+
+  const ITEMS_PER_PAGE = 12;
   const totalPages = Math.ceil(filteredJewellery.length / ITEMS_PER_PAGE);
   const paginatedProducts = useMemo(() => {
     const startIndex = (collectionsPage - 1) * ITEMS_PER_PAGE;
     return filteredJewellery.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   }, [filteredJewellery, collectionsPage]);
+
+
 
   const cartTotal = (cartItems || []).reduce((acc, curr) => acc + Number(curr && curr.price || 0) * Number(curr && curr.quantity || 1), 0);
 
@@ -2392,16 +2459,33 @@ export default function App() {
 
                 {/* Centered Navigation Links */}
                 <div className="flex items-center justify-center space-x-5 lg:space-x-6 h-full text-[11px] font-sans tracking-widest uppercase font-bold text-slate-200">
-                  {/* 11+1 Scheme */}
-                  <button
-                    onClick={() => { triggerAudio('click'); navigateTo('savings'); }}
-                    className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
-                  >
-                    <span>11+1 Scheme</span>
-                    <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </button>
+                  {/* 11+1 Scheme Dropdown */}
+                  <div className="relative group h-full flex items-center">
+                    <button
+                      onClick={() => { triggerAudio('click'); navigateTo('savings'); }}
+                      className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
+                    >
+                      <span>11+1 Scheme</span>
+                      <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                      </svg>
+                    </button>
+                    {/* Dropdown */}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-0 bg-white text-gray-800 shadow-2xl border border-gray-200/60 rounded-b-2xl py-3 px-1 min-w-[200px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-xs normal-case font-sans select-none">
+                      <button
+                        onClick={() => { triggerAudio('click'); navigateTo('savings'); }}
+                        className="w-full text-left px-5 py-3 text-[13px] font-semibold text-gray-800 hover:bg-[#4A126D]/8 hover:text-[#4A126D] transition-colors rounded-xl cursor-pointer"
+                      >
+                        Gold Mine
+                      </button>
+                      <button
+                        onClick={() => { triggerAudio('click'); navigateTo('savings'); }}
+                        className="w-full text-left px-5 py-3 text-[13px] font-semibold text-gray-800 hover:bg-[#4A126D]/8 hover:text-[#4A126D] transition-colors rounded-xl cursor-pointer"
+                      >
+                        Gold Reserve
+                      </button>
+                    </div>
+                  </div>
 
                   {/* Watch Jewellery */}
                   <button
@@ -2571,16 +2655,33 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Offers */}
-                  <button
-                    onClick={() => { triggerAudio('click'); navigateTo('savings'); }}
-                    className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
-                  >
-                    <span>Offers</span>
-                    <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </button>
+                  {/* Offers Dropdown */}
+                  <div className="relative group h-full flex items-center">
+                    <button
+                      onClick={() => { triggerAudio('click'); changeCategoryTab('Collections'); navigateTo('collections'); }}
+                      className="hover:text-[#DDA0DD] transition-colors duration-300 cursor-pointer h-full flex items-center text-[#DDA0DD]"
+                    >
+                      <span>Offers</span>
+                      <svg className="w-3 h-3 ml-1 text-[#DDA0DD]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                      </svg>
+                    </button>
+                    {/* Dropdown */}
+                    <div className="absolute top-full right-0 mt-0 bg-white text-gray-800 shadow-2xl border border-gray-200/60 rounded-b-2xl py-3 px-1 min-w-[340px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-xs normal-case font-sans select-none">
+                      <button
+                        onClick={() => { triggerAudio('click'); setMaxPriceFilter(1000000); changeCategoryTab('Collections'); navigateTo('collections'); }}
+                        className="w-full text-left px-5 py-3 text-[12px] font-semibold text-gray-800 hover:bg-[#DDA0DD]/10 hover:text-[#4A126D] transition-colors rounded-xl cursor-pointer leading-snug"
+                      >
+                        💎 Up To 50% Off On Making Charges On Diamond Jewellery
+                      </button>
+                      <button
+                        onClick={() => { triggerAudio('click'); setMetalFilter('gold'); changeCategoryTab('Collections'); navigateTo('collections'); }}
+                        className="w-full text-left px-5 py-3 text-[12px] font-semibold text-gray-800 hover:bg-[#DDA0DD]/10 hover:text-[#4A126D] transition-colors rounded-xl cursor-pointer leading-snug"
+                      >
+                        🥇 Up To 20% Off On Making Charges On Plain Gold Jewellery
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
               </div>
@@ -5050,157 +5151,17 @@ export default function App() {
             B. CATALOG / SHOP COLLECTION PAGE VIEW
             ========================================== */}
           {currentPage === 'collections' && (
-            <div className={`transition-colors duration-500 min-h-screen pb-20 pt-8 ${isCatalogDark ? 'bg-[#F4ECF9] text-[#4A126D]' : 'bg-[#FCFAFF] text-[#4A126D]'}`}>
-              <div className="max-w-7xl mx-auto px-6 space-y-12 animate-slide-up">
+            <div className={`transition-colors duration-500 min-h-screen pb-20 ${isCatalogDark ? 'bg-[#F4ECF9] text-[#4A126D]' : 'bg-[#FCFAFF] text-[#4A126D]'}`}>
 
-                {/* Redesigned Luxury Hero Banner */}
-                <div className={`relative overflow-hidden rounded-[2.5rem] border p-8 sm:p-16 text-center select-none backdrop-blur-xl transition-all duration-500 ${isCatalogDark
-                  ? 'bg-gradient-to-b from-[#FCFAFF] via-[#F4ECF9] to-[#FCFAFF] border-[#DDA0DD]/35 shadow-[0_20px_50px_rgba(212,175,55,0.08)]'
-                  : 'bg-gradient-to-b from-[#FBF9FF] via-[#FBF9FF] to-white border-[#DDA0DD]/20 shadow-[0_15px_30px_rgba(7,24,43,0.04)]'
-                  }`}>
-                  {/* Heritage Background Image (matching hero section) */}
-                  <div
-                    className="absolute inset-0 bg-cover bg-center opacity-15 pointer-events-none z-0 transition-opacity duration-700"
-                    style={{ backgroundImage: `url(${heritageBg})` }}
-                  />
-                  {/* Vignette overlay */}
-                  <div className={`absolute inset-0 pointer-events-none z-0 ${isCatalogDark
-                    ? 'bg-gradient-to-b from-[#FCFAFF]/80 via-[#F4ECF9]/65 to-[#FCFAFF]/90'
-                    : 'bg-gradient-to-b from-[#FBF9FF]/80 via-[#FBF9FF]/60 to-[#FBF9FF]/90'
-                    }`} />
+              {/* Full-width Banner Carousel — outside constrained container */}
+              <BannerCarousel banners={[banner1, banner2]} />
 
-                  {/* Radial glow blur circles */}
-                  <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 blur-[100px] rounded-full pointer-events-none z-0 transition-colors ${isCatalogDark ? 'bg-[#DDA0DD]/15' : 'bg-[#DDA0DD]/10'
-                    }`}></div>
-
-                  {/* Minimal dotted matrix overlay */}
-                  <div className={`absolute inset-0 opacity-10 [background-size:16px_16px] pointer-events-none z-0 ${isCatalogDark
-                    ? 'bg-[radial-gradient(#FBF9FF_1px,transparent_1px)]'
-                    : 'bg-[radial-gradient(#DDA0DD_1px,transparent_1px)]'
-                    }`}></div>
-
-                  {/* Sparkles / Gold dust absolute micro-elements */}
-                  <div className="absolute inset-0 pointer-events-none z-0">
-                    <span className="absolute top-10 left-[15%] text-[#DDA0DD] animate-float-gentle text-base">✦</span>
-                    <span className="absolute bottom-12 right-[12%] text-[#DDA0DD] animate-pulse-slow text-sm">✦</span>
-                    <span className="absolute top-1/3 right-[18%] text-[#DDA0DD] animate-float-gentle text-xs">✨</span>
-                    <span className="absolute bottom-1/3 left-[10%] text-[#DDA0DD] animate-pulse-slow text-base">✨</span>
-                  </div>
-
-                  {/* Header Content Wrapper */}
-                  <div className="relative z-10 max-w-3xl mx-auto space-y-6">
-                    {/* Top luxury label and Dark Mode Toggle switch */}
-                    <div className="flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-gold/10 pb-4">
-                      <span className="text-[10px] uppercase tracking-[0.35em] font-extrabold text-[#DDA0DD] block">
-                        ✦ HERITAGE COLLECTION ✦
-                      </span>
-
-
-                    </div>
-
-                    {/* Main luxury heading */}
-                    <div className="relative inline-block pt-2">
-                      {/* Soft background glow */}
-                      <span className="absolute -inset-1 blur-lg bg-[#DDA0DD]/15 opacity-70 rounded-full"></span>
-                      <h1 className={`relative serif-luxury text-4xl sm:text-7xl font-bold tracking-wide leading-tight transition-colors duration-550 ${isCatalogDark ? 'text-[#4A126D]' : 'text-[#4A126D]'
-                        }`}>
-                        All Jewellery
-                      </h1>
-                      {/* Gold accent line */}
-                      <div className="w-20 h-[2px] bg-[#DDA0DD] mx-auto mt-4 shadow-[0_0_8px_rgba(212,175,55,0.6)]"></div>
-                    </div>
-
-                    {/* Sub text */}
-                    <p className={`text-xs sm:text-sm tracking-widest font-light normal-case max-w-lg mx-auto leading-relaxed transition-colors ${isCatalogDark ? 'text-[#4A126D]/80' : 'text-[#4A126D]/85'
-                      }`}>
-                      Discover handcrafted gold, diamond and heritage jewellery collections.
-                    </p>
-
-                    {homeSearchVal.trim() && (
-                      <div className="flex items-center justify-center gap-2 mt-4 text-xs font-sans tracking-widest text-[#4A126D]/80 uppercase">
-                        <span>Showing results for: <strong className="text-[#4A126D] font-extrabold">"{homeSearchVal}"</strong></span>
-                        <button
-                          onClick={() => setHomeSearchVal('')}
-                          className="text-[10px] bg-[#4A126D]/10 hover:bg-[#4A126D]/20 text-[#4A126D] px-3 py-1 rounded-full font-bold ml-2 transition-all duration-300 border border-[#4A126D]/20 cursor-pointer shadow-sm"
-                        >
-                          Clear search
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
+              <div className="max-w-7xl mx-auto px-6 space-y-12 animate-slide-up pt-10">
 
               </div> {/* Close hero wrapper max-w-7xl div */}
 
-              {/* ==========================================
-                REDESIGNED FULL-WIDTH CREAM & GOLD CATEGORY SHOWCASE
-                ========================================== */}
-              <div className="w-full bg-[#FAF7F2] py-20 px-6 sm:px-12 border-y border-[#EAEAEA] relative select-none my-12">
 
-                {/* Subtle background overlay */}
-                <div className="absolute inset-0 opacity-[0.03] [background-size:24px_24px] pointer-events-none z-0 bg-[radial-gradient(#DDA0DD_1px,transparent_1px)]"></div>
 
-                {/* Top & Bottom Gold Dividers */}
-                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#DDA0DD]/35 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#DDA0DD]/35 to-transparent"></div>
-
-                {/* Section Header */}
-                <div className="max-w-7xl mx-auto text-center mb-16 space-y-3 relative z-10">
-                  <span className="text-[10px] sm:text-xs uppercase tracking-[0.35em] font-extrabold text-[#DDA0DD] block font-sans">
-                    ✦ COLLECTION SHOWROOM ✦
-                  </span>
-                  <h2 className="serif-luxury text-3xl sm:text-4xl lg:text-5xl font-bold tracking-widest text-[#1B1B1B] mt-1">
-                    EXPLORE OUR COLLECTIONS
-                  </h2>
-                  <div className="w-24 h-[1px] bg-[#DDA0DD] mx-auto my-4 opacity-50"></div>
-                  <p className="text-xs sm:text-sm font-light tracking-wide text-[#666666] max-w-lg mx-auto font-sans leading-relaxed">
-                    Discover timeless elegance crafted for every occasion
-                  </p>
-                </div>
-
-                {/* Category Grid / Scroll Area */}
-                <div className="max-w-7xl mx-auto relative z-10">
-                  <div className="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pb-6 px-4 lg:grid lg:grid-cols-6 lg:grid-rows-2 lg:gap-6 lg:overflow-x-visible lg:px-0">
-                    {PREMIUM_CATEGORIES.map((cat) => {
-                      const isActive = activeCategoryTab === cat.name;
-                      return (
-                        <button
-                          key={cat.name}
-                          onClick={() => {
-                            triggerAudio('click');
-                            changeCategoryTab(cat.name);
-                          }}
-                          className={`snap-center shrink-0 w-[250px] lg:w-full h-[180px] sm:h-[210px] lg:h-[230px] p-4 flex flex-col justify-between items-center text-center cursor-pointer transition-all duration-300 ease group ${isActive
-                            ? 'bg-[#FAF7F2]/30 border-[#DDA0DD] ring-1 ring-[#DDA0DD]/45 scale-[1.02] shadow-[0_8px_20px_rgba(221,160,221,0.15)]'
-                            : 'bg-white border border-[rgba(212,175,55,0.12)] rounded-[24px] shadow-[0_4px_12px_rgba(0,0,0,0.04)] hover:-translate-y-[6px] hover:shadow-[0_16px_30px_rgba(0,0,0,0.08)]'
-                            }`}
-                          style={{ borderRadius: '24px' }}
-                        >
-                          {/* Dedicated Image Area */}
-                          <div className="w-[90px] h-[90px] sm:w-[100px] sm:h-[100px] lg:w-[120px] lg:h-[120px] flex items-center justify-center relative bg-transparent">
-                            <img
-                              src={cat.img}
-                              alt={cat.name}
-                              className="w-full h-full object-contain object-center transition-transform duration-300 ease-out group-hover:scale-[1.05] filter drop-shadow-[0_8px_12px_rgba(90,74,74,0.12)]"
-                            />
-                          </div>
-
-                          {/* Text and Explore CTA */}
-                          <div className="space-y-1 w-full flex flex-col items-center mt-auto">
-                            <h4 className={`text-center font-sans font-medium text-[13px] sm:text-[15px] lg:text-[17px] leading-[1.3] tracking-tight line-clamp-1 ${isActive ? 'text-[#DDA0DD]' : 'text-[#2f2f2f]'}`}>
-                              {cat.name}
-                            </h4>
-                            <span className={`text-[10px] uppercase font-bold tracking-widest flex items-center gap-1 transition-colors duration-300 ${isActive ? 'text-[#DDA0DD]' : 'text-[#666666] group-hover:text-[#DDA0DD]'
-                              }`}>
-                              Explore <span className="text-[8px]">✦</span>
-                            </span>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
 
               {/* 3. Products List Container */}
               <div className="max-w-7xl mx-auto px-6 space-y-12">
@@ -5208,79 +5169,131 @@ export default function App() {
                 {/* Split Layout: Sidebar Filters (left) & Products Grid (right) */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-                  {/* Left Sidebar Filters Panel (Persistent on desktop, collapsible on mobile) */}
-                  <aside className="col-span-12 lg:col-span-3 lg:sticky lg:top-24 max-h-[calc(100vh-120px)] overflow-y-auto no-scrollbar space-y-5 bg-white border border-[#DDA0DD]/20 rounded-3xl p-5 shadow-[0_15px_40px_rgba(63,31,84,0.03)] text-left relative z-20 transition-all duration-300">
-                    <div className="flex justify-between items-center border-b border-gray-150/60 pb-3">
+                  {/* Left Sidebar Filters Panel — Sticky, full viewport height */}
+                  {/* Left Sidebar Filters — Always Open, Full Height to Footer */}
+                  <aside className="col-span-12 lg:col-span-4 lg:sticky lg:top-24 bg-white border border-[#DDA0DD]/20 rounded-3xl shadow-[0_15px_40px_rgba(63,31,84,0.03)] text-left relative z-20 self-start" style={{ height: 'calc(100vh - 112px)', overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#DDA0DD transparent', padding: '20px' }}>
+
+
+                    {/* Header */}
+                    <div className="flex justify-between items-center border-b border-gray-100 pb-3 mb-1 sticky top-0 bg-white z-10 pt-1">
                       <h3 className="serif-luxury text-base font-bold text-[#4A126D] flex items-center gap-1.5 tracking-wide">
-                        <span>✨</span> Atelier Filters
+                        <span>✨</span> Filters
                       </h3>
-                      {(metalFilter !== 'all' || purityFilter !== 'all' || maxPriceFilter !== 1000000) && (
-                        <button
-                          onClick={() => {
-                            setMetalFilter('all');
-                            setPurityFilter('all');
-                            setMaxPriceFilter(1000000);
-                          }}
-                          className="text-[9px] uppercase tracking-widest font-black text-[#DDA0DD] hover:text-[#4A126D] transition-colors cursor-pointer"
-                        >
-                          Reset
-                        </button>
-                      )}
+                      <button
+                        onClick={() => { setMetalFilter('all'); setPurityFilter('all'); setMaxPriceFilter(1000000); setPriceFilter('all'); setTypeFilter('all'); setGenderFilter('all'); setStoneFilter('all'); setOccasionFilter('all'); }}
+                        className="text-[9px] uppercase tracking-widest font-black text-[#DDA0DD] hover:text-[#4A126D] transition-colors cursor-pointer border border-[#DDA0DD]/30 rounded-lg px-2 py-1"
+                      >
+                        Clear All
+                      </button>
                     </div>
 
-                    {/* Metal Type Filter */}
-                    <div className="border-b border-gray-100 pb-4 space-y-2">
-                      <label className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-gray-405 block">Metal Type</label>
-                      <div className="flex gap-2">
-                        {['all', 'gold', 'silver'].map(metal => (
-                          <button
-                            key={metal}
-                            onClick={() => setMetalFilter(metal)}
-                            className={`flex-1 py-2 rounded-xl text-[9px] uppercase font-bold tracking-widest transition-all duration-300 border text-center cursor-pointer ${metalFilter === metal
-                              ? 'bg-[#4A126D] text-white border-[#4A126D] shadow-sm scale-[1.02]'
-                              : 'bg-[#FCFAFF] text-gray-700 border-gray-200 hover:border-gold hover:bg-white hover:text-[#4A126D]'
-                              }`}
-                          >
-                            {metal}
-                          </button>
+                    {/* PRICE */}
+                    <div className="border-b border-gray-100 py-3">
+                      <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Price</span>
+                      <div className="space-y-2">
+                        {[
+                          { label: 'Below Rs. 10,000', val: 10000 },
+                          { label: 'Rs. 10,000 – Rs. 20,000', val: 20000 },
+                          { label: 'Rs. 20,000 – Rs. 30,000', val: 30000 },
+                          { label: 'Rs. 30,000 – Rs. 40,000', val: 40000 },
+                          { label: 'Rs. 40,000 – Rs. 50,000', val: 50000 },
+                          { label: 'Rs. 50,000 and Above', val: 1000000 },
+                        ].map(({ label, val }) => (
+                          <label key={val} className="flex items-center gap-2.5 cursor-pointer group">
+                            <input type="radio" name="price" checked={maxPriceFilter === val} onChange={() => setMaxPriceFilter(val)} className="accent-[#4A126D] w-3.5 h-3.5 cursor-pointer" />
+                            <span className={`text-[11px] font-sans leading-none ${maxPriceFilter === val ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{label}</span>
+                          </label>
                         ))}
                       </div>
                     </div>
 
-                    {/* Gold Purity Filter */}
-                    <div className="border-b border-gray-100 pb-4 space-y-2">
-                      <label className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-gray-405 block">Gold Purity</label>
-                      <div className="grid grid-cols-2 gap-2">
-                        {['all', '18K', '22K', '24K'].map(purity => (
-                          <button
-                            key={purity}
-                            onClick={() => setPurityFilter(purity)}
-                            className={`py-2 rounded-xl text-[9px] uppercase font-bold tracking-widest transition-all duration-300 border text-center cursor-pointer ${purityFilter === purity
-                              ? 'bg-[#4A126D] text-white border-[#4A126D] shadow-sm scale-[1.02]'
-                              : 'bg-[#FCFAFF] text-gray-700 border-gray-200 hover:border-gold hover:bg-white hover:text-[#4A126D]'
-                              }`}
-                          >
-                            {purity}
-                          </button>
+                    {/* TYPE */}
+                    <div className="border-b border-gray-100 py-3">
+                      <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Type</span>
+                      <div className="space-y-2">
+                        {['Earrings','Rings','Pendants','Necklaces','Bangles','Bracelets','Mangalsutra','Chains','Nose Pins','Anklets','Kids Bangles','Kids Rings','Cufflinks','Brooch'].map(t => (
+                          <label key={t} className="flex items-center gap-2.5 cursor-pointer group">
+                            <input type="radio" name="type" checked={typeFilter === t} onChange={() => setTypeFilter(prev => prev === t ? 'all' : t)} className="accent-[#4A126D] w-3.5 h-3.5 cursor-pointer" />
+                            <span className={`text-[11px] font-sans leading-none ${typeFilter === t ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{t}</span>
+                          </label>
                         ))}
                       </div>
                     </div>
 
-                    {/* Category Filter */}
-                    <div className="border-b border-gray-100 pb-4 space-y-2">
-                      <label className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-gray-405 block">Categories</label>
+                    {/* METAL */}
+                    <div className="border-b border-gray-100 py-3">
+                      <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Metal</span>
+                      <div className="space-y-2">
+                        {['All','Gold','Silver','Rose Gold','White Gold','Platinum','Plain Gold'].map(m => (
+                          <label key={m} className="flex items-center gap-2.5 cursor-pointer group">
+                            <input type="radio" name="metal" checked={metalFilter === m.toLowerCase()} onChange={() => setMetalFilter(m.toLowerCase())} className="accent-[#4A126D] w-3.5 h-3.5 cursor-pointer" />
+                            <span className={`text-[11px] font-sans leading-none ${metalFilter === m.toLowerCase() ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{m}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* GOLD PURITY */}
+                    <div className="border-b border-gray-100 py-3">
+                      <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Gold Purity</span>
+                      <div className="space-y-2">
+                        {['All','14K','18K','22K','24K'].map(p => (
+                          <label key={p} className="flex items-center gap-2.5 cursor-pointer group">
+                            <input type="radio" name="purity" checked={purityFilter === (p === 'All' ? 'all' : p)} onChange={() => setPurityFilter(p === 'All' ? 'all' : p)} className="accent-[#4A126D] w-3.5 h-3.5 cursor-pointer" />
+                            <span className={`text-[11px] font-sans leading-none ${purityFilter === (p === 'All' ? 'all' : p) ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{p}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* GENDER */}
+                    <div className="border-b border-gray-100 py-3">
+                      <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Gender</span>
+                      <div className="space-y-2">
+                        {['All','Women','Men','Unisex'].map(g => (
+                          <label key={g} className="flex items-center gap-2.5 cursor-pointer group">
+                            <input type="radio" name="gender" checked={genderFilter === g.toLowerCase()} onChange={() => setGenderFilter(g.toLowerCase())} className="accent-[#4A126D] w-3.5 h-3.5 cursor-pointer" />
+                            <span className={`text-[11px] font-sans leading-none ${genderFilter === g.toLowerCase() ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{g}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* STONES */}
+                    <div className="border-b border-gray-100 py-3">
+                      <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Stones</span>
+                      <div className="space-y-2">
+                        {['Diamond','Ruby','Sapphire','Emerald','Pearl','Topaz','Amethyst','Garnet','Opal','Citrine','Aquamarine'].map(s => (
+                          <label key={s} className="flex items-center gap-2.5 cursor-pointer group">
+                            <input type="radio" name="stone" checked={stoneFilter === s} onChange={() => setStoneFilter(prev => prev === s ? 'all' : s)} className="accent-[#4A126D] w-3.5 h-3.5 cursor-pointer" />
+                            <span className={`text-[11px] font-sans leading-none ${stoneFilter === s ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{s}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* OCCASION */}
+                    <div className="border-b border-gray-100 py-3">
+                      <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Occasion</span>
+                      <div className="space-y-2">
+                        {['Everyday Wear','Festive','Wedding','Engagement','Anniversary','Gifting','Workwear','Romantic','Vacation','Special Occasion','Valentine'].map(o => (
+                          <label key={o} className="flex items-center gap-2.5 cursor-pointer group">
+                            <input type="radio" name="occasion" checked={occasionFilter === o} onChange={() => setOccasionFilter(prev => prev === o ? 'all' : o)} className="accent-[#4A126D] w-3.5 h-3.5 cursor-pointer" />
+                            <span className={`text-[11px] font-sans leading-none ${occasionFilter === o ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{o}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* CATEGORY */}
+                    <div className="border-b border-gray-100 py-3">
+                      <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Category</span>
                       <div className="flex flex-wrap gap-1.5">
-                        {['Collections', 'Rings', 'Earrings', 'Necklace', 'Mangalsutra', 'Bracelets', 'Bangles', 'Gold Coins', 'Anklets', 'Men Jewellery', 'Kids Jewellery', 'Gifts & Pooja'].map(cat => {
+                        {['Collections','Rings','Earrings','Necklace','Mangalsutra','Bracelets','Bangles','Gold Coins','Anklets','Men Jewellery','Kids Jewellery','Gifts & Pooja'].map(cat => {
                           const isActive = activeCategoryTab === cat;
                           return (
-                            <button
-                              key={cat}
-                              onClick={() => changeCategoryTab(cat)}
-                              className={`px-3 py-1.5 rounded-xl text-[8px] uppercase tracking-widest font-extrabold transition-all duration-300 border cursor-pointer ${isActive
-                                ? 'bg-[#DDA0DD] text-white border-[#DDA0DD] shadow-sm scale-[1.02]'
-                                : 'bg-[#FCFAFF] text-gray-650 border-gray-200 hover:border-gold hover:bg-white hover:text-[#4A126D]'
-                                }`}
-                            >
+                            <button key={cat} onClick={() => changeCategoryTab(cat)}
+                              className={`px-2.5 py-1 rounded-lg text-[9px] uppercase tracking-widest font-bold transition-all duration-300 border cursor-pointer ${isActive ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-[#FCFAFF] text-gray-600 border-gray-200 hover:border-[#4A126D] hover:text-[#4A126D]'}`}>
                               {cat}
                             </button>
                           );
@@ -5288,44 +5301,19 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Price Range Filter */}
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center text-[9px] uppercase tracking-[0.2em] font-extrabold text-gray-405">
-                        <span>Price Range</span>
-                        <span className="text-[#DDA0DD] font-black">≤ ₹{maxPriceFilter.toLocaleString('en-IN')}</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="5000"
-                        max="1000000"
-                        step="5000"
-                        value={maxPriceFilter}
-                        onChange={(e) => setMaxPriceFilter(+e.target.value)}
-                        className="w-full accent-[#4A126D] cursor-pointer"
-                      />
-                      <div className="flex justify-between text-[8px] text-gray-400 font-bold uppercase tracking-wider">
-                        <span>₹5K</span>
-                        <span>₹500K</span>
-                        <span>₹1M</span>
-                      </div>
-                    </div>
-
-                    {/* Bespoke Request Block */}
-                    <div className="border-t border-gray-100 pt-3.5 mt-3 text-center space-y-2.5">
-                      <p className="text-[9px] text-gray-400 font-light font-sans normal-case leading-relaxed">
-                        Cannot find your dream drawing or antique weight specification? Request bespoke craftsmanship.
-                      </p>
-                      <button
-                        onClick={() => { triggerAudio('shimmer'); setCustomDesignOpen(true); }}
-                        className="w-full py-2.5 rounded-xl bg-gold/10 hover:bg-[#DDA0DD] text-[#DDA0DD] hover:text-white border border-[#DDA0DD]/50 hover:border-transparent text-[8.5px] uppercase font-bold tracking-widest transition-all duration-300 cursor-pointer text-center"
-                      >
+                    {/* BESPOKE CTA */}
+                    <div className="pt-4 text-center space-y-2">
+                      <p className="text-[9px] text-gray-400 font-light leading-relaxed">Can't find your dream piece? Request bespoke craftsmanship.</p>
+                      <button onClick={() => { triggerAudio('shimmer'); setCustomDesignOpen(true); }}
+                        className="w-full py-2.5 rounded-xl bg-[#4A126D]/10 hover:bg-[#4A126D] text-[#4A126D] hover:text-white border border-[#4A126D]/30 hover:border-transparent text-[8.5px] uppercase font-bold tracking-widest transition-all duration-300 cursor-pointer">
                         ✍️ Create Custom Design
                       </button>
                     </div>
+
                   </aside>
 
                   {/* Right Products panel: grid and header sorting actions */}
-                  <div className="col-span-12 lg:col-span-9 space-y-6">
+                  <div className="col-span-12 lg:col-span-8 space-y-6">
 
                     {/* Sorting Header Row */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-[#DDA0DD]/15 rounded-2xl py-3 px-6 shadow-[0_10px_35px_rgba(63,31,84,0.03)] text-xs">
@@ -5499,120 +5487,45 @@ export default function App() {
                           })}
                         </div>
 
-                        {/* Premium Luxury Paginator Control */}
-                        {totalPages > 1 && (
-                          <div className="flex justify-center items-center space-x-2 pt-10 pb-4 select-none">
-                            {/* Previous Page Button */}
-                            <button
-                              onClick={() => {
-                                if (collectionsPage > 1) {
-                                  triggerAudio('click');
-                                  setCollectionsPage(collectionsPage - 1);
-                                  window.scrollTo({ top: 400, behavior: 'smooth' });
-                                }
-                              }}
-                              disabled={collectionsPage === 1}
-                              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border cursor-pointer ${collectionsPage === 1
-                                ? 'text-gray-300 border-gray-150 bg-gray-50/50 cursor-not-allowed opacity-50'
-                                : isCatalogDark
-                                  ? 'text-[#DDA0DD] bg-[#4A126D] border-[#DDA0DD]/30 hover:border-[#DDA0DD] hover:bg-[#4A126D]/80'
-                                  : 'text-[#4A126D] bg-[#FBF9FF] border-gray-200 hover:border-[#DDA0DD] hover:text-[#DDA0DD]'
-                                }`}
-                            >
-                              ← Prev
-                            </button>
 
-                            {/* Page Numbers */}
-                            {Array.from({ length: totalPages }).map((_, idx) => {
-                              const pageNum = idx + 1;
-                              const isActive = collectionsPage === pageNum;
-                              return (
-                                <button
-                                  key={pageNum}
-                                  onClick={() => {
-                                    triggerAudio('click');
-                                    setCollectionsPage(pageNum);
-                                    window.scrollTo({ top: 400, behavior: 'smooth' });
-                                  }}
-                                  className={`w-9 h-9 rounded-xl text-xs font-bold transition-all duration-300 border cursor-pointer flex items-center justify-center ${isActive
-                                    ? 'bg-[#4A126D] text-white border-[#DDA0DD] shadow-[0_0_15px_rgba(212,175,55,0.25)] scale-105'
-                                    : isCatalogDark
-                                      ? 'text-white/80 bg-[#4A126D]/50 border-[#DDA0DD]/20 hover:border-[#DDA0DD]'
-                                      : 'text-gray-600 bg-white border-gray-200 hover:border-[#DDA0DD] hover:text-[#4A126D]'
-                                    }`}
-                                >
-                                  {pageNum}
-                                </button>
-                              );
-                            })}
-
-                            {/* Next Page Button */}
-                            <button
-                              onClick={() => {
-                                if (collectionsPage < totalPages) {
-                                  triggerAudio('click');
-                                  setCollectionsPage(collectionsPage + 1);
-                                  window.scrollTo({ top: 400, behavior: 'smooth' });
-                                }
-                              }}
-                              disabled={collectionsPage === totalPages}
-                              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border cursor-pointer ${collectionsPage === totalPages
-                                ? 'text-gray-300 border-gray-150 bg-gray-50/50 cursor-not-allowed opacity-50'
-                                : isCatalogDark
-                                  ? 'text-[#DDA0DD] bg-[#4A126D] border-[#DDA0DD]/30 hover:border-[#DDA0DD] hover:bg-[#4A126D]/80'
-                                  : 'text-[#4A126D] bg-[#FBF9FF] border-gray-200 hover:border-[#DDA0DD] hover:text-[#DDA0DD]'
-                                }`}
-                            >
-                              Next →
-                            </button>
-                          </div>
-                        )}
                       </>
                     )}
                   </div>
                 </div>
 
-                {/* Previous Custom Work Gallery: "Our Custom Creations" */}
-                <div className="border-t border-[#DDA0DD]/15 pt-16 mt-16 space-y-12">
-                  <div className="text-center space-y-3">
-                    <span className="text-[10px] uppercase tracking-[0.35em] text-[#DDA0DD] font-bold font-sans">MAISON SPECIALTIES</span>
-                    <h2 className="serif-luxury text-3xl sm:text-5xl font-medium text-[#4A126D]">Our Custom Creations</h2>
-                    <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
-                      View ancestral drawings translated into royal masterworks by our master artisans.
-                    </p>
-                    <div className="w-16 h-[1.5px] bg-[#DDA0DD] mx-auto mt-3"></div>
-                  </div>
-
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 select-none">
-                    {[
-                      { name: "Imperial Bikaneri Kadas", desc: "Ancestral Chitai hand engraving", img: royalChitaiKadas, sketch: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=300&auto=format&fit=crop" },
-                      { name: "Udaipur Filigree Ring", desc: "Symmetrical VVS Solitaire setting", img: udaipurFiligreeSolitaire, sketch: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=300&auto=format&fit=crop" },
-                      { name: "Mayura Peacock Har", desc: "Jaipur Meenakari enamel fusion", img: mayuraMangalsutra, sketch: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=300&auto=format&fit=crop" },
-                      { name: "Sovereign Emerald Pendant", desc: "Hand-selected Zambian collet", img: diamondEmeraldChoker, sketch: "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?q=80&w=300&auto=format&fit=crop" }
-                    ].map((creation, idx) => (
-                      <div
-                        key={idx}
-                        onClick={() => { triggerAudio('shimmer'); setActiveLightboxImg(creation.img); }}
-                        className="bg-white border border-[#DDA0DD]/15 rounded-3xl p-4 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 cursor-pointer group text-left"
-                      >
-                        <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-gray-50 border relative">
-                          <img
-                            src={creation.img}
-                            alt={creation.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                          />
-                          <div className="absolute inset-0 bg-[#4A126D]/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <span className="bg-white text-[#4A126D] text-[10px] uppercase font-bold px-3 py-1.5 rounded-full shadow-lg">View Masterpiece</span>
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                          <div className="flex justify-center items-center gap-2 pt-8 pb-4 select-none flex-wrap">
+                            <button
+                              onClick={() => { if (collectionsPage > 1) { triggerAudio('click'); setCollectionsPage(collectionsPage - 1); window.scrollTo({ top: 400, behavior: 'smooth' }); } }}
+                              disabled={collectionsPage === 1}
+                              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border cursor-pointer ${collectionsPage === 1 ? 'opacity-40 cursor-not-allowed bg-gray-50 text-gray-400 border-gray-200' : 'bg-white text-[#4A126D] border-[#DDA0DD]/40 hover:border-[#DDA0DD] hover:bg-[#4A126D] hover:text-white shadow-sm'}`}
+                            >
+                              ← Prev
+                            </button>
+                            {Array.from({ length: totalPages }).map((_, idx) => {
+                              const pageNum = idx + 1;
+                              const isActive = collectionsPage === pageNum;
+                              if (totalPages > 7 && pageNum !== 1 && pageNum !== totalPages && Math.abs(pageNum - collectionsPage) > 2) return null;
+                              return (
+                                <button key={pageNum} onClick={() => { triggerAudio('click'); setCollectionsPage(pageNum); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+                                  className={`w-9 h-9 rounded-xl text-xs font-bold transition-all duration-300 border cursor-pointer flex items-center justify-center ${isActive ? 'bg-[#4A126D] text-white border-[#4A126D] shadow-[0_0_15px_rgba(74,18,109,0.3)] scale-110' : 'bg-white text-gray-600 border-gray-200 hover:border-[#DDA0DD] hover:text-[#4A126D]'}`}
+                                >
+                                  {pageNum}
+                                </button>
+                              );
+                            })}
+                            <button
+                              onClick={() => { if (collectionsPage < totalPages) { triggerAudio('click'); setCollectionsPage(collectionsPage + 1); window.scrollTo({ top: 400, behavior: 'smooth' }); } }}
+                              disabled={collectionsPage === totalPages}
+                              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border cursor-pointer ${collectionsPage === totalPages ? 'opacity-40 cursor-not-allowed bg-gray-50 text-gray-400 border-gray-200' : 'bg-white text-[#4A126D] border-[#DDA0DD]/40 hover:border-[#DDA0DD] hover:bg-[#4A126D] hover:text-white shadow-sm'}`}
+                            >
+                              Next →
+                            </button>
                           </div>
-                        </div>
-                        <div className="mt-3.5 space-y-1">
-                          <h4 className="serif-luxury text-sm font-bold text-[#4A126D] group-hover:text-gold transition-colors">{creation.name}</h4>
-                          <span className="text-[10px] text-gray-400 block font-light leading-none">{creation.desc}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                        )}
+
+
               </div>
             </div>
           )}
