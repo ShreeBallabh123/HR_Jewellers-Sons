@@ -2981,80 +2981,208 @@ export default function App() {
           </button>
         </div>
 
-        {/* Cinematic Mobile Menu Drawer overlay */}
+        {/* ═══════════════════════════════════════════════════════════
+           MOBILE MENU DRAWER - BlueStone Exact Style
+           ═══════════════════════════════════════════════════════════ */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, x: '-100%' }}
+              initial={{ opacity: 0, x: '100%' }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: '-100%' }}
-              transition={{ type: 'tween', duration: 0.35, ease: 'easeOut' }}
-              className={`fixed inset-0 z-45 flex flex-col justify-between pt-24 pb-20 px-8 overflow-y-auto select-none transition-colors duration-500 ${isCatalogDark ? "bg-[#12051E] text-white" : "bg-[#FCFAFF] text-[#4A126D]"}`}
+              exit={{ opacity: 0, x: '100%' }}
+              transition={{ type: 'tween', duration: 0.3, ease: 'easeOut' }}
+              className="fixed inset-0 z-50 bg-white overflow-y-auto select-none flex flex-col"
             >
-              {/* Background elements */}
-              <div className="absolute top-[10%] right-[-10%] w-[280px] h-[280px] rounded-full bg-[#DDA0DD]/5 blur-[80px] pointer-events-none" />
 
-              {/* Nav list */}
-              <div className="space-y-8 text-left z-10">
-                <span className={`text-[9px] uppercase tracking-[0.3em] text-[#DDA0DD] font-black font-sans block border-b pb-2 ${isCatalogDark ? "border-gold/15" : "border-purple-200"}`}>
-                  Atelier Catalog Menu
-                </span>
-
-                <div className="flex flex-col space-y-5">
-                  {[
-                    { label: "Home", page: "home" },
-                    { label: "Exclusive Offers & Stores", page: "offers" },
-                    { label: "All Jewellery", nav: "all" },
-                    { label: "Bespoke Bridal Suite", nav: "bridal" },
-                    { label: "Certified Diamond Ornaments", nav: "diamond" },
-                    { label: "Fine 92.5 Sterling Silver", nav: "silver" },
-                    { label: "Our Legacy Timeline", page: "heritage" },
-                    { label: "Daily Spot Bullion rates", page: "valuation" },
-                    { label: "Bespoke Lounge booking", action: () => setConsultationModal(true) },
-                  ].map((link, idx) => {
-                    const onClick = () => {
-                      triggerAudio('click');
-                      setMobileMenuOpen(false);
-                      if (link.page) navigateTo(link.page);
-                      else if (link.nav) handleCategoryNav(link.nav);
-                      else if (link.action) link.action();
-                    };
-                    return (
-                      <button
-                        key={idx}
-                        onClick={onClick}
-                        className={`serif-luxury text-2xl font-bold uppercase tracking-widest hover:text-gold text-left transition-colors cursor-pointer block focus:outline-none ${isCatalogDark ? "text-white" : "text-[#4A126D]"}`}
-                      >
-                        {link.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Bullion live status drawer widget */}
-              <div className={`rounded-2xl p-4.5 space-y-2 z-10 text-left border ${isCatalogDark ? "border-gold/15 bg-[#1C0D2C] text-white" : "border-[#DDA0DD]/20 bg-white text-[#4A126D]"}`}>
-                <span className="text-[8px] uppercase tracking-wider font-bold block text-[#DDA0DD]">Live Bullion MCX Jaipur Feed</span>
-                <div className="flex justify-between items-center text-xs">
-                  <span className={`font-sans ${isCatalogDark ? "text-white/60" : "text-gray-600"}`}>Gold (22K) Spot</span>
-                  <span className="font-bold text-[#DDA0DD] font-sans">₹{(goldRate24k * 0.9167).toFixed(0)}/g</span>
-                </div>
-                <div className="flex justify-between items-center text-xs">
-                  <span className={`font-sans ${isCatalogDark ? "text-white/60" : "text-gray-600"}`}>Silver (999) Spot</span>
-                  <span className={`font-bold font-sans ${isCatalogDark ? "text-white" : "text-[#4A126D]"}`}>₹{silverRate.toFixed(1)}/g</span>
+              {/* ── Dark Header Bar (BlueStone style) ── */}
+              <div className="bg-[#1B3152] px-4 py-4 flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full border-2 border-white/20 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-white/60 text-[10px] font-sans font-medium">Welcome to</span>
+                    <span className="text-white text-[13px] font-sans font-bold tracking-wide">HR Jewellers & Sons</span>
+                  </div>
                 </div>
                 <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    triggerAudio('shimmer');
-                    navigateTo('gold-coins');
-                  }}
-                  className={`w-full text-[9px] uppercase font-black py-3 rounded-xl text-center tracking-widest mt-2 cursor-pointer font-sans transition-all duration-300 ${isCatalogDark ? "bg-gold hover:bg-gold/85 text-[#13071C]" : "bg-[#4A126D] hover:bg-[#2C0A42] text-white"}`}
+                  onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); }}
+                  className="w-8 h-8 flex items-center justify-center text-white/70 hover:text-white transition-colors"
                 >
-                  🪙 Shop Gold Coins
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
 
+              {/* ── Scrollable Content ── */}
+              <div className="flex-1 overflow-y-auto pb-20">
+
+                {/* ── "Shop For" Section ── */}
+                <div className="px-4 pt-4 pb-1">
+                  <span className="text-[11px] text-gray-400 font-sans font-medium">Shop For</span>
+                </div>
+
+                {/* Category List Items with + icon */}
+                <div className="divide-y divide-gray-100">
+                  {[
+                    { label: 'Watch Jewellery', tab: 'Bracelets' },
+                    { label: 'Women', nav: 'all' },
+                    { label: 'Men', tab: 'Men Jewellery' },
+                    { label: 'Kids', tab: 'Kids Jewellery' },
+                    { label: 'Offers', page: 'offers', highlight: true },
+                    { label: 'Gifting', tab: 'Collections' },
+                  ].map((item, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        triggerAudio('click');
+                        setMobileMenuOpen(false);
+                        if (item.page) navigateTo(item.page);
+                        else if (item.nav) handleCategoryNav(item.nav);
+                        else if (item.tab) { changeCategoryTab(item.tab); navigateTo('collections'); }
+                      }}
+                      className="w-full flex items-center justify-between px-4 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer focus:outline-none"
+                    >
+                      <span className={`text-[14px] font-sans font-medium ${item.highlight ? 'text-[#E07C6A]' : 'text-gray-800'}`}>
+                        {item.label}
+                      </span>
+                      <svg className="w-4 h-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                      </svg>
+                    </button>
+                  ))}
+                </div>
+
+                {/* ── Gold Mine 10+1 Monthly Plan Banner ── */}
+                <button
+                  onClick={() => { triggerAudio('shimmer'); setMobileMenuOpen(false); navigateTo('offers'); }}
+                  className="w-full flex items-center justify-between px-4 py-4 bg-[#FDF8F0] border-y border-[#E6C687]/20 cursor-pointer hover:bg-[#FBF3E5] transition-colors focus:outline-none"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-10 rounded-md border border-[#E6C687]/40 bg-white flex items-center justify-center overflow-hidden">
+                      <span className="text-[10px] font-serif font-bold text-[#8B6914] leading-tight text-center px-1">Gold<br/>Mine</span>
+                    </div>
+                    <div className="flex flex-col text-left">
+                      <span className="text-[14px] font-sans font-bold text-gray-900 tracking-tight">10 + 1 Monthly Plan</span>
+                      <span className="text-[10px] font-sans text-gray-500">(Save & get the last month FREE!)</span>
+                    </div>
+                  </div>
+                  <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
+                </button>
+
+                {/* ── "Jewellery" Section ── */}
+                <div className="px-4 pt-5 pb-1">
+                  <span className="text-[11px] text-gray-400 font-sans font-medium">Jewellery</span>
+                </div>
+
+                <div className="divide-y divide-gray-100">
+                  {[
+                    { label: 'Diamond', nav: 'diamond' },
+                    { label: 'Plain Gold', nav: 'gold' },
+                    { label: 'Gemstone', tab: 'Collections' },
+                    { label: 'Platinum', nav: 'platinum' },
+                    { label: 'Solitaire', tab: 'Rings' },
+                    { label: 'Gold Coins', page: 'gold-coins' },
+                  ].map((item, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        triggerAudio('click');
+                        setMobileMenuOpen(false);
+                        if (item.page) navigateTo(item.page);
+                        else if (item.nav) handleCategoryNav(item.nav);
+                        else if (item.tab) { changeCategoryTab(item.tab); navigateTo('collections'); }
+                      }}
+                      className="w-full flex items-center justify-between px-4 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer focus:outline-none"
+                    >
+                      <span className="text-[14px] font-sans font-medium text-gray-800">{item.label}</span>
+                      <svg className="w-4 h-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                      </svg>
+                    </button>
+                  ))}
+                </div>
+
+                {/* ── Locate Our Store Banner ── */}
+                <button
+                  onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); window.open('https://maps.google.com/?q=4-D-37,+Near+Murti+Circle,+J.N.V.+Colony,+Bikaner,+Rajasthan+334003', '_blank'); }}
+                  className="w-full flex items-center gap-3 px-4 py-4 bg-[#E8DCC8] cursor-pointer hover:bg-[#DDD0B8] transition-colors focus:outline-none mt-2"
+                >
+                  <svg className="w-8 h-8 text-[#5C4A2A] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                  </svg>
+                  <span className="text-[14px] font-sans font-bold text-[#3D3122] tracking-wide uppercase">Locate Our Store</span>
+                </button>
+
+                {/* ── Bottom Links ── */}
+                <div className="divide-y divide-gray-100 mt-2">
+                  <button
+                    onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('home'); }}
+                    className="w-full text-left px-4 py-4 text-[14px] font-sans font-medium text-[#E07C6A] hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none"
+                  >
+                    Recently Viewed
+                  </button>
+
+                  <a
+                    href="https://wa.me/917610843978?text=Hello%20HR%20Jewellers,%20I%20would%20like%20a%20video%20consultation."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full text-left px-4 py-4 text-[14px] font-sans font-medium text-gray-800 hover:bg-gray-50 transition-colors"
+                  >
+                    Video Call Cart
+                  </a>
+
+                  <button
+                    onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('heritage'); }}
+                    className="w-full text-left px-4 py-4 text-[14px] font-sans font-medium text-gray-800 hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none"
+                  >
+                    Jewellery Guide
+                  </button>
+
+                  <button
+                    onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('valuation'); }}
+                    className="w-full text-left px-4 py-4 text-[14px] font-sans font-medium text-gray-800 hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none"
+                  >
+                    Live Gold Rates
+                  </button>
+
+                  <button
+                    onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('privacy-policy'); }}
+                    className="w-full text-left px-4 py-4 text-[14px] font-sans font-medium text-gray-800 hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none"
+                  >
+                    Privacy Policy
+                  </button>
+
+                  <button
+                    onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('terms-and-conditions'); }}
+                    className="w-full text-left px-4 py-4 text-[14px] font-sans font-medium text-gray-800 hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none"
+                  >
+                    Terms & Conditions
+                  </button>
+                </div>
+
+                {/* ── Live Gold Rate Mini Widget ── */}
+                <div className="px-4 py-4 mt-2">
+                  <div className="bg-gray-50 rounded-xl p-3 flex items-center justify-between border border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                      <span className="text-[11px] font-sans text-gray-500">Gold 22K</span>
+                      <span className="text-[12px] font-sans font-bold text-gray-800">₹{(goldRate24k * 0.9167).toFixed(0)}/g</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-sans text-gray-500">Silver</span>
+                      <span className="text-[12px] font-sans font-bold text-gray-800">₹{silverRate.toFixed(1)}/g</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -3153,7 +3281,7 @@ export default function App() {
                   SECTION 01: CINEMATIC HERO SECTION
                   ========================================================== */}
                 <section
-                  className="relative w-full h-[calc(100vh-5rem)] min-h-[600px] overflow-hidden flex items-end pb-12 sm:pb-16 lg:pb-20 select-none bg-black"
+                  className="relative w-full h-[55vh] sm:h-[65vh] lg:h-[calc(100vh-5rem)] sm:min-h-[400px] lg:min-h-[600px] overflow-hidden flex items-end pb-6 sm:pb-16 lg:pb-20 select-none bg-black"
                 >
                   {/* Full Screen Cinematic Video Background */}
                   <video
