@@ -66,7 +66,9 @@ import goldReserveBanner from './assets/gold_reserve_banner.png';
 import offerSavingsBanner from './assets/1778492620039-BS--MCPG--Offer---Desktop-Responsive----2400-x-778.webp';
 import atelierManifestoBanner from './assets/f604b099-b1cd-4941-b277-94d746277ae8.jpg';
 import bannerOldGold from './assets/banner_old_gold.webp';
-import bannerDiamond50 from './assets/banner_diamond_50.webp';
+import bannerDiamond50 from './assets/Gemini_Generated_Image_11boa611boa611bo.png';
+import offerSavings11_1Banner from './assets/Gemini_Generated_Image_rw2cj3rw2cj3rw2c.png';
+import storefrontLocatorBanner from './assets/Gemini_Generated_Image_abzyycabzyycabzy.png';
 import campaignDaintyDreams from './assets/campaign_dainty_dreams.webp';
 import campaignRawReverie from './assets/campaign_raw_reverie.webp';
 import campaignClayWhispers from './assets/campaign_clay_whispers.webp';
@@ -140,9 +142,9 @@ export function LogoCrest({ className = "w-10 h-10" }) {
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
       <defs>
         <linearGradient id="lGold" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stopColor="#FFF8DC" />
-          <stop offset="25%"  stopColor="#E6C96A" />
-          <stop offset="55%"  stopColor="#C8972A" />
+          <stop offset="0%" stopColor="#FFF8DC" />
+          <stop offset="25%" stopColor="#E6C96A" />
+          <stop offset="55%" stopColor="#C8972A" />
           <stop offset="100%" stopColor="#A07820" />
         </linearGradient>
       </defs>
@@ -825,7 +827,7 @@ export default function App() {
       const pageParam = urlParams.get('page');
       const path = window.location.pathname.replace(/^\/|\/$/g, '');
       const targetPage = pageParam || path;
-      const validPages = ['admin', 'savings', 'gold-reserve', 'gold-coins', 'heritage', 'valuation', 'collections', 'showrooms', 'terms-and-conditions', 'privacy-policy', 'product-detail'];
+      const validPages = ['admin', 'savings', 'gold-reserve', 'offers', 'gold-coins', 'heritage', 'valuation', 'collections', 'showrooms', 'terms-and-conditions', 'privacy-policy', 'product-detail', 'savings-enroll'];
       if (validPages.includes(targetPage)) {
         return targetPage;
       }
@@ -985,6 +987,8 @@ export default function App() {
   const [zipCode, setZipCode] = useState('');
   const [zipChecking, setZipChecking] = useState(false);
   const [zipCheckResult, setZipCheckResult] = useState(null); // success or error string
+  const [storePincode, setStorePincode] = useState('');
+  const [storeSearchStatus, setStoreSearchStatus] = useState(null);
 
   // 11+1 Gold Saving Scheme States (Upgraded GRP Scheme)
   const [monthlySavingsInput, setMonthlySavingsInput] = useState(2000);
@@ -1003,6 +1007,27 @@ export default function App() {
     branch: 'Tilak Nagar Flagship, Bikaner'
   });
   const [savingsVoucherType, setSavingsVoucherType] = useState('Diamond/Gemstone');
+  const [savingsEnrollStep, setSavingsEnrollStep] = useState(1);
+  const [savingsEnrollForm, setSavingsEnrollForm] = useState({
+    email: '',
+    mobile: '',
+    name: '',
+    pincode: '',
+    address: '',
+    street: '',
+    locality: '',
+    landmark: '',
+    city: '',
+    state: 'Rajasthan',
+    nomineeName: '',
+    nomineeRelationship: 'Spouse',
+    nomineePhone: '',
+    cardNumber: '',
+    cardExpiry: '',
+    cardCvv: '',
+    upiId: '',
+    paymentMethod: 'card'
+  });
 
   // Bespoke Custom Design Request Modal States
   const [customDesignOpen, setCustomDesignOpen] = useState(false);
@@ -1066,6 +1091,17 @@ export default function App() {
   useEffect(() => {
     checkFirebaseConfig();
   }, []);
+
+  useEffect(() => {
+    if (currentPage === 'savings-enroll') {
+      setSavingsEnrollForm(prev => ({
+        ...prev,
+        email: prev.email || savingsForm.email || '',
+        name: prev.name || savingsForm.name || ''
+      }));
+      setSavingsEnrollStep(1);
+    }
+  }, [currentPage]);
 
   // Catalog Premium Filters & Sorting States
   const [metalFilter, setMetalFilter] = useState('all');
@@ -1207,6 +1243,17 @@ export default function App() {
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
   const [checkoutForm, setCheckoutForm] = useState({
     name: '', phone: '', address: '', method: 'Cash on Showroom Delivery'
+  });
+
+  // Full-Page Checkout Flow States
+  const [checkoutFlowStep, setCheckoutFlowStep] = useState(1); // 1=Cart, 2=Delivery, 3=Payment
+  const [deliveryType, setDeliveryType] = useState('home'); // 'home' or 'store'
+  const [deliveryForm, setDeliveryForm] = useState({
+    email: '', mobile: '', whatsapp: '',
+    recipientName: '', recipientMobile: '', pincode: '',
+    apartment: '', street: '', locality: '', landmark: '',
+    gstNumber: '', billingIsSameAsShipping: true,
+    storeCity: '', storeBranch: ''
   });
 
   const [tryHomeModalOpen, setTryHomeModalOpen] = useState(false);
@@ -1407,6 +1454,14 @@ export default function App() {
         title = 'Invest in Pure Gold Coins — HR Jewellers & Sons';
         desc = 'Discover certified 24K and 22K gold coins crafted for gifting, investment, and heritage value. Real-time dynamic pricing based on daily metal rates.';
         break;
+      case 'offers':
+        title = `Exclusive Offers & Stores — HR Jewellers & Sons`;
+        desc = `Explore exclusive discounts, GRP monthly savings options, BlueStone certified diamond offers, and check nearest boutique store pincodes.`;
+        break;
+      case 'checkout':
+        title = `Checkout — HR Jewellers & Sons`;
+        desc = `Complete your order securely with HR Jewellers & Sons. Choose delivery or store pickup.`;
+        break;
       case 'terms-and-conditions':
         title = `Maison Terms & Conditions — HR Jewellers & Sons`;
         desc = `Read the official terms and conditions of HR Jewellers & Sons, including details on the 11+1 GRP saving scheme bonus eligibility and guidelines.`;
@@ -1422,7 +1477,7 @@ export default function App() {
     const handlePopState = () => {
       try {
         const path = window.location.pathname.replace(/^\/|\/$/g, '');
-        const validPages = ['admin', 'savings', 'gold-reserve', 'gold-coins', 'heritage', 'valuation', 'collections', 'showrooms', 'terms-and-conditions', 'privacy-policy', 'product-detail'];
+        const validPages = ['admin', 'savings', 'gold-reserve', 'offers', 'gold-coins', 'heritage', 'valuation', 'collections', 'showrooms', 'terms-and-conditions', 'privacy-policy', 'product-detail', 'savings-enroll', 'checkout'];
         if (validPages.includes(path)) {
           setCurrentPage(path);
           return;
@@ -1868,6 +1923,46 @@ export default function App() {
     }
   };
 
+  // 1.5. Store Pincode Search
+  const handleStoreSearch = (pincodeVal) => {
+    const pin = pincodeVal !== undefined ? pincodeVal : storePincode;
+    if (!pin || pin.toString().trim() === '') return;
+
+    setStoreSearchStatus('loading');
+    triggerAudio('click');
+
+    setTimeout(() => {
+      const sanitized = pin.toString().trim();
+      if (sanitized.startsWith('334')) {
+        setStoreSearchStatus({
+          type: 'flagship',
+          city: 'Bikaner',
+          name: 'HR Jewellers & Sons Bikaner JNV Flagship',
+          address: '4-D-37, Near Murti Circle, J.N.V. Colony, Bikaner, Rajasthan (334001)',
+          phone: '+91 97838 43978 / +91 76108 43978',
+          hours: '11:00 AM - 08:30 PM (Mon - Sun)',
+          directions: 'https://maps.google.com/?q=4-D-37,+Near+Murti+Circle,+J.N.V.+Colony,+Bikaner'
+        });
+      } else if (sanitized.startsWith('302')) {
+        setStoreSearchStatus({
+          type: 'flagship',
+          city: 'Jaipur',
+          name: 'HR Jewellers & Sons Jaipur Central Showroom',
+          address: 'Ground Floor, Landmark Tower, M.I. Road, Jaipur, Rajasthan (302001)',
+          phone: '+91 91160 43978',
+          hours: '11:00 AM - 08:30 PM (Mon - Sun)',
+          directions: 'https://maps.google.com/?q=M.I.+Road,+Jaipur'
+        });
+      } else {
+        setStoreSearchStatus({
+          type: 'partner',
+          pincode: sanitized,
+          message: 'No flagship showroom found in this pincode, but we have Express Partners & Home Advisory available!'
+        });
+      }
+    }, 600);
+  };
+
   // 2. Showroom Lounge Appointment
   const handleLoungeBookingSubmit = async (e) => {
     e.preventDefault();
@@ -1966,6 +2061,58 @@ export default function App() {
       console.error(err);
     } finally {
       setSavingsSuccess(true);
+    }
+  };
+
+  const handleSavingsEnrollWizardSubmit = async (e) => {
+    if (e) e.preventDefault();
+    const rate22K = Math.round(goldRate24k * 0.9167);
+    const matureInstallments = 12; // 11 Paid + 1 Bonus
+    const matureWeight = (monthlySavingsInput * matureInstallments) / rate22K;
+
+    let waMsg = `Hello HR Jewellers & Sons, I would like to enroll in the 11+1 Gold Saving Scheme.\n\n*Step 1: Personal Details*\n*Name:* ${savingsEnrollForm.name}\n*Email:* ${savingsEnrollForm.email}\n*Phone/Mobile:* ${savingsEnrollForm.mobile}\n*Pincode:* ${savingsEnrollForm.pincode}\n*Address:* ${savingsEnrollForm.address}, ${savingsEnrollForm.street}, ${savingsEnrollForm.locality}, ${savingsEnrollForm.landmark || 'N/A'}, ${savingsEnrollForm.city}, ${savingsEnrollForm.state}\n\n*Step 2: Nominee Details*\n*Nominee Name:* ${savingsEnrollForm.nomineeName}\n*Relationship:* ${savingsEnrollForm.nomineeRelationship}\n*Nominee Phone:* ${savingsEnrollForm.nomineePhone || 'N/A'}\n\n*Subscription Details*\n*Monthly Installment:* ₹${monthlySavingsInput.toLocaleString('en-IN')}/month\n*Estimated Mature Gold Weight:* ${matureWeight.toFixed(2)} g\n*Maturity Value:* ₹${(monthlySavingsInput * 12).toLocaleString('en-IN')}\n\n*Step 3: Payment Type*\n*Authorized Method:* ${savingsEnrollForm.paymentMethod.toUpperCase()}`;
+
+    const waUrl = `https://wa.me/919783843978?text=${encodeURIComponent(waMsg)}`;
+
+    try {
+      window.open(waUrl, '_blank');
+    } catch {
+      window.location.href = waUrl;
+    }
+
+    try {
+      triggerAudio('shimmer');
+      const docData = {
+        name: savingsEnrollForm.name || '',
+        phone: savingsEnrollForm.mobile || '',
+        email: savingsEnrollForm.email || '',
+        pincode: savingsEnrollForm.pincode || '',
+        address: `${savingsEnrollForm.address}, ${savingsEnrollForm.street}, ${savingsEnrollForm.locality}, ${savingsEnrollForm.city}, ${savingsEnrollForm.state}`,
+        nomineeName: savingsEnrollForm.nomineeName || '',
+        nomineeRelationship: savingsEnrollForm.nomineeRelationship || 'Spouse',
+        amount: monthlySavingsInput,
+        date: new Date().toLocaleDateString(),
+        requestType: `11+1 Gold Saving Scheme Wizard Enrollment`,
+        notes: `Selected monthly installment: ₹${monthlySavingsInput}/month. GRP Bonus: ₹${monthlySavingsInput}. Total mature value: ₹${monthlySavingsInput * 12}. Estimated gold weight: ${matureWeight.toFixed(2)} g. Nominee Relationship: ${savingsEnrollForm.nomineeRelationship}`,
+        createdDate: new Date(),
+        status: 'Pending'
+      };
+
+      await saveDocumentToServerFirestore('consultations', docData);
+
+      fetch('/api/send-email', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: 'gold_saving_scheme',
+          recipient: 'notifications@hrjewellers.com',
+          data: docData
+        })
+      }).catch(e => console.log(e));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSavingsEnrollStep(4);
     }
   };
 
@@ -2409,7 +2556,7 @@ export default function App() {
 
                   {/* 3. Stores */}
                   <button
-                    onClick={() => { triggerAudio('click'); navigateTo('showrooms'); }}
+                    onClick={() => { triggerAudio('click'); navigateTo('offers'); }}
                     className="flex flex-col items-center justify-center text-center cursor-pointer text-[#DDA0DD] hover:scale-105 transition-transform"
                   >
                     <div className="p-1 hover:bg-white/5 rounded-full transition-colors">
@@ -2576,16 +2723,53 @@ export default function App() {
                     </svg>
                   </button>
 
-                  {/* Gifts */}
-                  <button
-                    onClick={() => { triggerAudio('click'); changeCategoryTab('Gifts & Pooja'); navigateTo('collections'); }}
-                    className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
-                  >
-                    <span>Gifts</span>
-                    <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </button>
+                  {/* Gifts Dropdown */}
+                  <div className="relative group h-full flex items-center">
+                    <button
+                      onClick={() => { triggerAudio('click'); changeCategoryTab('Gifts & Pooja'); navigateTo('collections'); }}
+                      className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
+                    >
+                      <span>Gifts</span>
+                      <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                      </svg>
+                    </button>
+
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-0 bg-white text-gray-800 shadow-2xl border border-gray-200/60 rounded-b-2xl py-6 px-7 min-w-[420px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex gap-8 text-xs normal-case font-sans select-none text-left">
+                      {/* Left: Gift Categories */}
+                      <div className="flex flex-col space-y-1 flex-1">
+                        <h4 className="font-bold text-[13px] text-[#031838] border-b border-gray-100 pb-2 mb-1">Gifts For Special Someone</h4>
+                        {[
+                          { label: 'For HER', price: '2,861' },
+                          { label: 'For HIM', price: '5,820' },
+                          { label: 'For SISTER', price: '5,746' },
+                          { label: 'For BROTHER', price: '5,820' },
+                          { label: 'For MOTHER', price: '5,805' },
+                          { label: 'For FATHER', price: '5,820' },
+                          { label: 'For FRIENDS', price: '4,221' }
+                        ].map((g) => (
+                          <button
+                            key={g.label}
+                            onClick={() => { triggerAudio('click'); changeCategoryTab('Gifts & Pooja'); navigateTo('collections'); }}
+                            className="text-left hover:text-[#D4AF37] hover:translate-x-1 transition-all py-1 cursor-pointer"
+                          >
+                            <span className="font-bold text-[12px] text-gray-800 block">{g.label}</span>
+                            <span className="text-[10px] text-gray-400">Starting at Rs. {g.price}/-</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Right: Gift Card Banner */}
+                      <div className="flex flex-col items-center justify-center bg-[#FAF8F6] rounded-2xl p-4 min-w-[160px]">
+                        <div className="bg-gradient-to-br from-[#8B7BA5] to-[#6B5B8A] rounded-xl p-4 text-center text-white w-full">
+                          <p className="text-[9px] uppercase tracking-wider font-semibold opacity-80">HR Jeweller & Sons</p>
+                          <p className="text-[10px] font-bold mt-0.5">Gift Cards</p>
+                          <div className="text-2xl mt-1">💍</div>
+                        </div>
+                        <p className="text-[10px] text-gray-500 text-center mt-2 leading-snug font-medium">Available in denominations<br/>starting from <strong className="text-[#031838]">₹500</strong> to <strong className="text-[#031838]">₹50,000</strong></p>
+                      </div>
+                    </div>
+                  </div>
 
                   {/* Gold Coins Dropdown */}
                   <div className="relative group h-full flex items-center">
@@ -2670,7 +2854,7 @@ export default function App() {
                   {/* Offers Dropdown */}
                   <div className="relative group h-full flex items-center">
                     <button
-                      onClick={() => { triggerAudio('click'); changeCategoryTab('Collections'); navigateTo('collections'); }}
+                      onClick={() => { triggerAudio('click'); navigateTo('offers'); }}
                       className="hover:text-[#DDA0DD] transition-colors duration-300 cursor-pointer h-full flex items-center text-[#DDA0DD]"
                     >
                       <span>Offers</span>
@@ -2819,6 +3003,7 @@ export default function App() {
                 <div className="flex flex-col space-y-5">
                   {[
                     { label: "Home", page: "home" },
+                    { label: "Exclusive Offers & Stores", page: "offers" },
                     { label: "All Jewellery", nav: "all" },
                     { label: "Bespoke Bridal Suite", nav: "bridal" },
                     { label: "Certified Diamond Ornaments", nav: "diamond" },
@@ -3747,7 +3932,7 @@ export default function App() {
                         <div
                           onClick={() => {
                             triggerAudio('click');
-                            navigateTo('showrooms');
+                            navigateTo('offers');
                           }}
                           className="w-full overflow-hidden relative group cursor-pointer shadow-md hover:shadow-xl transition-all duration-500 border-y border-[#DDA0DD]/10"
                         >
@@ -4186,7 +4371,7 @@ export default function App() {
                       />
                     </div>
                     <button
-                      onClick={() => { triggerAudio('shimmer'); setSavingsEnrollOpen(true); }}
+                      onClick={() => { triggerAudio('shimmer'); navigateTo('savings-enroll'); }}
                       className="px-10 py-3 rounded-lg bg-[#c0392b] hover:bg-[#a93226] text-white text-xs uppercase font-black tracking-widest transition-all cursor-pointer whitespace-nowrap shadow-md hover:shadow-lg"
                     >
                       Start Now
@@ -4194,7 +4379,7 @@ export default function App() {
                   </div>
                   <div className="text-right mt-2">
                     <button
-                      onClick={() => { triggerAudio('click'); setSavingsEnrollOpen(true); }}
+                      onClick={() => { triggerAudio('click'); navigateTo('savings-enroll'); }}
                       className="text-[11px] text-gray-500 hover:text-[#c0392b] cursor-pointer transition-colors"
                     >
                       Want to pay your {savingsSchemeType} Installment?{' '}
@@ -4267,22 +4452,22 @@ export default function App() {
                   <div style={{ textAlign: 'center', marginBottom: '96px' }}>
                     <p style={{
                       fontFamily: 'sans-serif',
-                      fontSize: '10px', 
+                      fontSize: '10px',
                       letterSpacing: '0.4em',
-                      textTransform: 'uppercase', 
+                      textTransform: 'uppercase',
                       color: '#E89AA9',
-                      fontWeight: '700', 
+                      fontWeight: '700',
                       margin: '0 0 14px'
                     }}>
                       Simple &amp; Transparent
                     </p>
                     <h2 style={{
                       fontFamily: '"Playfair Display", Georgia, serif',
-                      fontSize: '40px', 
+                      fontSize: '40px',
                       fontWeight: '600',
-                      color: '#0B2341', 
+                      color: '#0B2341',
                       letterSpacing: '0.01em',
-                      margin: '0 0 24px', 
+                      margin: '0 0 24px',
                       lineHeight: '1.2'
                     }}>
                       How It Works
@@ -4291,8 +4476,8 @@ export default function App() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
                       <div style={{ width: '64px', height: '1px', background: '#E89AA9', opacity: 0.7 }} />
                       <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
-                        <circle cx="4" cy="4" r="3.5" stroke="#E89AA9" strokeWidth="0.8"/>
-                        <circle cx="4" cy="4" r="1.5" fill="#E89AA9"/>
+                        <circle cx="4" cy="4" r="3.5" stroke="#E89AA9" strokeWidth="0.8" />
+                        <circle cx="4" cy="4" r="1.5" fill="#E89AA9" />
                       </svg>
                       <div style={{ width: '64px', height: '1px', background: '#E89AA9', opacity: 0.7 }} />
                     </div>
@@ -4369,11 +4554,11 @@ export default function App() {
                       }}>
                         <h3 style={{
                           fontFamily: '"Playfair Display", Georgia, serif',
-                          fontSize: '38px', 
+                          fontSize: '38px',
                           fontWeight: '700',
-                          color: '#0B2341', 
+                          color: '#0B2341',
                           lineHeight: '1.2',
-                          letterSpacing: '0.01em', 
+                          letterSpacing: '0.01em',
                           margin: 0
                         }}>
                           3 Easy<br />Steps
@@ -4384,10 +4569,10 @@ export default function App() {
                         }} />
                         <p style={{
                           fontFamily: 'sans-serif',
-                          fontSize: '12px', 
+                          fontSize: '12px',
                           color: '#8A94A6',
-                          lineHeight: '1.6', 
-                          margin: 0, 
+                          lineHeight: '1.6',
+                          margin: 0,
                           fontWeight: '400'
                         }}>
                           to purchase the jewellery your heart desires
@@ -4437,10 +4622,10 @@ export default function App() {
                             <svg viewBox="0 0 24 24" fill="none" stroke="#E89AA9"
                               strokeWidth="1.2" width="28" height="28"
                               strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="3" y="4" width="18" height="18" rx="2"/>
-                              <line x1="16" y1="2" x2="16" y2="6"/>
-                              <line x1="8" y1="2" x2="8" y2="6"/>
-                              <line x1="3" y1="10" x2="21" y2="10"/>
+                              <rect x="3" y="4" width="18" height="18" rx="2" />
+                              <line x1="16" y1="2" x2="16" y2="6" />
+                              <line x1="8" y1="2" x2="8" y2="6" />
+                              <line x1="3" y1="10" x2="21" y2="10" />
                             </svg>
                           </div>
                         </div>
@@ -4499,9 +4684,9 @@ export default function App() {
                             <svg viewBox="0 0 24 24" fill="none" stroke="#E89AA9"
                               strokeWidth="1.2" width="28" height="28"
                               strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M6 3h12l4 6-10 12L2 9z"/>
-                              <path d="M11 3 L8 9 L12 21 L16 9 L13 3"/>
-                              <path d="M2 9h20"/>
+                              <path d="M6 3h12l4 6-10 12L2 9z" />
+                              <path d="M11 3 L8 9 L12 21 L16 9 L13 3" />
+                              <path d="M2 9h20" />
                             </svg>
                           </div>
                         </div>
@@ -4558,9 +4743,9 @@ export default function App() {
                             <svg viewBox="0 0 24 24" fill="none" stroke="#E89AA9"
                               strokeWidth="1.2" width="28" height="28"
                               strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-                              <line x1="3" y1="6" x2="21" y2="6"/>
-                              <path d="M16 10a4 4 0 01-8 0"/>
+                              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                              <line x1="3" y1="6" x2="21" y2="6" />
+                              <path d="M16 10a4 4 0 01-8 0" />
                             </svg>
                           </div>
                         </div>
@@ -4592,22 +4777,22 @@ export default function App() {
                   {/* Bottom reference pill */}
                   <div style={{ textAlign: 'center', marginTop: '72px' }}>
                     <span style={{
-                      display: 'inline-flex', 
-                      alignItems: 'center', 
+                      display: 'inline-flex',
+                      alignItems: 'center',
                       gap: '10px',
-                      background: '#FDF7F7', 
+                      background: '#FDF7F7',
                       border: '1px solid rgba(232,154,169,0.25)',
-                      borderRadius: '30px', 
+                      borderRadius: '30px',
                       padding: '12px 36px',
                       fontFamily: 'sans-serif',
-                      fontSize: '12px', 
+                      fontSize: '12px',
                       color: '#6F727A',
                       letterSpacing: '0.02em',
                       boxShadow: '0 2px 12px rgba(232,154,169,0.03)'
                     }}>
                       <svg viewBox="0 0 14 14" fill="none" width="13" height="13" style={{ flexShrink: 0 }}>
-                        <circle cx="7" cy="7" r="6" stroke="#E89AA9" strokeWidth="1"/>
-                        <path d="M7 4.5V7.5L9 9" stroke="#E89AA9" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+                        <circle cx="7" cy="7" r="6" stroke="#E89AA9" strokeWidth="1" />
+                        <path d="M7 4.5V7.5L9 9" stroke="#E89AA9" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                       Refer to the calculator below for complete details
                     </span>
@@ -4634,9 +4819,9 @@ export default function App() {
                   <h2 style={{
                     textAlign: 'center',
                     fontFamily: '"Playfair Display", Georgia, serif',
-                    fontSize: '32px', 
+                    fontSize: '32px',
                     fontWeight: '600',
-                    color: '#0B2341', 
+                    color: '#0B2341',
                     marginBottom: '40px',
                     letterSpacing: '0.01em'
                   }}>Gold Mine Calculator</h2>
@@ -4655,12 +4840,12 @@ export default function App() {
 
                       {/* Amount Input Box */}
                       <div style={{
-                        border: '1.2px solid #D1D5DB', 
+                        border: '1.2px solid #D1D5DB',
                         borderRadius: '4px',
                         background: '#fff',
-                        display: 'flex', 
+                        display: 'flex',
                         alignItems: 'stretch',
-                        justifyContent: 'space-between', 
+                        justifyContent: 'space-between',
                         overflow: 'hidden',
                         height: '64px',
                         marginBottom: '18px'
@@ -4672,14 +4857,14 @@ export default function App() {
                           </div>
                         </div>
                         <button style={{
-                          background: '#F26544', 
-                          color: '#fff', 
+                          background: '#F26544',
+                          color: '#fff',
                           border: 'none',
                           padding: '0 24px',
-                          fontSize: '13px', 
-                          fontWeight: '700', 
+                          fontSize: '13px',
+                          fontWeight: '700',
                           cursor: 'pointer',
-                          letterSpacing: '0.08em', 
+                          letterSpacing: '0.08em',
                           textTransform: 'uppercase',
                           fontFamily: 'sans-serif',
                           display: 'flex',
@@ -4698,7 +4883,7 @@ export default function App() {
                           background: `linear-gradient(to right, #E8BEC5 0%, #E8BEC5 ${((monthlySavingsInput - 1000) / 49000) * 100}%, #E5E5E5 ${((monthlySavingsInput - 1000) / 49000) * 100}%, #E5E5E5 100%)`
                         }}
                       />
-                      
+
                       {/* Pie Chart */}
                       <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '12px' }}>
                         <svg viewBox="0 0 260 260" width="288" height="288" style={{ display: 'block' }}>
@@ -4807,7 +4992,7 @@ export default function App() {
                               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             >
                               <svg viewBox="0 0 20 20" width="18" height="18" fill="none">
-                                <circle cx="10" cy="10" r="8.5" stroke={erdTooltip === '6th' ? '#2F6FB6' : '#999'} strokeWidth="1.2"/>
+                                <circle cx="10" cy="10" r="8.5" stroke={erdTooltip === '6th' ? '#2F6FB6' : '#999'} strokeWidth="1.2" />
                                 <text x="10" y="13.5" textAnchor="middle" fontFamily="sans-serif" fontSize="10" fontWeight="700" fill={erdTooltip === '6th' ? '#2F6FB6' : '#999'}>i</text>
                               </svg>
                             </button>
@@ -4881,7 +5066,7 @@ export default function App() {
                               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             >
                               <svg viewBox="0 0 20 20" width="18" height="18" fill="none">
-                                <circle cx="10" cy="10" r="8.5" stroke={erdTooltip === '8th' ? '#2F6FB6' : '#999'} strokeWidth="1.2"/>
+                                <circle cx="10" cy="10" r="8.5" stroke={erdTooltip === '8th' ? '#2F6FB6' : '#999'} strokeWidth="1.2" />
                                 <text x="10" y="13.5" textAnchor="middle" fontFamily="sans-serif" fontSize="10" fontWeight="700" fill={erdTooltip === '8th' ? '#2F6FB6' : '#999'}>i</text>
                               </svg>
                             </button>
@@ -4937,12 +5122,12 @@ export default function App() {
 
                   {/* Bottom Divider and Note spanning full width */}
                   <div style={{ height: '1.2px', background: '#E6B7BE', opacity: 0.6, width: '100%', margin: '24px 0 12px 0' }} />
-                  <p style={{ 
-                    fontSize: '11.5px', 
-                    color: '#8A94A6', 
-                    textAlign: 'center', 
-                    lineHeight: '1.5', 
-                    margin: 0, 
+                  <p style={{
+                    fontSize: '11.5px',
+                    color: '#8A94A6',
+                    textAlign: 'center',
+                    lineHeight: '1.5',
+                    margin: 0,
                     fontFamily: 'sans-serif',
                     fontWeight: '400'
                   }}>
@@ -4955,12 +5140,12 @@ export default function App() {
               {/* ═══════════════════════════════════════════════
                   NOTE + FAQ SECTION
                   ═══════════════════════════════════════════════ */}
-              <section 
+              <section
                 className="relative w-full overflow-hidden flex flex-col items-center justify-between box-border"
-                style={{ 
-                  background: '#F9F1F2', 
-                  height: '520px', 
-                  paddingTop: '110px', 
+                style={{
+                  background: '#F9F1F2',
+                  height: '520px',
+                  paddingTop: '110px',
                   paddingBottom: '50px'
                 }}
               >
@@ -4972,10 +5157,10 @@ export default function App() {
                 </div>
 
                 <div className="w-full max-w-7xl mx-auto px-6 md:px-10 flex flex-col items-center justify-between h-full relative z-20">
-                  
+
                   {/* TOP NOTICE */}
                   <div className="text-center max-w-[600px] px-4">
-                    <span 
+                    <span
                       className="block text-xs font-extrabold uppercase tracking-widest mb-1.5 font-sans"
                       style={{ color: '#F26544' }}
                     >
@@ -4991,7 +5176,7 @@ export default function App() {
                   <div className="flex items-center w-full my-4 md:my-6">
                     <div className="flex-grow h-[1px] md:h-[1.2px]" style={{ backgroundColor: '#E6B7BE' }} />
                     <div className="bg-white py-3 md:py-4 px-6 md:px-12 mx-3 md:mx-6 shadow-none">
-                      <h3 
+                      <h3
                         className="text-base md:text-[28px] font-medium text-[#0B2341] m-0 tracking-wide text-center"
                         style={{ fontFamily: '"Playfair Display", Georgia, serif', lineHeight: '1.2' }}
                       >
@@ -5003,8 +5188,8 @@ export default function App() {
 
                   {/* LINKS SECTION */}
                   <div className="flex flex-wrap items-center justify-center gap-4 md:gap-16 font-sans mb-4">
-                    <a 
-                      href="/#faq" 
+                    <a
+                      href="/#faq"
                       onClick={(e) => {
                         e.preventDefault();
                         navigateTo('home');
@@ -5020,8 +5205,8 @@ export default function App() {
                       View all FAQ &gt;&gt;
                     </a>
                     <span className="text-[#E6B7BE] text-base hidden md:inline select-none">|</span>
-                    <a 
-                      href="/terms-and-conditions" 
+                    <a
+                      href="/terms-and-conditions"
                       onClick={(e) => {
                         e.preventDefault();
                         navigateTo('terms-and-conditions');
@@ -5076,7 +5261,7 @@ export default function App() {
                       />
                     </div>
                     <button
-                      onClick={() => { triggerAudio('shimmer'); setSavingsEnrollOpen(true); }}
+                      onClick={() => { triggerAudio('shimmer'); navigateTo('savings-enroll'); }}
                       className="px-10 py-3 rounded-lg bg-[#c0392b] hover:bg-[#a93226] text-white text-xs uppercase font-black tracking-widest transition-all cursor-pointer whitespace-nowrap shadow-md hover:shadow-lg"
                     >
                       GET STARTED
@@ -5084,7 +5269,7 @@ export default function App() {
                   </div>
                   <div className="text-right mt-2">
                     <button
-                      onClick={() => { triggerAudio('click'); setSavingsEnrollOpen(true); }}
+                      onClick={() => { triggerAudio('click'); navigateTo('savings-enroll'); }}
                       className="text-[11px] text-gray-500 hover:text-[#c0392b] cursor-pointer transition-colors font-sans"
                     >
                       Want to pay your {savingsSchemeType} Installment?{' '}
@@ -5157,22 +5342,22 @@ export default function App() {
                   <div style={{ textAlign: 'center', marginBottom: '96px' }}>
                     <p style={{
                       fontFamily: 'sans-serif',
-                      fontSize: '10px', 
+                      fontSize: '10px',
                       letterSpacing: '0.4em',
-                      textTransform: 'uppercase', 
+                      textTransform: 'uppercase',
                       color: '#E89AA9',
-                      fontWeight: '700', 
+                      fontWeight: '700',
                       margin: '0 0 14px'
                     }}>
                       Simple &amp; Transparent
                     </p>
                     <h2 style={{
                       fontFamily: '"Playfair Display", Georgia, serif',
-                      fontSize: '40px', 
+                      fontSize: '40px',
                       fontWeight: '600',
-                      color: '#0B2341', 
+                      color: '#0B2341',
                       letterSpacing: '0.01em',
-                      margin: '0 0 24px', 
+                      margin: '0 0 24px',
                       lineHeight: '1.2'
                     }}>
                       How It Works
@@ -5181,8 +5366,8 @@ export default function App() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
                       <div style={{ width: '64px', height: '1px', background: '#E89AA9', opacity: 0.7 }} />
                       <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
-                        <circle cx="4" cy="4" r="3.5" stroke="#E89AA9" strokeWidth="0.8"/>
-                        <circle cx="4" cy="4" r="1.5" fill="#E89AA9"/>
+                        <circle cx="4" cy="4" r="3.5" stroke="#E89AA9" strokeWidth="0.8" />
+                        <circle cx="4" cy="4" r="1.5" fill="#E89AA9" />
                       </svg>
                       <div style={{ width: '64px', height: '1px', background: '#E89AA9', opacity: 0.7 }} />
                     </div>
@@ -5259,11 +5444,11 @@ export default function App() {
                       }}>
                         <h3 style={{
                           fontFamily: '"Playfair Display", Georgia, serif',
-                          fontSize: '38px', 
+                          fontSize: '38px',
                           fontWeight: '700',
-                          color: '#0B2341', 
+                          color: '#0B2341',
                           lineHeight: '1.2',
-                          letterSpacing: '0.01em', 
+                          letterSpacing: '0.01em',
                           margin: 0
                         }}>
                           3 Easy<br />Steps
@@ -5274,10 +5459,10 @@ export default function App() {
                         }} />
                         <p style={{
                           fontFamily: 'sans-serif',
-                          fontSize: '12px', 
+                          fontSize: '12px',
                           color: '#8A94A6',
-                          lineHeight: '1.6', 
-                          margin: 0, 
+                          lineHeight: '1.6',
+                          margin: 0,
                           fontWeight: '400'
                         }}>
                           to purchase the jewellery your heart desires
@@ -5327,10 +5512,10 @@ export default function App() {
                             <svg viewBox="0 0 24 24" fill="none" stroke="#E89AA9"
                               strokeWidth="1.2" width="28" height="28"
                               strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="3" y="4" width="18" height="18" rx="2"/>
-                              <line x1="16" y1="2" x2="16" y2="6"/>
-                              <line x1="8" y1="2" x2="8" y2="6"/>
-                              <line x1="3" y1="10" x2="21" y2="10"/>
+                              <rect x="3" y="4" width="18" height="18" rx="2" />
+                              <line x1="16" y1="2" x2="16" y2="6" />
+                              <line x1="8" y1="2" x2="8" y2="6" />
+                              <line x1="3" y1="10" x2="21" y2="10" />
                             </svg>
                           </div>
                         </div>
@@ -5389,9 +5574,9 @@ export default function App() {
                             <svg viewBox="0 0 24 24" fill="none" stroke="#E89AA9"
                               strokeWidth="1.2" width="28" height="28"
                               strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M6 3h12l4 6-10 12L2 9z"/>
-                              <path d="M11 3 L8 9 L12 21 L16 9 L13 3"/>
-                              <path d="M2 9h20"/>
+                              <path d="M6 3h12l4 6-10 12L2 9z" />
+                              <path d="M11 3 L8 9 L12 21 L16 9 L13 3" />
+                              <path d="M2 9h20" />
                             </svg>
                           </div>
                         </div>
@@ -5448,9 +5633,9 @@ export default function App() {
                             <svg viewBox="0 0 24 24" fill="none" stroke="#E89AA9"
                               strokeWidth="1.2" width="28" height="28"
                               strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-                              <line x1="3" y1="6" x2="21" y2="6"/>
-                              <path d="M16 10a4 4 0 01-8 0"/>
+                              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                              <line x1="3" y1="6" x2="21" y2="6" />
+                              <path d="M16 10a4 4 0 01-8 0" />
                             </svg>
                           </div>
                         </div>
@@ -5482,22 +5667,22 @@ export default function App() {
                   {/* Bottom reference pill */}
                   <div style={{ textAlign: 'center', marginTop: '72px' }}>
                     <span style={{
-                      display: 'inline-flex', 
-                      alignItems: 'center', 
+                      display: 'inline-flex',
+                      alignItems: 'center',
                       gap: '10px',
-                      background: '#FDF7F7', 
+                      background: '#FDF7F7',
                       border: '1px solid rgba(232,154,169,0.25)',
-                      borderRadius: '30px', 
+                      borderRadius: '30px',
                       padding: '12px 36px',
                       fontFamily: 'sans-serif',
-                      fontSize: '12px', 
+                      fontSize: '12px',
                       color: '#6F727A',
                       letterSpacing: '0.02em',
                       boxShadow: '0 2px 12px rgba(232,154,169,0.03)'
                     }}>
                       <svg viewBox="0 0 14 14" fill="none" width="13" height="13" style={{ flexShrink: 0 }}>
-                        <circle cx="7" cy="7" r="6" stroke="#E89AA9" strokeWidth="1"/>
-                        <path d="M7 4.5V7.5L9 9" stroke="#E89AA9" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+                        <circle cx="7" cy="7" r="6" stroke="#E89AA9" strokeWidth="1" />
+                        <path d="M7 4.5V7.5L9 9" stroke="#E89AA9" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                       Refer to the calculator below for details
                     </span>
@@ -5524,9 +5709,9 @@ export default function App() {
                   <h2 style={{
                     textAlign: 'center',
                     fontFamily: '"Playfair Display", Georgia, serif',
-                    fontSize: '32px', 
+                    fontSize: '32px',
                     fontWeight: '600',
-                    color: '#0B2341', 
+                    color: '#0B2341',
                     margin: '0 0 8px',
                     letterSpacing: '0.01em'
                   }}>Gold Reserve Calculator</h2>
@@ -5554,7 +5739,7 @@ export default function App() {
 
                       {/* Amount Input Box */}
                       <div style={{
-                        border: '1.2px solid #D1D5DB', 
+                        border: '1.2px solid #D1D5DB',
                         borderRadius: '4px',
                         background: '#fff',
                         height: '56px',
@@ -5645,11 +5830,11 @@ export default function App() {
                       <div style={{ height: '1px', background: '#E5E5E5', marginBottom: '18px' }} />
 
                       {/* Explanatory text box */}
-                      <div style={{ 
-                        fontFamily: 'sans-serif', 
-                        fontSize: '13px', 
-                        color: '#555', 
-                        lineHeight: '1.6', 
+                      <div style={{
+                        fontFamily: 'sans-serif',
+                        fontSize: '13px',
+                        color: '#555',
+                        lineHeight: '1.6',
                         background: '#FAF8F6',
                         padding: '16px',
                         borderRadius: '4px',
@@ -5669,12 +5854,12 @@ export default function App() {
 
                   {/* Bottom Divider and Note spanning full width */}
                   <div style={{ height: '1.2px', background: '#E6B7BE', opacity: 0.6, width: '100%', margin: '24px 0 12px 0' }} />
-                  <p style={{ 
-                    fontSize: '11.5px', 
-                    color: '#8A94A6', 
-                    textAlign: 'center', 
-                    lineHeight: '1.5', 
-                    margin: 0, 
+                  <p style={{
+                    fontSize: '11.5px',
+                    color: '#8A94A6',
+                    textAlign: 'center',
+                    lineHeight: '1.5',
+                    margin: 0,
                     fontFamily: 'sans-serif',
                     fontWeight: '400'
                   }}>
@@ -5687,12 +5872,12 @@ export default function App() {
               {/* ═══════════════════════════════════════════════
                   NOTE + FAQ SECTION
                   ═══════════════════════════════════════════════ */}
-              <section 
+              <section
                 className="relative w-full overflow-hidden flex flex-col items-center justify-between box-border"
-                style={{ 
-                  background: '#F9F1F2', 
-                  height: '520px', 
-                  paddingTop: '110px', 
+                style={{
+                  background: '#F9F1F2',
+                  height: '520px',
+                  paddingTop: '110px',
                   paddingBottom: '50px'
                 }}
               >
@@ -5704,10 +5889,10 @@ export default function App() {
                 </div>
 
                 <div className="w-full max-w-7xl mx-auto px-6 md:px-10 flex flex-col items-center justify-between h-full relative z-20">
-                  
+
                   {/* TOP NOTICE */}
                   <div className="text-center max-w-[600px] px-4">
-                    <span 
+                    <span
                       className="block text-xs font-extrabold uppercase tracking-widest mb-1.5 font-sans"
                       style={{ color: '#F26544' }}
                     >
@@ -5726,7 +5911,7 @@ export default function App() {
                   <div className="flex items-center w-full my-4 md:my-6">
                     <div className="flex-grow h-[1px] md:h-[1.2px]" style={{ backgroundColor: '#E6B7BE' }} />
                     <div className="bg-white py-3 md:py-4 px-6 md:px-12 mx-3 md:mx-6 shadow-none">
-                      <h3 
+                      <h3
                         className="text-base md:text-[28px] font-medium text-[#0B2341] m-0 tracking-wide text-center"
                         style={{ fontFamily: '"Playfair Display", Georgia, serif', lineHeight: '1.2' }}
                       >
@@ -5738,8 +5923,8 @@ export default function App() {
 
                   {/* LINKS SECTION */}
                   <div className="flex flex-wrap items-center justify-center gap-4 md:gap-16 font-sans mb-4">
-                    <a 
-                      href="/#faq" 
+                    <a
+                      href="/#faq"
                       onClick={(e) => {
                         e.preventDefault();
                         navigateTo('home');
@@ -5755,8 +5940,8 @@ export default function App() {
                       View all FAQ &gt;&gt;
                     </a>
                     <span className="text-[#E6B7BE] text-base hidden md:inline select-none">|</span>
-                    <a 
-                      href="/terms-and-conditions" 
+                    <a
+                      href="/terms-and-conditions"
                       onClick={(e) => {
                         e.preventDefault();
                         navigateTo('terms-and-conditions');
@@ -5769,6 +5954,216 @@ export default function App() {
 
                 </div>
               </section>
+
+            </div>
+          )}
+
+          {/* ==========================================
+            A2. EXCLUSIVE OFFERS & STORES PAGE VIEW
+            ========================================== */}
+          {currentPage === 'offers' && (
+            <div className="bg-[#FCFAFF] text-[#0A2240] min-h-screen pb-16">
+
+              {/* TOP ANNOUNCEMENT BANNERS */}
+              <div className="w-full bg-[#031838] border-b border-[#DDA0DD]/10 py-6 px-4">
+                {/* Two Banners Grid */}
+                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 select-none animate-slide-up">
+                  {/* Banner 1: Gold Mine */}
+                  <div
+                    onClick={() => {
+                      triggerAudio('click');
+                      navigateTo('savings');
+                    }}
+                    className="overflow-hidden rounded-2xl relative group cursor-pointer shadow-md hover:shadow-xl transition-all duration-500 border border-white/10"
+                  >
+                    <img
+                      src={offerSavingsBanner}
+                      alt="Gold Mine 10+1 Monthly Installment Plan"
+                      loading="lazy"
+                      className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.015]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none" />
+                  </div>
+
+                  {/* Banner 2: Diamond Making Charges */}
+                  <div
+                    onClick={() => {
+                      triggerAudio('click');
+                      changeCategoryTab('Diamond');
+                      navigateTo('collections');
+                    }}
+                    className="overflow-hidden rounded-2xl relative group cursor-pointer shadow-md hover:shadow-xl transition-all duration-500 border border-white/10"
+                  >
+                    <img
+                      src={bannerDiamond50}
+                      alt="Up to 50% Off on Making Charges on Diamond Jewellery"
+                      loading="lazy"
+                      className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.015]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none" />
+                  </div>
+                </div>
+              </div>
+
+              {/* WHITE AREA BELOW BANNERS */}
+              <div className="w-full select-none animate-slide-up bg-white space-y-0">
+                {/* 11+1 GRP Savings Scheme Banner */}
+                <div
+                  onClick={() => {
+                    triggerAudio('click');
+                    navigateTo('savings');
+                  }}
+                  className="w-full overflow-hidden relative group cursor-pointer shadow-xs"
+                >
+                  <img
+                    src={offerSavings11_1Banner}
+                    alt="Gold Mine 11+1 Monthly Installment Plan"
+                    loading="lazy"
+                    className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.005]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none" />
+                </div>
+
+                {/* HR Jeweller & Sons Storefront Locator Banner */}
+                <div
+                  onClick={() => {
+                    triggerAudio('click');
+                    navigateTo('showrooms');
+                  }}
+                  className="w-full overflow-hidden relative group cursor-pointer shadow-xs border-t border-gray-100"
+                >
+                  <img
+                    src={storefrontLocatorBanner}
+                    alt="HR Jeweller & Sons Store Locator"
+                    loading="lazy"
+                    className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.005]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none" />
+                </div>
+
+                {/* HR Jeweller & Sons Promise Section */}
+                <div className="w-full bg-[#FAF6F8] py-16 lg:py-24 px-6 sm:px-12 md:px-16 lg:px-24 border-t border-gray-200 select-none">
+                  <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center gap-12 lg:gap-20">
+
+                    {/* Left Column - Branding (Matching screenshot layout & typography) */}
+                    <div className="w-full lg:w-1/2 flex flex-col justify-center items-center lg:items-start text-center lg:text-left">
+                      <h3 className="font-serif text-[#031838] text-[28px] sm:text-[36px] lg:text-[44px] font-normal tracking-[0.01em] leading-tight m-0">
+                        HR Jeweller & Sons
+                      </h3>
+                      <h2 className="font-serif text-[#031838] text-[56px] sm:text-[72px] lg:text-[84px] font-extrabold tracking-[0.02em] leading-none mt-1 sm:mt-2 mb-0">
+                        Promise
+                      </h2>
+                    </div>
+
+                    {/* Right Column - Grid of Circles (Exactly 3 columns on all screens, responsive circles) */}
+                    <div className="w-full lg:w-1/2 grid grid-cols-3 gap-y-10 sm:gap-y-12 gap-x-4 sm:gap-x-8 md:gap-x-12 justify-items-center">
+
+                      {/* Circle 1 - Heritage */}
+                      <div className="flex flex-col items-center max-w-[120px]">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-[#031838] text-white flex flex-col justify-center items-center shadow-md transform transition-transform duration-300 hover:scale-105">
+                          <span className="text-[8px] sm:text-[10px] tracking-widest uppercase opacity-75 font-semibold font-sans">SINCE</span>
+                          <span className="text-lg sm:text-xl md:text-2xl font-bold font-serif tracking-wider mt-0.5">1952</span>
+                        </div>
+                        <p className="text-[9px] sm:text-[11px] text-[#2c3e50] font-sans font-medium tracking-wide text-center mt-3 leading-snug">
+                          Royal Lineage of Bikaner
+                        </p>
+                      </div>
+
+                      {/* Circle 2 - Certified */}
+                      <div className="flex flex-col items-center max-w-[120px]">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-[#031838] text-white flex flex-col justify-center items-center shadow-md transform transition-transform duration-300 hover:scale-105">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </div>
+                        <p className="text-[9px] sm:text-[11px] text-[#2c3e50] font-sans font-medium tracking-wide text-center mt-3 leading-snug">
+                          100% Certified Jewellery
+                        </p>
+                      </div>
+
+                      {/* Circle 3 - Lifetime Exchange */}
+                      <div className="flex flex-col items-center max-w-[120px]">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-[#031838] text-white flex flex-col justify-center items-center shadow-md transform transition-transform duration-300 hover:scale-105">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </div>
+                        <p className="text-[9px] sm:text-[11px] text-[#2c3e50] font-sans font-medium tracking-wide text-center mt-3 leading-snug">
+                          Lifetime Exchange & Buyback
+                        </p>
+                      </div>
+
+                      {/* Circle 4 - Guaranteed Purity */}
+                      <div className="flex flex-col items-center max-w-[120px]">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-[#031838] text-white flex flex-col justify-center items-center shadow-md transform transition-transform duration-300 hover:scale-105">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                          </svg>
+                        </div>
+                        <p className="text-[9px] sm:text-[11px] text-[#2c3e50] font-sans font-medium tracking-wide text-center mt-3 leading-snug">
+                          Guaranteed Purity & Value
+                        </p>
+                      </div>
+
+                      {/* Circle 5 - Complete Transparency */}
+                      <div className="flex flex-col items-center max-w-[120px]">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-[#031838] text-white flex flex-col justify-center items-center shadow-md transform transition-transform duration-300 hover:scale-105">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </div>
+                        <p className="text-[9px] sm:text-[11px] text-[#2c3e50] font-sans font-medium tracking-wide text-center mt-3 leading-snug">
+                          100% Transparency
+                        </p>
+                      </div>
+
+                      {/* Circle 6 - Free Shipping */}
+                      <div className="flex flex-col items-center max-w-[120px]">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-[#031838] text-white flex flex-col justify-center items-center shadow-md transform transition-transform duration-300 hover:scale-105">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                            <rect x="1" y="3" width="15" height="13" />
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                            <circle cx="5.5" cy="18.5" r="2.5" />
+                            <circle cx="18.5" cy="18.5" r="2.5" />
+                          </svg>
+                        </div>
+                        <p className="text-[9px] sm:text-[11px] text-[#2c3e50] font-sans font-medium tracking-wide text-center mt-3 leading-snug">
+                          Free Shipping
+                        </p>
+                      </div>
+
+                      {/* Circle 7 - Rajputi Heritage */}
+                      <div className="flex flex-col items-center max-w-[120px]">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-[#031838] text-white flex flex-col justify-center items-center shadow-md transform transition-transform duration-300 hover:scale-105">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </div>
+                        <p className="text-[9px] sm:text-[11px] text-[#2c3e50] font-sans font-medium tracking-wide text-center mt-3 leading-snug">
+                          Authentic Rajputi Ornaments
+                        </p>
+                      </div>
+
+                      {/* Circle 8 - Video Consultation */}
+                      <div className="flex flex-col items-center max-w-[120px]">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-[#031838] text-white flex flex-col justify-center items-center shadow-md transform transition-transform duration-300 hover:scale-105">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                            <polygon points="23 7 16 12 23 17 23 7" strokeLinecap="round" strokeLinejoin="round" />
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </div>
+                        <p className="text-[9px] sm:text-[11px] text-[#2c3e50] font-sans font-medium tracking-wide text-center mt-3 leading-snug">
+                          Personalised Video Consultations
+                        </p>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
 
             </div>
           )}
@@ -5837,7 +6232,7 @@ export default function App() {
                     <div className="border-b border-gray-100 py-3">
                       <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Type</span>
                       <div className="space-y-2">
-                        {['Earrings','Rings','Pendants','Necklaces','Bangles','Bracelets','Mangalsutra','Chains','Nose Pins','Anklets','Kids Bangles','Kids Rings','Cufflinks','Brooch'].map(t => (
+                        {['Earrings', 'Rings', 'Pendants', 'Necklaces', 'Bangles', 'Bracelets', 'Mangalsutra', 'Chains', 'Nose Pins', 'Anklets', 'Kids Bangles', 'Kids Rings', 'Cufflinks', 'Brooch'].map(t => (
                           <label key={t} className="flex items-center gap-2.5 cursor-pointer group">
                             <input type="radio" name="type" checked={typeFilter === t} onChange={() => setTypeFilter(prev => prev === t ? 'all' : t)} className="accent-[#4A126D] w-3.5 h-3.5 cursor-pointer" />
                             <span className={`text-[11px] font-sans leading-none ${typeFilter === t ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{t}</span>
@@ -5850,7 +6245,7 @@ export default function App() {
                     <div className="border-b border-gray-100 py-3">
                       <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Metal</span>
                       <div className="space-y-2">
-                        {['All','Gold','Silver','Rose Gold','White Gold','Platinum','Plain Gold'].map(m => (
+                        {['All', 'Gold', 'Silver', 'Rose Gold', 'White Gold', 'Platinum', 'Plain Gold'].map(m => (
                           <label key={m} className="flex items-center gap-2.5 cursor-pointer group">
                             <input type="radio" name="metal" checked={metalFilter === m.toLowerCase()} onChange={() => setMetalFilter(m.toLowerCase())} className="accent-[#4A126D] w-3.5 h-3.5 cursor-pointer" />
                             <span className={`text-[11px] font-sans leading-none ${metalFilter === m.toLowerCase() ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{m}</span>
@@ -5863,7 +6258,7 @@ export default function App() {
                     <div className="border-b border-gray-100 py-3">
                       <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Gold Purity</span>
                       <div className="space-y-2">
-                        {['All','14K','18K','22K','24K'].map(p => (
+                        {['All', '14K', '18K', '22K', '24K'].map(p => (
                           <label key={p} className="flex items-center gap-2.5 cursor-pointer group">
                             <input type="radio" name="purity" checked={purityFilter === (p === 'All' ? 'all' : p)} onChange={() => setPurityFilter(p === 'All' ? 'all' : p)} className="accent-[#4A126D] w-3.5 h-3.5 cursor-pointer" />
                             <span className={`text-[11px] font-sans leading-none ${purityFilter === (p === 'All' ? 'all' : p) ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{p}</span>
@@ -5876,7 +6271,7 @@ export default function App() {
                     <div className="border-b border-gray-100 py-3">
                       <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Gender</span>
                       <div className="space-y-2">
-                        {['All','Women','Men','Unisex'].map(g => (
+                        {['All', 'Women', 'Men', 'Unisex'].map(g => (
                           <label key={g} className="flex items-center gap-2.5 cursor-pointer group">
                             <input type="radio" name="gender" checked={genderFilter === g.toLowerCase()} onChange={() => setGenderFilter(g.toLowerCase())} className="accent-[#4A126D] w-3.5 h-3.5 cursor-pointer" />
                             <span className={`text-[11px] font-sans leading-none ${genderFilter === g.toLowerCase() ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{g}</span>
@@ -5889,7 +6284,7 @@ export default function App() {
                     <div className="border-b border-gray-100 py-3">
                       <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Stones</span>
                       <div className="space-y-2">
-                        {['Diamond','Ruby','Sapphire','Emerald','Pearl','Topaz','Amethyst','Garnet','Opal','Citrine','Aquamarine'].map(s => (
+                        {['Diamond', 'Ruby', 'Sapphire', 'Emerald', 'Pearl', 'Topaz', 'Amethyst', 'Garnet', 'Opal', 'Citrine', 'Aquamarine'].map(s => (
                           <label key={s} className="flex items-center gap-2.5 cursor-pointer group">
                             <input type="radio" name="stone" checked={stoneFilter === s} onChange={() => setStoneFilter(prev => prev === s ? 'all' : s)} className="accent-[#4A126D] w-3.5 h-3.5 cursor-pointer" />
                             <span className={`text-[11px] font-sans leading-none ${stoneFilter === s ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{s}</span>
@@ -5902,7 +6297,7 @@ export default function App() {
                     <div className="border-b border-gray-100 py-3">
                       <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Occasion</span>
                       <div className="space-y-2">
-                        {['Everyday Wear','Festive','Wedding','Engagement','Anniversary','Gifting','Workwear','Romantic','Vacation','Special Occasion','Valentine'].map(o => (
+                        {['Everyday Wear', 'Festive', 'Wedding', 'Engagement', 'Anniversary', 'Gifting', 'Workwear', 'Romantic', 'Vacation', 'Special Occasion', 'Valentine'].map(o => (
                           <label key={o} className="flex items-center gap-2.5 cursor-pointer group">
                             <input type="radio" name="occasion" checked={occasionFilter === o} onChange={() => setOccasionFilter(prev => prev === o ? 'all' : o)} className="accent-[#4A126D] w-3.5 h-3.5 cursor-pointer" />
                             <span className={`text-[11px] font-sans leading-none ${occasionFilter === o ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{o}</span>
@@ -5915,7 +6310,7 @@ export default function App() {
                     <div className="border-b border-gray-100 py-3">
                       <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2.5">Category</span>
                       <div className="flex flex-wrap gap-1.5">
-                        {['Collections','Rings','Earrings','Necklace','Mangalsutra','Bracelets','Bangles','Gold Coins','Anklets','Men Jewellery','Kids Jewellery','Gifts & Pooja'].map(cat => {
+                        {['Collections', 'Rings', 'Earrings', 'Necklace', 'Mangalsutra', 'Bracelets', 'Bangles', 'Gold Coins', 'Anklets', 'Men Jewellery', 'Kids Jewellery', 'Gifts & Pooja'].map(cat => {
                           const isActive = activeCategoryTab === cat;
                           return (
                             <button key={cat} onClick={() => changeCategoryTab(cat)}
@@ -6119,37 +6514,37 @@ export default function App() {
                   </div>
                 </div>
 
-                        {/* Pagination */}
-                        {totalPages > 1 && (
-                          <div className="flex justify-center items-center gap-2 pt-8 pb-4 select-none flex-wrap">
-                            <button
-                              onClick={() => { if (collectionsPage > 1) { triggerAudio('click'); setCollectionsPage(collectionsPage - 1); window.scrollTo({ top: 400, behavior: 'smooth' }); } }}
-                              disabled={collectionsPage === 1}
-                              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border cursor-pointer ${collectionsPage === 1 ? 'opacity-40 cursor-not-allowed bg-gray-50 text-gray-400 border-gray-200' : 'bg-white text-[#4A126D] border-[#DDA0DD]/40 hover:border-[#DDA0DD] hover:bg-[#4A126D] hover:text-white shadow-sm'}`}
-                            >
-                              ← Prev
-                            </button>
-                            {Array.from({ length: totalPages }).map((_, idx) => {
-                              const pageNum = idx + 1;
-                              const isActive = collectionsPage === pageNum;
-                              if (totalPages > 7 && pageNum !== 1 && pageNum !== totalPages && Math.abs(pageNum - collectionsPage) > 2) return null;
-                              return (
-                                <button key={pageNum} onClick={() => { triggerAudio('click'); setCollectionsPage(pageNum); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
-                                  className={`w-9 h-9 rounded-xl text-xs font-bold transition-all duration-300 border cursor-pointer flex items-center justify-center ${isActive ? 'bg-[#4A126D] text-white border-[#4A126D] shadow-[0_0_15px_rgba(74,18,109,0.3)] scale-110' : 'bg-white text-gray-600 border-gray-200 hover:border-[#DDA0DD] hover:text-[#4A126D]'}`}
-                                >
-                                  {pageNum}
-                                </button>
-                              );
-                            })}
-                            <button
-                              onClick={() => { if (collectionsPage < totalPages) { triggerAudio('click'); setCollectionsPage(collectionsPage + 1); window.scrollTo({ top: 400, behavior: 'smooth' }); } }}
-                              disabled={collectionsPage === totalPages}
-                              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border cursor-pointer ${collectionsPage === totalPages ? 'opacity-40 cursor-not-allowed bg-gray-50 text-gray-400 border-gray-200' : 'bg-white text-[#4A126D] border-[#DDA0DD]/40 hover:border-[#DDA0DD] hover:bg-[#4A126D] hover:text-white shadow-sm'}`}
-                            >
-                              Next →
-                            </button>
-                          </div>
-                        )}
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex justify-center items-center gap-2 pt-8 pb-4 select-none flex-wrap">
+                    <button
+                      onClick={() => { if (collectionsPage > 1) { triggerAudio('click'); setCollectionsPage(collectionsPage - 1); window.scrollTo({ top: 400, behavior: 'smooth' }); } }}
+                      disabled={collectionsPage === 1}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border cursor-pointer ${collectionsPage === 1 ? 'opacity-40 cursor-not-allowed bg-gray-50 text-gray-400 border-gray-200' : 'bg-white text-[#4A126D] border-[#DDA0DD]/40 hover:border-[#DDA0DD] hover:bg-[#4A126D] hover:text-white shadow-sm'}`}
+                    >
+                      ← Prev
+                    </button>
+                    {Array.from({ length: totalPages }).map((_, idx) => {
+                      const pageNum = idx + 1;
+                      const isActive = collectionsPage === pageNum;
+                      if (totalPages > 7 && pageNum !== 1 && pageNum !== totalPages && Math.abs(pageNum - collectionsPage) > 2) return null;
+                      return (
+                        <button key={pageNum} onClick={() => { triggerAudio('click'); setCollectionsPage(pageNum); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+                          className={`w-9 h-9 rounded-xl text-xs font-bold transition-all duration-300 border cursor-pointer flex items-center justify-center ${isActive ? 'bg-[#4A126D] text-white border-[#4A126D] shadow-[0_0_15px_rgba(74,18,109,0.3)] scale-110' : 'bg-white text-gray-600 border-gray-200 hover:border-[#DDA0DD] hover:text-[#4A126D]'}`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                    <button
+                      onClick={() => { if (collectionsPage < totalPages) { triggerAudio('click'); setCollectionsPage(collectionsPage + 1); window.scrollTo({ top: 400, behavior: 'smooth' }); } }}
+                      disabled={collectionsPage === totalPages}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border cursor-pointer ${collectionsPage === totalPages ? 'opacity-40 cursor-not-allowed bg-gray-50 text-gray-400 border-gray-200' : 'bg-white text-[#4A126D] border-[#DDA0DD]/40 hover:border-[#DDA0DD] hover:bg-[#4A126D] hover:text-white shadow-sm'}`}
+                    >
+                      Next →
+                    </button>
+                  </div>
+                )}
 
 
               </div>
@@ -9310,6 +9705,927 @@ export default function App() {
           )}
 
           {/* ==========================================
+            F. 11+1 WIZARD SAVINGS ENROLLMENT PAGE VIEW
+            ========================================== */}
+          {currentPage === 'savings-enroll' && (
+            <div className="bg-[#FAF8F6] min-h-screen pb-16 font-sans text-gray-800">
+
+              {/* Enrollment Header */}
+              <header className="w-full bg-white border-b border-gray-200 py-4 px-6 sm:px-12 flex flex-col sm:flex-row justify-between items-center gap-4">
+                {/* Logo */}
+                <div onClick={() => navigateTo('home')} className="flex items-center space-x-2 font-serif text-lg font-bold text-[#031838] tracking-widest cursor-pointer">
+                  <span>HR JEWELLER & SONS</span>
+                </div>
+
+                {/* Progress Bar (Matching BlueStone style) */}
+                {savingsEnrollStep <= 3 && (
+                  <div className="flex items-center space-x-4 text-xs font-semibold select-none">
+                    <div className="flex flex-col items-center">
+                      <span className={`${savingsEnrollStep === 1 ? 'text-[#031838]' : 'text-gray-400'}`}>Personal Details</span>
+                      <div className={`w-3.5 h-3.5 rounded-full border-2 mt-1 flex items-center justify-center ${savingsEnrollStep >= 1 ? 'border-[#006361] bg-[#006361]' : 'border-gray-300'}`}>
+                        {savingsEnrollStep > 1 && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      </div>
+                    </div>
+                    <div className="w-12 h-[2px] bg-gray-200 mt-4" style={{ backgroundColor: savingsEnrollStep > 1 ? '#006361' : '#E5E7EB' }} />
+                    <div className="flex flex-col items-center">
+                      <span className={`${savingsEnrollStep === 2 ? 'text-[#031838]' : 'text-gray-400'}`}>Nominee Details</span>
+                      <div className={`w-3.5 h-3.5 rounded-full border-2 mt-1 flex items-center justify-center ${savingsEnrollStep >= 2 ? 'border-[#006361] bg-[#006361]' : 'border-gray-300 bg-white'}`}>
+                        {savingsEnrollStep > 2 && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      </div>
+                    </div>
+                    <div className="w-12 h-[2px] bg-gray-200 mt-4" style={{ backgroundColor: savingsEnrollStep > 2 ? '#006361' : '#E5E7EB' }} />
+                    <div className="flex flex-col items-center">
+                      <span className={`${savingsEnrollStep === 3 ? 'text-[#031838]' : 'text-gray-400'}`}>Payment Details</span>
+                      <div className={`w-3.5 h-3.5 rounded-full border-2 mt-1 flex items-center justify-center ${savingsEnrollStep >= 3 ? 'border-[#006361] bg-[#006361]' : 'border-gray-300 bg-white'}`}>
+                        {savingsEnrollStep > 3 && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Secure Badge */}
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 tracking-wide select-none">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 text-[#006361]">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  <span className="font-bold text-[#006361]">100% SECURE</span>
+                </div>
+              </header>
+
+              {/* Main Content Layout */}
+              <div className="max-w-7xl mx-auto px-6 sm:px-12 mt-10">
+
+                {savingsEnrollStep === 4 ? (
+                  /* STEP 4: SUCCESS RECEIPT SCREEN */
+                  <div className="max-w-2xl mx-auto bg-white border border-gray-100 rounded-[2.5rem] p-8 sm:p-12 shadow-xl text-center space-y-6 animate-fade-in">
+                    <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto text-green-500">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-10 h-10">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                    <div className="space-y-2">
+                      <h2 className="serif-luxury text-3xl font-bold text-[#031838]">Enrollment Initiated Successfully!</h2>
+                      <p className="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">
+                        Your application for the 11+1 Gold Saving scheme is processed. An Atelier Specialist will contact you on WhatsApp to finalize direct bank mandate links.
+                      </p>
+                    </div>
+
+                    <div className="border border-dashed border-gray-200 rounded-2xl p-6 text-left space-y-3 bg-[#FAF8F6]">
+                      <div className="flex justify-between text-xs text-gray-600"><span className="font-bold">Subscriber Name</span><span>{savingsEnrollForm.name}</span></div>
+                      <div className="flex justify-between text-xs text-gray-600"><span className="font-bold">Contact Phone</span><span>{savingsEnrollForm.mobile}</span></div>
+                      <div className="flex justify-between text-xs text-gray-600"><span className="font-bold">Email Address</span><span>{savingsEnrollForm.email}</span></div>
+                      <div className="flex justify-between text-xs text-gray-600"><span className="font-bold">Nominee Name</span><span>{savingsEnrollForm.nomineeName} ({savingsEnrollForm.nomineeRelationship})</span></div>
+                      <div className="h-[1px] bg-gray-200 my-2" />
+                      <div className="flex justify-between text-sm text-[#031838] font-bold"><span>Monthly Installment</span><span>₹ {monthlySavingsInput.toLocaleString('en-IN')}</span></div>
+                      <div className="flex justify-between text-sm text-[#006361] font-bold"><span>12th Month Bonus (Atelier)</span><span>₹ {monthlySavingsInput.toLocaleString('en-IN')}</span></div>
+                    </div>
+
+                    <button onClick={() => navigateTo('home')} className="px-8 py-3.5 rounded-xl bg-[#031838] hover:bg-[#0c2b5c] text-white text-xs uppercase font-black tracking-widest transition-all shadow-md">
+                      Go back to Home
+                    </button>
+                  </div>
+                ) : (
+                  /* SPLIT LAYOUT FOR STEPS 1, 2, 3 */
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+
+                    {/* LEFT PANEL - FORMS */}
+                    <div className="lg:col-span-8 bg-white border border-gray-100 rounded-3xl p-6 sm:p-10 shadow-md">
+
+                      {savingsEnrollStep === 1 && (
+                        /* STEP 1: PERSONAL DETAILS FORM */
+                        <form onSubmit={(e) => { e.preventDefault(); setSavingsEnrollStep(2); }} className="space-y-6">
+                          <div className="border-b border-gray-100 pb-4">
+                            <h2 className="text-xl font-bold text-[#031838] serif-luxury">Personal Details</h2>
+                            <p className="text-xs text-gray-400 font-light">Kindly enter your personal details for the fields mentioned below</p>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* Email address */}
+                            <div className="relative border border-gray-200 rounded-xl px-3 py-2 bg-[#FAF8F6]">
+                              <span className="text-[9px] uppercase tracking-wider text-gray-400 block">Email Address</span>
+                              <input
+                                type="email"
+                                required
+                                value={savingsEnrollForm.email}
+                                onChange={(e) => setSavingsEnrollForm({ ...savingsEnrollForm, email: e.target.value })}
+                                className="w-full bg-transparent border-none outline-none text-xs text-gray-700 font-semibold mt-0.5 focus:ring-0"
+                              />
+                            </div>
+
+                            {/* Mobile number */}
+                            <div className="relative border border-gray-200 rounded-xl px-3 py-2">
+                              <span className="text-[9px] uppercase tracking-wider text-[#031838] font-bold block">Mobile Number</span>
+                              <input
+                                type="tel"
+                                required
+                                placeholder="e.g. 9783843978"
+                                value={savingsEnrollForm.mobile}
+                                onChange={(e) => setSavingsEnrollForm({ ...savingsEnrollForm, mobile: e.target.value })}
+                                className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Full Name */}
+                          <div className="relative border border-gray-200 rounded-xl px-3 py-2">
+                            <span className="text-[9px] uppercase tracking-wider text-[#031838] font-bold block">Your Full Name</span>
+                            <input
+                              type="text"
+                              required
+                              placeholder="e.g. Suryaveer Singh"
+                              value={savingsEnrollForm.name}
+                              onChange={(e) => setSavingsEnrollForm({ ...savingsEnrollForm, name: e.target.value })}
+                              className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0"
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* Pincode */}
+                            <div className="relative border border-gray-200 rounded-xl px-3 py-2">
+                              <span className="text-[9px] uppercase tracking-wider text-[#031838] font-bold block">Pincode</span>
+                              <input
+                                type="text"
+                                required
+                                placeholder="e.g. 334001"
+                                value={savingsEnrollForm.pincode}
+                                onChange={(e) => setSavingsEnrollForm({ ...savingsEnrollForm, pincode: e.target.value })}
+                                className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0"
+                              />
+                            </div>
+
+                            {/* Flat/House No. */}
+                            <div className="relative border border-gray-200 rounded-xl px-3 py-2">
+                              <span className="text-[9px] uppercase tracking-wider text-[#031838] font-bold block">Apartment/House/Flat No.</span>
+                              <input
+                                type="text"
+                                required
+                                placeholder="e.g. 4-D-37"
+                                value={savingsEnrollForm.address}
+                                onChange={(e) => setSavingsEnrollForm({ ...savingsEnrollForm, address: e.target.value })}
+                                className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* Street/Colony */}
+                            <div className="relative border border-gray-200 rounded-xl px-3 py-2">
+                              <span className="text-[9px] uppercase tracking-wider text-[#031838] font-bold block">Street/Colony/Area Name</span>
+                              <input
+                                type="text"
+                                required
+                                placeholder="e.g. JNV Colony"
+                                value={savingsEnrollForm.street}
+                                onChange={(e) => setSavingsEnrollForm({ ...savingsEnrollForm, street: e.target.value })}
+                                className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0"
+                              />
+                            </div>
+
+                            {/* Locality */}
+                            <div className="relative border border-gray-200 rounded-xl px-3 py-2">
+                              <span className="text-[9px] uppercase tracking-wider text-[#031838] font-bold block">Locality/Town</span>
+                              <input
+                                type="text"
+                                required
+                                placeholder="e.g. Near Murti Circle"
+                                value={savingsEnrollForm.locality}
+                                onChange={(e) => setSavingsEnrollForm({ ...savingsEnrollForm, locality: e.target.value })}
+                                className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* Landmark */}
+                            <div className="relative border border-gray-200 rounded-xl px-3 py-2">
+                              <span className="text-[9px] uppercase tracking-wider text-[#031838] font-bold block">Landmark (Optional)</span>
+                              <input
+                                type="text"
+                                placeholder="e.g. Opposite Park"
+                                value={savingsEnrollForm.landmark}
+                                onChange={(e) => setSavingsEnrollForm({ ...savingsEnrollForm, landmark: e.target.value })}
+                                className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0"
+                              />
+                            </div>
+
+                            {/* City */}
+                            <div className="relative border border-gray-200 rounded-xl px-3 py-2">
+                              <span className="text-[9px] uppercase tracking-wider text-[#031838] font-bold block">City/District</span>
+                              <input
+                                type="text"
+                                required
+                                placeholder="e.g. Bikaner"
+                                value={savingsEnrollForm.city}
+                                onChange={(e) => setSavingsEnrollForm({ ...savingsEnrollForm, city: e.target.value })}
+                                className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0"
+                              />
+                            </div>
+                          </div>
+
+                          {/* State Dropdown */}
+                          <div className="relative border border-gray-200 rounded-xl px-3 py-2">
+                            <span className="text-[9px] uppercase tracking-wider text-[#031838] font-bold block">State</span>
+                            <select
+                              value={savingsEnrollForm.state}
+                              onChange={(e) => setSavingsEnrollForm({ ...savingsEnrollForm, state: e.target.value })}
+                              className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0 select-none cursor-pointer"
+                            >
+                              <option value="Rajasthan">Rajasthan</option>
+                              <option value="Delhi">Delhi</option>
+                              <option value="Gujarat">Gujarat</option>
+                              <option value="Haryana">Haryana</option>
+                              <option value="Maharashtra">Maharashtra</option>
+                              <option value="Punjab">Punjab</option>
+                              <option value="Uttar Pradesh">Uttar Pradesh</option>
+                            </select>
+                          </div>
+
+                          <div className="pt-2">
+                            <p className="text-[10px] text-gray-400 font-light leading-relaxed font-sans">
+                              By clicking Next, I hereby acknowledge that I am above 18 years old and I am resident of India.
+                            </p>
+                          </div>
+
+                          <div className="flex justify-end">
+                            <button
+                              type="submit"
+                              className="px-10 py-3.5 rounded-xl bg-[#E84F35] hover:bg-[#d63d22] text-white text-xs uppercase font-black tracking-widest transition-all shadow-md cursor-pointer"
+                            >
+                              NEXT
+                            </button>
+                          </div>
+                        </form>
+                      )}
+
+                      {savingsEnrollStep === 2 && (
+                        /* STEP 2: NOMINEE DETAILS FORM */
+                        <form onSubmit={(e) => { e.preventDefault(); setSavingsEnrollStep(3); }} className="space-y-6 animate-fade-in">
+                          <div className="border-b border-gray-100 pb-4">
+                            <h2 className="text-xl font-bold text-[#031838] serif-luxury">Nominee Details</h2>
+                            <p className="text-xs text-gray-400 font-light" style={{ lineHeight: '1.5' }}>Enter details of the person who can redeem the plan benefits in case of unforeseen circumstances</p>
+                          </div>
+
+                          {/* Nominee Name & Relationship - Side by Side */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* Nominee's Full Name */}
+                            <div className="relative border border-gray-200 rounded-xl px-3 py-2">
+                              <span className="text-[9px] uppercase tracking-wider text-[#031838] font-bold block">Nominee's Full Name</span>
+                              <input
+                                type="text"
+                                required
+                                placeholder="e.g. Savitri Devi"
+                                value={savingsEnrollForm.nomineeName}
+                                onChange={(e) => setSavingsEnrollForm({ ...savingsEnrollForm, nomineeName: e.target.value })}
+                                className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0"
+                              />
+                            </div>
+
+                            {/* Relationship Dropdown */}
+                            <div className="relative border border-gray-200 rounded-xl px-3 py-2">
+                              <span className="text-[9px] uppercase tracking-wider text-[#031838] font-bold block">Relationship</span>
+                              <select
+                                value={savingsEnrollForm.nomineeRelationship}
+                                onChange={(e) => setSavingsEnrollForm({ ...savingsEnrollForm, nomineeRelationship: e.target.value })}
+                                className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0 cursor-pointer select-none"
+                              >
+                                <option value="Spouse">Spouse</option>
+                                <option value="Mother">Mother</option>
+                                <option value="Father">Father</option>
+                                <option value="Son">Son</option>
+                                <option value="Daughter">Daughter</option>
+                                <option value="Brother">Brother</option>
+                                <option value="Sister">Sister</option>
+                                <option value="Other">Other</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Nationality Dropdown */}
+                          <div className="relative border border-gray-200 rounded-xl px-3 py-2">
+                            <span className="text-[9px] uppercase tracking-wider text-[#031838] font-bold block">Nationality</span>
+                            <select
+                              value={savingsEnrollForm.nomineeNationality || 'Indian'}
+                              onChange={(e) => setSavingsEnrollForm({ ...savingsEnrollForm, nomineeNationality: e.target.value })}
+                              className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0 cursor-pointer select-none"
+                            >
+                              <option value="Indian">Indian</option>
+                              <option value="NRI">NRI (Non-Resident Indian)</option>
+                              <option value="Other">Other</option>
+                            </select>
+                          </div>
+
+                          {/* Disclaimer */}
+                          <p className="text-[11px] text-gray-400 font-light leading-relaxed">
+                            By clicking Next, I hereby acknowledge that nominee is above 18 years old
+                          </p>
+
+                          <div className="flex justify-between pt-4">
+                            <button
+                              type="button"
+                              onClick={() => setSavingsEnrollStep(1)}
+                              className="px-8 py-3.5 rounded-xl border border-gray-200 text-gray-600 text-xs uppercase font-black tracking-widest transition-all hover:bg-gray-50 cursor-pointer"
+                            >
+                              BACK
+                            </button>
+                            <button
+                              type="submit"
+                              className="px-10 py-3.5 rounded-xl bg-[#E84F35] hover:bg-[#d63d22] text-white text-xs uppercase font-black tracking-widest transition-all shadow-md cursor-pointer"
+                            >
+                              NEXT
+                            </button>
+                          </div>
+                        </form>
+                      )}
+
+                      {savingsEnrollStep === 3 && (
+                        /* STEP 3: PAYMENT DETAILS FORM */
+                        <form onSubmit={handleSavingsEnrollWizardSubmit} className="space-y-6 animate-fade-in">
+                          <div className="pb-4">
+                            <h2 className="text-lg font-bold text-[#031838] serif-luxury">Choose a Payment Method</h2>
+                          </div>
+
+                          {/* Payment Layout: Vertical Tabs + Content */}
+                          <div className="flex flex-col sm:flex-row gap-0">
+                            {/* Vertical Tabs (Left) */}
+                            <div className="flex flex-row sm:flex-col sm:min-w-[140px] border-b sm:border-b-0 sm:border-r border-gray-200">
+                              {[
+                                { id: 'card', name: 'Cards' },
+                                { id: 'netbanking', name: 'Net Banking' },
+                                { id: 'upi', name: 'UPI' }
+                              ].map(m => (
+                                <button
+                                  key={m.id}
+                                  type="button"
+                                  onClick={() => setSavingsEnrollForm({ ...savingsEnrollForm, paymentMethod: m.id })}
+                                  className={`text-left px-4 py-3 text-xs font-semibold transition-all cursor-pointer relative ${savingsEnrollForm.paymentMethod === m.id
+                                      ? 'text-[#031838] bg-white'
+                                      : 'text-gray-400 hover:text-gray-600 bg-transparent'
+                                    }`}
+                                  style={savingsEnrollForm.paymentMethod === m.id ? {
+                                    borderLeft: '3px solid #E84F35',
+                                  } : {
+                                    borderLeft: '3px solid transparent',
+                                  }}
+                                >
+                                  {m.name}
+                                </button>
+                              ))}
+                            </div>
+
+                            {/* Right Content */}
+                            <div className="flex-1 px-4 sm:px-8 py-4 sm:py-2">
+                              <h3 className="text-sm font-bold text-[#031838] mb-3">
+                                Pay with {savingsEnrollForm.paymentMethod === 'card' ? 'Card' : savingsEnrollForm.paymentMethod === 'netbanking' ? 'Net Banking' : 'UPI'}, Net Banking or UPI
+                              </h3>
+                              <p className="text-xs text-gray-400 leading-relaxed mb-6">
+                                You'll be securely redirected to enter your {savingsEnrollForm.paymentMethod === 'card' ? 'Card' : savingsEnrollForm.paymentMethod === 'netbanking' ? 'Net Banking' : 'UPI'}, Net Banking or UPI details, and complete your purchase.
+                              </p>
+
+                              {/* PROCEED TO PAY Button */}
+                              <button
+                                type="submit"
+                                className="w-full sm:w-auto px-16 py-3.5 rounded-lg bg-[#E84F35] hover:bg-[#d63d22] text-white text-xs uppercase font-black tracking-widest transition-all shadow-md cursor-pointer"
+                              >
+                                PROCEED TO PAY
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-start pt-4">
+                            <button
+                              type="button"
+                              onClick={() => setSavingsEnrollStep(2)}
+                              className="px-8 py-3.5 rounded-xl border border-gray-200 text-gray-600 text-xs uppercase font-black tracking-widest transition-all hover:bg-gray-50 cursor-pointer"
+                            >
+                              BACK
+                            </button>
+                          </div>
+                        </form>
+                      )}
+
+                    </div>
+
+                    {/* RIGHT PANEL - SUBSCRIPTION SUMMARY */}
+                    <div className="lg:col-span-4 bg-white border border-gray-100 rounded-3xl p-6 shadow-md space-y-6">
+                      <div className="border-b border-gray-100 pb-3">
+                        <h3 className="text-base font-bold text-[#031838] serif-luxury">Subscription Summary</h3>
+                        <p className="text-[10px] text-gray-400">Kindly check your monthly subscription amount.</p>
+                      </div>
+
+                      {/* Subscription amount card */}
+                      <div className="border border-red-200 bg-red-50/20 rounded-2xl p-5 space-y-3">
+                        <div className="flex justify-between items-center text-xs font-semibold text-gray-600">
+                          <span>Subscription Amount (Monthly)</span>
+                          <span className="text-[#031838] font-bold">₹ {monthlySavingsInput.toLocaleString('en-IN')}</span>
+                        </div>
+                        <div className="h-[1px] bg-red-100" />
+                        <div className="flex justify-between items-center text-sm font-bold text-[#031838]">
+                          <span>You Pay</span>
+                          <span className="text-[#c0392b] text-base font-sans">₹ {monthlySavingsInput.toLocaleString('en-IN')}</span>
+                        </div>
+                      </div>
+
+                      <p className="text-[11px] text-gray-400 font-light text-center">
+                        Any Questions? Please call us at <strong className="text-[#031838]">+91 97838 43978</strong>
+                      </p>
+                    </div>
+
+                  </div>
+                )}
+
+              </div>
+
+              {/* Value Propositions Footer (similar to Bluestone) */}
+              <div className="w-full bg-[#FAF8F6] border-t border-gray-200 mt-16 pt-10 pb-6 px-6 sm:px-12 select-none">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                  {/* Props list */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center md:text-left">
+                    <div className="space-y-1">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-[#031838]">Bikaner's Heritage Store</span>
+                      <p className="text-[9px] text-gray-400 font-light">Established lineage since 1952</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-[#031838]">Trusted by Patrons</span>
+                      <p className="text-[9px] text-gray-400 font-light font-sans">Renowned for purity nationwide</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-[#031838]">100% Transparent Pricing</span>
+                      <p className="text-[9px] text-gray-400 font-light">Guaranteed weight & value tracking</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-[#031838]">Certified Hallmark</span>
+                      <p className="text-[9px] text-gray-400 font-light">100% BIS Hallmarked Jewellery</p>
+                    </div>
+                  </div>
+
+                  {/* Payment Icons */}
+                  <div className="flex items-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider font-sans">
+                    <span>Visa</span>
+                    <span>•</span>
+                    <span>Mastercard</span>
+                    <span>•</span>
+                    <span>RuPay</span>
+                    <span>•</span>
+                    <span>UPI</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {/* ==========================================
+            G-CHECKOUT. FULL-PAGE CHECKOUT FLOW
+            ========================================== */}
+          {currentPage === 'checkout' && (
+            <div className="bg-[#FAF8F6] min-h-screen pb-0 font-sans text-gray-800">
+
+              {/* Checkout Header with Progress Bar */}
+              <header className="w-full bg-white border-b border-gray-200 py-4 px-6 sm:px-12 flex flex-col sm:flex-row justify-between items-center gap-4">
+                {/* Logo */}
+                <div onClick={() => navigateTo('home')} className="flex items-center space-x-2 font-serif text-lg font-bold text-[#031838] tracking-widest cursor-pointer">
+                  <span>HR JEWELLER & SONS</span>
+                </div>
+
+                {/* Progress Steps */}
+                <div className="flex items-center space-x-4 text-xs font-semibold select-none">
+                  <div className="flex flex-col items-center">
+                    <span className={`${checkoutFlowStep === 1 ? 'text-[#031838]' : 'text-gray-400'}`}>Cart</span>
+                    <div className={`w-3.5 h-3.5 rounded-full border-2 mt-1 flex items-center justify-center ${checkoutFlowStep >= 1 ? 'border-[#006361] bg-[#006361]' : 'border-gray-300 bg-white'}`}>
+                      {checkoutFlowStep > 1 && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </div>
+                  </div>
+                  <div className="w-16 h-[2px]" style={{ backgroundColor: checkoutFlowStep > 1 ? '#006361' : '#E5E7EB' }} />
+                  <div className="flex flex-col items-center">
+                    <span className={`${checkoutFlowStep === 2 ? 'text-[#031838]' : 'text-gray-400'}`}>Delivery</span>
+                    <div className={`w-3.5 h-3.5 rounded-full border-2 mt-1 flex items-center justify-center ${checkoutFlowStep >= 2 ? 'border-[#006361] bg-[#006361]' : 'border-gray-300 bg-white'}`}>
+                      {checkoutFlowStep > 2 && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </div>
+                  </div>
+                  <div className="w-16 h-[2px]" style={{ backgroundColor: checkoutFlowStep > 2 ? '#006361' : '#E5E7EB' }} />
+                  <div className="flex flex-col items-center">
+                    <span className={`${checkoutFlowStep === 3 ? 'text-[#031838]' : 'text-gray-400'}`}>Payment</span>
+                    <div className={`w-3.5 h-3.5 rounded-full border-2 mt-1 flex items-center justify-center ${checkoutFlowStep >= 3 ? 'border-[#006361] bg-[#006361]' : 'border-gray-300 bg-white'}`}>
+                      {checkoutFlowStep > 3 && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Secure Badge */}
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 tracking-wide select-none">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 text-[#006361]">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  <span className="font-bold text-[#006361]">100% SECURE</span>
+                </div>
+              </header>
+
+              {/* Main Content */}
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 mt-8 pb-16">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+                  {/* ===== LEFT PANEL ===== */}
+                  <div className="lg:col-span-8 space-y-6">
+
+                    {/* ===== STEP 1: CART ===== */}
+                    {checkoutFlowStep === 1 && (
+                      <div className="animate-fade-in">
+                        <h2 className="text-lg font-bold text-[#031838] mb-6">My Shopping Cart ({cartItems.reduce((a, c) => a + c.quantity, 0)} Item{cartItems.reduce((a, c) => a + c.quantity, 0) !== 1 ? 's' : ''})</h2>
+
+                        {cartItems.length === 0 ? (
+                          <div className="bg-white border border-gray-100 rounded-2xl p-12 text-center">
+                            <p className="text-gray-400 text-sm">Your cart is empty</p>
+                            <button onClick={() => navigateTo('collections')} className="mt-4 px-6 py-2 bg-[#031838] text-white text-xs font-bold rounded-lg cursor-pointer">CONTINUE SHOPPING</button>
+                          </div>
+                        ) : (
+                          <div className="space-y-4">
+                            {cartItems.map(item => (
+                              <div key={item.id} className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row gap-4 sm:gap-6 relative">
+                                {/* Product Image */}
+                                <div className="w-full sm:w-32 h-32 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0">
+                                  <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
+                                </div>
+
+                                {/* Product Info */}
+                                <div className="flex-1 space-y-2">
+                                  <h3 className="text-sm font-bold text-[#031838]">{item.name}</h3>
+                                  <p className="text-[10px] text-gray-400">Product Code: {item.id}</p>
+
+                                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-[10px] text-gray-500 mt-2">
+                                    {item.carat && <span><strong className="text-gray-600">Metal:</strong> {item.carat}</span>}
+                                    {item.weight && <span><strong className="text-gray-600">Weight:</strong> {item.weight}</span>}
+                                  </div>
+
+                                  <div className="flex items-center gap-3 mt-3">
+                                    <span className="text-xs text-gray-500">Quantity</span>
+                                    <div className="flex items-center border border-gray-200 rounded-lg">
+                                      <button
+                                        onClick={() => updateCartQuantity(item.id, -1)}
+                                        className="w-7 h-7 text-gray-500 hover:text-gray-800 flex items-center justify-center cursor-pointer text-sm"
+                                      >−</button>
+                                      <span className="px-2 text-xs font-bold text-gray-800">{item.quantity}</span>
+                                      <button
+                                        onClick={() => updateCartQuantity(item.id, 1)}
+                                        className="w-7 h-7 text-gray-500 hover:text-gray-800 flex items-center justify-center cursor-pointer text-sm"
+                                      >+</button>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex gap-4 mt-3 text-[10px] uppercase font-bold tracking-wider">
+                                    <button onClick={() => removeFromCart(item.id)} className="text-[#c0392b] hover:underline cursor-pointer">REMOVE</button>
+                                  </div>
+                                </div>
+
+                                {/* Price */}
+                                <div className="text-right flex-shrink-0">
+                                  <span className="text-base font-bold text-[#031838]">₹ {(item.price * item.quantity).toLocaleString('en-IN')}</span>
+                                </div>
+                              </div>
+                            ))}
+
+                            {/* Trust Badges under cart */}
+                            <div className="bg-white border border-gray-100 rounded-2xl p-4 flex flex-wrap justify-center gap-6 text-[10px] text-gray-500">
+                              <span className="flex items-center gap-1"><span className="text-green-500">✓</span> 30-Day Returnable</span>
+                              <span className="flex items-center gap-1"><span className="text-green-500">✓</span> Eligible for Lifetime exchange & Buy back</span>
+                              <span className="flex items-center gap-1"><span className="text-green-500">✓</span> Free & Insured Delivery</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* ===== STEP 2: DELIVERY ===== */}
+                    {checkoutFlowStep === 2 && (
+                      <div className="animate-fade-in space-y-6">
+                        {/* Your Details Section */}
+                        <div className="bg-white border border-gray-100 rounded-2xl p-6 sm:p-8 space-y-5">
+                          <div>
+                            <h2 className="text-lg font-bold text-[#031838]">Your Details</h2>
+                            <p className="text-xs text-gray-400 mt-1">Required to Save Cart and Send Order Updates</p>
+                          </div>
+
+                          {/* Email & Mobile */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="relative border border-gray-200 rounded-lg px-3 py-2.5 flex items-center gap-2">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-gray-400 flex-shrink-0"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+                              <div className="flex-1">
+                                <span className="text-[9px] uppercase tracking-wider text-gray-400 block">Email address</span>
+                                <input type="email" required placeholder="your@email.com" value={deliveryForm.email} onChange={(e) => setDeliveryForm({...deliveryForm, email: e.target.value})} className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0" />
+                              </div>
+                            </div>
+                            <div className="relative border border-gray-200 rounded-lg px-3 py-2.5 flex items-center gap-2">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-gray-400 flex-shrink-0"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
+                              <div className="flex-1">
+                                <span className="text-[9px] uppercase tracking-wider text-gray-400 block">Mobile number</span>
+                                <input type="tel" required placeholder="+91 XXXXX XXXXX" value={deliveryForm.mobile} onChange={(e) => setDeliveryForm({...deliveryForm, mobile: e.target.value})} className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0" />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* WhatsApp */}
+                          <p className="text-xs text-gray-400">Would you like to receive notifications on WhatsApp?</p>
+                          <div className="relative border border-gray-200 rounded-lg px-3 py-2.5 flex items-center gap-2">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-gray-400 flex-shrink-0"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
+                            <div className="flex-1">
+                              <span className="text-[9px] uppercase tracking-wider text-gray-400 block">WhatsApp Number (Optional)</span>
+                              <input type="tel" placeholder="+91" value={deliveryForm.whatsapp} onChange={(e) => setDeliveryForm({...deliveryForm, whatsapp: e.target.value})} className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Delivery Type */}
+                        <div className="bg-white border border-gray-100 rounded-2xl p-6 sm:p-8 space-y-4">
+                          <div>
+                            <h2 className="text-lg font-bold text-[#031838]">Delivery Type</h2>
+                            <p className="text-xs text-gray-400 mt-1">Please choose preferred type of delivery.</p>
+                          </div>
+
+                          <label className={`flex items-center justify-between border rounded-xl px-4 py-3.5 cursor-pointer transition-all ${deliveryType === 'home' ? 'border-[#006361] bg-[#006361]/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                            <span className="text-xs font-semibold text-[#031838]">Home Delivery</span>
+                            <input type="radio" name="deliveryType" value="home" checked={deliveryType === 'home'} onChange={() => setDeliveryType('home')} className="accent-[#006361]" />
+                          </label>
+
+                          <label className={`flex flex-col border rounded-xl px-4 py-3.5 cursor-pointer transition-all ${deliveryType === 'store' ? 'border-[#006361] bg-[#006361]/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <span className="text-xs font-semibold text-[#031838]">Pick up from store</span>
+                                <p className="text-[10px] text-gray-400 mt-0.5">Buy now, pick up from our store at your convenience.</p>
+                              </div>
+                              <input type="radio" name="deliveryType" value="store" checked={deliveryType === 'store'} onChange={() => setDeliveryType('store')} className="accent-[#006361]" />
+                            </div>
+
+                            {/* Store Selection (shown when store is selected) */}
+                            {deliveryType === 'store' && (
+                              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-gray-100">
+                                <div className="relative border border-gray-200 rounded-lg px-3 py-2">
+                                  <span className="text-[9px] uppercase tracking-wider text-gray-400 block">City</span>
+                                  <select value={deliveryForm.storeCity} onChange={(e) => setDeliveryForm({...deliveryForm, storeCity: e.target.value})} className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0 cursor-pointer">
+                                    <option value="">—</option>
+                                    <option value="Bikaner">Bikaner</option>
+                                    <option value="Jaipur">Jaipur</option>
+                                    <option value="Jodhpur">Jodhpur</option>
+                                  </select>
+                                </div>
+                                <div className="relative border border-gray-200 rounded-lg px-3 py-2">
+                                  <span className="text-[9px] uppercase tracking-wider text-gray-400 block">Store</span>
+                                  <select value={deliveryForm.storeBranch} onChange={(e) => setDeliveryForm({...deliveryForm, storeBranch: e.target.value})} className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0 cursor-pointer">
+                                    <option value="">—</option>
+                                    <option value="Tilak Nagar Flagship, Bikaner">Tilak Nagar Flagship, Bikaner</option>
+                                    <option value="Station Road, Bikaner">Station Road, Bikaner</option>
+                                  </select>
+                                </div>
+                                {deliveryForm.storeBranch && (
+                                  <div className="sm:col-span-2 relative border border-gray-200 rounded-lg px-3 py-2">
+                                    <span className="text-[9px] uppercase tracking-wider text-gray-400 block">Store Address</span>
+                                    <p className="text-xs text-gray-700 font-semibold mt-0.5">{deliveryForm.storeBranch}</p>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </label>
+                        </div>
+
+                        {/* Delivery Details (Address Fields) */}
+                        <div className="bg-white border border-gray-100 rounded-2xl p-6 sm:p-8 space-y-4">
+                          <div>
+                            <h2 className="text-lg font-bold text-[#031838]">Delivery Details</h2>
+                            <p className="text-xs text-gray-400 mt-1">We will deliver the order at the below address</p>
+                          </div>
+
+                          {/* Recipient Name */}
+                          <div className="relative border border-gray-200 rounded-lg px-3 py-2.5 flex items-center gap-2">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-gray-400 flex-shrink-0"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <input type="text" required placeholder="Recipient's Name" value={deliveryForm.recipientName} onChange={(e) => setDeliveryForm({...deliveryForm, recipientName: e.target.value})} className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold focus:ring-0" />
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* Recipient Mobile */}
+                            <div className="relative border border-gray-200 rounded-lg px-3 py-2.5 flex items-center gap-2">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-gray-400 flex-shrink-0"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
+                              <div className="flex-1">
+                                <span className="text-[9px] uppercase tracking-wider text-gray-400 block">Recipient's mobile (optional)</span>
+                                <input type="tel" placeholder="+91" value={deliveryForm.recipientMobile} onChange={(e) => setDeliveryForm({...deliveryForm, recipientMobile: e.target.value})} className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0" />
+                              </div>
+                            </div>
+                            {/* Pincode */}
+                            <div className="relative border border-gray-200 rounded-lg px-3 py-2.5">
+                              <span className="text-[9px] uppercase tracking-wider text-gray-400 block">Enter Valid Pincode</span>
+                              <input type="text" required placeholder="e.g. 334001" maxLength="6" value={deliveryForm.pincode} onChange={(e) => setDeliveryForm({...deliveryForm, pincode: e.target.value})} className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0" />
+                            </div>
+                          </div>
+
+                          {deliveryType === 'home' && (
+                            <>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="relative border border-gray-200 rounded-lg px-3 py-2.5">
+                                  <input type="text" required placeholder="Enter complete Apartment/House/Flat No." value={deliveryForm.apartment} onChange={(e) => setDeliveryForm({...deliveryForm, apartment: e.target.value})} className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold focus:ring-0" />
+                                </div>
+                                <div className="relative border border-gray-200 rounded-lg px-3 py-2.5">
+                                  <input type="text" required placeholder="Enter complete Street/Colony/Area Name" value={deliveryForm.street} onChange={(e) => setDeliveryForm({...deliveryForm, street: e.target.value})} className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold focus:ring-0" />
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="relative border border-gray-200 rounded-lg px-3 py-2.5">
+                                  <input type="text" required placeholder="Enter complete Locality/Town Name" value={deliveryForm.locality} onChange={(e) => setDeliveryForm({...deliveryForm, locality: e.target.value})} className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold focus:ring-0" />
+                                </div>
+                                <div className="relative border border-gray-200 rounded-lg px-3 py-2.5">
+                                  <input type="text" placeholder="Landmark (Optional)" value={deliveryForm.landmark} onChange={(e) => setDeliveryForm({...deliveryForm, landmark: e.target.value})} className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold focus:ring-0" />
+                                </div>
+                              </div>
+                            </>
+                          )}
+
+                          {/* GST Number */}
+                          <div className="relative border border-gray-200 rounded-lg px-3 py-2.5">
+                            <input type="text" placeholder="GST Number (Optional)" value={deliveryForm.gstNumber} onChange={(e) => setDeliveryForm({...deliveryForm, gstNumber: e.target.value})} className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold focus:ring-0" />
+                          </div>
+
+                          {/* Billing same as shipping */}
+                          <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
+                            <input type="checkbox" checked={deliveryForm.billingIsSameAsShipping} onChange={(e) => setDeliveryForm({...deliveryForm, billingIsSameAsShipping: e.target.checked})} className="accent-[#006361] rounded" />
+                            <span>Billing address is <span className="text-[#006361] font-semibold">same as shipping address</span></span>
+                          </label>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* ===== STEP 3: PAYMENT ===== */}
+                    {checkoutFlowStep === 3 && (
+                      <div className="animate-fade-in">
+                        <div className="bg-white border border-gray-100 rounded-2xl p-6 sm:p-8 space-y-6">
+                          <h2 className="text-lg font-bold text-[#031838]">Choose a Payment Method</h2>
+
+                          <div className="flex flex-col sm:flex-row gap-0">
+                            {/* Vertical Tabs */}
+                            <div className="flex flex-row sm:flex-col sm:min-w-[140px] border-b sm:border-b-0 sm:border-r border-gray-200">
+                              {[
+                                { id: 'card', name: 'Cards' },
+                                { id: 'netbanking', name: 'Net Banking' },
+                                { id: 'upi', name: 'UPI' },
+                                { id: 'cod', name: 'Cash on Delivery' }
+                              ].map(m => (
+                                <button
+                                  key={m.id}
+                                  type="button"
+                                  onClick={() => setCheckoutForm({...checkoutForm, method: m.id})}
+                                  className={`text-left px-4 py-3 text-xs font-semibold transition-all cursor-pointer ${checkoutForm.method === m.id ? 'text-[#031838] bg-white' : 'text-gray-400 hover:text-gray-600'}`}
+                                  style={{ borderLeft: checkoutForm.method === m.id ? '3px solid #E84F35' : '3px solid transparent' }}
+                                >
+                                  {m.name}
+                                </button>
+                              ))}
+                            </div>
+
+                            {/* Right Content */}
+                            <div className="flex-1 px-4 sm:px-8 py-4 sm:py-2">
+                              <h3 className="text-sm font-bold text-[#031838] mb-3">
+                                Pay with {checkoutForm.method === 'cod' ? 'Cash on Showroom Delivery' : 'Card, Net Banking or UPI'}
+                              </h3>
+                              <p className="text-xs text-gray-400 leading-relaxed mb-6">
+                                {checkoutForm.method === 'cod'
+                                  ? 'Your order will be confirmed and you can pay at the showroom or upon delivery.'
+                                  : "You'll be securely redirected to enter your payment details and complete your purchase via WhatsApp confirmation."
+                                }
+                              </p>
+
+                              <button
+                                onClick={handleCartCheckoutSubmit}
+                                className="w-full sm:w-auto px-16 py-3.5 rounded-lg bg-[#E84F35] hover:bg-[#d63d22] text-white text-xs uppercase font-black tracking-widest transition-all shadow-md cursor-pointer"
+                              >
+                                PROCEED TO PAY
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ===== RIGHT PANEL: ORDER SUMMARY ===== */}
+                  <div className="lg:col-span-4 space-y-4">
+                    {/* Delivery Check (Step 2+) */}
+                    {checkoutFlowStep >= 2 && (
+                      <div className="bg-white border border-gray-100 rounded-2xl p-5 flex items-center justify-between">
+                        <span className="text-xs font-bold text-[#031838]">Delivery check</span>
+                        <span className="text-xs text-[#E84F35] font-semibold cursor-pointer">{deliveryForm.pincode || 'Enter pincode'}</span>
+                      </div>
+                    )}
+
+                    {/* Order Summary Card */}
+                    <div className="bg-white border border-gray-100 rounded-2xl p-5 space-y-4">
+                      <h3 className="text-sm font-bold text-[#031838] uppercase tracking-wider">Order Summary</h3>
+
+                      <div className="space-y-2 text-xs">
+                        <div className="flex justify-between text-gray-600">
+                          <span>Subtotal ({cartItems.reduce((a, c) => a + c.quantity, 0)} Item{cartItems.reduce((a, c) => a + c.quantity, 0) !== 1 ? 's' : ''})</span>
+                          <span className="font-bold text-[#031838]">₹ {cartTotal.toLocaleString('en-IN')}</span>
+                        </div>
+                        <div className="flex justify-between text-gray-600">
+                          <span>GST</span>
+                          <span className="font-bold text-[#031838]">₹ {Math.round(cartTotal * 0.03).toLocaleString('en-IN')}</span>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-gray-100 pt-3 flex justify-between items-center">
+                        <span className="text-sm font-bold text-[#031838]">Total Payable</span>
+                        <span className="text-lg font-black text-[#031838]">₹ {(cartTotal + Math.round(cartTotal * 0.03)).toLocaleString('en-IN')}</span>
+                      </div>
+
+                      {/* Action Button */}
+                      {checkoutFlowStep === 1 && (
+                        <button
+                          onClick={() => { if(cartItems.length > 0) setCheckoutFlowStep(2); }}
+                          className="w-full py-3.5 rounded-lg bg-[#E84F35] hover:bg-[#d63d22] text-white text-xs uppercase font-black tracking-widest transition-all shadow-md cursor-pointer"
+                        >
+                          PLACE ORDER
+                        </button>
+                      )}
+                      {checkoutFlowStep === 2 && (
+                        <button
+                          onClick={() => {
+                            if(deliveryForm.email && deliveryForm.mobile && deliveryForm.recipientName && deliveryForm.pincode) {
+                              setCheckoutForm({
+                                ...checkoutForm,
+                                name: deliveryForm.recipientName,
+                                phone: deliveryForm.mobile,
+                                address: deliveryType === 'store'
+                                  ? `Store Pickup: ${deliveryForm.storeBranch}`
+                                  : `${deliveryForm.apartment}, ${deliveryForm.street}, ${deliveryForm.locality}, ${deliveryForm.landmark || ''}, PIN: ${deliveryForm.pincode}`
+                              });
+                              setCheckoutFlowStep(3);
+                            } else {
+                              alert('Please fill in Email, Mobile, Recipient Name, and Pincode.');
+                            }
+                          }}
+                          className="w-full py-3.5 rounded-lg bg-[#E84F35] hover:bg-[#d63d22] text-white text-xs uppercase font-black tracking-widest transition-all shadow-md cursor-pointer"
+                        >
+                          PROCEED TO PAYMENT
+                        </button>
+                      )}
+
+                      {/* Apply Voucher */}
+                      {checkoutFlowStep === 1 && (
+                        <p className="text-[11px] text-[#006361] font-semibold cursor-pointer">🏷️ Apply Voucher / Gift Card</p>
+                      )}
+
+                      <div className="border-t border-gray-100 pt-3">
+                        <p className="text-[11px] text-gray-400 leading-relaxed">
+                          Any Questions?<br />
+                          Please call us at <strong className="text-[#031838]">+91 97838 43978</strong> or <span className="text-[#006361] font-semibold cursor-pointer">Chat with us</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Back Button */}
+                    {checkoutFlowStep > 1 && (
+                      <button
+                        onClick={() => setCheckoutFlowStep(checkoutFlowStep - 1)}
+                        className="w-full py-3 text-xs text-gray-500 font-bold uppercase tracking-widest border border-gray-200 rounded-xl hover:bg-gray-50 transition-all cursor-pointer"
+                      >
+                        ← BACK
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Trust Footer */}
+              <div className="w-full bg-[#FAF8F6] border-t border-gray-200 pt-10 pb-6 px-6 sm:px-12 select-none">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center md:text-left">
+                    <div className="space-y-1">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-[#031838]">Bikaner's Heritage Store</span>
+                      <p className="text-[9px] text-gray-400 font-light">Established lineage since 1952</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-[#031838]">Trusted by Patrons</span>
+                      <p className="text-[9px] text-gray-400 font-light">Renowned for purity nationwide</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-[#031838]">Transparent Pricing</span>
+                      <p className="text-[9px] text-gray-400 font-light">Guaranteed weight & value tracking</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-[#031838]">100% Certified Jewellery</span>
+                      <p className="text-[9px] text-gray-400 font-light">BIS Hallmarked</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider font-sans">
+                    <span className="bg-gray-200 text-gray-600 px-2 py-1 rounded text-[8px]">CASH</span>
+                    <span className="bg-[#1a1f71] text-white px-2 py-1 rounded text-[8px]">VISA</span>
+                    <span className="bg-[#eb001b] text-white px-2 py-1 rounded text-[8px]">MC</span>
+                    <span className="bg-[#006fcf] text-white px-2 py-1 rounded text-[8px]">AMEX</span>
+                    <span className="bg-[#097A44] text-white px-2 py-1 rounded text-[8px]">RuPay</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {/* ==========================================
             G. TERMS & CONDITIONS PAGE VIEW
             ========================================== */}
           {currentPage === 'terms-and-conditions' && (
@@ -10025,6 +11341,13 @@ export default function App() {
 
             <div className="flex flex-wrap items-center justify-center gap-3.5 text-white/60">
               <button
+                onClick={() => navigateTo('offers')}
+                className="hover:text-[#E6C687] transition-colors duration-300 cursor-pointer focus:outline-none text-xs"
+              >
+                Offers &amp; Stores
+              </button>
+              <span className="text-[#E6C687]/40">|</span>
+              <button
                 onClick={() => navigateTo('privacy-policy')}
                 className="hover:text-[#E6C687] transition-colors duration-300 cursor-pointer focus:outline-none text-xs"
               >
@@ -10099,62 +11422,20 @@ export default function App() {
                     <span className="text-[#4A126D] text-lg font-black">₹{cartTotal.toLocaleString('en-IN')}</span>
                   </div>
 
-                  {checkoutFormOpen ? (
-                    // Inline Checkout form
-                    <div className="bg-[#FBF9FF] border border-gray-200/50 p-4 rounded-2xl space-y-3 animate-fade-in relative z-20">
-                      <h4 className="font-bold text-[#4A126D] uppercase tracking-wider text-[9px] text-center border-b border-gray-200 pb-1.5">Confirm Checkout Details</h4>
-                      {checkoutSuccess ? (
-                        <div className="text-center text-[#006361] p-3 rounded-xl bg-[#006361]/10 font-bold text-[10px]">
-                          🎉 ORDER SENT! WhatsApp Inquiries & Ref logged successfully.
-                        </div>
-                      ) : (
-                        <form onSubmit={handleCartCheckoutSubmit} className="space-y-3">
-                          <input
-                            type="text"
-                            required
-                            placeholder="Your Name"
-                            value={checkoutForm.name}
-                            onChange={(e) => setCheckoutForm({ ...checkoutForm, name: e.target.value })}
-                            className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#4A126D] focus:ring-1 focus:ring-[#4A126D]/30 transition-all duration-300"
-                          />
-                          <input
-                            type="tel"
-                            required
-                            placeholder="WhatsApp Contact Phone"
-                            value={checkoutForm.phone}
-                            onChange={(e) => setCheckoutForm({ ...checkoutForm, phone: e.target.value })}
-                            className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#4A126D] focus:ring-1 focus:ring-[#4A126D]/30 transition-all duration-300"
-                          />
-                          <input
-                            type="text"
-                            required
-                            placeholder="Showroom/Delivery Address"
-                            value={checkoutForm.address}
-                            onChange={(e) => setCheckoutForm({ ...checkoutForm, address: e.target.value })}
-                            className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#4A126D] focus:ring-1 focus:ring-[#4A126D]/30 transition-all duration-300"
-                          />
-                          <button type="submit" className="w-full bg-[#006361] hover:bg-[#004e4c] text-white font-bold text-xs uppercase py-3 rounded-xl shadow-md tracking-wider">
-                            Submit Order Ref
-                          </button>
-                        </form>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="flex gap-2">
+                  <div className="flex gap-2">
                       <button
-                        onClick={() => setCheckoutFormOpen(true)}
-                        className="flex-1 bg-[#4A126D] hover:bg-[#2C133C] text-white font-bold text-xs uppercase py-4 rounded-full tracking-widest text-center shadow-lg transition-all"
+                        onClick={() => { setCheckoutFlowStep(1); setCartOpen(false); navigateTo('checkout'); }}
+                        className="flex-1 bg-[#4A126D] hover:bg-[#2C133C] text-white font-bold text-xs uppercase py-4 rounded-full tracking-widest text-center shadow-lg transition-all cursor-pointer"
                       >
                         Confirm Bag Checkout
                       </button>
                       <button
                         onClick={() => setCartItems([])}
-                        className="border border-gray-200 hover:border-gray-300 text-gray-500 hover:text-gray-700 px-4 rounded-full"
+                        className="border border-gray-200 hover:border-gray-300 text-gray-500 hover:text-gray-700 px-4 rounded-full cursor-pointer"
                       >
                         Clear
                       </button>
                     </div>
-                  )}
                 </div>
               )}
             </div>
