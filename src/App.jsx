@@ -61,6 +61,7 @@ import giftingCovetedStyles from './assets/gifting_coveted_styles.png';
 import giftingHrMan from './assets/gifting_hr_man.png';
 import bannerGold20 from './assets/banner_gold_20.webp';
 import bannerSavings11_1 from './assets/banner_savings_11_1.webp';
+import savingsHeroJewellery from './assets/savings_hero_jewellery.png';
 import offerSavingsBanner from './assets/1778492620039-BS--MCPG--Offer---Desktop-Responsive----2400-x-778.webp';
 import atelierManifestoBanner from './assets/f604b099-b1cd-4941-b277-94d746277ae8.jpg';
 import bannerOldGold from './assets/banner_old_gold.webp';
@@ -989,6 +990,7 @@ export default function App() {
   const [savingsSchemeOpen, setSavingsSchemeOpen] = useState(false);
   const [savingsSchemeType, setSavingsSchemeType] = useState('Gold Mine');
   const [savingsSuccess, setSavingsSuccess] = useState(false);
+  const [erdTooltip, setErdTooltip] = useState(null); // null | '6th' | '8th'
   const [savingsForm, setSavingsForm] = useState({
     name: '',
     phone: '',
@@ -4096,7 +4098,7 @@ export default function App() {
                       {/* ==========================================================
                   SECTION 14: FAQ ACCORDIONS (INTERACTIVE)
                   ========================================================== */}
-                      <section className="max-w-3xl mx-auto px-6 py-4 space-y-8">
+                      <section id="faq" className="max-w-3xl mx-auto px-6 py-4 space-y-8">
                         <div className="text-center space-y-3">
                           <span className="text-[10px] uppercase tracking-[0.35em] text-[#DDA0DD] font-bold font-sans">Elite Assistance</span>
                           <h2 className={`serif-luxury text-3xl sm:text-5xl font-medium leading-none transition-colors duration-500 ${isCatalogDark ? 'text-white' : 'text-[#1B1B1B]'}`}>Frequently Asked Questions</h2>
@@ -4138,1014 +4140,865 @@ export default function App() {
             );
           })()}
           {currentPage === 'savings' && (
-            <div className={`transition-colors duration-500 min-h-screen pb-8 ${isCatalogDark ? 'bg-[#1C1C1C] text-[#FBF9FF]' : 'bg-[#FAF7F2] text-[#1B1B1B]'}`}>
-              <div className="max-w-7xl mx-auto px-6 pt-12 space-y-12 animate-slide-up pb-16">
+            <div className="bg-white min-h-screen">
 
-                {/* Dynamic Plan Switcher Segment Control */}
-                <div className="flex justify-center select-none">
-                  <div className="backdrop-blur-md p-1.5 rounded-full border border-gray-200/80 shadow-[0_8px_32px_0_rgba(15,23,42,0.06)] inline-flex items-center space-x-1 bg-white/70">
-                    <button
-                      onClick={() => { triggerAudio('shimmer'); setSavingsSchemeType('Gold Mine'); }}
-                      className={`px-6 py-2.5 rounded-full text-xs uppercase tracking-widest font-black transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${savingsSchemeType === 'Gold Mine'
-                        ? 'bg-[#1B1B1B] text-white shadow-md'
-                        : 'text-gray-500 hover:text-[#1B1B1B]'
-                        }`}
-                    >
-                      📈 Gold Mine (11+1 Cash Bonus)
-                    </button>
-                    <button
-                      onClick={() => { triggerAudio('shimmer'); setSavingsSchemeType('Gold Reserve'); }}
-                      className={`px-6 py-2.5 rounded-full text-xs uppercase tracking-widest font-black transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${savingsSchemeType === 'Gold Reserve'
-                        ? 'bg-[#1B1B1B] text-white shadow-md'
-                        : 'text-gray-500 hover:text-[#1B1B1B]'
-                        }`}
-                    >
-                      🪙 Gold Reserve (Weight Lock)
-                    </button>
-                  </div>
-                </div>
+              {/* FULL WIDTH BANNER — full image, no crop */}
+              <div className="w-full bg-[#fdf5ee]">
+                <img
+                  src={savingsHeroJewellery}
+                  alt="Gold Mine 11+1 Monthly Installment Plan"
+                  className="w-full object-contain"
+                />
+              </div>
 
-                {/* Header Content block */}
-                <div className="relative rounded-[3rem] overflow-hidden border p-8 md:p-16 flex flex-col lg:flex-row justify-between items-center gap-12 select-none min-h-[550px] w-full animate-fade-in transition-colors duration-500 bg-white border-[#DDA0DD]/20 text-[#1B1B1B] shadow-sm">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(212,175,55,0.06)_0%,transparent_60%)] pointer-events-none" />
-
-                  <div className="w-full lg:w-1/2 flex items-center justify-center relative min-h-[350px]">
-                    <div className="absolute w-[280px] h-[280px] sm:w-[360px] sm:h-[360px] rounded-full border border-[#DDA0DD]/10 flex items-center justify-center animate-[spin_60s_linear_infinite]" />
-                    <div className="absolute w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] rounded-full border border-[#DDA0DD]/10 flex items-center justify-center animate-[spin_30s_linear_infinite]" />
-                    <div className="absolute w-[160px] h-[160px] sm:w-[200px] sm:h-[200px] rounded-full bg-gradient-to-tr from-[#DDA0DD]/5 to-[#DDA0DD]/5 blur-2xl animate-pulse-slow" />
-
-                    <div className="relative z-10 flex items-center justify-center w-full h-full animate-float-gentle">
-                      <div className="absolute w-[240px] h-[60px] bg-white/5 border border-white/10 rounded-full blur-[1px] transform translate-y-32 rotate-[15deg] shadow-lg flex items-center justify-center">
-                        <div className="w-[180px] h-[30px] rounded-full bg-[#DDA0DD]/10 filter blur-xs" />
-                      </div>
-
-                      <div className="flex gap-4 items-center justify-center w-full relative">
-                        <div className="w-40 h-40 animate-[spin_24s_linear_infinite] hover:scale-105 transition-all duration-500 cursor-pointer flex items-center justify-center border rounded-full p-6 backdrop-blur-xs relative z-20 bg-[#FAF7F2]/80 border border-[#DDA0DD]/20 drop-shadow-[0_20px_40px_rgba(212,175,55,0.15)]">
-                          <svg className="w-24 h-24 text-[#DDA0DD]" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C9 7 4 6 7 12c-3 6 1 6 5 13 4-7 8-7 5-13 3-6-2-5-5-10zm0 13c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z" />
-                          </svg>
-                          <div className="absolute top-6 left-6 w-3 h-3 bg-white rounded-full opacity-70 filter blur-[1px] animate-pulse" />
-                        </div>
-
-                        <div className="w-24 h-24 absolute -right-4 -top-8 animate-float-gentle hover:scale-110 transition-all duration-300 flex items-center justify-center border rounded-full p-4 backdrop-blur-xs z-30 bg-[#FAF7F2]/80 border border-[#DDA0DD]/20 drop-shadow-[0_15px_30px_rgba(232,180,160,0.15)]">
-                          <svg className="w-14 h-14 text-[#DDA0DD]" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L8 8h8l-4-6zm-6 8h12v4c0 3.3-2.7 6-6 6s-6-2.7-6-6v-4zm6 7c1.7 0 3-1.3 3-3H9c0 1.7 1.3 3 3 3z" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="w-full lg:w-1/2 space-y-6 text-center lg:text-left z-10">
-                    <div className="inline-flex items-center space-x-2 border px-4 py-1.5 rounded-full bg-[#FAF7F2]/80 border border-[#DDA0DD]/25">
-                      <span className="w-2 h-2 rounded-full bg-[#DDA0DD] animate-pulse" />
-                      <span className="text-[9.5px] uppercase tracking-[0.25em] text-[#DDA0DD] font-black font-sans">
-                        11+1 Gold Saving Scheme
-                      </span>
-                    </div>
-
-                    <div className="space-y-2">
-                      <h1 className="serif-luxury text-5xl sm:text-6xl font-semibold leading-none tracking-wide text-[#1B1B1B]">
-                        {savingsSchemeType === 'Gold Mine' ? 'GOLD MINE' : 'GOLD RESERVE'}
-                      </h1>
-                      <h2 className="text-[#DDA0DD] font-serif text-2xl sm:text-3xl italic tracking-wider font-medium leading-tight">
-                        11 + 1 Monthly GRP Savings Plan
-                      </h2>
-                    </div>
-
-                    <div className="w-24 h-[1.5px] bg-[#DDA0DD]/40 mx-auto lg:mx-0" />
-
-                    <p className="text-sm leading-relaxed font-light font-sans max-w-lg text-gray-600">
-                      Build your premium jewelry systematic step by systematic step. Pay standard monthly installments for <strong className="text-[#1B1B1B] font-bold">11 Months</strong>. On the 12th month, HR Jewellers & Sons contributes the final installment completely <strong className="text-gold font-bold">FREE as a 100% Bonus Month!</strong>
-                    </p>
-
-                    <div className="border rounded-2xl p-4 flex items-center space-x-3 max-w-md bg-[#FAF7F2]/80 border border-[#DDA0DD]/20 hover:bg-white transition-all">
-                      <div className="w-8 h-8 rounded-full bg-[#DDA0DD]/15 flex items-center justify-center text-xs">✨</div>
-                      <p className="text-[11px] opacity-70 font-light font-sans leading-relaxed">
-                        Lock value today. Refer to <button onClick={() => navigateTo('terms-and-conditions')} className="text-gold font-bold underline hover:text-[#1B1B1B]">Terms & Conditions</button> for full bonus details.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Split Calculator & Enrollment Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-                  {/* Left Column: Interactive Calculator (lg:col-span-7) */}
-                  <div className="lg:col-span-7 border rounded-[2.5rem] p-8 shadow-sm space-y-8 relative overflow-hidden bg-white border-gray-100 text-[#1B1B1B]">
-                    <div className="absolute top-[-10%] right-[-10%] w-[250px] h-[250px] rounded-full bg-[#DDA0DD]/5 blur-[70px] pointer-events-none" />
-
-                    <div className="text-left space-y-1 relative z-10">
-                      <span className="text-[9px] uppercase tracking-[0.2em] text-[#DDA0DD] font-bold">SCHEME CALCULATOR</span>
-                      <h3 className="serif-luxury text-2xl font-semibold mt-1 text-[#1B1B1B]">
-                        11+1 {savingsSchemeType} Calculator
-                      </h3>
-                      <p className="text-[10.5px] opacity-70 font-light mt-0.5">
-                        Multiply your GRP systematic savings. Adjust installment inputs to see mature details.
-                      </p>
-                      <div className="w-12 h-[1px] bg-[#DDA0DD] mt-2"></div>
-                    </div>
-
-                    {/* Slider Input */}
-                    <div className="space-y-3 relative z-10">
-                      <div className="flex justify-between items-center text-xs font-bold text-gray-800">
-                        <span>Select Monthly Installment</span>
-                        <span className="text-base font-black text-[#1B1B1B]">₹{monthlySavingsInput.toLocaleString('en-IN')}/mo</span>
-                      </div>
+              {/* QUICK ENROLL STRIP */}
+              <div className="w-full border-b border-gray-100 bg-white">
+                <div className="max-w-5xl mx-auto px-6 py-5">
+                  <div className="flex flex-col sm:flex-row gap-3 items-end">
+                    <div className="flex-1">
+                      <label className="text-[9px] text-gray-400 uppercase tracking-wider block mb-1.5 font-semibold">Enter Monthly Amount</label>
                       <input
-                        type="range"
-                        min="1000"
-                        max="50000"
-                        step="1000"
+                        type="number"
+                        placeholder="2000"
                         value={monthlySavingsInput}
-                        onChange={(e) => setMonthlySavingsInput(+e.target.value)}
-                        className="w-full cursor-pointer accent-[#1B1B1B]"
+                        onChange={(e) => setMonthlySavingsInput(+e.target.value || 2000)}
+                        className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#c0392b] transition-all"
                       />
-                      <div className="flex justify-between text-[9px] text-gray-400 font-bold uppercase tracking-wider">
-                        <span>₹1,000</span>
-                        <span>₹25,000</span>
-                        <span>₹50,000</span>
-                      </div>
                     </div>
-
-                    {/* GRP Math Breakdown */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 border py-6 text-center relative z-10 backdrop-blur-sm rounded-2xl p-4 shadow-inner bg-white border-gray-200">
-                      <div>
-                        <span className="text-gray-400 text-[8.5px] uppercase tracking-wider block font-semibold">Your Deposits</span>
-                        <span className="text-[10px] opacity-70 block mt-1">₹{monthlySavingsInput.toLocaleString('en-IN')} x 11m</span>
-                        <span className="font-black text-sm block mt-0.5 text-[#1B1B1B]">₹{(monthlySavingsInput * 11).toLocaleString('en-IN')}</span>
-                      </div>
-                      <div>
-                        <span className="text-gold text-[8.5px] uppercase tracking-wider block font-bold">Atelier Bonus</span>
-                        <span className="text-[10px] opacity-70 block mt-1">100% 12th Month</span>
-                        <span className="text-gold font-black text-sm block mt-0.5">+ ₹{monthlySavingsInput.toLocaleString('en-IN')}</span>
-                      </div>
-                      <div className="rounded-xl p-2 bg-[#1B1B1B]/5 border border-[#1B1B1B]/10">
-                        <span className="text-[#1B1B1B] text-[8.5px] uppercase tracking-wider block font-bold">Mature Value</span>
-                        <span className="text-[10px] opacity-70 block mt-1">Total (12 Months)</span>
-                        <span className="text-emerald-600 font-black text-base block mt-0.5">₹{(monthlySavingsInput * 12).toLocaleString('en-IN')}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-400 text-[8.5px] uppercase tracking-wider block font-semibold">Est. Gold Yield</span>
-                        <span className="text-[10px] opacity-70 block mt-1">Weight locks 22K</span>
-                        <span className="text-[#DDA0DD] font-black text-sm block mt-0.5">
-                          {((monthlySavingsInput * 12) / (goldRate24k * 0.9167)).toFixed(2)} g
-                        </span>
-                      </div>
+                    <div className="flex-1">
+                      <label className="text-[9px] text-gray-400 uppercase tracking-wider block mb-1.5 font-semibold">Enter Email Address</label>
+                      <input
+                        type="email"
+                        placeholder="Enter Email address"
+                        value={savingsForm.email}
+                        onChange={(e) => setSavingsForm({ ...savingsForm, email: e.target.value })}
+                        className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 focus:outline-none focus:border-[#c0392b] transition-all"
+                      />
                     </div>
-
-                    {/* Progress Timeline nodes */}
-                    <div className="border rounded-2xl p-6 space-y-5 relative z-10 animate-fade-in shadow-inner bg-[#FAF7F2] border-gray-200">
-                      <span className="text-[9.5px] uppercase tracking-[0.2em] block font-black text-center font-sans text-[#1B1B1B]">
-                        ✨ Installment Progress & Reward Month Timeline
-                      </span>
-
-                      <div className="relative flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0 pt-2 pb-1">
-                        {/* Horizontal dotted connector */}
-                        <div className="hidden sm:block absolute top-[14px] left-[15%] right-[15%] h-[2px] bg-dashed bg-gradient-to-r from-[#DDA0DD]/30 via-gray-300 to-[#1B1B1B]/20 z-0" />
-
-                        {/* Month 1 */}
-                        <div className="flex flex-col items-center space-y-1.5 z-10 text-center w-full sm:w-1/3">
-                          <div className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shadow-md border bg-[#FAF7F2] border-[#DDA0DD] text-[#1B1B1B]">
-                            01
-                          </div>
-                          <div>
-                            <span className="font-bold text-[10.5px] block font-sans text-gray-800">Month 1</span>
-                            <span className="text-[9px] opacity-60 font-light font-sans block">Start Deposit</span>
-                          </div>
-                        </div>
-
-                        {/* Month 11 */}
-                        <div className="flex flex-col items-center space-y-1.5 z-10 text-center w-full sm:w-1/3">
-                          <div className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shadow-md border bg-[#FAF7F2] border-gray-300 text-[#1B1B1B]">
-                            11
-                          </div>
-                          <div>
-                            <span className="font-bold text-[10.5px] block font-sans text-gray-800">Month 11</span>
-                            <span className="text-[9px] opacity-60 font-light font-sans block">Final Installment</span>
-                          </div>
-                        </div>
-
-                        {/* Month 12 */}
-                        <div className="flex flex-col items-center space-y-1.5 z-10 text-center w-full sm:w-1/3">
-                          <div className="w-8 h-8 rounded-full border flex items-center justify-center font-bold text-xs shadow-lg animate-pulse bg-[#1B1B1B] border-[#DDA0DD] text-[#DDA0DD]">
-                            🎁
-                          </div>
-                          <div>
-                            <span className="font-black text-[9.5px] tracking-wider uppercase block font-sans text-[#1B1B1B]">Month 12</span>
-                            <span className="text-[9px] text-emerald-500 font-semibold font-sans block">100% Free Bonus Month</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <button
+                      onClick={() => { triggerAudio('shimmer'); setSavingsEnrollOpen(true); }}
+                      className="px-10 py-3 rounded-lg bg-[#c0392b] hover:bg-[#a93226] text-white text-xs uppercase font-black tracking-widest transition-all cursor-pointer whitespace-nowrap shadow-md hover:shadow-lg"
+                    >
+                      Start Now
+                    </button>
                   </div>
-
-                  {/* Right Column: Premium Enrollment Form */}
-                  <div className="lg:col-span-5 border rounded-[2.5rem] p-8 shadow-xl flex flex-col justify-between transition-all duration-500 relative overflow-hidden group bg-white border border-[#DDA0DD]/25 text-[#1B1B1B] hover:shadow-[0_20px_50px_rgba(212,175,55,0.06)]">
-                    <div className="absolute top-[-30%] right-[-20%] w-[300px] h-[300px] rounded-full bg-[#DDA0DD]/5 blur-[70px] pointer-events-none group-hover:scale-105 transition-transform" />
-
-                    <div className="space-y-4 z-10 relative">
-                      <div className="text-left space-y-1">
-                        <span className="text-[9px] uppercase tracking-[0.25em] text-[#DDA0DD] font-black font-sans block">JOIN ROYAL GRP SCHEME</span>
-                        <h3 className="serif-luxury text-2xl font-semibold mt-1 text-[#1B1B1B]">Submit Application</h3>
-                        <div className="w-12 h-[1px] bg-[#DDA0DD] mt-2"></div>
-                      </div>
-
-                      {savingsSuccess ? (
-                        <div className="border p-8 rounded-3xl text-center space-y-4 animate-fade-in my-6 bg-[#FAF7F2] border-[#DDA0DD]/20">
-                          <span className="text-4xl block animate-bounce">🎉</span>
-                          <h4 className="serif-luxury text-xl font-bold text-[#1B1B1B]">Application Registered!</h4>
-                          <p className="text-xs opacity-80 leading-relaxed font-sans">
-                            Your application for the <strong>11+1 {savingsSchemeType}</strong> scheme has been saved successfully in our system. A luxury advisor will contact you shortly.
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => setSavingsSuccess(false)}
-                            className="w-full bg-[#1B1B1B] hover:bg-[#DDA0DD] text-white hover:text-[#1B1B1B] font-bold py-3.5 rounded-xl uppercase tracking-widest text-[10px] cursor-pointer transition-colors"
-                          >
-                            Fill Another Form
-                          </button>
-                        </div>
-                      ) : (
-                        <form onSubmit={handleSavingsEnrollSubmit} className="space-y-3.5 text-left">
-                          {/* Name */}
-                          <div>
-                            <label htmlFor="savings-page-name" className="text-[9px] uppercase tracking-wider text-[#1B1B1B]/75 font-bold block mb-1">Your Full Name</label>
-                            <input
-                              id="savings-page-name"
-                              type="text"
-                              required
-                              placeholder="e.g. Suryaveer Singh"
-                              value={savingsForm.name}
-                              onChange={(e) => setSavingsForm({ ...savingsForm, name: e.target.value })}
-                              className="w-full border rounded-xl px-4 py-2.5 text-xs bg-white border-gray-200 text-[#1B1B1B] placeholder-gray-400 focus:outline-none focus:border-[#DDA0DD] focus:ring-1 focus:ring-[#DDA0DD]/20 transition-all"
-                            />
-                          </div>
-
-                          {/* WhatsApp Phone */}
-                          <div>
-                            <label htmlFor="savings-page-phone" className="text-[9px] uppercase tracking-wider text-[#1B1B1B]/75 font-bold block mb-1">WhatsApp Phone Number</label>
-                            <input
-                              id="savings-page-phone"
-                              type="tel"
-                              required
-                              placeholder="e.g. +91 97838 43978"
-                              value={savingsForm.phone}
-                              onChange={(e) => setSavingsForm({ ...savingsForm, phone: e.target.value })}
-                              className="w-full border rounded-xl px-4 py-2.5 text-xs bg-white border-gray-200 text-[#1B1B1B] placeholder-gray-400 focus:outline-none focus:border-[#DDA0DD] focus:ring-1 focus:ring-[#DDA0DD]/20 transition-all"
-                            />
-                          </div>
-
-                          {/* Email */}
-                          <div>
-                            <label htmlFor="savings-page-email" className="text-[9px] uppercase tracking-wider text-[#1B1B1B]/75 font-bold block mb-1">Email Address</label>
-                            <input
-                              id="savings-page-email"
-                              type="email"
-                              required
-                              placeholder="e.g. patron@gmail.com"
-                              value={savingsForm.email}
-                              onChange={(e) => setSavingsForm({ ...savingsForm, email: e.target.value })}
-                              className="w-full border rounded-xl px-4 py-2.5 text-xs bg-white border-gray-200 text-[#1B1B1B] placeholder-gray-400 focus:outline-none focus:border-[#DDA0DD] focus:ring-1 focus:ring-[#DDA0DD]/20 transition-all"
-                            />
-                          </div>
-
-                          {/* City */}
-                          <div>
-                            <label htmlFor="savings-page-city" className="text-[9px] uppercase tracking-wider text-[#1B1B1B]/75 font-bold block mb-1">City</label>
-                            <input
-                              id="savings-page-city"
-                              type="text"
-                              required
-                              placeholder="e.g. Bikaner, Jaipur"
-                              value={savingsForm.city || ''}
-                              onChange={(e) => setSavingsForm({ ...savingsForm, city: e.target.value })}
-                              className="w-full border rounded-xl px-4 py-2.5 text-xs bg-white border-gray-200 text-[#1B1B1B] placeholder-gray-400 focus:outline-none focus:border-[#DDA0DD] focus:ring-1 focus:ring-[#DDA0DD]/20 transition-all"
-                            />
-                          </div>
-
-                          {/* Aadhaar Number */}
-                          <div>
-                            <label htmlFor="savings-page-aadhaar" className="text-[9px] uppercase tracking-wider text-[#1B1B1B]/75 font-bold block mb-1">Aadhaar Number</label>
-                            <input
-                              id="savings-page-aadhaar"
-                              type="text"
-                              required
-                              pattern="\d{12}"
-                              placeholder="12-digit Aadhaar Card Number"
-                              value={savingsForm.aadhaar || ''}
-                              onChange={(e) => setSavingsForm({ ...savingsForm, aadhaar: e.target.value.replace(/\D/g, '').slice(0, 12) })}
-                              className="w-full border rounded-xl px-4 py-2.5 text-xs bg-white border-gray-200 text-[#1B1B1B] placeholder-gray-400 focus:outline-none focus:border-[#DDA0DD] focus:ring-1 focus:ring-[#DDA0DD]/20 transition-all"
-                            />
-                          </div>
-
-                          {/* Preferred Ornament Style */}
-                          <div>
-                            <label htmlFor="savings-page-style" className="text-[9.5px] uppercase tracking-wider text-[#1B1B1B]/75 font-black font-sans block mb-1">Preferred Ornament Style</label>
-                            <select
-                              id="savings-page-style"
-                              value={savingsForm.preferredJewellery}
-                              onChange={(e) => setSavingsForm({ ...savingsForm, preferredJewellery: e.target.value })}
-                              className="w-full border rounded-xl px-4 py-2.5 text-xs focus:outline-none bg-white border-gray-200 text-[#1B1B1B] cursor-pointer focus:border-[#DDA0DD]"
-                            >
-                              <option value="Rings">Rings & Solitaires</option>
-                              <option value="Earrings">Earrings & Jhumkas</option>
-                              <option value="Bangles">Bangles & Kadas</option>
-                              <option value="Necklace">Necklace & Rajputi Chokers</option>
-                              <option value="Gold Coins">Gold Coins & Bars</option>
-                            </select>
-                          </div>
-
-                          {/* Preferred Branch */}
-                          <div>
-                            <label htmlFor="savings-page-branch" className="text-[9.5px] uppercase tracking-wider text-[#1B1B1B]/75 font-black font-sans block mb-1">Preferred Showroom Branch</label>
-                            <select
-                              id="savings-page-branch"
-                              value={savingsForm.branch}
-                              onChange={(e) => setSavingsForm({ ...savingsForm, branch: e.target.value })}
-                              className="w-full border rounded-xl px-4 py-2.5 text-xs focus:outline-none bg-white border-gray-200 text-[#1B1B1B] cursor-pointer focus:border-[#DDA0DD]"
-                            >
-                              <option value="Tilak Nagar Bikaner">Tilak Nagar Flagship, Bikaner</option>
-                              <option value="Jaipur Central Showroom">Jaipur Central Atelier, Jaipur</option>
-                              <option value="Jodhpur Royal Suite">Jodhpur Royal Suite, Jodhpur</option>
-                            </select>
-                          </div>
-
-                          <button
-                            type="submit"
-                            className="w-full font-bold text-xs uppercase tracking-widest py-4 rounded-xl transition-all duration-300 shadow-md bg-[#1B1B1B] hover:bg-[#DDA0DD] text-white hover:text-[#1B1B1B] cursor-pointer relative overflow-hidden group/btn"
-                          >
-                            <div className="absolute inset-0 w-1/2 h-full bg-white/10 skew-x-[-20deg] transform -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]" />
-                            START GRP APPLICATION
-                          </button>
-                        </form>
-                      )}
-                    </div>
+                  <div className="text-right mt-2">
+                    <button
+                      onClick={() => { triggerAudio('click'); setSavingsEnrollOpen(true); }}
+                      className="text-[11px] text-gray-500 hover:text-[#c0392b] cursor-pointer transition-colors"
+                    >
+                      Want to pay your {savingsSchemeType} Installment?{' '}
+                      <span className="text-[#c0392b] font-semibold hover:underline">Click to Pay</span>
+                    </button>
                   </div>
-                </div>
-
-              </div>
-
-              {/* ── FAQ / Notes Section — Below Gold Reserve Calculator ── */}
-              {savingsSchemeType === 'Gold Reserve' && (
-                <div className="w-full py-10 px-2 sm:px-6">
-                  <div className="max-w-3xl mx-auto text-center space-y-5">
-                    {/* NOTE Disclaimer */}
-                    <div className={`space-y-1.5 text-xs leading-relaxed ${isCatalogDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                      <p className="text-red-500 font-bold text-sm tracking-wide">NOTE:</p>
-                      <p>*1 gold unit = 1 gram of 24kt gold</p>
-                      <p>The Gold Reserve Option Plan is redeemable from 2nd month onwards, subject to terms and conditions.</p>
-                      <p>The subscription amount and primary voucher can be used towards the purchase of Diamond studded, Gemstone studded, Plain Gold, <span className={`font-semibold ${isCatalogDark ? 'text-[#DDA0DD]' : 'text-[#4A126D]'}`}>Plain Platinum</span> or Preset Solitaire jewellery.</p>
-                      <p>The <span className={`font-semibold ${isCatalogDark ? 'text-[#DDA0DD]' : 'text-[#4A126D]'}`}>Plain Gold</span> special benefit voucher can be used towards the purchase of Plain Gold jewellery only.</p>
-                      <p>The Non-<span className={`font-semibold ${isCatalogDark ? 'text-[#DDA0DD]' : 'text-[#4A126D]'}`}>Plain Gold</span> special benefit voucher can be used towards the purchase of Diamond studded, Gemstone studded, Plain Platinum or Preset Solitaire jewellery only.</p>
-                    </div>
-
-                    {/* Decorative Divider */}
-                    <div className="relative py-2">
-                      <div className={`absolute left-0 right-0 top-1/2 -translate-y-1/2 h-px ${isCatalogDark ? 'bg-white/10' : 'bg-gray-200'}`} />
-                      <div className="relative flex items-center justify-center">
-                        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#C5A55A]/60 max-w-[140px]" />
-                        <span className="mx-3 text-[#C5A55A] text-xs">◆</span>
-                        <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#C5A55A]/60 max-w-[140px]" />
-                      </div>
-                    </div>
-
-                    {/* Heading */}
-                    <h4 className={`serif-luxury text-xl sm:text-2xl font-bold ${isCatalogDark ? 'text-white' : 'text-[#0F2C59]'}`}>
-                      Find answers to all your queries here
-                    </h4>
-
-                    {/* FAQ & T&C Links */}
-                    <div className="flex items-center justify-center space-x-6 text-sm pb-2">
-                      <button
-                        onClick={() => navigateTo('faq')}
-                        className={`font-semibold hover:underline transition-colors ${isCatalogDark ? 'text-[#DDA0DD]' : 'text-[#0F7B9B]'}`}
-                      >
-                        View all FAQ &gt;&gt;
-                      </button>
-                      <span className={`${isCatalogDark ? 'text-white/30' : 'text-gray-400'} font-light`}>|</span>
-                      <button
-                        onClick={() => navigateTo('terms-and-conditions')}
-                        className={`font-semibold hover:underline transition-colors ${isCatalogDark ? 'text-[#DDA0DD]' : 'text-[#0F7B9B]'}`}
-                      >
-                        View all Terms &amp; Conditions &gt;&gt;
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Comparison Results */}
-              {(() => {
-                const rate22K = Math.round(goldRate24k * 0.9167);
-                const goldGrams = comparisonInvestmentInput / rate22K;
-                const silverGrams = comparisonInvestmentInput / silverRate;
-                return (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-white/10 relative z-10 items-stretch">
-                    {/* Gold Column */}
-                    <div className={`border rounded-2xl p-4 flex flex-col justify-between space-y-3 ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200'}`}>
-                      <div className="text-center">
-                        <span className="text-[#DDA0DD] text-xs font-serif font-black block">📈 Fine Gold (22K)</span>
-                        <span className="text-[8.5px] opacity-60 uppercase block mt-0.5">Asset Safety Hedge</span>
-                      </div>
-                      <div className="text-center bg-[#DDA0DD]/10 p-2.5 rounded-xl border border-[#DDA0DD]/20">
-                        <span className="opacity-60 text-[8px] uppercase tracking-wider block font-semibold">Yield (Grams)</span>
-                        <span className="text-[#DDA0DD] font-black text-sm block mt-0.5">{goldGrams.toFixed(2)} g</span>
-                      </div>
-                      <p className={`text-[9.5px] text-center leading-normal font-light italic opacity-85`}>
-                        "Excellent safety shelter. Protects wealth steadily against long-term inflation index trends."
-                      </p>
-                    </div>
-
-                    {/* Silver Column */}
-                    <div className={`border rounded-2xl p-4 flex flex-col justify-between space-y-3 ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200'}`}>
-                      <div className="text-center">
-                        <span className={`font-serif font-black text-xs block ${isCatalogDark ? 'text-white' : 'text-[#4A126D]'}`}>🪙 Sterling Silver (999)</span>
-                        <span className="text-[8.5px] opacity-60 uppercase block mt-0.5">Industrial Accumulation</span>
-                      </div>
-                      <div className={`text-center p-2.5 rounded-xl border ${isCatalogDark ? 'bg-white/10 border-white/20' : 'bg-[#4A126D]/10 border-[#4A126D]/20'}`}>
-                        <span className="opacity-60 text-[8px] uppercase tracking-wider block font-semibold">Yield (Grams)</span>
-                        <span className={`font-black text-sm block mt-0.5 ${isCatalogDark ? 'text-white' : 'text-[#4A126D]'}`}>{silverGrams.toFixed(1)} g</span>
-                      </div>
-                      <p className={`text-[9.5px] text-center leading-normal font-light italic opacity-85`}>
-                        "Highly liquid. Perfect for medium-term yield growth backed by dynamic industrial demand."
-                      </p>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* REDESIGNED THE “PLAN COMPARISON” SECTION INTO A MODERN LUXURY INTERACTIVE EXPERIENCE */}
-              <div className={`border rounded-[3rem] p-6 md:p-12 shadow-2xl relative overflow-hidden animate-fade-in text-xs select-none transition-colors duration-500 ${isCatalogDark
-                ? 'bg-gradient-to-br from-[#231034] via-[#29153C] to-[#231034] border-gold/15'
-                : 'bg-gradient-to-br from-[#FBF9FF] via-[#F3E9FB] to-[#FBF9FF] border-[#DDA0DD]/25'
-                }`}>
-                {/* Luxury background glow elements */}
-                <div className="absolute top-[10%] left-[-15%] w-[350px] h-[350px] rounded-full bg-[#DDA0DD]/8 blur-[90px] pointer-events-none" />
-                <div className="absolute bottom-[10%] right-[-15%] w-[350px] h-[350px] rounded-full bg-[#DDA0DD]/6 blur-[90px] pointer-events-none" />
-
-                {/* Subtle gold particle animation overlay (pure CSS) */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(212,175,55,0.02)_0,transparent_60%)] pointer-events-none" />
-
-                {/* SECTION HEADER */}
-                <div className="text-center space-y-3 relative z-10">
-                  <div className="inline-flex flex-col items-center">
-                    <span className="text-[9.5px] font-black uppercase tracking-[0.35em] text-[#DDA0DD] block font-sans">
-                      SCHEME MATRIX
-                    </span>
-                    <div className="w-10 h-[1.5px] bg-[#DDA0DD] mt-1.5 animate-pulse" />
-                  </div>
-
-                  <h2 className={`serif-luxury text-3xl sm:text-4xl font-bold leading-none tracking-tight ${isCatalogDark ? 'text-white' : 'text-[#4A126D]'}`}>
-                    Gold Mine vs Gold Reserve
-                  </h2>
-
-                  <p className="text-xs md:text-sm opacity-70 font-light max-w-xl mx-auto font-sans">
-                    Compare savings, rewards, protection and redemption benefits.
-                  </p>
-
-                  {/* Animated divider line */}
-                  <div className="w-24 h-[1.5px] bg-gradient-to-r from-transparent via-[#DDA0DD] to-transparent mx-auto mt-4" />
-                </div>
-
-                {/* TIMELINE ROADMAP COMPARISON CONTAINER */}
-                <div className="mt-8 relative z-10">
-                  <div className={`border rounded-3xl p-6 md:p-8 animate-fade-in select-none ${isCatalogDark ? 'bg-black/30 border-white/10' : 'bg-white/40 border-[#DDA0DD]/20'}`}>
-                    <span className={`text-[9.5px] uppercase tracking-widest font-black block text-center mb-6 font-sans ${isCatalogDark ? 'text-white/60' : 'text-[#4A126D]/60'}`}>
-                      📅 SYSTEMATIC REDEMPTION JOURNEY ROADMAP
-                    </span>
-
-                    <div className="relative border-l border-[#DDA0DD]/30 ml-4 md:ml-12 pl-6 md:pl-10 space-y-8">
-                      {/* Step 1 */}
-                      <div className="relative text-left">
-                        <div className="absolute left-[-31px] md:left-[-47px] top-0 w-4 h-4 rounded-full bg-[#DDA0DD] border-4 border-white shadow-md animate-ping" />
-                        <div className="absolute left-[-31px] md:left-[-47px] top-0 w-4 h-4 rounded-full bg-[#DDA0DD] border-4 border-white shadow-md" />
-                        <div>
-                          <span className="text-[9px] uppercase tracking-widest text-[#DDA0DD] font-black block font-sans">STEP 01</span>
-                          <h4 className={`font-bold text-sm mt-0.5 ${isCatalogDark ? 'text-[#DDA0DD]' : 'text-[#4A126D]'}`}>Enrollment & Initial Installment</h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                            <div className={`border rounded-xl p-3 ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-white/50 border-white/60'}`}>
-                              <span className={`font-bold text-[10px] block ${isCatalogDark ? 'text-[#FCFAFF]' : 'text-gray-800'}`}>📈 Gold Mine Scheme</span>
-                              <p className={`text-[9.5px] font-light mt-1 font-sans ${isCatalogDark ? 'text-white/70' : 'text-gray-600'}`}>
-                                Select monthly savings amount (e.g. ₹5,000) and choose the Diamond/Gemstone voucher or Plain Gold option. Installment logged in cash value.
-                              </p>
-                            </div>
-                            <div className={`border rounded-xl p-3 ${isCatalogDark ? 'bg-[#DDA0DD]/10 border-[#DDA0DD]/20' : 'bg-[#4A126D]/5 border-[#4A126D]/10'}`}>
-                              <span className={`font-bold text-[10px] block ${isCatalogDark ? 'text-[#DDA0DD]' : 'text-[#4A126D]'}`}>🪙 Gold Reserve Scheme</span>
-                              <p className={`text-[9.5px] font-light mt-1 font-sans ${isCatalogDark ? 'text-white/75' : 'text-gray-600'}`}>
-                                Submit monthly savings amount. Your cash is converted immediately into physical 22K gold grams matching the active gold rate of the day.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Step 2 */}
-                      <div className="relative text-left">
-                        <div className={`absolute left-[-31px] md:left-[-47px] top-0 w-4 h-4 rounded-full border-4 border-white shadow-md ${isCatalogDark ? 'bg-[#DDA0DD]' : 'bg-[#4A126D]'}`} />
-                        <div>
-                          <span className="text-[9px] uppercase tracking-widest text-gray-400 font-black block font-sans">STEP 02</span>
-                          <h4 className={`font-bold text-sm mt-0.5 ${isCatalogDark ? 'text-[#DDA0DD]' : 'text-[#4A126D]'}`}>Monthly Accumulation Phase (Months 2 to 10)</h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                            <div className={`border rounded-xl p-3 ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-white/50 border-white/60'}`}>
-                              <span className={`font-bold text-[10px] block ${isCatalogDark ? 'text-[#FCFAFF]' : 'text-gray-800'}`}>📈 Gold Mine Scheme</span>
-                              <p className={`text-[9.5px] font-light mt-1 font-sans ${isCatalogDark ? 'text-white/70' : 'text-gray-600'}`}>
-                                Deposit cash regularly. Account statement builds up as a cash value reserve. Gold rate fluctuations do not affect your cash index during this time.
-                              </p>
-                            </div>
-                            <div className={`border rounded-xl p-3 ${isCatalogDark ? 'bg-[#DDA0DD]/10 border-[#DDA0DD]/20' : 'bg-[#4A126D]/5 border-[#4A126D]/10'}`}>
-                              <span className={`font-bold text-[10px] block ${isCatalogDark ? 'text-[#DDA0DD]' : 'text-[#4A126D]'}`}>🪙 Gold Reserve Scheme</span>
-                              <p className={`text-[9.5px] font-light mt-1 font-sans ${isCatalogDark ? 'text-white/75' : 'text-gray-600'}`}>
-                                Each month's cash deposit is immediately translated to gold grams on deposit date. Total physical gold grams accrue, shielding you from mid-year rate hikes.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Step 3 */}
-                      <div className="relative text-left">
-                        <div className="absolute left-[-31px] md:left-[-47px] top-0 w-4 h-4 rounded-full bg-[#DDA0DD] border-4 border-white shadow-md" />
-                        <div>
-                          <span className="text-[9px] uppercase tracking-widest text-[#DDA0DD] font-black block font-sans">STEP 03</span>
-                          <h4 className={`font-bold text-sm mt-0.5 ${isCatalogDark ? 'text-[#DDA0DD]' : 'text-[#4A126D]'}`}>Final Installment & Eligibility Completion</h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                            <div className={`border rounded-xl p-3 ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-white/50 border-white/60'}`}>
-                              <span className={`font-bold text-[10px] block ${isCatalogDark ? 'text-[#FCFAFF]' : 'text-gray-800'}`}>📈 Gold Mine Scheme</span>
-                              <p className={`text-[9.5px] font-light mt-1 font-sans ${isCatalogDark ? 'text-white/70' : 'text-gray-600'}`}>
-                                Pay your 10th month final installment. Complete eligibility period and await the bonus dispatch.
-                              </p>
-                            </div>
-                            <div className={`border rounded-xl p-3 ${isCatalogDark ? 'bg-[#DDA0DD]/10 border-[#DDA0DD]/20' : 'bg-[#4A126D]/5 border-[#4A126D]/10'}`}>
-                              <span className={`font-bold text-[10px] block ${isCatalogDark ? 'text-[#DDA0DD]' : 'text-[#4A126D]'}`}>🪙 Gold Reserve Scheme</span>
-                              <p className={`text-[9.5px] font-light mt-1 font-sans ${isCatalogDark ? 'text-white/75' : 'text-gray-600'}`}>
-                                Pay final installment. The final grams are accumulated into your locked weight balance.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Step 4 */}
-                      <div className="relative text-left">
-                        <div className="absolute left-[-33px] md:left-[-49px] top-0 w-5 h-5 rounded-full bg-emerald-600 border-4 border-white shadow-md animate-pulse" />
-                        <div>
-                          <span className="text-[9px] uppercase tracking-widest text-emerald-600 font-black block font-sans">STEP 04</span>
-                          <h4 className="font-bold text-emerald-500 text-sm mt-0.5">Maturity & Redemption (Month 11)</h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                            <div className={`border rounded-xl p-3 ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-white/50 border-white/60'}`}>
-                              <span className={`font-bold text-[10px] block ${isCatalogDark ? 'text-[#FCFAFF]' : 'text-gray-800'}`}>📈 Gold Mine Scheme</span>
-                              <p className={`text-[9.5px] font-light mt-1 font-sans font-semibold ${isCatalogDark ? 'text-white/80' : 'text-gray-700'}`}>
-                                Get dynamic matching cash value bonus (100% of voucher). Redeem total cash accumulated against any grand Rajputi heritage bridal suites or solicitaires.
-                              </p>
-                            </div>
-                            <div className={`border rounded-xl p-3 ${isCatalogDark ? 'bg-[#DDA0DD]/10 border-[#DDA0DD]/20 text-[#FCFAFF]' : 'bg-[#4A126D]/10 border-[#DDA0DD]/35 text-[#4A126D]'}`}>
-                              <span className="font-bold text-[#DDA0DD] text-[10px] block">🪙 Gold Reserve Scheme</span>
-                              <p className={`text-xs font-light mt-1 font-sans font-semibold p-2.5 rounded-lg border border-[#DDA0DD]/20 ${isCatalogDark ? 'bg-[#231034] text-white' : 'bg-[#FCFAFF] text-[#4A126D]'}`}>
-                                Get bonus gold grams (up to 100% equivalent gold weight of 1 month). Redeem total accrued locked gold weight against catalogs with absolutely zero rate fluctuation exposure!
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* BOTTOM INSIGHT SECTION: AI RECOMMENDATION ASSISTANT */}
-                <div className={`mt-12 border rounded-3xl p-5 md:p-8 relative overflow-hidden animate-fade-in group shadow-md text-left ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-white/70 backdrop-blur-xl border border-[#DDA0DD]/25'}`}>
-                  {/* Floating shine glow effect */}
-                  <div className="absolute top-[-30%] right-[-10%] w-[180px] h-[180px] rounded-full bg-[#DDA0DD]/8 blur-[40px] pointer-events-none group-hover:scale-105 transition-transform" />
-
-                  <div className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4 relative z-10 ${isCatalogDark ? 'border-white/10' : 'border-[#DDA0DD]/15'}`}>
-                    <div className="space-y-1">
-                      <span className="text-[#DDA0DD] text-[9px] uppercase tracking-widest font-black block font-sans">
-                        💎 AI WEALTH ADVISOR RECOMMENDATION
-                      </span>
-                      <p className={`text-[10px] font-light font-sans ${isCatalogDark ? 'text-white/70' : 'text-gray-600'}`}>
-                        Select your purchase intent below, and our luxury algorithms will recommend your ideal systematic investment blueprint.
-                      </p>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => { triggerAudio('click'); setComparisonAiIntent('wedding'); }}
-                        className={`py-2 px-3.5 rounded-xl border text-[9.5px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${comparisonAiIntent === 'wedding' ? 'bg-[#4A126D] text-white border-transparent shadow-sm' : 'border-gray-200 text-gray-555 hover:text-gray-700 bg-white/40'}`}
-                      >
-                        💍 Wedding / Bridal Purchase
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => { triggerAudio('click'); setComparisonAiIntent('investment'); }}
-                        className={`py-2 px-3.5 rounded-xl border text-[9.5px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${comparisonAiIntent === 'investment' ? 'bg-[#4A126D] text-white border-transparent shadow-sm' : 'border-gray-200 text-gray-555 hover:text-gray-700 bg-white/40'}`}
-                      >
-                        📈 Long-term Wealth & Savings
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className={`mt-4 relative z-10 animate-fade-in border p-4 rounded-2xl flex items-start gap-4 ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-gradient-to-r from-[#FBF9FF] to-white/30 border-[#DDA0DD]/10'}`}>
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg shrink-0 ${isCatalogDark ? 'bg-[#DDA0DD] text-[#4A126D]' : 'bg-[#4A126D] text-white'}`}>
-                      💡
-                    </div>
-                    <div>
-                      {comparisonAiIntent === 'wedding' ? (
-                        <div>
-                          <span className="text-[8.5px] uppercase tracking-widest text-emerald-500 font-black block font-sans">
-                            RECOMMENDED BLUEPRINT: 11+1 GOLD SAVING SCHEME (CASH VALUE)
-                          </span>
-                          <p className={`text-[10px] mt-1 leading-relaxed font-light font-sans ${isCatalogDark ? 'text-white/80' : 'text-gray-700'}`}>
-                            "For grand celebrations and wedding catalog campaigns, the **11+1 Gold Saving Scheme (Gold Mine)** is highly recommended. It offers a maximum Cash Value reward (up to **100% bonus month** funded by HRJ) to boost your ultimate checkout budget. This maximizes your purchasing capacity, allowing you to secure heavier, high-value Rajputi heritage ornaments and designer diamond solitaires with exceptional loyalty cash bonus benefits."
-                          </p>
-                        </div>
-                      ) : (
-                        <div>
-                          <span className="text-[8.5px] uppercase tracking-widest text-[#DDA0DD] font-black block font-sans">
-                            RECOMMENDED BLUEPRINT: 11+1 GOLD SAVING SCHEME (WEIGHT LOCK)
-                          </span>
-                          <p className={`text-[10px] mt-1 leading-relaxed font-light font-sans ${isCatalogDark ? 'text-white/80' : 'text-gray-700'}`}>
-                            "For systematic asset accumulation and rates protection, the **11+1 Gold Saving Scheme (Gold Reserve)** is highly recommended. Every single deposit is immediately converted and locked into pure physical 22K gold grams on transaction day. This shields your wealth completely against inflationary price spikes, offering an absolute **Gold Gram weight bonus** (up to 100% of 1 month weight) upon maturity. Secure physical metals with zero rate volatility exposure."
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Benefits Section: Why Choose Gold Mine Plan? */}
-              <div className="space-y-8 select-none py-4 animate-fade-in">
-                <div className="text-center space-y-2">
-                  <span className={`text-[10px] uppercase tracking-[0.35em] font-black font-sans ${isCatalogDark ? 'text-[#DDA0DD]' : 'text-[#4A126D]'}`}>PRIVILEGED SYSTEMATIC PURCHASING</span>
-                  <h2 className={`serif-luxury text-3xl sm:text-4xl font-semibold leading-none ${isCatalogDark ? 'text-[#FCFAFF]' : 'text-[#4A126D]'}`}>Why Choose Gold Mine Plan?</h2>
-                  <div className="w-12 h-[1px] bg-[#DDA0DD] mx-auto mt-2"></div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
-
-                  {/* Card 01: Plan Ahead */}
-                  <div className={`border rounded-3xl p-6 shadow-sm hover:shadow-[0_15px_35px_rgba(212,175,55,0.08)] hover:-translate-y-1.5 transition-all duration-500 cursor-pointer flex flex-col justify-between gap-4 group ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-white border-[#DDA0DD]/15'}`}>
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold transition-colors duration-500 shadow-sm shrink-0 ${isCatalogDark ? 'bg-[#DDA0DD] text-[#4A126D]' : 'bg-[#FBF9FF] text-[#4A126D] group-hover:bg-[#4A126D] group-hover:text-white'}`}>
-                      📅
-                    </div>
-                    <div className="space-y-1.5 text-left">
-                      <h4 className={`serif-luxury text-lg font-bold leading-snug ${isCatalogDark ? 'text-white' : 'text-gray-900'}`}>Plan Ahead</h4>
-                      <p className={`text-xs leading-relaxed font-light font-sans ${isCatalogDark ? 'text-white/70' : 'text-gray-600'}`}>
-                        Build savings systematically over time to afford high-value, premium ornaments without single-payment budget stress.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Card 02: Special Moments */}
-                  <div className={`border rounded-3xl p-6 shadow-sm hover:shadow-[0_15px_35px_rgba(212,175,55,0.08)] hover:-translate-y-1.5 transition-all duration-500 cursor-pointer flex flex-col justify-between gap-4 group ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-white border-[#DDA0DD]/15'}`}>
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold transition-colors duration-500 shadow-sm shrink-0 ${isCatalogDark ? 'bg-[#DDA0DD] text-[#4A126D]' : 'bg-[#FBF9FF] text-[#4A126D] group-hover:bg-[#4A126D] group-hover:text-white'}`}>
-                      🎁
-                    </div>
-                    <div className="space-y-1.5 text-left">
-                      <h4 className={`serif-luxury text-lg font-bold leading-snug ${isCatalogDark ? 'text-white' : 'text-gray-900'}`}>Special Moments</h4>
-                      <p className={`text-xs leading-relaxed font-light font-sans ${isCatalogDark ? 'text-white/70' : 'text-gray-600'}`}>
-                        Completely perfect for upcoming birthday celebrations, grand Rajputi wedding shopping campaigns, or traditional festivals!
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Card 03: Exclusive Rewards */}
-                  <div className={`border rounded-3xl p-6 shadow-sm hover:shadow-[0_15px_35px_rgba(212,175,55,0.08)] hover:-translate-y-1.5 transition-all duration-500 cursor-pointer flex flex-col justify-between gap-4 group ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-white border-[#DDA0DD]/15'}`}>
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold transition-colors duration-500 shadow-sm shrink-0 ${isCatalogDark ? 'bg-[#DDA0DD] text-[#4A126D]' : 'bg-[#FBF9FF] text-[#4A126D] group-hover:bg-[#4A126D] group-hover:text-white'}`}>
-                      🏷️
-                    </div>
-                    <div className="space-y-1.5 text-left">
-                      <h4 className={`serif-luxury text-lg font-bold leading-snug ${isCatalogDark ? 'text-white' : 'text-gray-900'}`}>Exclusive Rewards</h4>
-                      <p className={`text-xs leading-relaxed font-light font-sans ${isCatalogDark ? 'text-white/70' : 'text-gray-600'}`}>
-                        Acquire lucrative loyalty benefits, premium member-only discounts, and a magnificent extra 11th installment bonus month.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Card 04: Trusted Purchase */}
-                  <div className={`border rounded-3xl p-6 shadow-sm hover:shadow-[0_15px_35px_rgba(212,175,55,0.08)] hover:-translate-y-1.5 transition-all duration-500 cursor-pointer flex flex-col justify-between gap-4 group ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-white border-[#DDA0DD]/15'}`}>
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold transition-colors duration-500 shadow-sm shrink-0 ${isCatalogDark ? 'bg-[#DDA0DD] text-[#4A126D]' : 'bg-[#FBF9FF] text-[#4A126D] group-hover:bg-[#4A126D] group-hover:text-white'}`}>
-                      🛡️
-                    </div>
-                    <div className="space-y-1.5 text-left">
-                      <h4 className={`serif-luxury text-lg font-bold leading-snug ${isCatalogDark ? 'text-white' : 'text-gray-900'}`}>Trusted Purchase</h4>
-                      <p className={`text-xs leading-relaxed font-light font-sans ${isCatalogDark ? 'text-white/70' : 'text-gray-600'}`}>
-                        Fully secured savings accounts, certified BIS 916 hallmarked pure ornaments, and encrypted premium client data.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Card 05: Premium Collection */}
-                  <div className={`border rounded-3xl p-6 shadow-sm hover:shadow-[0_15px_35px_rgba(212,175,55,0.08)] hover:-translate-y-1.5 transition-all duration-500 cursor-pointer flex flex-col justify-between gap-4 group ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-white border-[#DDA0DD]/15'}`}>
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold transition-colors duration-500 shadow-sm shrink-0 ${isCatalogDark ? 'bg-[#DDA0DD] text-[#4A126D]' : 'bg-[#FBF9FF] text-[#4A126D] group-hover:bg-[#4A126D] group-hover:text-white'}`}>
-                      💎
-                    </div>
-                    <div className="space-y-1.5 text-left">
-                      <h4 className={`serif-luxury text-lg font-bold leading-snug ${isCatalogDark ? 'text-white' : 'text-gray-900'}`}>Premium Collection</h4>
-                      <p className={`text-xs leading-relaxed font-light font-sans ${isCatalogDark ? 'text-white/70' : 'text-gray-600'}`}>
-                        Gain unrestricted access to our ultimate luxury collections: IG-certified diamond solitaires and Bikaneri masterworks.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Card 06: Flexible Payment */}
-                  <div className={`border rounded-3xl p-6 shadow-sm hover:shadow-[0_15px_35px_rgba(212,175,55,0.08)] hover:-translate-y-1.5 transition-all duration-500 cursor-pointer flex flex-col justify-between gap-4 group ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-white border-[#DDA0DD]/15'}`}>
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold transition-colors duration-500 shadow-sm shrink-0 ${isCatalogDark ? 'bg-[#DDA0DD] text-[#4A126D]' : 'bg-[#FBF9FF] text-[#4A126D] group-hover:bg-[#4A126D] group-hover:text-white'}`}>
-                      💳
-                    </div>
-                    <div className="space-y-1.5 text-left">
-                      <h4 className={`serif-luxury text-lg font-bold leading-snug ${isCatalogDark ? 'text-white' : 'text-gray-900'}`}>Flexible Payment</h4>
-                      <p className={`text-xs leading-relaxed font-light font-sans ${isCatalogDark ? 'text-white/70' : 'text-gray-600'}`}>
-                        Convenient monthly systematically-scheduled contributions, optional installment upgrades, and hassle-free showroom checkouts.
-                      </p>
-                    </div>
-                  </div>
-
                 </div>
               </div>
 
-              {/* Premium Interactive "How It Works" Storytelling Section */}
-              <div className={`rounded-[2.5rem] border p-8 md:p-16 space-y-12 shadow-sm animate-fade-in text-xs relative select-none transition-colors duration-500 ${isCatalogDark
-                ? 'bg-gradient-to-br from-[#231034] via-[#29153C] to-[#231034] border-white/10'
-                : 'bg-[#FBF9FF] border-[#DDA0DD]/20'
-                }`}>
-                <div className="absolute top-[-10%] right-[-10%] w-[250px] h-[250px] rounded-full bg-[#DDA0DD]/5 blur-[80px] pointer-events-none" />
-
-                <div className="text-center space-y-2">
-                  <span className={`text-[10px] uppercase tracking-[0.35em] font-bold ${isCatalogDark ? 'text-[#DDA0DD]' : 'text-[#4A126D]'}`}>LUXURY ATELIER CUSTOMER JOURNEY</span>
-                  <h2 className={`serif-luxury text-3xl sm:text-4xl font-semibold ${isCatalogDark ? 'text-white' : 'text-[#0F172A]'}`}>How The Savings Plan Works</h2>
-                  <div className="w-12 h-[1px] bg-[#DDA0DD] mx-auto mt-2"></div>
-                </div>
-
-                {/* Desktop Layout - Split Grid (lg:grid-cols-12) */}
-                <div className="hidden lg:grid grid-cols-12 gap-12 items-center pt-4 relative z-10">
-                  {/* Left Column: Large circular journey visualization */}
-                  <div className="col-span-6 flex justify-center relative">
-                    <div className="w-[520px] h-[520px] relative flex items-center justify-center">
-
-                      {/* Outlined SVG Circle */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <svg className="w-[520px] h-[520px] transform -rotate-90" viewBox="0 0 520 520">
-                          <defs>
-                            <linearGradient id="roseGoldCircleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                              <stop offset="0%" stopColor="#DDA0DD" />
-                              <stop offset="50%" stopColor="#DDA0DD" />
-                              <stop offset="100%" stopColor="#4A126D" />
-                            </linearGradient>
-                          </defs>
-                          {/* Background dashed circle */}
-                          <circle
-                            cx="260"
-                            cy="260"
-                            r="230"
-                            stroke={isCatalogDark ? '#FCFAFF' : '#DDA0DD'}
-                            strokeOpacity={isCatalogDark ? '0.1' : '0.25'}
-                            strokeWidth="2"
-                            fill="none"
-                            strokeDasharray="8 8"
-                          />
-                          {/* Animated active path circle */}
-                          <circle
-                            cx="260"
-                            cy="260"
-                            r="230"
-                            stroke="url(#roseGoldCircleGrad)"
-                            strokeWidth="4"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeDasharray="1445"
-                            strokeDashoffset={1445 - (1445 * (activeStoryStep + 1)) / 3}
-                            className="transition-all duration-1000 ease-in-out"
-                          />
-                        </svg>
-                      </div>
-
-                      {/* Floating Numbered Step Nodes */}
-                      {/* Step 1 Node (330 degrees) */}
-                      <button
-                        type="button"
-                        onClick={() => { triggerAudio('click'); setActiveStoryStep(0); }}
-                        className={`absolute w-12 h-12 rounded-full border-2 flex items-center justify-center font-bold text-sm tracking-wider shadow-lg transition-all duration-500 cursor-pointer z-20 ${activeStoryStep === 0
-                          ? 'bg-[#4A126D] border-[#DDA0DD] text-[#DDA0DD] scale-110 ring-4 ring-[#DDA0DD]/20'
-                          : (isCatalogDark ? 'bg-[#231034] border-white/20 text-gray-400 hover:border-gold hover:text-white' : 'bg-white border-[#DDA0DD] text-gray-555 hover:border-[#4A126D] hover:text-[#4A126D]')
-                          }`}
-                        style={{ left: '435px', top: '121px' }}
-                      >
-                        01
-                      </button>
-
-                      {/* Step 2 Node (90 degrees) */}
-                      <button
-                        type="button"
-                        onClick={() => { triggerAudio('click'); setActiveStoryStep(1); }}
-                        className={`absolute w-12 h-12 rounded-full border-2 flex items-center justify-center font-bold text-sm tracking-wider shadow-lg transition-all duration-500 cursor-pointer z-20 ${activeStoryStep === 1
-                          ? 'bg-[#4A126D] border-[#DDA0DD] text-[#DDA0DD] scale-110 ring-4 ring-[#DDA0DD]/20'
-                          : (isCatalogDark ? 'bg-[#231034] border-white/20 text-gray-400 hover:border-gold hover:text-white' : 'bg-white border-[#DDA0DD] text-gray-555 hover:border-[#4A126D] hover:text-[#4A126D]')
-                          }`}
-                        style={{ left: '236px', top: '466px' }}
-                      >
-                        02
-                      </button>
-
-                      {/* Step 3 Node (210 degrees) */}
-                      <button
-                        type="button"
-                        onClick={() => { triggerAudio('click'); setActiveStoryStep(2); }}
-                        className={`absolute w-12 h-12 rounded-full border-2 flex items-center justify-center font-bold text-sm tracking-wider shadow-lg transition-all duration-500 cursor-pointer z-20 ${activeStoryStep === 2
-                          ? 'bg-[#4A126D] border-[#DDA0DD] text-[#DDA0DD] scale-110 ring-4 ring-[#DDA0DD]/20'
-                          : (isCatalogDark ? 'bg-[#231034] border-white/20 text-gray-400 hover:border-gold hover:text-white' : 'bg-white border-[#DDA0DD] text-gray-555 hover:border-[#4A126D] hover:text-[#4A126D]')
-                          }`}
-                        style={{ left: '37px', top: '121px' }}
-                      >
-                        03
-                      </button>
-
-                      {/* Center Typography & Luxury Branding Shield */}
-                      <div className={`absolute w-[320px] h-[320px] rounded-full border backdrop-blur-md flex flex-col items-center justify-center text-center p-8 shadow-inner z-10 transition-all duration-500 ${isCatalogDark
-                        ? 'bg-black/45 border-white/10 hover:bg-black/65'
-                        : 'bg-white/60 border-[#DDA0DD]/20 hover:bg-white/80'
-                        }`}>
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_70%)] pointer-events-none" />
-                        <span className="text-[10px] uppercase tracking-[0.25em] text-[#DDA0DD] font-black mb-2 animate-pulse">Atelier Journey</span>
-                        <h3 className={`serif-luxury text-3xl font-bold leading-tight mb-2 ${isCatalogDark ? 'text-white' : 'text-[#4A126D]'}`}>3 Easy Steps</h3>
-                        <div className="w-10 h-[1.5px] bg-[#DDA0DD] mb-3" />
-                        <p className="text-[11px] opacity-70 font-light leading-relaxed max-w-[200px]">
-                          To purchase the luxury jewellery your heart desires with our systematic GRP protection.
-                        </p>
-                      </div>
-
-                    </div>
+              {/* WHY PLAN SECTION — reference style */}
+              <div className="w-full bg-[#fafafa] py-12">
+                <div className="max-w-5xl mx-auto px-6 space-y-8">
+                  <div className="text-center space-y-2">
+                    <h2 style={{ fontFamily: 'Georgia, serif' }} className="text-2xl font-semibold text-[#1a1a2e]">
+                      Why {savingsSchemeType} Plan?
+                    </h2>
+                    <div className="w-10 h-[2px] bg-[#c0392b] mx-auto" />
                   </div>
-
-                  {/* Right Column: Three floating premium feature cards connected with animated dotted line markers */}
-                  <div className="col-span-6 space-y-6 relative flex flex-col justify-center min-h-[520px]">
-                    {/* Dynamic Vertical Connecting Lines */}
-                    <div className="absolute left-[36px] top-[48px] bottom-[48px] w-[2px] bg-dashed bg-gradient-to-b from-[#DDA0DD]/45 via-[#DDA0DD]/30 to-[#4A126D]/20 z-0" />
-
-                    {/* Card 1: Pay Monthly */}
-                    <div
-                      onMouseEnter={() => setActiveStoryStep(0)}
-                      onClick={() => { triggerAudio('click'); setActiveStoryStep(0); }}
-                      className={`backdrop-blur-md border rounded-3xl p-6 shadow-sm hover:shadow-[0_12px_36px_rgba(212,175,55,0.08)] hover:-translate-y-1 transition-all duration-500 cursor-pointer flex items-start gap-5 group z-10 relative ${activeStoryStep === 0
-                        ? 'border-[#DDA0DD] ring-1 ring-[#DDA0DD]/30 shadow-[0_12px_36px_rgba(212,175,55,0.08)] -translate-y-1'
-                        : 'border-[#DDA0DD]/20'
-                        } ${isCatalogDark ? 'bg-white/5' : 'bg-white/80'}`}
-                    >
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold transition-all duration-500 shrink-0 ${activeStoryStep === 0
-                        ? 'bg-[#4A126D] text-[#DDA0DD] rotate-6'
-                        : 'bg-[#FBF9FF] text-[#4A126D] group-hover:bg-[#4A126D]/5'
-                        }`}>
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <div className="space-y-1.5 flex-1 text-left">
-                        <div className="flex justify-between items-center">
-                          <h4 className={`serif-luxury text-lg font-bold ${isCatalogDark ? 'text-white' : 'text-[#0F172A]'}`}>01 / Pay Monthly</h4>
-                          <span className="text-[9px] uppercase tracking-widest text-[#DDA0DD] font-black">Plan</span>
-                        </div>
-                        <p className="text-xs opacity-70 leading-relaxed font-light">
-                          Select a comfortable monthly budget from ₹1,000 to ₹50,000. Setup automatic systematically-saved payments to lock in today's gold rate or gain a complete 11th installment FREE on maturity!
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Card 2: Accumulate Assets */}
-                    <div
-                      onMouseEnter={() => setActiveStoryStep(1)}
-                      onClick={() => { triggerAudio('click'); setActiveStoryStep(1); }}
-                      className={`backdrop-blur-md border rounded-3xl p-6 shadow-sm hover:shadow-[0_12px_36px_rgba(212,175,55,0.08)] hover:-translate-y-1 transition-all duration-500 cursor-pointer flex items-start gap-5 group z-10 relative ${activeStoryStep === 1
-                        ? 'border-[#DDA0DD] ring-1 ring-[#DDA0DD]/30 shadow-[0_12px_36px_rgba(212,175,55,0.08)] -translate-y-1'
-                        : 'border-[#DDA0DD]/20'
-                        } ${isCatalogDark ? 'bg-white/5' : 'bg-white/80'}`}
-                    >
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold transition-all duration-500 shrink-0 ${activeStoryStep === 1
-                        ? 'bg-[#4A126D] text-[#DDA0DD] rotate-6'
-                        : 'bg-[#FBF9FF] text-[#4A126D] group-hover:bg-[#4A126D]/5'
-                        }`}>
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
-                      </div>
-                      <div className="space-y-1.5 flex-1 text-left">
-                        <div className="flex justify-between items-center">
-                          <h4 className={`serif-luxury text-lg font-bold ${isCatalogDark ? 'text-white' : 'text-[#0F172A]'}`}>02 / Accumulate Assets</h4>
-                          <span className="text-[9px] uppercase tracking-widest text-emerald-500 font-black">Hedge</span>
-                        </div>
-                        <p className="text-xs opacity-70 leading-relaxed font-light">
-                          Watch your savings build systematically! Choose between physical gold weight accumulation (instantly protecting your investment against gold price hikes) or high-yield cash voucher compounding.
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Card 3: Redeem Heirloom */}
-                    <div
-                      onMouseEnter={() => setActiveStoryStep(2)}
-                      onClick={() => { triggerAudio('click'); setActiveStoryStep(2); }}
-                      className={`backdrop-blur-md border rounded-3xl p-6 shadow-sm hover:shadow-[0_12px_36px_rgba(212,175,55,0.08)] hover:-translate-y-1 transition-all duration-500 cursor-pointer flex items-start gap-5 group z-10 relative ${activeStoryStep === 2
-                        ? 'border-[#DDA0DD] ring-1 ring-[#DDA0DD]/30 shadow-[0_12px_36px_rgba(212,175,55,0.08)] -translate-y-1'
-                        : 'border-[#DDA0DD]/20'
-                        } ${isCatalogDark ? 'bg-white/5' : 'bg-white/80'}`}
-                    >
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold transition-all duration-500 shrink-0 ${activeStoryStep === 2
-                        ? 'bg-[#4A126D] text-[#DDA0DD] rotate-6'
-                        : 'bg-[#FBF9FF] text-[#4A126D] group-hover:bg-[#4A126D]/5'
-                        }`}>
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                      </div>
-                      <div className="space-y-1.5 flex-1 text-left">
-                        <div className="flex justify-between items-center">
-                          <h4 className={`serif-luxury text-lg font-bold ${isCatalogDark ? 'text-white' : 'text-[#0F172A]'}`}>03 / Redeem Heirloom</h4>
-                          <span className="text-[9px] uppercase tracking-widest text-[#DDA0DD] font-black">Redeem</span>
-                        </div>
-                        <p className="text-xs opacity-70 leading-relaxed font-light">
-                          Redeem your accrued savings or physical gold grams. Enjoy booking a private Lounge Suite for bespoke customization by our generational Soni craftsmen, or trade directly for premium certified solitaires!
-                        </p>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-
-                {/* Mobile/Tablet Layout (lg:hidden) - Rendered as a vertical timeline */}
-                <div className="lg:hidden space-y-8 relative pt-4 z-10">
-                  {/* Animated Vertical Line Connector */}
-                  <div className="absolute left-[24px] top-6 bottom-6 w-[2px] bg-gradient-to-b from-[#DDA0DD] via-[#DDA0DD] to-[#4A126D] opacity-50 z-0 animate-pulse-slow" />
-
-                  {/* Mobile Card 1 */}
-                  <div className="relative flex items-start gap-4 z-10">
-                    <div className="w-12 h-12 rounded-full bg-[#4A126D] border-2 border-[#DDA0DD] text-[#DDA0DD] flex items-center justify-center font-bold text-sm tracking-wider shadow-md shrink-0">
-                      01
-                    </div>
-                    <div className={`border rounded-3xl p-5 shadow-sm flex-1 space-y-1 text-left ${isCatalogDark ? 'bg-[#231034] border-white/10' : 'bg-white border-[#DDA0DD]/20'}`}>
-                      <h4 className={`serif-luxury text-base font-bold ${isCatalogDark ? 'text-white' : 'text-[#0F172A]'}`}>01 / Pay Monthly</h4>
-                      <p className="text-xs opacity-70 leading-relaxed font-light">
-                        Set a monthly savings target (₹1,000 - ₹50,000). Save for 10 months and get the 11th month installment completely free from HR Jewellers.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Mobile Card 2 */}
-                  <div className="relative flex items-start gap-4 z-10">
-                    <div className="w-12 h-12 rounded-full bg-[#4A126D] border-2 border-[#DDA0DD] text-[#DDA0DD] flex items-center justify-center font-bold text-sm tracking-wider shadow-md shrink-0">
-                      02
-                    </div>
-                    <div className={`border rounded-3xl p-5 shadow-sm flex-1 space-y-1 text-left ${isCatalogDark ? 'bg-[#231034] border-white/10' : 'bg-white border-[#DDA0DD]/20'}`}>
-                      <h4 className={`serif-luxury text-base font-bold ${isCatalogDark ? 'text-white' : 'text-[#0F172A]'}`}>02 / Accumulate Assets</h4>
-                      <p className="text-xs opacity-70 leading-relaxed font-light">
-                        Each deposit is stored safely. Lock physical 22K gold weights immediately to protect against rate rises, or enjoy cash voucher loyalty compounding.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Mobile Card 3 */}
-                  <div className="relative flex items-start gap-4 z-10">
-                    <div className="w-12 h-12 rounded-full bg-[#4A126D] border-2 border-[#DDA0DD] text-[#DDA0DD] flex items-center justify-center font-bold text-sm tracking-wider shadow-md shrink-0">
-                      03
-                    </div>
-                    <div className={`border rounded-3xl p-5 shadow-sm flex-1 space-y-1 text-left ${isCatalogDark ? 'bg-[#231034] border-white/10' : 'bg-white border-[#DDA0DD]/20'}`}>
-                      <h4 className={`serif-luxury text-base font-bold ${isCatalogDark ? 'text-white' : 'text-[#0F172A]'}`}>03 / Redeem Heirloom</h4>
-                      <p className="text-xs opacity-70 leading-relaxed font-light">
-                        On maturity, redeem against hallmarked ornaments. Experience ultimate lounge booking suite consultations or online storefront redemption with zero rate risk.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bottom Pro Pill */}
-                <div className="flex justify-center pt-8 border-t border-gray-150/10">
-                  <div className={`inline-flex items-center space-x-2 border px-6 py-3 rounded-full shadow-md text-xs font-semibold hover:shadow-lg transition-shadow duration-300 ${isCatalogDark ? 'bg-white/5 border-[#DDA0DD]/50 text-white' : 'bg-gradient-to-r from-[#FBF9FF] to-[#FFF] border-[#DDA0DD]/30 text-[#4A126D]'}`}>
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#DDA0DD] animate-ping"></span>
-                    <span className="tracking-wide uppercase text-[10px]">✨ Pro Tip: Simulate your savings value above to lock in active rate advantages!</span>
-                  </div>
-                </div>
-
-                {/* Why Choose Us Timeline certifications bar */}
-                <div className={`border rounded-3xl p-6 shadow-sm space-y-4 pt-8 ${isCatalogDark ? 'bg-white/5 border-white/10' : 'bg-white border-[#DDA0DD]/20'}`}>
-                  <span className="text-gray-400 text-[8.5px] uppercase tracking-wider block font-bold text-center">Atelier Promises and Trust Badges</span>
-                  <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
                     {[
-                      { title: "BIS Hallmark", emoji: "✓" },
-                      { title: "100% Authentic", emoji: "✓" },
-                      { title: "Certified Diamonds", emoji: "✓" },
-                      { title: "Lifetime Support", emoji: "✓" },
-                      { title: "Easy Exchange", emoji: "✓" },
-                      { title: "Secure Delivery", emoji: "✓" }
-                    ].map((promise, index) => (
-                      <div key={index} className={`p-3 border rounded-2xl shadow-inner flex flex-col justify-center items-center hover:scale-105 transition-transform duration-300 ${isCatalogDark ? 'bg-[#231034] border-white/10 text-white' : 'bg-[#FBF9FF] border-[#DDA0DD]/10 text-[#4A126D]'}`}>
-                        <span className="text-xl block text-[#DDA0DD]">{promise.emoji}</span>
-                        <span className="text-[10px] font-black uppercase mt-1">{promise.title}</span>
+                      {
+                        icon: (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#c0392b" strokeWidth="1.5" className="w-8 h-8">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        ),
+                        title: 'Plan Ahead',
+                        desc: 'Subscribe to plan for your future high value purchases',
+                      },
+                      {
+                        icon: (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#c0392b" strokeWidth="1.5" className="w-8 h-8">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+                          </svg>
+                        ),
+                        title: 'For Special Moments',
+                        desc: 'Plan for gifting on special occasions like Birthdays, Weddings etc',
+                      },
+                      {
+                        icon: (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#c0392b" strokeWidth="1.5" className="w-8 h-8">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 6h13M7 13l-1.4-6M17 17a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+                          </svg>
+                        ),
+                        title: 'Special Discounts',
+                        desc: 'Pay 10 installments & get 100% discount on the 11th installment',
+                      },
+                    ].map(({ icon, title, desc }) => (
+                      <div key={title} className="flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-full bg-white border border-gray-100 shadow-sm flex items-center justify-center shrink-0">
+                          {icon}
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-bold text-[#1a1a2e] mb-1" style={{ fontFamily: 'Georgia, serif' }}>{title}</h4>
+                          <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
+
+              {/* ═══════════════════════════════════════════════
+                  HOW IT WORKS — PREMIUM LUXURY JEWELLERY
+                  ═══════════════════════════════════════════════ */}
+              <section style={{ background: '#FAF8F5', width: '100%', padding: '100px 0 88px' }}>
+                <div style={{ maxWidth: '1140px', margin: '0 auto', padding: '0 48px' }}>
+
+                  {/* ── Section Header ── */}
+                  <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+                    <p style={{
+                      fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                      fontSize: '9px', letterSpacing: '0.35em',
+                      textTransform: 'uppercase', color: '#D8A0A8',
+                      fontWeight: '600', margin: '0 0 16px'
+                    }}>
+                      Simple &amp; Transparent
+                    </p>
+                    <h2 style={{
+                      fontFamily: 'Georgia, "Times New Roman", serif',
+                      fontSize: '36px', fontWeight: '400',
+                      color: '#0B2341', letterSpacing: '-0.02em',
+                      margin: '0 0 22px', lineHeight: '1.2'
+                    }}>
+                      How It Works
+                    </h2>
+                    {/* Decorative divider */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+                      <div style={{ width: '48px', height: '0.5px', background: '#D8A0A8' }} />
+                      <svg width="6" height="6" viewBox="0 0 6 6">
+                        <circle cx="3" cy="3" r="2.5" fill="none" stroke="#D8A0A8" strokeWidth="0.8"/>
+                      </svg>
+                      <div style={{ width: '48px', height: '0.5px', background: '#D8A0A8' }} />
+                    </div>
+                  </div>
+
+                  {/* ── Main Layout: Circle + Steps ── */}
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0' }}>
+
+                    {/* ══════════════════════════
+                        LEFT — Circle Diagram
+                        ══════════════════════════ */}
+                    <div style={{ position: 'relative', width: '500px', height: '500px', flexShrink: 0 }}>
+
+                      {/* SVG: Circle + Arrow + Markers + Connectors */}
+                      <svg width="500" height="500" viewBox="0 0 500 500" fill="none"
+                        style={{ position: 'absolute', inset: 0 }}>
+
+                        {/* Outer dashed rose-gold circle  cx=230, cy=250, r=195 */}
+                        <circle cx="230" cy="250" r="195"
+                          stroke="#D8A0A8" strokeWidth="1.8"
+                          strokeDasharray="4 8" opacity="0.9" />
+
+                        {/* Inner hairline circle */}
+                        <circle cx="230" cy="250" r="170"
+                          stroke="#D8A0A8" strokeWidth="0.7"
+                          opacity="0.35" />
+
+                        {/* Curved decorative arrow — bottom-left of circle */}
+                        {/* Circle bottom-left arc at ~210° → approx x=92, y=348 */}
+                        <path d="M55 368 Q30 398 58 416"
+                          stroke="#D8A0A8" strokeWidth="1"
+                          fill="none" strokeLinecap="round" opacity="0.65" />
+                        <path d="M53 412 L58 417 L63 411"
+                          stroke="#D8A0A8" strokeWidth="1"
+                          fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.65" />
+
+                        {/* ── Marker 1 — top-right arc (~−38° from right) ──
+                            x = 230 + 195*cos(−38°) = 230 + 153.7 = 384
+                            y = 250 + 195*sin(−38°) = 250 − 120.0 = 130  */}
+                        <line x1="384" y1="130" x2="500" y2="130"
+                          stroke="#D8A0A8" strokeWidth="0.75"
+                          strokeDasharray="3 6" opacity="0.75" />
+                        <circle cx="384" cy="130" r="15"
+                          fill="#FAF8F5" stroke="#D8A0A8" strokeWidth="0.9" />
+                        <text x="384" y="135" textAnchor="middle"
+                          fontFamily="Georgia, serif" fontSize="12"
+                          fill="#D8A0A8" fontWeight="400">1</text>
+
+                        {/* ── Marker 2 — rightmost (0°) ──
+                            x = 230 + 195 = 425, y = 250 */}
+                        <line x1="425" y1="250" x2="500" y2="250"
+                          stroke="#D8A0A8" strokeWidth="0.75"
+                          strokeDasharray="3 6" opacity="0.75" />
+                        <circle cx="425" cy="250" r="15"
+                          fill="#FAF8F5" stroke="#D8A0A8" strokeWidth="0.9" />
+                        <text x="425" y="255" textAnchor="middle"
+                          fontFamily="Georgia, serif" fontSize="12"
+                          fill="#D8A0A8" fontWeight="400">2</text>
+
+                        {/* ── Marker 3 — bottom-right arc (~+38°) ──
+                            x = 230 + 153.7 = 384, y = 250 + 120.0 = 370  */}
+                        <line x1="384" y1="370" x2="500" y2="370"
+                          stroke="#D8A0A8" strokeWidth="0.75"
+                          strokeDasharray="3 6" opacity="0.75" />
+                        <circle cx="384" cy="370" r="15"
+                          fill="#FAF8F5" stroke="#D8A0A8" strokeWidth="0.9" />
+                        <text x="384" y="375" textAnchor="middle"
+                          fontFamily="Georgia, serif" fontSize="12"
+                          fill="#D8A0A8" fontWeight="400">3</text>
+                      </svg>
+
+                      {/* Center text — anchored on circle center cx=230, cy=250 */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '250px', left: '230px',
+                        transform: 'translate(-50%, -50%)',
+                        textAlign: 'center', width: '220px',
+                        pointerEvents: 'none'
+                      }}>
+                        <p style={{
+                          fontFamily: 'Georgia, "Times New Roman", serif',
+                          fontSize: '42px', fontWeight: '400',
+                          color: '#0B2341', lineHeight: '1.1',
+                          letterSpacing: '-0.03em', margin: 0
+                        }}>
+                          3 Easy<br />Steps
+                        </p>
+                        <div style={{
+                          width: '32px', height: '0.5px',
+                          background: '#D8A0A8', margin: '18px auto'
+                        }} />
+                        <p style={{
+                          fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                          fontSize: '12px', color: '#8a9aaa',
+                          lineHeight: '1.7', margin: 0, fontWeight: '400'
+                        }}>
+                          to purchase the jewellery your heart desires
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* ══════════════════════════
+                        RIGHT — Step Cards
+                        ══════════════════════════
+                        SVG h=500. Connectors at y=130, 250, 370.
+                        paddingTop = 130−48 = 82px → step center at 82+48=130 ✓
+                        gap = 250−(130+48) = 72px  (each step ~96px tall)     */}
+                    <div style={{
+                      flex: 1,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      paddingTop: '82px',
+                      paddingBottom: '82px',
+                      gap: '24px',
+                      minWidth: 0
+                    }}>
+
+                      {/* ─── STEP 01 ─── */}
+                      <div
+                        style={{
+                          display: 'flex', alignItems: 'center',
+                          gap: '28px', height: '96px',
+                          borderBottom: '0.5px solid rgba(216,160,168,0.2)',
+                          paddingBottom: '24px',
+                          transition: 'opacity 0.3s ease'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.opacity = '0.82'}
+                        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                      >
+                        {/* Icon circle */}
+                        <div style={{
+                          width: '72px', height: '72px', flexShrink: 0,
+                          borderRadius: '50%',
+                          border: '0.8px solid #D8A0A8',
+                          background: '#fff',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          boxShadow: '0 2px 20px rgba(216,160,168,0.1)'
+                        }}>
+                          {/* Calendar icon */}
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#D8A0A8"
+                            strokeWidth="1.1" width="26" height="26"
+                            strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                            <line x1="8" y1="14" x2="11" y2="14"/>
+                            <line x1="8" y1="18" x2="11" y2="18"/>
+                          </svg>
+                        </div>
+                        {/* Text */}
+                        <div>
+                          <p style={{
+                            fontFamily: "'Helvetica Neue', sans-serif",
+                            fontSize: '8px', letterSpacing: '0.3em',
+                            textTransform: 'uppercase', color: '#D8A0A8',
+                            fontWeight: '600', margin: '0 0 8px'
+                          }}>Step 01</p>
+                          <p style={{
+                            fontFamily: 'Georgia, serif',
+                            fontSize: '18px', fontWeight: '400',
+                            color: '#0B2341', margin: '0 0 7px',
+                            letterSpacing: '-0.01em'
+                          }}>Pay Monthly</p>
+                          <p style={{
+                            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                            fontSize: '12.5px', color: '#7a8898',
+                            lineHeight: '1.65', margin: 0,
+                            maxWidth: '300px', fontWeight: '400'
+                          }}>Flexible monthly installments with easy payment options.</p>
+                        </div>
+                      </div>
+
+                      {/* ─── STEP 02 ─── */}
+                      <div
+                        style={{
+                          display: 'flex', alignItems: 'center',
+                          gap: '28px', height: '96px',
+                          borderBottom: '0.5px solid rgba(216,160,168,0.2)',
+                          paddingBottom: '24px',
+                          transition: 'opacity 0.3s ease'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.opacity = '0.82'}
+                        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                      >
+                        <div style={{
+                          width: '72px', height: '72px', flexShrink: 0,
+                          borderRadius: '50%',
+                          border: '0.8px solid #D8A0A8',
+                          background: '#fff',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          boxShadow: '0 2px 20px rgba(216,160,168,0.1)'
+                        }}>
+                          {/* Shopping cart icon */}
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#D8A0A8"
+                            strokeWidth="1.1" width="26" height="26"
+                            strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="9" cy="21" r="1"/>
+                            <circle cx="20" cy="21" r="1"/>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 001.95 1.61h9.74a2 2 0 001.95-1.61l1.38-7.39H6"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <p style={{
+                            fontFamily: "'Helvetica Neue', sans-serif",
+                            fontSize: '8px', letterSpacing: '0.3em',
+                            textTransform: 'uppercase', color: '#D8A0A8',
+                            fontWeight: '600', margin: '0 0 8px'
+                          }}>Step 02</p>
+                          <p style={{
+                            fontFamily: 'Georgia, serif',
+                            fontSize: '18px', fontWeight: '400',
+                            color: '#0B2341', margin: '0 0 7px',
+                            letterSpacing: '-0.01em'
+                          }}>Get Exclusive Benefits</p>
+                          <p style={{
+                            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                            fontSize: '12.5px', color: '#7a8898',
+                            lineHeight: '1.65', margin: 0,
+                            maxWidth: '300px', fontWeight: '400'
+                          }}>Complete your installments and unlock special rewards.</p>
+                        </div>
+                      </div>
+
+                      {/* ─── STEP 03 ─── */}
+                      <div
+                        style={{
+                          display: 'flex', alignItems: 'center',
+                          gap: '28px', height: '96px',
+                          transition: 'opacity 0.3s ease'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.opacity = '0.82'}
+                        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                      >
+                        <div style={{
+                          width: '72px', height: '72px', flexShrink: 0,
+                          borderRadius: '50%',
+                          border: '0.8px solid #D8A0A8',
+                          background: '#fff',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          boxShadow: '0 2px 20px rgba(216,160,168,0.1)'
+                        }}>
+                          {/* Luxury shopping bag icon */}
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#D8A0A8"
+                            strokeWidth="1.1" width="26" height="26"
+                            strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <path d="M16 10a4 4 0 01-8 0"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <p style={{
+                            fontFamily: "'Helvetica Neue', sans-serif",
+                            fontSize: '8px', letterSpacing: '0.3em',
+                            textTransform: 'uppercase', color: '#D8A0A8',
+                            fontWeight: '600', margin: '0 0 8px'
+                          }}>Step 03</p>
+                          <p style={{
+                            fontFamily: 'Georgia, serif',
+                            fontSize: '18px', fontWeight: '400',
+                            color: '#0B2341', margin: '0 0 7px',
+                            letterSpacing: '-0.01em'
+                          }}>Enjoy Your Purchase</p>
+                          <p style={{
+                            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                            fontSize: '12.5px', color: '#7a8898',
+                            lineHeight: '1.65', margin: 0,
+                            maxWidth: '300px', fontWeight: '400'
+                          }}>Redeem your benefits and purchase any jewelry item online or in-store.</p>
+                        </div>
+                      </div>
+
+                    </div>{/* end right panel */}
+                  </div>{/* end main layout */}
+
+                  {/* Bottom reference pill */}
+                  <div style={{ textAlign: 'center', marginTop: '60px' }}>
+                    <span style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '8px',
+                      border: '0.8px solid rgba(216,160,168,0.5)',
+                      borderRadius: '999px', padding: '10px 28px',
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: '11px', color: '#a0a8b0',
+                      letterSpacing: '0.04em', background: '#fff',
+                      boxShadow: '0 1px 10px rgba(0,0,0,0.04)'
+                    }}>
+                      <svg viewBox="0 0 14 14" fill="none" width="11" height="11">
+                        <circle cx="7" cy="7" r="6" stroke="#D8A0A8" strokeWidth="0.9"/>
+                        <path d="M7 4.5V7.5L9 9" stroke="#D8A0A8" strokeWidth="0.9"
+                          strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Refer to the calculator below for complete details
+                    </span>
+                  </div>
+
+                </div>
+              </section>
+
+              {/* ═══════════════════════════════════════════════
+                  GOLD MINE CALCULATOR — PIXEL-PERFECT
+                  ═══════════════════════════════════════════════ */}
+              <section style={{ background: '#F8F8F8', padding: '64px 0 48px' }}>
+
+                {/* Slider custom styles */}
+                <style>{`
+                  .gmc-slider { -webkit-appearance:none; appearance:none; width:100%; height:5px; border-radius:4px; outline:none; cursor:pointer; }
+                  .gmc-slider::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; background:#0B2341; border-radius:50%; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,0.25); }
+                  .gmc-slider::-moz-range-thumb { width:20px; height:20px; background:#0B2341; border-radius:50%; cursor:pointer; border:none; }
+                `}</style>
+
+                <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 40px' }}>
+
+                  {/* Heading */}
+                  <h2 style={{
+                    textAlign: 'center',
+                    fontFamily: '"Playfair Display", Georgia, serif',
+                    fontSize: '32px', 
+                    fontWeight: '600',
+                    color: '#0B2341', 
+                    marginBottom: '40px',
+                    letterSpacing: '0.01em'
+                  }}>Gold Mine Calculator</h2>
+
+                  {/* Main Card — no border, open layout */}
+                  <div style={{
+                    display: 'flex', gap: '64px', alignItems: 'flex-start', marginBottom: '24px'
+                  }}>
+
+                    {/* ═══ LEFT PANEL ═══ */}
+                    <div style={{ width: '320px', flexShrink: 0 }}>
+
+                      <p style={{ fontFamily: 'sans-serif', fontSize: '13px', color: '#0B2341', fontWeight: '600', marginBottom: '14px', lineHeight: '1.5' }}>
+                        Slide or enter monthly installment amount
+                      </p>
+
+                      {/* Amount Input Box */}
+                      <div style={{
+                        border: '1.2px solid #D1D5DB', 
+                        borderRadius: '4px',
+                        background: '#fff',
+                        display: 'flex', 
+                        alignItems: 'stretch',
+                        justifyContent: 'space-between', 
+                        overflow: 'hidden',
+                        height: '64px',
+                        marginBottom: '18px'
+                      }}>
+                        <div style={{ padding: '10px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                          <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px', fontFamily: 'sans-serif' }}>Monthly Amount</div>
+                          <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#0B2341', fontFamily: 'sans-serif', lineHeight: 1.1 }}>
+                            ₹ {monthlySavingsInput.toLocaleString('en-IN')}
+                          </div>
+                        </div>
+                        <button style={{
+                          background: '#F26544', 
+                          color: '#fff', 
+                          border: 'none',
+                          padding: '0 24px',
+                          fontSize: '13px', 
+                          fontWeight: '700', 
+                          cursor: 'pointer',
+                          letterSpacing: '0.08em', 
+                          textTransform: 'uppercase',
+                          fontFamily: 'sans-serif',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>CHECK</button>
+                      </div>
+
+                      {/* Slider */}
+                      <input
+                        type="range" min="1000" max="50000" step="1000"
+                        value={monthlySavingsInput}
+                        onChange={(e) => setMonthlySavingsInput(+e.target.value)}
+                        className="gmc-slider"
+                        style={{
+                          background: `linear-gradient(to right, #E8BEC5 0%, #E8BEC5 ${((monthlySavingsInput - 1000) / 49000) * 100}%, #E5E5E5 ${((monthlySavingsInput - 1000) / 49000) * 100}%, #E5E5E5 100%)`
+                        }}
+                      />
+                      
+                      {/* Pie Chart */}
+                      <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '12px' }}>
+                        <svg viewBox="0 0 260 260" width="288" height="288" style={{ display: 'block' }}>
+                          {/* Pink slice */}
+                          <path d="M130 130 L189.5 37.5 A110 110 0 1 1 130 20 Z" fill="#E8BEC5" />
+                          {/* Green slice */}
+                          <path d="M130 130 L130 20 A110 110 0 0 1 189.5 37.5 Z" fill="#38A52B" />
+
+                          {/* Green label */}
+                          <text x="152" y="46" textAnchor="middle" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="white">100%</text>
+                          <text x="152" y="57" textAnchor="middle" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="white">Discount*</text>
+                          <text x="152" y="70" textAnchor="middle" fontFamily="sans-serif" fontSize="10" fontWeight="700" fill="white">₹{monthlySavingsInput.toLocaleString('en-IN')}</text>
+
+                          {/* Pink label */}
+                          <text x="109" y="190" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fill="#6F727A">You Pay</text>
+                          <text x="109" y="210" textAnchor="middle" fontFamily="Georgia, serif" fontSize="18" fontWeight="700" fill="#0B2341">₹{(monthlySavingsInput * 10).toLocaleString('en-IN')}</text>
+                        </svg>
+                      </div>
+                    </div>{/* end left panel */}
+
+                    {/* ═══ RIGHT PANEL ═══ */}
+                    <div style={{ flex: 1, paddingTop: '0px' }}>
+
+                      {/* Row 1 — Pink indicator */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                          <div style={{ width: '12px', height: '12px', background: '#E8BEC5', borderRadius: '2px', flexShrink: 0 }} />
+                          <div style={{ fontFamily: 'sans-serif' }}>
+                            <span style={{ fontSize: '13.5px', fontWeight: '500', color: '#0B2341', display: 'block' }}>Your total payment</span>
+                            <span style={{ fontSize: '11px', color: '#888' }}>(Period of 10 months)</span>
+                          </div>
+                        </div>
+                        <div style={{ fontSize: '15px', fontWeight: '700', color: '#0B2341', fontFamily: 'sans-serif', whiteSpace: 'nowrap' }}>
+                          ₹ {(monthlySavingsInput * 10).toLocaleString('en-IN')}
+                        </div>
+                      </div>
+
+                      {/* Row 2 — Green indicator */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                          <div style={{ width: '12px', height: '12px', background: '#38A52B', borderRadius: '2px', flexShrink: 0 }} />
+                          <div style={{ fontFamily: 'sans-serif' }}>
+                            <span style={{ fontSize: '13.5px', fontWeight: '500', color: '#0B2341', display: 'block' }}>100% Discount on 11th installment</span>
+                            <span style={{ fontSize: '11px', color: '#888' }}>(100% of 1 month installment value)</span>
+                          </div>
+                        </div>
+                        <div style={{ fontSize: '15px', fontWeight: '700', color: '#0B2341', fontFamily: 'sans-serif', whiteSpace: 'nowrap' }}>
+                          ₹ {monthlySavingsInput.toLocaleString('en-IN')}
+                        </div>
+                      </div>
+
+                      {/* Divider */}
+                      <div style={{ height: '1px', background: '#E5E5E5', marginBottom: '18px' }} />
+
+                      {/* Benefits: Buy worth */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                        <div style={{ fontFamily: 'sans-serif' }}>
+                          <div style={{ fontSize: '14px', fontWeight: '500', color: '#0B2341' }}>Buy any jewellery worth:</div>
+                          <div style={{ fontSize: '11px', color: '#888', marginTop: '2px' }}>(after 11th month)</div>
+                        </div>
+                        <div style={{ fontSize: '26px', fontWeight: '800', color: '#F26544', fontFamily: 'sans-serif', whiteSpace: 'nowrap' }}>
+                          ₹ {(monthlySavingsInput * 11).toLocaleString('en-IN')}
+                        </div>
+                      </div>
+
+                      {/* Effectively pay + discount badge */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'sans-serif' }}>
+                          <span style={{ fontSize: '14px', fontWeight: '500', color: '#0B2341' }}>You effectively pay</span>
+                          <span style={{ background: '#38A52B', color: '#fff', borderRadius: '3px', padding: '2px 8px', fontSize: '11px', fontWeight: '700' }}>9.09% discount!</span>
+                        </div>
+                        <div style={{ fontSize: '16px', fontWeight: '700', color: '#0B2341', fontFamily: 'sans-serif', whiteSpace: 'nowrap' }}>
+                          ₹ {(monthlySavingsInput * 10).toLocaleString('en-IN')}
+                        </div>
+                      </div>
+
+                      {/* Divider */}
+                      <div style={{ height: '1px', background: '#E5E5E5', marginBottom: '18px' }} />
+
+                      {/* Early Redemption */}
+                      <p style={{ fontSize: '14px', fontWeight: '700', color: '#0B2341', fontFamily: 'sans-serif', marginBottom: '12px' }}>
+                        Early Redemption
+                      </p>
+                      <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
+
+                        {/* ── Card 1: 6th Month ── */}
+                        <div style={{ position: 'relative', flex: 1 }}>
+                          <div style={{
+                            background: '#ffffff',
+                            border: '1.2px solid #E5E7EB',
+                            borderRadius: '4px',
+                            padding: '14px 18px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.04)'
+                          }}>
+                            <div style={{ fontFamily: 'sans-serif' }}>
+                              <div style={{ fontSize: '11px', color: '#2F6FB6', fontWeight: '600', marginBottom: '4px' }}>6th Month</div>
+                              <div style={{ fontSize: '16px', fontWeight: '700', color: '#F26544' }}>
+                                ₹ {Math.round(monthlySavingsInput * 5.25).toLocaleString('en-IN')}
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => setErdTooltip(erdTooltip === '6th' ? null : '6th')}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                              <svg viewBox="0 0 20 20" width="18" height="18" fill="none">
+                                <circle cx="10" cy="10" r="8.5" stroke={erdTooltip === '6th' ? '#2F6FB6' : '#999'} strokeWidth="1.2"/>
+                                <text x="10" y="13.5" textAnchor="middle" fontFamily="sans-serif" fontSize="10" fontWeight="700" fill={erdTooltip === '6th' ? '#2F6FB6' : '#999'}>i</text>
+                              </svg>
+                            </button>
+                          </div>
+
+                          {/* 6th Month Tooltip */}
+                          {erdTooltip === '6th' && (
+                            <div style={{
+                              position: 'absolute', bottom: 'calc(100% + 10px)', left: 0,
+                              background: '#fff', border: '1px solid #e0e0e0',
+                              borderRadius: '8px', padding: '18px 20px',
+                              minWidth: '280px', zIndex: 100,
+                              boxShadow: '0 4px 20px rgba(0,0,0,0.10)',
+                              fontFamily: 'sans-serif'
+                            }}>
+                              <p style={{ fontSize: '14px', fontWeight: '700', color: '#0B2341', marginBottom: '14px' }}>
+                                Redemption in 6th month
+                              </p>
+                              {/* Row 1 */}
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                                <div>
+                                  <div style={{ fontSize: '12.5px', color: '#333' }}>Your total payment</div>
+                                  <div style={{ fontSize: '11px', color: '#aaa' }}>(5 installments)</div>
+                                </div>
+                                <div style={{ fontSize: '13px', fontWeight: '600', color: '#333', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {(monthlySavingsInput * 5).toLocaleString('en-IN')}</div>
+                              </div>
+                              {/* Divider */}
+                              <div style={{ height: '1px', background: '#f0f0f0', margin: '10px 0' }} />
+                              {/* Row 2 */}
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                                <div>
+                                  <div style={{ fontSize: '12.5px', color: '#333' }}>Special Discount</div>
+                                  <div style={{ fontSize: '11px', color: '#aaa' }}>(25% of one installment value)</div>
+                                </div>
+                                <div style={{ fontSize: '13px', fontWeight: '600', color: '#333', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {Math.round(monthlySavingsInput * 0.25).toLocaleString('en-IN')}</div>
+                              </div>
+                              {/* Divider */}
+                              <div style={{ height: '1px', background: '#f0f0f0', margin: '10px 0' }} />
+                              {/* Row 3 */}
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                                <div>
+                                  <div style={{ fontSize: '12.5px', color: '#333' }}>You can buy jewellery worth:</div>
+                                  <div style={{ fontSize: '11px', color: '#aaa' }}>(after 6th month)</div>
+                                </div>
+                                <div style={{ fontSize: '14px', fontWeight: '700', color: '#F26544', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {Math.round(monthlySavingsInput * 5.25).toLocaleString('en-IN')}</div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* ── Card 2: 8th Month ── */}
+                        <div style={{ position: 'relative', flex: 1 }}>
+                          <div style={{
+                            background: '#ffffff',
+                            border: '1.2px solid #E5E7EB',
+                            borderRadius: '4px',
+                            padding: '14px 18px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.04)'
+                          }}>
+                            <div style={{ fontFamily: 'sans-serif' }}>
+                              <div style={{ fontSize: '11px', color: '#2F6FB6', fontWeight: '600', marginBottom: '4px' }}>8th Month</div>
+                              <div style={{ fontSize: '16px', fontWeight: '700', color: '#F26544' }}>
+                                ₹ {Math.round(monthlySavingsInput * 7.5).toLocaleString('en-IN')}
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => setErdTooltip(erdTooltip === '8th' ? null : '8th')}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                              <svg viewBox="0 0 20 20" width="18" height="18" fill="none">
+                                <circle cx="10" cy="10" r="8.5" stroke={erdTooltip === '8th' ? '#2F6FB6' : '#999'} strokeWidth="1.2"/>
+                                <text x="10" y="13.5" textAnchor="middle" fontFamily="sans-serif" fontSize="10" fontWeight="700" fill={erdTooltip === '8th' ? '#2F6FB6' : '#999'}>i</text>
+                              </svg>
+                            </button>
+                          </div>
+
+                          {/* 8th Month Tooltip */}
+                          {erdTooltip === '8th' && (
+                            <div style={{
+                              position: 'absolute', bottom: 'calc(100% + 10px)', left: 0,
+                              background: '#fff', border: '1px solid #e0e0e0',
+                              borderRadius: '8px', padding: '18px 20px',
+                              minWidth: '280px', zIndex: 100,
+                              boxShadow: '0 4px 20px rgba(0,0,0,0.10)',
+                              fontFamily: 'sans-serif'
+                            }}>
+                              <p style={{ fontSize: '14px', fontWeight: '700', color: '#0B2341', marginBottom: '14px' }}>
+                                Redemption in 8th month
+                              </p>
+                              {/* Row 1 */}
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                                <div>
+                                  <div style={{ fontSize: '12.5px', color: '#333' }}>Your total payment</div>
+                                  <div style={{ fontSize: '11px', color: '#aaa' }}>(7 installments)</div>
+                                </div>
+                                <div style={{ fontSize: '13px', fontWeight: '600', color: '#333', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {(monthlySavingsInput * 7).toLocaleString('en-IN')}</div>
+                              </div>
+                              <div style={{ height: '1px', background: '#f0f0f0', margin: '10px 0' }} />
+                              {/* Row 2 */}
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                                <div>
+                                  <div style={{ fontSize: '12.5px', color: '#333' }}>Special Discount</div>
+                                  <div style={{ fontSize: '11px', color: '#aaa' }}>(50% of one installment value)</div>
+                                </div>
+                                <div style={{ fontSize: '13px', fontWeight: '600', color: '#333', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {Math.round(monthlySavingsInput * 0.5).toLocaleString('en-IN')}</div>
+                              </div>
+                              <div style={{ height: '1px', background: '#f0f0f0', margin: '10px 0' }} />
+                              {/* Row 3 */}
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                                <div>
+                                  <div style={{ fontSize: '12.5px', color: '#333' }}>You can buy jewellery worth:</div>
+                                  <div style={{ fontSize: '11px', color: '#aaa' }}>(after 8th month)</div>
+                                </div>
+                                <div style={{ fontSize: '14px', fontWeight: '700', color: '#F26544', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {Math.round(monthlySavingsInput * 7.5).toLocaleString('en-IN')}</div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                      </div>
+
+                    </div>{/* end right panel */}
+                  </div>{/* end main card flex */}
+
+                  {/* Bottom Divider and Note spanning full width */}
+                  <div style={{ height: '1.2px', background: '#E6B7BE', opacity: 0.6, width: '100%', margin: '24px 0 12px 0' }} />
+                  <p style={{ 
+                    fontSize: '11.5px', 
+                    color: '#8A94A6', 
+                    textAlign: 'center', 
+                    lineHeight: '1.5', 
+                    margin: 0, 
+                    fontFamily: 'sans-serif',
+                    fontWeight: '400'
+                  }}>
+                    If jewellery is more than ₹ {(monthlySavingsInput * 11).toLocaleString('en-IN')}, you just need to pay the difference amount at the time of purchase
+                  </p>
+
+                </div>
+              </section>
+
+              {/* ═══════════════════════════════════════════════
+                  NOTE + FAQ SECTION
+                  ═══════════════════════════════════════════════ */}
+              <section 
+                className="relative w-full overflow-hidden flex flex-col items-center justify-between box-border"
+                style={{ 
+                  background: '#F9F1F2', 
+                  height: '520px', 
+                  paddingTop: '110px', 
+                  paddingBottom: '50px'
+                }}
+              >
+                {/* Large curved wave shape at the top of the section */}
+                <div className="absolute top-0 left-0 right-0 w-full z-10 pointer-events-none" style={{ lineHeight: 0 }}>
+                  <svg viewBox="0 0 1440 100" preserveAspectRatio="none" className="w-full h-[60px] md:h-[100px] block">
+                    <path d="M0,100 C360,30 1080,30 1440,100 L1440,0 L0,0 Z" fill="#F8F8F8" />
+                  </svg>
+                </div>
+
+                <div className="w-full max-w-7xl mx-auto px-6 md:px-10 flex flex-col items-center justify-between h-full relative z-20">
+                  
+                  {/* TOP NOTICE */}
+                  <div className="text-center max-w-[600px] px-4">
+                    <span 
+                      className="block text-xs font-extrabold uppercase tracking-widest mb-1.5 font-sans"
+                      style={{ color: '#F26544' }}
+                    >
+                      NOTE:-
+                    </span>
+                    <p className="text-xs md:text-[13.5px] text-[#6F727A] leading-relaxed font-sans m-0">
+                      The subscription amount and benefits can be used towards the purchase of<br className="hidden md:inline" />
+                      either diamond/gemstone studded jewellery or plain gold jewellery.
+                    </p>
+                  </div>
+
+                  {/* MAIN HEADING BLOCK */}
+                  <div className="flex items-center w-full my-4 md:my-6">
+                    <div className="flex-grow h-[1px] md:h-[1.2px]" style={{ backgroundColor: '#E6B7BE' }} />
+                    <div className="bg-white py-3 md:py-4 px-6 md:px-12 mx-3 md:mx-6 shadow-none">
+                      <h3 
+                        className="text-base md:text-[28px] font-medium text-[#0B2341] m-0 tracking-wide text-center"
+                        style={{ fontFamily: '"Playfair Display", Georgia, serif', lineHeight: '1.2' }}
+                      >
+                        Find answers to all your queries here
+                      </h3>
+                    </div>
+                    <div className="flex-grow h-[1px] md:h-[1.2px]" style={{ backgroundColor: '#E6B7BE' }} />
+                  </div>
+
+                  {/* LINKS SECTION */}
+                  <div className="flex flex-wrap items-center justify-center gap-4 md:gap-16 font-sans mb-4">
+                    <a 
+                      href="/#faq" 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigateTo('home');
+                        setTimeout(() => {
+                          const faqEl = document.getElementById('faq');
+                          if (faqEl) {
+                            faqEl.scrollIntoView({ behavior: 'smooth' });
+                          }
+                        }, 150);
+                      }}
+                      className="text-sm md:text-[15.5px] font-semibold text-[#2F6FB6] no-underline hover:text-[#1c508a] transition-colors"
+                    >
+                      View all FAQ &gt;&gt;
+                    </a>
+                    <span className="text-[#E6B7BE] text-base hidden md:inline select-none">|</span>
+                    <a 
+                      href="/terms-and-conditions" 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigateTo('terms-and-conditions');
+                      }}
+                      className="text-sm md:text-[15.5px] font-semibold text-[#2F6FB6] no-underline hover:text-[#1c508a] transition-colors"
+                    >
+                      View all Terms &amp; Conditions &gt;&gt;
+                    </a>
+                  </div>
+
+                </div>
+              </section>
+
+
             </div>
           )}
+
+
 
           {/* ==========================================
             B. CATALOG / SHOP COLLECTION PAGE VIEW
@@ -9033,7 +8886,8 @@ export default function App() {
         {/* ==========================================================
           3. PREMIUM LUXURY FOOTER SECTION
           ========================================================== */}
-        <footer className="bg-[#12071B] text-white border-t border-[#E6C687]/20 pt-16 pb-10 px-6 md:px-12 relative z-10 font-sans">
+        <footer className="bg-[#12071B] text-white pt-16 pb-10 px-6 md:px-12 relative z-10 font-sans">
+
           <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.2fr_auto_0.8fr_auto_1fr_auto_1.1fr] gap-x-8 gap-y-12 items-start text-center md:text-left">
 
             {/* Brand Column */}
