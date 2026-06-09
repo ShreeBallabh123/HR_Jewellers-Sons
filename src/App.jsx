@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { db, storage, auth } from './firebase';
 import { signInAnonymously } from 'firebase/auth';
 import {
@@ -4962,7 +4962,7 @@ export default function App() {
                     <div style={{ textAlign: 'center', marginBottom: '96px' }}>
                       <p style={{ fontFamily: 'sans-serif', fontSize: '10px', letterSpacing: '0.4em', textTransform: 'uppercase', color: '#E89AA9', fontWeight: '700', margin: '0 0 14px' }}>Simple &amp; Transparent</p>
                       <h2 style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: '40px', fontWeight: '600', color: '#0B2341', letterSpacing: '0.01em', margin: '0 0 24px', lineHeight: '1.2' }}>How It Works</h2>
-                      <div style={{ display: 'flex', alignItems: 'center', justifycontent: 'center', gap: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
                         <div style={{ width: '64px', height: '1px', background: '#E89AA9', opacity: 0.7 }} />
                         <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
                           <circle cx="4" cy="4" r="3.5" stroke="#E89AA9" strokeWidth="0.8" />
@@ -5005,7 +5005,7 @@ export default function App() {
                       {/* RIGHT — Step Cards */}
                       <div style={{ flex: 1, position: 'relative', height: '560px', minWidth: 0 }}>
                         <div style={{ position: 'absolute', top: '98px', left: 0, right: 0, height: '96px', display: 'flex', alignItems: 'center', gap: '28px', borderBottom: '0.5px solid rgba(232,154,169,0.15)', paddingBottom: '20px' }}>
-                          <div style={{ width: '80px', height: '80px', flexShrink: 0, borderRadius: '50%', border: '1px solid #E89AA9', background: '#fff', display: 'flex', alignItems: 'center', justifycontent: 'center', padding: '4px', boxShadow: '0 4px 15px rgba(232,154,169,0.06)' }}>
+                          <div style={{ width: '80px', height: '80px', flexShrink: 0, borderRadius: '50%', border: '1px solid #E89AA9', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px', boxShadow: '0 4px 15px rgba(232,154,169,0.06)' }}>
                             <div style={{ width: '100%', height: '100%', borderRadius: '50%', border: '0.8px solid rgba(232,154,169,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               <svg viewBox="0 0 24 24" fill="none" stroke="#E89AA9" strokeWidth="1.2" width="28" height="28" strokeLinecap="round" strokeLinejoin="round">
                                 <rect x="3" y="4" width="18" height="18" rx="2" />
@@ -5082,7 +5082,7 @@ export default function App() {
                           Slide or enter monthly installment amount
                         </p>
 
-                        <div style={{ border: '1.2px solid #D1D5DB', borderRadius: '4px', background: '#fff', display: 'flex', alignItems: 'stretch', justifycontent: 'space-between', overflow: 'hidden', height: '64px', marginBottom: '18px' }}>
+                        <div style={{ border: '1.2px solid #D1D5DB', borderRadius: '4px', background: '#fff', display: 'flex', alignItems: 'stretch', justifyContent: 'space-between', overflow: 'hidden', height: '64px', marginBottom: '18px' }}>
                           <div style={{ padding: '10px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                             <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px', fontFamily: 'sans-serif' }}>Monthly Amount</div>
                             <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#0B2341', fontFamily: 'sans-serif', lineHeight: 1.1 }}>
@@ -5180,7 +5180,7 @@ export default function App() {
                                   ₹ {Math.round(monthlySavingsInput * 5.25).toLocaleString('en-IN')}
                                 </div>
                               </div>
-                              <button onClick={() => setErdTooltip(erdTooltip === '6th' ? null : '6th')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifycontent: 'center' }}>
+                              <button onClick={() => setErdTooltip(erdTooltip === '6th' ? null : '6th')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <svg viewBox="0 0 20 20" width="18" height="18" fill="none">
                                   <circle cx="10" cy="10" r="8.5" stroke={erdTooltip === '6th' ? '#2F6FB6' : '#999'} strokeWidth="1.2" />
                                   <text x="10" y="13.5" textAnchor="middle" fontFamily="sans-serif" fontSize="10" fontWeight="700" fill={erdTooltip === '6th' ? '#2F6FB6' : '#999'}>i</text>
@@ -5226,7 +5226,7 @@ export default function App() {
                                   ₹ {Math.round(monthlySavingsInput * 7.5).toLocaleString('en-IN')}
                                 </div>
                               </div>
-                              <button onClick={() => setErdTooltip(erdTooltip === '8th' ? null : '8th')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifycontent: 'center' }}>
+                              <button onClick={() => setErdTooltip(erdTooltip === '8th' ? null : '8th')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <svg viewBox="0 0 20 20" width="18" height="18" fill="none">
                                   <circle cx="10" cy="10" r="8.5" stroke={erdTooltip === '8th' ? '#2F6FB6' : '#999'} strokeWidth="1.2" />
                                   <text x="10" y="13.5" textAnchor="middle" fontFamily="sans-serif" fontSize="10" fontWeight="700" fill={erdTooltip === '8th' ? '#2F6FB6' : '#999'}>i</text>
