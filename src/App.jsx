@@ -5333,7 +5333,370 @@ export default function App() {
           )}
 
           {currentPage === 'gold-reserve' && (
-            <div className="bg-white min-h-screen">
+            <>
+              {/* MOBILE VIEW */}
+              <div className="lg:hidden bg-white min-h-screen pb-24 text-[#1B1B1B]">
+                {/* FULL WIDTH BANNER */}
+                <div className="w-full bg-[#FAF0ED]">
+                  <img
+                    src={goldReserveBanner}
+                    alt="Gold Reserve Plan"
+                    className="w-full object-contain"
+                  />
+                </div>
+
+                {/* QUICK ENROLL CARD (BlueStone Style) */}
+                <div className="w-full bg-[#FCFAFF] py-6 px-4">
+                  <div className="max-w-md mx-auto bg-white border border-gray-150 rounded-2xl shadow-[0_8px_30px_rgba(63,31,84,0.05)] p-5 space-y-4">
+                    <h3 className="text-center text-[13.5px] font-bold text-[#1B3152] font-sans tracking-wide">
+                      Pay 10 installments, get an extra voucher worth upto <span className="text-[#c0392b]">1 installment!</span>
+                    </h3>
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-[10px] text-gray-400 uppercase tracking-wider block mb-1.5 font-semibold">Enter Monthly Amount</label>
+                        <input
+                          type="number"
+                          placeholder="2000"
+                          value={monthlySavingsInput}
+                          onChange={(e) => setMonthlySavingsInput(+e.target.value || 2000)}
+                          className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#c0392b] transition-all bg-[#FCFAFF]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-gray-400 uppercase tracking-wider block mb-1.5 font-semibold">Enter Email ID</label>
+                        <input
+                          type="email"
+                          placeholder="e.g. patron@mail.com"
+                          value={savingsForm.email}
+                          onChange={(e) => setSavingsForm({ ...savingsForm, email: e.target.value })}
+                          className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:border-[#c0392b] transition-all bg-[#FCFAFF]"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => { triggerAudio('shimmer'); navigateTo('savings-enroll'); }}
+                      className="w-full py-3.5 rounded-lg bg-[#c0392b] hover:bg-[#a93226] text-white text-xs uppercase font-extrabold tracking-widest transition-all cursor-pointer shadow-md active:scale-95"
+                    >
+                      GET STARTED
+                    </button>
+
+                    <div className="text-center space-y-1.5 pt-2">
+                      <button
+                        onClick={() => { triggerAudio('click'); navigateTo('savings-enroll'); }}
+                        className="text-[11px] text-gray-500 hover:text-[#c0392b] cursor-pointer transition-colors block mx-auto font-medium"
+                      >
+                        Want to pay your {savingsSchemeType} Installment?{' '}
+                        <span className="text-[#c0392b] font-bold hover:underline">Click to Pay</span>
+                      </button>
+                      <p className="text-[10px] text-gray-400 font-medium">
+                        For any queries, call/WhatsApp us at <a href="tel:+917610843978" className="text-[#c0392b] font-bold">+91 76108 43978</a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* WHY PLAN SECTION — reference style */}
+                <div className="w-full bg-[#fafafa] py-10 px-4">
+                  <div className="max-w-md mx-auto space-y-6">
+                    <div className="text-center space-y-2">
+                      <h2 style={{ fontFamily: 'Georgia, serif' }} className="text-xl font-semibold text-[#1a1a2e]">
+                        Why {savingsSchemeType} Plan?
+                      </h2>
+                      <div className="w-10 h-[2px] bg-[#c0392b] mx-auto" />
+                    </div>
+                    <div className="flex flex-col gap-5">
+                      {[
+                        {
+                          icon: (
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#c0392b" strokeWidth="1.5" className="w-6 h-6">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          ),
+                          title: 'Plan Ahead',
+                          desc: 'Subscribe to plan for your future high value purchases',
+                        },
+                        {
+                          icon: (
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#c0392b" strokeWidth="1.5" className="w-6 h-6">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 11v-1" />
+                            </svg>
+                          ),
+                          title: 'Gold accumulation',
+                          desc: 'With every installment payment, gold units are allocated to your plan based on the prevailing gold rate',
+                        },
+                        {
+                          icon: (
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#c0392b" strokeWidth="1.5" className="w-6 h-6">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                            </svg>
+                          ),
+                          title: 'Special benefits',
+                          desc: 'Pay 10 installments and get on extra voucher worth upto 1 installment amount',
+                        },
+                      ].map(({ icon, title, desc }) => (
+                        <div key={title} className="flex items-start gap-4 bg-white p-4 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-gray-100">
+                          <div className="w-10 h-10 rounded-full bg-[#FCFAFF] border border-gray-100 flex items-center justify-center shrink-0">
+                            {icon}
+                          </div>
+                          <div>
+                            <h4 className="text-xs font-bold text-[#1a1a2e] mb-1 text-left" style={{ fontFamily: 'Georgia, serif' }}>{title}</h4>
+                            <p className="text-[11px] text-gray-500 leading-relaxed text-left font-sans">{desc}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* HOW IT WORKS */}
+                <div className="w-full bg-white py-10 px-4">
+                  <div className="max-w-md mx-auto">
+                    <div className="text-center mb-8">
+                      <p style={{ fontFamily: 'sans-serif', fontSize: '9px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#E89AA9', fontWeight: '700', margin: '0 0 8px' }}>Simple &amp; Transparent</p>
+                      <h2 className="text-xl font-semibold text-[#0B2341] tracking-wide" style={{ fontFamily: '"Playfair Display", Georgia, serif', lineHeight: '1.2' }}>How does it work?</h2>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginTop: '8px' }}>
+                        <div style={{ width: '32px', height: '1.5px', background: '#E89AA9' }} />
+                        <svg width="6" height="6" viewBox="0 0 8 8" fill="none">
+                          <circle cx="4" cy="4" r="3.5" stroke="#E89AA9" strokeWidth="0.8" />
+                          <circle cx="4" cy="4" r="1.5" fill="#E89AA9" />
+                        </svg>
+                        <div style={{ width: '32px', height: '1.5px', background: '#E89AA9' }} />
+                      </div>
+                    </div>
+
+                    <div className="relative pl-12 space-y-8 py-2">
+                      {/* Vertical dashed line */}
+                      <div className="absolute left-[18px] top-4 bottom-4 w-[1px] border-l border-dashed border-[#E89AA9]/60" />
+
+                      {[
+                        {
+                          step: 'Step 01',
+                          title: 'Pay Monthly',
+                          desc: 'Pay monthly installments to accumulate gold units.',
+                          icon: (
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#E89AA9" strokeWidth="1.2" className="w-5 h-5">
+                              <rect x="3" y="4" width="18" height="18" rx="2" />
+                              <line x1="16" y1="2" x2="16" y2="6" />
+                              <line x1="8" y1="2" x2="8" y2="6" />
+                              <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                          )
+                        },
+                        {
+                          step: 'Step 02',
+                          title: 'Gold accumulation',
+                          desc: 'Gold units are allocated based on the prevailing gold rate.',
+                          icon: (
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#E89AA9" strokeWidth="1.2" className="w-5 h-5">
+                              <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 11v-1" />
+                            </svg>
+                          )
+                        },
+                        {
+                          step: 'Step 03',
+                          title: 'Special benefits',
+                          desc: 'Pay 10 installments and get on extra voucher worth upto 1 installment amount.',
+                          icon: (
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#E89AA9" strokeWidth="1.2" className="w-5 h-5">
+                              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                              <line x1="3" y1="6" x2="21" y2="6" />
+                            </svg>
+                          )
+                        }
+                      ].map((s, idx) => (
+                        <div key={idx} className="relative flex flex-col items-start text-left">
+                          {/* Anchor dot */}
+                          <div className="absolute -left-12 w-9 h-9 rounded-full bg-white border border-[#E89AA9] flex items-center justify-center font-bold text-xs text-[#0B2341] shadow-xs">
+                            {idx + 1}
+                          </div>
+                          <span className="text-[8.5px] uppercase tracking-widest text-[#E89AA9] font-bold font-sans block mb-0.5">{s.step}</span>
+                          <h4 className="text-xs font-bold text-[#0B2341] font-serif mb-1">{s.title}</h4>
+                          <p className="text-[11px] text-gray-500 leading-relaxed font-sans">{s.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="text-center mt-6">
+                      <span className="inline-flex items-center gap-2 bg-[#FDF7F7] border border-[rgba(232,154,169,0.25)] rounded-full px-5 py-2 text-[10.5px] text-gray-500 font-sans shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                        <svg viewBox="0 0 14 14" fill="none" width="11" height="11" className="shrink-0">
+                          <circle cx="7" cy="7" r="6" stroke="#E89AA9" strokeWidth="1" />
+                          <path d="M7 4.5V7.5L9 9" stroke="#E89AA9" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        Refer to the calculator below for details
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5. GOLD RESERVE CALCULATOR */}
+                <div className="w-full py-10 px-4 bg-[#F8F8F8] border-t border-b border-gray-200">
+                  <div className="max-w-md mx-auto space-y-6">
+                    <div className="text-center">
+                      <h2 className="text-xl font-semibold text-[#0B2341] font-serif">Gold Reserve Calculator</h2>
+                      <p className="text-[11px] text-gray-500 mt-1 font-sans">Slide or enter monthly installment amount</p>
+                      <p className="text-[11px] text-[#c0392b] font-bold font-sans mt-0.5">Today's Gold rate(24kt) | ₹ {goldRate24k.toFixed(2)}</p>
+                    </div>
+
+                    <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-xs space-y-6">
+                      {/* Custom Amount Input Box */}
+                      <div className="flex items-center justify-between border border-gray-200 rounded-lg p-2.5 bg-white h-16">
+                        <div className="flex flex-col text-left">
+                          <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider font-sans">Monthly Amount</span>
+                          <div className="flex items-center text-lg font-bold text-[#0B2341] font-sans mt-0.5">
+                            <span className="mr-1">₹</span>
+                            <input
+                              type="number"
+                              value={monthlySavingsInput}
+                              onChange={(e) => setMonthlySavingsInput(+e.target.value)}
+                              className="w-24 focus:outline-none bg-transparent"
+                            />
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => { triggerAudio('shimmer'); navigateTo('savings-enroll'); }}
+                          className="px-5 py-2 rounded bg-[#c0392b] text-white text-[10.5px] font-bold tracking-wider cursor-pointer active:scale-95 transition-transform"
+                        >
+                          CHECK
+                        </button>
+                      </div>
+
+                      {/* Slider Input */}
+                      <div className="space-y-2">
+                        <input
+                          type="range"
+                          min="1000"
+                          max="50000"
+                          step="1000"
+                          value={monthlySavingsInput}
+                          onChange={(e) => setMonthlySavingsInput(+e.target.value)}
+                          className="w-full cursor-pointer accent-[#c0392b]"
+                          style={{
+                            background: `linear-gradient(to right, #c0392b 0%, #c0392b ${((monthlySavingsInput - 1000) / 49000) * 100}%, #E5E5E5 ${((monthlySavingsInput - 1000) / 49000) * 100}%, #E5E5E5 100%)`
+                          }}
+                        />
+                        <div className="flex justify-between text-[9.5px] text-gray-400 font-bold font-sans">
+                          <span>1,000</span>
+                          <span>25,000</span>
+                          <span>50,000</span>
+                        </div>
+                      </div>
+
+                      {/* Math Breakdown */}
+                      <div className="space-y-4 pt-2 text-left">
+                        <div className="flex justify-between items-center text-xs">
+                          <div className="flex gap-2 items-center">
+                            <div className="w-3 h-3 bg-[#0B2341] rounded-xs shrink-0" />
+                            <div className="font-sans">
+                              <span className="font-semibold text-[#0B2341] block">Your Payment</span>
+                              <span className="text-[10px] text-gray-400">(1 installment)</span>
+                            </div>
+                          </div>
+                          <span className="font-bold text-[#0B2341]">₹ {monthlySavingsInput.toLocaleString('en-IN')}</span>
+                        </div>
+
+                        <div className="flex justify-between items-center text-xs">
+                          <div className="flex gap-2 items-center">
+                            <div className="w-3 h-3 bg-[#38A52B] rounded-xs shrink-0" />
+                            <div className="font-sans">
+                              <span className="font-semibold text-[#0B2341] block">Your Reserved Gold</span>
+                              <span className="text-[10px] text-gray-400">(in units)</span>
+                            </div>
+                          </div>
+                          <span className="font-bold text-[#0B2341]">{(monthlySavingsInput / goldRate24k).toFixed(4)} g</span>
+                        </div>
+
+                        <div className="h-[1px] bg-gray-200" />
+
+                        {/* Explanatory text box */}
+                        <div className="font-sans text-[11px] text-gray-600 leading-relaxed bg-[#FAF8F6] p-4 rounded-lg border border-gray-150">
+                          <p className="margin-0 font-bold text-[#0B2341] mb-1.5">
+                            Pay all installments on time and choose between one of the two following options for your special benefit voucher:
+                          </p>
+                          <ul className="list-disc pl-4 space-y-1">
+                            <li>Plain Gold voucher worth 50% of your installment amount.</li>
+                            <li>Non-Plain Gold voucher worth 100% of your installment amount.</li>
+                          </ul>
+                        </div>
+
+                        <div className="h-[1px] bg-gray-200" />
+                        
+                        <p className="text-[10px] text-gray-400 text-center leading-normal font-sans pt-1">
+                          If jewellery is more than ₹ {(monthlySavingsInput * 11).toLocaleString('en-IN')}, you just need to pay the difference amount at the time of purchase.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 6. NOTE & FAQ */}
+                <div className="w-full py-10 px-4 bg-[#F9F1F2] text-center space-y-6">
+                  <div className="max-w-md mx-auto space-y-4">
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#F26544] font-sans block">NOTE:</span>
+                      <p className="text-xs text-gray-500 leading-relaxed font-sans text-left">
+                        *1 gold unit = 1 gram of 24kt gold<br />
+                        The Gold Reserve Option Plan is redeemable from 2nd month onwards, subject to terms and conditions.<br />
+                        The subscription amount and primary voucher can be used towards the purchase of Diamond studded, Gemstone studded, Plain Gold, Plain Platinum or Preset Solitaire jewellery.<br />
+                        The Plain Gold special benefit voucher can be used towards the purchase of Plain Gold jewellery only.<br />
+                        The Non-Plain Gold special benefit voucher can be used towards the purchase of Diamond studded, Gemstone studded, Plain Platinum or Preset Solitaire jewellery only.
+                      </p>
+                    </div>
+
+                    <div className="w-10 h-[1px] bg-[#E6B7BE]/50 mx-auto" />
+
+                    <div className="flex flex-col gap-2 font-sans text-xs">
+                      <a
+                        href="/#faq"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigateTo('home');
+                          setTimeout(() => {
+                            const faqEl = document.getElementById('faq');
+                            if (faqEl) faqEl.scrollIntoView({ behavior: 'smooth' });
+                          }, 150);
+                        }}
+                        className="font-semibold text-[#2F6FB6] hover:underline"
+                      >
+                        View all FAQ &gt;&gt;
+                      </a>
+                      <a
+                        href="/terms-and-conditions"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigateTo('terms-and-conditions');
+                        }}
+                        className="font-semibold text-[#2F6FB6] hover:underline"
+                      >
+                        View all Terms &amp; Conditions &gt;&gt;
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* STICKY BOTTOM ACTION BAR */}
+                <div className="flex fixed bottom-0 left-0 w-full z-45 bg-white border-t border-gray-200 px-4 py-3 items-center justify-between shadow-[0_-4px_25px_rgba(0,0,0,0.06)]">
+                  <a
+                    href="https://wa.me/917610843978"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 mr-2 text-center py-2.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 bg-white active:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    CONTACT US
+                  </a>
+                  <button
+                    onClick={() => { triggerAudio('shimmer'); navigateTo('savings-enroll'); }}
+                    className="flex-1 py-2.5 bg-[#c0392b] hover:bg-[#a93226] text-white rounded-xl text-xs font-extrabold uppercase tracking-widest text-center shadow-md active:scale-95 transition-transform cursor-pointer"
+                  >
+                    GET STARTED
+                  </button>
+                </div>
+              </div>
+
+              {/* DESKTOP VIEW */}
+              <div className="hidden lg:block bg-white min-h-screen">
+
 
               {/* FULL WIDTH BANNER — full image, no crop */}
               <div className="w-full bg-[#FAF0ED]">
@@ -5862,7 +6225,7 @@ export default function App() {
                           <span style={{ fontSize: '18px', fontWeight: '700', color: '#0C223F', fontFamily: 'sans-serif', marginTop: '2px' }}>₹ {monthlySavingsInput}</span>
                         </div>
                         <button
-                          onClick={() => { triggerAudio('shimmer'); setSavingsEnrollOpen(true); }}
+                          onClick={() => { triggerAudio('shimmer'); navigateTo('savings-enroll'); }}
                           style={{
                             background: '#c0392b',
                             color: '#fff',
@@ -6063,7 +6426,8 @@ export default function App() {
                 </div>
               </section>
 
-            </div>
+              </div>
+            </>
           )}
 
           {/* ==========================================
