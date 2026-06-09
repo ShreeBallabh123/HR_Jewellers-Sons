@@ -25,6 +25,15 @@ body {
   overflow-x: hidden;
 }
 
+/* Hide scrollbars utility */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 .serif-luxury {
   font-family: 'Playfair Display', serif;
 }
