@@ -4707,12 +4707,12 @@ export default function App() {
                           <path d="M130 130 L185 34.74 A110 110 0 1 1 130 20 Z" fill="#E8BEC5" />
                           <path d="M130 130 L130 20 A110 110 0 0 1 185 34.74 Z" fill="#38A52B" />
 
-                          <text x="152" y="46" textAnchor="middle" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="white">100%</text>
-                          <text x="152" y="57" textAnchor="middle" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="white">Discount*</text>
-                          <text x="152" y="70" textAnchor="middle" fontFamily="sans-serif" fontSize="10" fontWeight="700" fill="white">₹{monthlySavingsInput.toLocaleString('en-IN')}</text>
+                          <text x="155" y="46" textAnchor="middle" fontFamily="sans-serif" fontSize="8" fontWeight="700" fill="white">100%</text>
+                          <text x="153" y="56" textAnchor="middle" fontFamily="sans-serif" fontSize="8" fontWeight="700" fill="white">Discount*</text>
+                          <text x="148" y="67" textAnchor="middle" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="white">₹{monthlySavingsInput.toLocaleString('en-IN')}</text>
 
-                          <text x="109" y="190" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fill="#6F727A">You Pay</text>
-                          <text x="109" y="210" textAnchor="middle" fontFamily="Georgia, serif" fontSize="18" fontWeight="700" fill="#0B2341">₹{(monthlySavingsInput * 11).toLocaleString('en-IN')}</text>
+                          <text x="130" y="190" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fill="#6F727A">You Pay</text>
+                          <text x="130" y="210" textAnchor="middle" fontFamily="Georgia, serif" fontSize="18" fontWeight="700" fill="#0B2341">₹{(monthlySavingsInput * 11).toLocaleString('en-IN')}</text>
                         </svg>
                       </div>
 
@@ -5107,12 +5107,12 @@ export default function App() {
                             <path d="M130 130 L185 34.74 A110 110 0 1 1 130 20 Z" fill="#E8BEC5" />
                             <path d="M130 130 L130 20 A110 110 0 0 1 185 34.74 Z" fill="#38A52B" />
 
-                            <text x="152" y="46" textAnchor="middle" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="white">100%</text>
-                            <text x="152" y="57" textAnchor="middle" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="white">Discount*</text>
-                            <text x="152" y="70" textAnchor="middle" fontFamily="sans-serif" fontSize="10" fontWeight="700" fill="white">₹{monthlySavingsInput.toLocaleString('en-IN')}</text>
+                            <text x="155" y="46" textAnchor="middle" fontFamily="sans-serif" fontSize="8" fontWeight="700" fill="white">100%</text>
+                            <text x="153" y="56" textAnchor="middle" fontFamily="sans-serif" fontSize="8" fontWeight="700" fill="white">Discount*</text>
+                            <text x="148" y="67" textAnchor="middle" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="white">₹{monthlySavingsInput.toLocaleString('en-IN')}</text>
 
-                            <text x="109" y="190" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fill="#6F727A">You Pay</text>
-                            <text x="109" y="210" textAnchor="middle" fontFamily="Georgia, serif" fontSize="18" fontWeight="700" fill="#0B2341">₹{(monthlySavingsInput * 11).toLocaleString('en-IN')}</text>
+                            <text x="130" y="190" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fill="#6F727A">You Pay</text>
+                            <text x="130" y="210" textAnchor="middle" fontFamily="Georgia, serif" fontSize="18" fontWeight="700" fill="#0B2341">₹{(monthlySavingsInput * 11).toLocaleString('en-IN')}</text>
                           </svg>
                         </div>
                       </div>
