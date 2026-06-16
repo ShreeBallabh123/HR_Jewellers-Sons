@@ -1417,7 +1417,7 @@ export default function App() {
   // Document dynamic header tags for SEO
   useEffect(() => {
     let title = 'HR Jewellers & Sons — Luxury Storefront';
-    let desc = 'Finalized light-themed modern storefront replica of BlueStone.com. Explore certified diamond solitaires, gold mine GRP savings calculators, and Bikaneri ornaments.';
+    let desc = 'Finalized light-themed modern storefront replica of HR Jewellers & Sons. Explore certified diamond solitaires, gold mine GRP savings calculators, and Bikaneri ornaments.';
     if (currentPage === 'gold-reserve') {
       setSavingsSchemeType('Gold Reserve');
     } else if (currentPage === 'savings') {
@@ -1425,7 +1425,7 @@ export default function App() {
     }
     switch (currentPage) {
       case 'collections':
-        title = 'Premium Storefront Catalog — BlueStone by HRJ';
+        title = 'Premium Storefront Catalog — HR Jewellers & Sons by HRJ';
         desc = 'Browse our modern interactive catalog of certified gold, platinum, uncut diamonds, and pooja silverwares.';
         break;
       case 'heritage':
@@ -1433,15 +1433,15 @@ export default function App() {
         desc = 'Discover the legacy and certified royal lineage of our master goldsmiths working in Bikaner since 1924.';
         break;
       case 'valuation':
-        title = 'Live Daily Bullion Rates Estimator — BlueStone Partner';
+        title = 'Live Daily Bullion Rates Estimator — HR Jewellers & Sons Partner';
         desc = 'Calculate jewelry rates instantly according to active Indian bullion indexes and 916 hallmark metrics.';
         break;
       case 'showrooms':
-        title = 'Flagship Fitting Showroom Bikaner — BlueStone';
+        title = 'Flagship Fitting Showroom Bikaner — HR Jewellers & Sons';
         desc = 'Book a private lounge suite at Tilak Nagar in Bikaner. Register appointments for bespoke custom fittings.';
         break;
       case 'product-detail':
-        title = `${detailProduct?.name || 'Exclusive Ornaments'} — BlueStone`;
+        title = `${detailProduct?.name || 'Exclusive Ornaments'} — HR Jewellers & Sons`;
         desc = `Details, carat purity specs, dynamic pricing breakdown, EMI calculator and zip code delivery checker for ${detailProduct?.name}`;
         break;
       case 'savings':
@@ -1458,7 +1458,7 @@ export default function App() {
         break;
       case 'offers':
         title = `Exclusive Offers & Stores — HR Jewellers & Sons`;
-        desc = `Explore exclusive discounts, GRP monthly savings options, BlueStone certified diamond offers, and check nearest boutique store pincodes.`;
+        desc = `Explore exclusive discounts, GRP monthly savings options, HR Jewellers & Sons certified diamond offers, and check nearest boutique store pincodes.`;
         break;
       case 'checkout':
         title = `Checkout — HR Jewellers & Sons`;
@@ -2979,7 +2979,7 @@ export default function App() {
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
-           MOBILE MENU DRAWER - BlueStone Exact Style
+           MOBILE MENU DRAWER - HR Jewellers & Sons Exact Style
            ═══════════════════════════════════════════════════════════ */}
         <AnimatePresence>
           {mobileMenuOpen && (
@@ -2991,7 +2991,7 @@ export default function App() {
               className="fixed inset-0 z-50 bg-white overflow-hidden select-none flex flex-col h-full"
             >
 
-              {/* ── Dark Header Bar (BlueStone style) ── */}
+              {/* ── Dark Header Bar (HR Jewellers & Sons style) ── */}
               <div className="bg-[#1B3152] px-4 py-4 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full border-2 border-white/20 flex items-center justify-center">
@@ -4065,7 +4065,7 @@ export default function App() {
                       </section>
 
                       {/* ==========================================================
-                  FEATURE: BLUESTONE STORE CALLOUT TEXT
+                  FEATURE: HR JEWELLERS & SONS STORE CALLOUT TEXT
                   ========================================================== */}
                       <div className="text-center pt-10 pb-6 px-4 select-none">
                         <h3 className={`serif-luxury text-2xl sm:text-3xl font-medium tracking-wide leading-snug transition-colors duration-500 ${isCatalogDark ? "text-white/90" : "text-[#0A2240]"}`}>
@@ -4302,7 +4302,7 @@ export default function App() {
                           { yr: 1974, title: "Pioneering Purity Benchmarks", desc: "The showroom institutes formal testing procedures and establishes official guild metrics in Western Rajasthan, decades before national hallmarking laws were standardized." },
                           { yr: 1998, title: "Uncut Diamond & Polki Expansion", desc: "Showroom introduces premium Syndicate Polki diamond collections, fusioning ancient Bikaneri carvings with Jaipuri royal color aesthetics, catering to high-fashion bridal demands." },
                           { yr: 2014, title: "Flagship Showroom Fitting Lounge", desc: "Opening of the grand flagship showroom at Tilak Nagar in Bikaner. Offering specialized custom-design tables, fitting chambers, and private lounges for family bridal viewings." },
-                          { yr: 2026, title: "HR Jewellery accredited Showroom Partnership", desc: "Transitioning to a fully accredited BlueStone partner boutique, integrating advanced live gold API conversion matrices, digital certification catalogs, and instant WhatsApp booking." }
+                          { yr: 2026, title: "HR Jewellery accredited Showroom Partnership", desc: "Transitioning to a fully accredited HR Jewellers & Sons partner boutique, integrating advanced live gold API conversion matrices, digital certification catalogs, and instant WhatsApp booking." }
                         ];
 
                         const years = timelineItems.map(t => t.yr);
@@ -4563,7 +4563,7 @@ export default function App() {
                   />
                 </div>
 
-                {/* QUICK ENROLL CARD (BlueStone Style) */}
+                {/* QUICK ENROLL CARD (HR Jewellers & Sons Style) */}
                 <div className="w-full bg-[#FCFAFF] py-6 px-4">
                   <div className="max-w-md mx-auto bg-white border border-gray-150 rounded-2xl shadow-[0_8px_30px_rgba(63,31,84,0.05)] p-5 space-y-4">
                     <h3 className="text-center text-[13.5px] font-bold text-[#1B3152] font-sans tracking-wide">
@@ -5431,7 +5431,7 @@ export default function App() {
                   />
                 </div>
 
-                {/* QUICK ENROLL CARD (BlueStone Style) */}
+                {/* QUICK ENROLL CARD (HR Jewellers & Sons Style) */}
                 <div className="w-full bg-[#FCFAFF] py-6 px-4">
                   <div className="max-w-md mx-auto bg-white border border-gray-150 rounded-2xl shadow-[0_8px_30px_rgba(63,31,84,0.05)] p-5 space-y-4">
                     <h3 className="text-center text-[13.5px] font-bold text-[#1B3152] font-sans tracking-wide">
@@ -8273,14 +8273,14 @@ export default function App() {
                               {activeStoryTimeline === 1974 && "1974: Purity Guild Standardization"}
                               {activeStoryTimeline === 1998 && "1998: Syndicate Uncut Diamonds Polki"}
                               {activeStoryTimeline === 2014 && "2014: Flagship Showroom Fitting Lounge"}
-                              {activeStoryTimeline === 2026 && "2026: High-Luxury BlueStone accredited Partner"}
+                              {activeStoryTimeline === 2026 && "2026: High-Luxury HR Jewellers & Sons accredited Partner"}
                             </h3>
                             <p className="text-xs sm:text-sm font-light leading-relaxed tracking-wide opacity-80 font-sans">
                               {activeStoryTimeline === 1952 && "Our lineage began inside the fort town of Bikaner, where native goldsmith showroom masters began hand-sculpting pristine ornaments for noble families. Driven by absolute purity and deep-rooted artistry, they established a lineage of royal goldsmith craftsmanship."}
                               {activeStoryTimeline === 1974 && "The showroom institutes formal testing procedures and establishes official guild metrics in Western Rajasthan, pioneering metal purity and absolute trust decades before national hallmarking laws were standardized."}
                               {activeStoryTimeline === 1998 && "Showroom introduces premium Syndicate Polki diamond collections, fusioning ancient Bikaneri carvings with Jaipuri royal color aesthetics, catering to high-fashion bridal demands."}
                               {activeStoryTimeline === 2014 && "Opening of the grand flagship showroom at Tilak Nagar in Bikaner. Offering specialized custom-design tables, fitting chambers, and private lounges for family bridal viewings."}
-                              {activeStoryTimeline === 2026 && "Transitioning to a fully accredited BlueStone partner boutique, integrating advanced live gold API conversion matrices, digital certification catalogs, and instant WhatsApp booking."}
+                              {activeStoryTimeline === 2026 && "Transitioning to a fully accredited HR Jewellers & Sons partner boutique, integrating advanced live gold API conversion matrices, digital certification catalogs, and instant WhatsApp booking."}
                             </p>
                           </div>
 
@@ -10542,7 +10542,7 @@ export default function App() {
                   <span>HR JEWELLER & SONS</span>
                 </div>
 
-                {/* Progress Bar (Matching BlueStone style) */}
+                {/* Progress Bar (Matching HR Jewellers & Sons style) */}
                 {savingsEnrollStep <= 3 && (
                   <div className="flex items-center space-x-4 text-xs font-semibold select-none">
                     <div className="flex flex-col items-center">
@@ -10961,7 +10961,7 @@ export default function App() {
 
               </div>
 
-              {/* Value Propositions Footer (similar to Bluestone) */}
+              {/* Value Propositions Footer (similar to HR Jewellers & Sons) */}
               <div className="w-full bg-[#FAF8F6] border-t border-gray-200 mt-16 pt-10 pb-6 px-6 sm:px-12 select-none">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
                   {/* Props list */}
@@ -11723,7 +11723,7 @@ export default function App() {
                     },
                     {
                       num: '07', title: 'Third-Party Links',
-                      content: 'Our website may contain links to third-party websites (such as BlueStone). We are not responsible for the privacy practices of these sites and encourage you to review their privacy policies.',
+                      content: 'Our website may contain links to third-party websites (such as HR Jewellers & Sons). We are not responsible for the privacy practices of these sites and encourage you to review their privacy policies.',
                     },
                     {
                       num: '08', title: 'Changes to This Policy',
