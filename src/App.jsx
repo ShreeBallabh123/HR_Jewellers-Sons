@@ -2197,12 +2197,7 @@ export default function App() {
   const handleCustomDesignSubmit = async (e) => {
     e.preventDefault();
     console.log("BEFORE SUBMIT", customDesignForm);
-    console.log("REFERENCE URL", customDesignForm.referenceImageUrl);
-
-    if (!customDesignForm.referenceImageUrl || !customDesignForm.referenceImageUrl.startsWith('http')) {
-      alert("Image upload failed. Please try again.");
-      return;
-    }
+    // Image is optional — allow submission even without a reference image
 
     const referenceImageURL = customDesignForm.referenceImageUrl;
 
@@ -3435,6 +3430,30 @@ export default function App() {
                             })}
                           </motion.div>
                         </section>
+
+                        {/* ── CUSTOM DESIGN BUTTON ── */}
+                        <div className="flex justify-center py-8">
+                          <button
+                            onClick={() => { triggerAudio('shimmer'); setCustomDesignOpen(true); }}
+                            id="custom-design-cta"
+                            className="group relative inline-flex items-center gap-3 px-8 py-3.5 rounded-full font-sans font-bold text-[13px] tracking-[0.15em] uppercase text-white overflow-hidden cursor-pointer select-none transition-all duration-300 hover:scale-105 hover:shadow-[0_8px_30px_rgba(180,120,20,0.45)] active:scale-95"
+                            style={{
+                              background: 'linear-gradient(135deg, #C8960C 0%, #E8B84B 40%, #A07820 100%)',
+                              boxShadow: '0 4px 18px rgba(180,120,20,0.30)',
+                            }}
+                          >
+                            {/* Shimmer overlay */}
+                            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out pointer-events-none" />
+                            {/* Diamond icon */}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-5 h-5 shrink-0">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                            </svg>
+                            Custom Design
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:translate-x-1">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
 
                       {/* ==========================================================
@@ -5349,7 +5368,7 @@ export default function App() {
                 <div className="w-full bg-[#FCFAFF] py-6 px-4">
                   <div className="max-w-md mx-auto bg-white border border-gray-150 rounded-2xl shadow-[0_8px_30px_rgba(63,31,84,0.05)] p-5 space-y-4">
                     <h3 className="text-center text-[13.5px] font-bold text-[#1B3152] font-sans tracking-wide">
-                      Pay 10 installments, get an extra voucher worth upto <span className="text-[#c0392b]">1 installment!</span>
+                      Pay 11 installments, get an extra voucher worth upto <span className="text-[#c0392b]">1 installment!</span>
                     </h3>
                     
                     <div className="space-y-3">
@@ -5433,7 +5452,7 @@ export default function App() {
                             </svg>
                           ),
                           title: 'Special benefits',
-                          desc: 'Pay 10 installments and get on extra voucher worth upto 1 installment amount',
+                          desc: 'Pay 11 installments and get on extra voucher worth upto 1 installment amount',
                         },
                       ].map(({ icon, title, desc }) => (
                         <div key={title} className="flex items-start gap-4 bg-white p-4 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-gray-100">
@@ -5497,7 +5516,7 @@ export default function App() {
                         {
                           step: 'Step 03',
                           title: 'Special benefits',
-                          desc: 'Pay 10 installments and get on extra voucher worth upto 1 installment amount.',
+                          desc: 'Pay 11 installments and get on extra voucher worth upto 1 installment amount.',
                           icon: (
                             <svg viewBox="0 0 24 24" fill="none" stroke="#E89AA9" strokeWidth="1.2" className="w-5 h-5">
                               <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
@@ -5786,7 +5805,7 @@ export default function App() {
                           </svg>
                         ),
                         title: 'Special benefits',
-                        desc: 'Pay 10 installments and get on extra voucher worth upto 1 installment amount',
+                        desc: 'Pay 11 installments and get on extra voucher worth upto 1 installment amount',
                       },
                     ].map(({ icon, title, desc }) => (
                       <div key={title} className="flex items-start gap-4">
@@ -6009,7 +6028,7 @@ export default function App() {
                             fontSize: '13px', color: '#6F727A',
                             lineHeight: '1.6', margin: 0,
                             maxWidth: '340px', fontWeight: '400'
-                          }}>Pay 10 monthly installments to accumulate gold units.</p>
+                          }}>Pay 11 monthly installments to accumulate gold units.</p>
                         </div>
                       </div>
 
@@ -6069,7 +6088,7 @@ export default function App() {
                             fontSize: '13px', color: '#6F727A',
                             lineHeight: '1.6', margin: 0,
                             maxWidth: '340px', fontWeight: '400'
-                          }}>Pay for 10 months on time and unlock an extra voucher worth upto 1 installment.</p>
+                          }}>Pay for 11 months on time and unlock an extra voucher worth upto 1 installment.</p>
                         </div>
                       </div>
 
@@ -7291,27 +7310,27 @@ export default function App() {
           )}
 
           {currentPage === 'product-detail' && detailProduct && (
-            <div className="bg-[#14001F] text-white min-h-screen pb-24 relative select-none overflow-hidden card-texture-light">
+            <div className="bg-[#FAF6F0] text-gray-800 min-h-screen pb-24 relative select-none overflow-hidden card-texture-light">
 
               {/* Ambient Background Spotlights */}
-              <div className="absolute top-[5%] left-[5%] w-[600px] h-[600px] rounded-full bg-[#DDA0DD]/5 blur-[140px] pointer-events-none animate-pulse-slow" />
-              <div className="absolute bottom-[15%] right-[2%] w-[700px] h-[700px] rounded-full bg-[#4A126D]/20 blur-[180px] pointer-events-none animate-[spotlight-glow_12s_infinite_ease-in-out]" />
+              <div className="absolute top-[5%] left-[5%] w-[600px] h-[600px] rounded-full bg-[#DDA0DD]/10 blur-[140px] pointer-events-none animate-pulse-slow" />
+              <div className="absolute bottom-[15%] right-[2%] w-[700px] h-[700px] rounded-full bg-[#4A126D]/5 blur-[180px] pointer-events-none animate-[spotlight-glow_12s_infinite_ease-in-out]" />
 
               {/* High-End Floating Luxury Particles/Sparks */}
-              <div className="absolute top-[18%] left-[20%] w-2 h-2 rounded-full bg-[#DDA0DD]/45 blur-[0.5px] animate-particle-1 pointer-events-none" />
-              <div className="absolute top-[45%] right-[28%] w-3 h-3 rounded-full bg-[#DDA0DD]/35 blur-[1.5px] animate-particle-2 pointer-events-none" />
-              <div className="absolute bottom-[35%] left-[42%] w-1.5 h-1.5 rounded-full bg-[#DDA0DD]/60 blur-[0.5px] animate-particle-3 pointer-events-none" />
-              <div className="absolute top-[75%] right-[15%] w-2 h-2 rounded-full bg-[#DDA0DD]/40 blur-[1px] animate-particle-1 pointer-events-none" style={{ animationDelay: '-6s' }} />
+              <div className="absolute top-[18%] left-[20%] w-2 h-2 rounded-full bg-[#4A126D]/30 blur-[0.5px] animate-particle-1 pointer-events-none" />
+              <div className="absolute top-[45%] right-[28%] w-3 h-3 rounded-full bg-[#4A126D]/20 blur-[1.5px] animate-particle-2 pointer-events-none" />
+              <div className="absolute bottom-[35%] left-[42%] w-1.5 h-1.5 rounded-full bg-[#4A126D]/40 blur-[0.5px] animate-particle-3 pointer-events-none" />
+              <div className="absolute top-[75%] right-[15%] w-2 h-2 rounded-full bg-[#4A126D]/25 blur-[1px] animate-particle-1 pointer-events-none" style={{ animationDelay: '-6s' }} />
 
               <div className="max-w-7xl mx-auto px-6 pt-10 space-y-12 animate-slide-up relative z-10">
 
                 {/* Luxury Breadcrumbs */}
-                <div className="flex flex-wrap items-center gap-2.5 text-[9.5px] tracking-[0.25em] uppercase font-bold text-white/50 font-sans">
-                  <button onClick={() => navigateTo('home')} className="hover:text-[#DDA0DD] transition-colors duration-300">Maison Home</button>
-                  <span className="text-[#DDA0DD]/60 font-black text-xs leading-none mt-[-2px]">✦</span>
-                  <button onClick={() => handleCategoryNav(detailProduct.category)} className="hover:text-[#DDA0DD] transition-colors duration-300 capitalize">{detailProduct.category} Collection</button>
-                  <span className="text-[#DDA0DD]/60 font-black text-xs leading-none mt-[-2px]">✦</span>
-                  <span className="text-white/90 truncate font-extrabold">{detailProduct.name}</span>
+                <div className="flex flex-wrap items-center gap-2.5 text-[9.5px] tracking-[0.25em] uppercase font-bold text-gray-500 font-sans">
+                  <button onClick={() => navigateTo('home')} className="hover:text-[#4A126D] transition-colors duration-300">Maison Home</button>
+                  <span className="text-[#4A126D]/60 font-black text-xs leading-none mt-[-2px]">✦</span>
+                  <button onClick={() => handleCategoryNav(detailProduct.category)} className="hover:text-[#4A126D] transition-colors duration-300 capitalize">{detailProduct.category} Collection</button>
+                  <span className="text-[#4A126D]/60 font-black text-xs leading-none mt-[-2px]">✦</span>
+                  <span className="text-gray-800 truncate font-extrabold">{detailProduct.name}</span>
                 </div>
 
                 {/* Two-Column Split Grid */}
@@ -7321,19 +7340,19 @@ export default function App() {
                   <div className="lg:col-span-6 space-y-8">
 
                     {/* Premium Large Hero Frame */}
-                    <div className="relative border-2 border-[#DDA0DD]/35 rounded-[2.5rem] p-8 bg-[#1C022B]/75 backdrop-blur-md overflow-hidden aspect-square flex items-center justify-center shadow-[0_25px_60px_rgba(212,175,55,0.18)] group transition-all duration-700 hover:border-[#DDA0DD]/60 hover:shadow-[0_30px_70px_rgba(212,175,55,0.3)]">
+                    <div className="relative border border-gray-200/80 rounded-[2.5rem] p-8 bg-white backdrop-blur-md overflow-hidden aspect-square flex items-center justify-center shadow-[0_15px_40px_rgba(74,18,109,0.05)] group transition-all duration-700 hover:border-[#DDA0DD]/80 hover:shadow-[0_25px_50px_rgba(74,18,109,0.1)]">
 
                       {/* Spotlight Glow behind image */}
-                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.14)_0%,transparent_75%)] pointer-events-none" />
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_75%)] pointer-events-none" />
 
                       {/* Corner Symmetrical Filigree Gold Lines */}
-                      <div className="absolute top-6 left-6 w-8 h-8 border-t-2 border-l-2 border-[#DDA0DD]/45" />
-                      <div className="absolute top-6 right-6 w-8 h-8 border-t-2 border-r-2 border-[#DDA0DD]/45" />
-                      <div className="absolute bottom-6 left-6 w-8 h-8 border-b-2 border-l-2 border-[#DDA0DD]/45" />
-                      <div className="absolute bottom-6 right-6 w-8 h-8 border-b-2 border-r-2 border-[#DDA0DD]/45" />
+                      <div className="absolute top-6 left-6 w-8 h-8 border-t-2 border-l-2 border-[#4A126D]/30" />
+                      <div className="absolute top-6 right-6 w-8 h-8 border-t-2 border-r-2 border-[#4A126D]/30" />
+                      <div className="absolute bottom-6 left-6 w-8 h-8 border-b-2 border-l-2 border-[#4A126D]/30" />
+                      <div className="absolute bottom-6 right-6 w-8 h-8 border-b-2 border-r-2 border-[#4A126D]/30" />
 
                       {/* Royal Fine Inner Lining Border */}
-                      <div className="absolute inset-4 border border-[#DDA0DD]/10 pointer-events-none rounded-[2rem]" />
+                      <div className="absolute inset-4 border border-[#4A126D]/10 pointer-events-none rounded-[2rem]" />
 
                       {/* Stately Floating Badge */}
                       {detailProduct.badge && (
@@ -7346,15 +7365,15 @@ export default function App() {
                       <img
                         src={detailActiveImg || detailProduct.img}
                         alt={detailProduct.name}
-                        className="relative w-[85%] h-[85%] object-contain transition-transform duration-[1500ms] cubic-bezier(0.16, 1, 0.3, 1) group-hover:scale-105 filter drop-shadow-[0_8px_30px_rgba(0,0,0,0.65)] select-none pointer-events-none"
+                        className="relative w-[85%] h-[85%] object-contain transition-transform duration-[1500ms] cubic-bezier(0.16, 1, 0.3, 1) group-hover:scale-105 filter drop-shadow-[0_8px_30px_rgba(0,0,0,0.15)] select-none pointer-events-none"
                       />
 
                       {/* Atelier Certified Medallion */}
-                      <div className="absolute bottom-8 right-8 flex items-center gap-2 bg-[#13071C]/90 border border-[#DDA0DD]/45 px-3 py-1.5 rounded-full shadow-lg z-10 transition-transform duration-500 group-hover:scale-105">
-                        <svg className="w-3.5 h-3.5 text-[#DDA0DD] animate-[spin_12s_linear_infinite]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <div className="absolute bottom-8 right-8 flex items-center gap-2 bg-white border border-[#4A126D]/30 px-3 py-1.5 rounded-full shadow-md z-10 transition-transform duration-500 group-hover:scale-105">
+                        <svg className="w-3.5 h-3.5 text-[#4A126D] animate-[spin_12s_linear_infinite]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                         </svg>
-                        <span className="text-[8px] uppercase tracking-widest font-extrabold text-[#DDA0DD] font-sans">Atelier Certified</span>
+                        <span className="text-[8px] uppercase tracking-widest font-extrabold text-[#4A126D] font-sans">Atelier Certified</span>
                       </div>
 
                     </div>
@@ -7373,12 +7392,12 @@ export default function App() {
                             key={idx}
                             onClick={() => { triggerAudio('click'); setDetailActiveImg(thumb.img); }}
                             className={`relative rounded-2xl overflow-hidden aspect-square flex items-center justify-center p-2 transition-all duration-500 cursor-pointer focus:outline-none hover:-translate-y-1 ${isActive
-                              ? 'bg-[#1C022B] border-2 border-[#DDA0DD] shadow-[0_0_20px_rgba(212,175,55,0.45)] scale-[1.04]'
-                              : 'bg-[#1C022B]/40 border border-[#DDA0DD]/20 hover:border-[#DDA0DD]/60'
+                              ? 'bg-white border-2 border-[#4A126D] shadow-[0_8px_20px_rgba(74,18,109,0.1)] scale-[1.04]'
+                              : 'bg-white border border-gray-200 hover:border-[#4A126D]'
                               }`}
                             title={thumb.label}
                           >
-                            <img src={thumb.img} alt={thumb.label} className="w-full h-full object-cover rounded-xl filter drop-shadow-md" />
+                            <img src={thumb.img} alt={thumb.label} className="w-full h-full object-cover rounded-xl filter drop-shadow-sm" />
                             <div className={`absolute inset-0 bg-[#DDA0DD]/5 transition-opacity duration-300 ${isActive ? 'opacity-0' : 'opacity-100 hover:opacity-0'}`} />
                           </button>
                         );
@@ -7386,61 +7405,61 @@ export default function App() {
                     </div>
 
                     {/* Specifications Card (Section 3) */}
-                    <div className="glass-luxury-dark rounded-[2rem] p-7 space-y-5 border border-[#DDA0DD]/30 shadow-[0_15px_45px_rgba(0,0,0,0.4)] relative overflow-hidden transition-all duration-500 hover:border-[#DDA0DD]/50 hover:shadow-[0_20px_50px_rgba(212,175,55,0.15)] group">
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-[#DDA0DD]/5 rounded-bl-full pointer-events-none" />
+                    <div className="bg-white rounded-[2rem] p-7 space-y-5 border border-gray-150 shadow-[0_15px_40px_rgba(74,18,109,0.04)] relative overflow-hidden transition-all duration-500 hover:border-[#4A126D]/40 hover:shadow-[0_20px_45px_rgba(74,18,109,0.08)] group">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-[#4A126D]/5 rounded-bl-full pointer-events-none" />
 
-                      <div className="flex items-center justify-between border-b border-[#DDA0DD]/25 pb-3">
+                      <div className="flex items-center justify-between border-b border-gray-200 pb-3">
                         <div className="flex items-center space-x-2.5">
-                          <span className="text-[#DDA0DD] text-sm animate-pulse-slow">✦</span>
-                          <span className="serif-luxury text-sm font-bold tracking-[0.15em] text-[#DDA0DD] uppercase">Atelier Authenticity Ledger</span>
+                          <span className="text-[#4A126D] text-sm animate-pulse-slow">✦</span>
+                          <span className="serif-luxury text-sm font-bold tracking-[0.15em] text-[#4A126D] uppercase">Atelier Authenticity Ledger</span>
                         </div>
-                        <span className="text-[8px] tracking-widest px-2.5 py-0.5 rounded-full font-bold uppercase bg-[#DDA0DD]/15 text-[#DDA0DD] border border-[#DDA0DD]/20">
+                        <span className="text-[8px] tracking-widest px-2.5 py-0.5 rounded-full font-bold uppercase bg-[#4A126D]/10 text-[#4A126D] border border-[#4A126D]/20">
                           NABL Certified
                         </span>
                       </div>
 
                       <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-xs font-sans">
                         <div className="space-y-1">
-                          <span className="block text-[9px] uppercase tracking-wider text-white/50 font-bold">Hallmark Certification</span>
-                          <span className="font-extrabold block text-white text-[13px] tracking-wide">{detailProduct.carat || 'BIS 22K (916) Gold'}</span>
+                          <span className="block text-[9px] uppercase tracking-wider text-gray-500 font-bold">Hallmark Certification</span>
+                          <span className="font-extrabold block text-gray-800 text-[13px] tracking-wide">{detailProduct.carat || 'BIS 22K (916) Gold'}</span>
                         </div>
                         <div className="space-y-1">
-                          <span className="block text-[9px] uppercase tracking-wider text-white/50 font-bold">Estimated Net Weight</span>
-                          <span className="font-extrabold block text-white text-[13px] tracking-wide">{detailProduct.weight}</span>
+                          <span className="block text-[9px] uppercase tracking-wider text-gray-500 font-bold">Estimated Net Weight</span>
+                          <span className="font-extrabold block text-gray-800 text-[13px] tracking-wide">{detailProduct.weight}</span>
                         </div>
-                        <div className="col-span-2 border-t border-white/5 pt-3.5 space-y-1">
-                          <span className="block text-[9px] uppercase tracking-wider text-white/50 font-bold">Purity Standard &amp; Laboratory Registry</span>
-                          <span className="font-light block text-[10.5px] text-white/80 leading-relaxed">{detailProduct.purityInfo || 'BIS 916 Government Laser hallmarked stamps & laboratory registry.'}</span>
+                        <div className="col-span-2 border-t border-gray-100 pt-3.5 space-y-1">
+                          <span className="block text-[9px] uppercase tracking-wider text-gray-500 font-bold">Purity Standard &amp; Laboratory Registry</span>
+                          <span className="font-light block text-[10.5px] text-gray-650 leading-relaxed">{detailProduct.purityInfo || 'BIS 916 Government Laser hallmarked stamps & laboratory registry.'}</span>
                         </div>
-                        <div className="col-span-2 border-t border-white/5 pt-3.5 space-y-1">
-                          <span className="block text-[9px] uppercase tracking-wider text-white/55 font-bold">Royal Handforging Details</span>
-                          <span className="font-light block text-[10.5px] text-white/80 leading-relaxed">{detailProduct.makingCharges || '₹380/gram high-fashion Rajasthan setting charges included.'}</span>
+                        <div className="col-span-2 border-t border-gray-100 pt-3.5 space-y-1">
+                          <span className="block text-[9px] uppercase tracking-wider text-gray-500 font-bold">Royal Handforging Details</span>
+                          <span className="font-light block text-[10.5px] text-gray-650 leading-relaxed">{detailProduct.makingCharges || '₹380/gram high-fashion Rajasthan setting charges included.'}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Financial EMI Estimator (Section 6) */}
-                    <div className="glass-luxury-dark rounded-[2rem] p-7 space-y-5 border border-[#DDA0DD]/30 shadow-[0_15px_45px_rgba(0,0,0,0.4)] relative overflow-hidden transition-all duration-500 hover:border-[#DDA0DD]/50 hover:shadow-[0_20px_50px_rgba(212,175,55,0.15)] group">
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-[#DDA0DD]/5 rounded-bl-full pointer-events-none" />
+                    <div className="bg-white rounded-[2rem] p-7 space-y-5 border border-gray-150 shadow-[0_15px_40px_rgba(74,18,109,0.04)] relative overflow-hidden transition-all duration-500 hover:border-[#4A126D]/40 hover:shadow-[0_20px_45px_rgba(74,18,109,0.08)] group">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-[#4A126D]/5 rounded-bl-full pointer-events-none" />
 
-                      <div className="flex justify-between items-center border-b border-[#DDA0DD]/25 pb-3">
+                      <div className="flex justify-between items-center border-b border-gray-200 pb-3">
                         <div className="flex items-center space-x-2.5">
-                          <span className="text-[#DDA0DD] text-xs">📈</span>
-                          <span className="serif-luxury text-sm font-bold tracking-[0.15em] text-[#DDA0DD] uppercase">Dynamic Atelier EMI Calculator</span>
+                          <span className="text-[#4A126D] text-xs">📈</span>
+                          <span className="serif-luxury text-sm font-bold tracking-[0.15em] text-[#4A126D] uppercase">Dynamic Atelier EMI Calculator</span>
                         </div>
-                        <span className="text-[8px] tracking-widest px-2.5 py-0.5 rounded-full font-bold uppercase bg-[#DDA0DD]/15 text-[#DDA0DD] border border-[#DDA0DD]/20">
+                        <span className="text-[8px] tracking-widest px-2.5 py-0.5 rounded-full font-bold uppercase bg-[#4A126D]/10 text-[#4A126D] border border-[#4A126D]/20">
                           9.5% Compound Interest
                         </span>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-center">
                         <div className="space-y-2">
-                          <label htmlFor="emi-months-select" className="text-[9px] uppercase tracking-wider block text-white/60 font-bold">Commitment Period</label>
+                          <label htmlFor="emi-months-select" className="text-[9px] uppercase tracking-wider block text-gray-500 font-bold">Commitment Period</label>
                           <select
                             id="emi-months-select"
                             value={emiMonths}
                             onChange={(e) => setEmiMonths(+e.target.value)}
-                            className="w-full bg-[#1C022B] border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#DDA0DD] cursor-pointer"
+                            className="w-full bg-white border border-gray-250 rounded-xl px-4 py-3 text-xs text-gray-800 focus:outline-none focus:border-[#4A126D] cursor-pointer"
                           >
                             <option value="3">3 Months (Short Term)</option>
                             <option value="6">6 Months (★ Popular Choice)</option>
@@ -7448,9 +7467,9 @@ export default function App() {
                             <option value="12">12 Months (Long Term)</option>
                           </select>
                         </div>
-                        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center hover:border-[#DDA0DD]/30 transition-all duration-300 shadow-inner">
-                          <span className="text-[9px] uppercase tracking-widest block text-white/50">Monthly Installment</span>
-                          <span className="font-extrabold text-xl block mt-1.5 text-[#DDA0DD] filter drop-shadow-[0_1px_5px_rgba(212,175,55,0.2)] font-mono">
+                        <div className="bg-[#4A126D]/5 border border-[#4A126D]/10 rounded-2xl p-4 text-center hover:border-[#4A126D]/30 transition-all duration-300 shadow-inner">
+                          <span className="text-[9px] uppercase tracking-widest block text-gray-500">Monthly Installment</span>
+                          <span className="font-extrabold text-xl block mt-1.5 text-[#4A126D] filter drop-shadow-[0_1px_3px_rgba(74,18,109,0.1)] font-mono">
                             ₹{calculatedEmi.toLocaleString('en-IN')}/mo
                           </span>
                         </div>
@@ -7458,11 +7477,11 @@ export default function App() {
                     </div>
 
                     {/* Delivery Feasibility checker (Section 7) */}
-                    <div className="glass-luxury-dark rounded-[2rem] p-7 space-y-5 border border-[#DDA0DD]/30 shadow-[0_15px_45px_rgba(0,0,0,0.4)] relative overflow-hidden transition-all duration-500 hover:border-[#DDA0DD]/50 hover:shadow-[0_20px_50px_rgba(212,175,55,0.15)]">
+                    <div className="bg-white rounded-[2rem] p-7 space-y-5 border border-gray-150 shadow-[0_15px_40px_rgba(74,18,109,0.04)] relative overflow-hidden transition-all duration-500 hover:border-[#4A126D]/40 hover:shadow-[0_20px_45px_rgba(74,18,109,0.08)]">
 
-                      <div className="flex items-center space-x-2.5 border-b border-[#DDA0DD]/25 pb-3">
-                        <span className="text-[#DDA0DD] text-xs">🚚</span>
-                        <span className="serif-luxury text-sm font-bold tracking-[0.15em] text-[#DDA0DD] uppercase">Delivery Feasibility &amp; Pickup</span>
+                      <div className="flex items-center space-x-2.5 border-b border-gray-200 pb-3">
+                        <span className="text-[#4A126D] text-xs">🚚</span>
+                        <span className="serif-luxury text-sm font-bold tracking-[0.15em] text-[#4A126D] uppercase">Delivery Feasibility &amp; Pickup</span>
                       </div>
 
                       <form onSubmit={handleZipCheck} className="flex gap-2.5">
@@ -7472,11 +7491,11 @@ export default function App() {
                           placeholder="Input 6-digit Pincode (e.g. 334001)"
                           value={zipCode}
                           onChange={(e) => setZipCode(e.target.value)}
-                          className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/55 focus:outline-none focus:border-[#DDA0DD] focus:ring-1 focus:ring-[#DDA0DD]/20 transition-all font-sans"
+                          className="flex-1 bg-white border border-gray-250 rounded-xl px-4 py-3 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#4A126D] focus:ring-1 focus:ring-[#4A126D]/20 transition-all font-sans"
                         />
                         <button
                           type="submit"
-                          className="px-6 bg-gradient-to-r from-[#DDA0DD] to-[#BA55D3] hover:from-[#BA55D3] hover:to-[#4A126D] text-[#13071C] font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 shadow-[0_4px_12px_rgba(212,175,55,0.2)] hover:shadow-[0_6px_18px_rgba(212,175,55,0.4)] cursor-pointer active:scale-95"
+                          className="px-6 bg-gradient-to-r from-[#4A126D] to-[#BA55D3] hover:from-[#BA55D3] hover:to-[#4A126D] text-white font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 shadow-[0_4px_12px_rgba(74,18,109,0.15)] hover:shadow-[0_6px_18px_rgba(74,18,109,0.3)] cursor-pointer active:scale-95"
                         >
                           {zipChecking ? 'Verifying...' : 'Verify'}
                         </button>
@@ -7484,8 +7503,8 @@ export default function App() {
 
                       {zipCheckResult && (
                         <div className={`p-4 rounded-xl text-[11px] font-semibold transition-all border leading-relaxed font-sans ${zipCheckResult.status === 'success'
-                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25 shadow-[0_0_15px_rgba(16,185,129,0.08)]'
-                          : 'bg-rose-500/10 text-rose-400 border-rose-500/25 shadow-[0_0_15px_rgba(244,63,94,0.08)]'
+                          ? 'bg-emerald-500/5 text-emerald-700 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.04)]'
+                          : 'bg-rose-500/5 text-rose-700 border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.04)]'
                           }`}>
                           <div className="flex items-center gap-1.5 font-bold mb-0.5">
                             <span>{zipCheckResult.status === 'success' ? '✦ Dispatch Verified:' : '✕ Delivery Restricted:'}</span>
@@ -7504,50 +7523,50 @@ export default function App() {
                     {/* Brand Header */}
                     <div className="space-y-3 relative">
                       <div className="flex items-center space-x-3">
-                        <span className="text-[10px] uppercase tracking-[0.3em] text-[#DDA0DD] font-extrabold block font-sans">{detailProduct.subCategory || 'Royal Signature Piece'}</span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#DDA0DD]/50" />
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-sans">
+                        <span className="text-[10px] uppercase tracking-[0.3em] text-[#4A126D] font-extrabold block font-sans">{detailProduct.subCategory || 'Royal Signature Piece'}</span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#4A126D]/50" />
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 font-sans">
                           ✓ In Stock
                         </span>
                       </div>
-                      <h1 className="serif-luxury text-4xl lg:text-5.5xl font-semibold text-white leading-tight font-serif tracking-wide filter drop-shadow-md">
+                      <h1 className="serif-luxury text-4xl lg:text-5.5xl font-semibold text-gray-800 leading-tight font-serif tracking-wide filter drop-shadow-[0_1px_3px_rgba(74,18,109,0.05)]">
                         {detailProduct.name}
                       </h1>
                       <div className="flex items-center gap-2">
-                        <div className="w-16 h-[2px] bg-gradient-to-r from-[#DDA0DD] to-transparent"></div>
-                        <span className="text-[10px] text-[#DDA0DD] font-bold animate-pulse-slow">✦</span>
+                        <div className="w-16 h-[2px] bg-gradient-to-r from-[#4A126D] to-transparent"></div>
+                        <span className="text-[10px] text-[#4A126D] font-bold animate-pulse-slow">✦</span>
                       </div>
                     </div>
 
                     {/* Estimated Price & Value Locks */}
-                    <div className="bg-gradient-to-r from-[#1C022B] via-[#350b52] to-[#1C022B] border-2 border-[#DDA0DD]/45 rounded-[2rem] p-7 shadow-[0_20px_45px_rgba(212,175,55,0.08)] flex flex-col sm:flex-row justify-between items-center gap-6 relative overflow-hidden group">
-                      <div className="absolute top-0 left-0 w-24 h-24 bg-[#DDA0DD]/5 rounded-br-full pointer-events-none" />
+                    <div className="bg-gradient-to-r from-[#FAF6F0] via-[#F4ECE2] to-[#FAF6F0] border border-[#4A126D]/20 rounded-[2rem] p-7 shadow-[0_15px_30px_rgba(74,18,109,0.05)] flex flex-col sm:flex-row justify-between items-center gap-6 relative overflow-hidden group">
+                      <div className="absolute top-0 left-0 w-24 h-24 bg-[#4A126D]/5 rounded-br-full pointer-events-none" />
 
                       <div className="text-center sm:text-left relative z-10 space-y-1">
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-[#DDA0DD] font-bold block font-sans">Estimated Valued Price</span>
-                        <span className="font-extrabold text-4xl sm:text-5xl mt-1.5 block text-transparent bg-clip-text bg-gradient-to-r from-[#DDA0DD] via-[#F4ECF9] to-[#BA55D3] filter drop-shadow-[0_2px_8px_rgba(212,175,55,0.35)] serif-luxury tracking-wide">
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-[#4A126D] font-bold block font-sans">Estimated Valued Price</span>
+                        <span className="font-extrabold text-4xl sm:text-5xl mt-1.5 block text-transparent bg-clip-text bg-gradient-to-r from-[#4A126D] via-[#8B35C8] to-[#4A126D] filter drop-shadow-[0_1px_3px_rgba(74,18,109,0.1)] serif-luxury tracking-wide">
                           ₹{formatPrice(detailProduct.price)}
                         </span>
                       </div>
 
-                      <div className="bg-white/5 border border-white/10 p-4 rounded-2xl text-center sm:text-right shrink-0 relative z-10 shadow-inner max-w-[200px] hover:border-[#DDA0DD]/30 transition-all duration-300">
-                        <span className="text-[9px] uppercase font-bold tracking-[0.15em] block text-[#DDA0DD] font-sans">Lifetime Exchange Lock</span>
-                        <span className="text-[9px] font-light block mt-1 text-white/70 font-sans leading-normal">100% Value Buyback Assured by Ateliers</span>
+                      <div className="bg-[#4A126D]/5 border border-gray-200 p-4 rounded-2xl text-center sm:text-right shrink-0 relative z-10 shadow-inner max-w-[200px] hover:border-[#4A126D]/30 transition-all duration-300">
+                        <span className="text-[9px] uppercase font-bold tracking-[0.15em] block text-[#4A126D] font-sans">Lifetime Exchange Lock</span>
+                        <span className="text-[9px] font-light block mt-1 text-gray-600 font-sans leading-normal">100% Value Buyback Assured by Ateliers</span>
                       </div>
                     </div>
 
                     {/* Craftsmanship Narrative */}
-                    <p className="text-sm font-sans font-light leading-relaxed text-white/80 tracking-wide text-justify pl-3 border-l-2 border-[#DDA0DD]/25 py-1">
+                    <p className="text-sm font-sans font-light leading-relaxed text-gray-700 tracking-wide text-justify pl-3 border-l-2 border-[#4A126D]/35 py-1">
                       {detailProduct.desc}
                     </p>
 
                     {/* Atelier Bespoke Options Customizer (Section 5) */}
-                    <div className="glass-luxury-dark rounded-[2.5rem] p-8 space-y-6 border border-[#DDA0DD]/30 shadow-[0_20px_50px_rgba(0,0,0,0.45)] relative overflow-hidden group">
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-[#DDA0DD]/5 rounded-bl-full pointer-events-none" />
+                    <div className="bg-white rounded-[2.5rem] p-8 space-y-6 border border-gray-150 shadow-[0_15px_40px_rgba(74,18,109,0.04)] relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-[#4A126D]/5 rounded-bl-full pointer-events-none" />
 
-                      <div className="flex items-center space-x-2 border-b border-[#DDA0DD]/25 pb-3">
-                        <span className="text-[#DDA0DD] text-xs">✦</span>
-                        <span className="font-serif text-sm tracking-[0.2em] font-bold text-[#DDA0DD] uppercase">Bespoke Atelier Customizer</span>
+                      <div className="flex items-center space-x-2 border-b border-gray-200 pb-3">
+                        <span className="text-[#4A126D] text-xs">✦</span>
+                        <span className="font-serif text-sm tracking-[0.2em] font-bold text-[#4A126D] uppercase">Bespoke Atelier Customizer</span>
                       </div>
 
                       <div className="space-y-5 text-xs font-sans">
@@ -7556,7 +7575,7 @@ export default function App() {
 
                           {/* Metal Type custom Selector */}
                           <div className="space-y-2">
-                            <label className="text-[9px] uppercase tracking-wider font-extrabold block text-white/60">Atelier Metal Type</label>
+                            <label className="text-[9px] uppercase tracking-wider font-extrabold block text-gray-500">Atelier Metal Type</label>
                             <div className="flex flex-col gap-2">
                               {['22K Yellow Gold', '18K Rose Gold', 'PT 950 Platinum'].map((metal) => {
                                 const isActive = pdpSelectedMetal === metal;
@@ -7566,14 +7585,14 @@ export default function App() {
                                     type="button"
                                     onClick={() => { triggerAudio('click'); setPdpSelectedMetal(metal); }}
                                     className={`py-3 px-3 text-[10px] font-bold rounded-xl border uppercase tracking-wider text-left transition-all flex items-center justify-between cursor-pointer focus:outline-none ${isActive
-                                      ? 'bg-[#DDA0DD]/15 border-[#DDA0DD] text-[#DDA0DD] shadow-[0_0_12px_rgba(212,175,55,0.15)]'
-                                      : 'bg-white/5 border-white/10 text-white/70 hover:border-white/20'
+                                      ? 'bg-[#4A126D]/10 border-[#4A126D] text-[#4A126D] shadow-[0_0_12px_rgba(74,18,109,0.08)]'
+                                      : 'bg-white border-gray-250 text-gray-750 hover:border-[#4A126D]/50'
                                       }`}
                                   >
                                     <span>{metal}</span>
-                                    <span className={`w-2.5 h-2.5 rounded-full border flex items-center justify-center transition-all ${isActive ? 'border-[#DDA0DD] bg-[#DDA0DD]' : 'border-white/30'
+                                    <span className={`w-2.5 h-2.5 rounded-full border flex items-center justify-center transition-all ${isActive ? 'border-[#4A126D] bg-[#4A126D]' : 'border-gray-300'
                                       }`}>
-                                      {isActive && <span className="w-1 h-1 rounded-full bg-[#13071C]" />}
+                                      {isActive && <span className="w-1 h-1 rounded-full bg-white" />}
                                     </span>
                                   </button>
                                 );
@@ -7583,7 +7602,7 @@ export default function App() {
 
                           {/* Gemstone custom Selector */}
                           <div className="space-y-2">
-                            <label className="text-[9px] uppercase tracking-wider font-extrabold block text-white/60">Primary Gemstone</label>
+                            <label className="text-[9px] uppercase tracking-wider font-extrabold block text-gray-500">Primary Gemstone</label>
                             <div className="flex flex-col gap-2">
                               {['Royal Syndicate Diamond', 'Maison Emerald', 'Burmese Ruby'].map((stone) => {
                                 const isActive = pdpSelectedStone === stone;
@@ -7593,14 +7612,14 @@ export default function App() {
                                     type="button"
                                     onClick={() => { triggerAudio('click'); setPdpSelectedStone(stone); }}
                                     className={`py-3 px-3 text-[10px] font-bold rounded-xl border uppercase tracking-wider text-left transition-all flex items-center justify-between cursor-pointer focus:outline-none ${isActive
-                                      ? 'bg-[#DDA0DD]/15 border-[#DDA0DD] text-[#DDA0DD] shadow-[0_0_12px_rgba(212,175,55,0.15)]'
-                                      : 'bg-white/5 border-white/10 text-white/70 hover:border-white/20'
+                                      ? 'bg-[#4A126D]/10 border-[#4A126D] text-[#4A126D] shadow-[0_0_12px_rgba(74,18,109,0.08)]'
+                                      : 'bg-white border-gray-250 text-gray-750 hover:border-[#4A126D]/50'
                                       }`}
                                   >
                                     <span>{stone.split(' ')[1] || stone}</span>
-                                    <span className={`w-2.5 h-2.5 rounded-full border flex items-center justify-center transition-all ${isActive ? 'border-[#DDA0DD] bg-[#DDA0DD]' : 'border-white/30'
+                                    <span className={`w-2.5 h-2.5 rounded-full border flex items-center justify-center transition-all ${isActive ? 'border-[#4A126D] bg-[#4A126D]' : 'border-gray-300'
                                       }`}>
-                                      {isActive && <span className="w-1 h-1 rounded-full bg-[#13071C]" />}
+                                      {isActive && <span className="w-1 h-1 rounded-full bg-white" />}
                                     </span>
                                   </button>
                                 );
@@ -7613,7 +7632,7 @@ export default function App() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
                           {/* Custom Engraving */}
                           <div className="space-y-2">
-                            <label htmlFor="pdp-engraving" className="text-[9px] uppercase tracking-wider font-extrabold block text-white/60">Bespoke Engraving (Initials)</label>
+                            <label htmlFor="pdp-engraving" className="text-[9px] uppercase tracking-wider font-extrabold block text-gray-500">Bespoke Engraving (Initials)</label>
                             <div className="relative">
                               <input
                                 id="pdp-engraving"
@@ -7621,21 +7640,21 @@ export default function App() {
                                 placeholder="e.g. Maharani ❤️ 1924"
                                 value={customEngraving}
                                 onChange={(e) => setCustomEngraving(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#DDA0DD] focus:ring-1 focus:ring-[#DDA0DD]/20 transition-all duration-300"
+                                className="w-full bg-white border border-gray-250 rounded-xl px-4 py-3 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#4A126D] focus:ring-1 focus:ring-[#4A126D]/20 transition-all duration-300"
                               />
-                              <span className="absolute right-3.5 top-3 text-[10px] text-white/30 pointer-events-none">✍️</span>
+                              <span className="absolute right-3.5 top-3 text-[10px] text-gray-400 pointer-events-none">✍️</span>
                             </div>
                           </div>
 
                           {/* Size Dropdown */}
                           {detailProduct.category === 'gold' || detailProduct.category === 'platinum' ? (
                             <div className="space-y-2">
-                              <label htmlFor="pdp-ring-size" className="text-[9px] uppercase tracking-wider font-extrabold block text-white/60">Showroom Ring Size</label>
+                              <label htmlFor="pdp-ring-size" className="text-[9px] uppercase tracking-wider font-extrabold block text-gray-500">Showroom Ring Size</label>
                               <select
                                 id="pdp-ring-size"
                                 value={selectedRingSize}
                                 onChange={(e) => setSelectedRingSize(e.target.value)}
-                                className="w-full bg-[#1C022B] border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#DDA0DD] cursor-pointer"
+                                className="w-full bg-white border border-gray-250 rounded-xl px-4 py-3 text-xs text-gray-800 focus:outline-none focus:border-[#4A126D] cursor-pointer"
                               >
                                 <option value="10">Size 10 (Slight Fit)</option>
                                 <option value="12">Size 12 (Bestselling Standard)</option>
@@ -7645,12 +7664,12 @@ export default function App() {
                             </div>
                           ) : (
                             <div className="space-y-2">
-                              <label htmlFor="pdp-purity-select" className="text-[9px] uppercase tracking-wider font-extrabold block text-white/60">Purity Standard</label>
+                              <label htmlFor="pdp-purity-select" className="text-[9px] uppercase tracking-wider font-extrabold block text-gray-500">Purity Standard</label>
                               <select
                                 id="pdp-purity-select"
                                 value={selectedCaratPurity}
                                 onChange={(e) => setSelectedCaratPurity(e.target.value)}
-                                className="w-full bg-[#1C022B] border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#DDA0DD] cursor-pointer"
+                                className="w-full bg-white border border-gray-250 rounded-xl px-4 py-3 text-xs text-gray-800 focus:outline-none focus:border-[#4A126D] cursor-pointer"
                               >
                                 <option value="18K">18 Karat Fine Gold</option>
                                 <option value="22K">22 Karat Royal Gold (BIS Stamps)</option>
@@ -7662,34 +7681,34 @@ export default function App() {
                     </div>
 
                     {/* Expandable Terms & Conditions Card (Section 4) */}
-                    <div className="glass-luxury-dark rounded-[2rem] p-6 space-y-3.5 border border-[#DDA0DD]/30 shadow-[0_15px_40px_rgba(0,0,0,0.4)] transition-all duration-500 hover:border-[#DDA0DD]/45 group">
+                    <div className="bg-white rounded-[2rem] p-6 space-y-3.5 border border-gray-150 shadow-[0_15px_40px_rgba(74,18,109,0.04)] transition-all duration-500 hover:border-[#4A126D]/40 group">
                       <div className="flex justify-between items-center">
                         <div className="flex items-center space-x-2.5">
-                          <span className="text-[#DDA0DD] text-xs">📄</span>
-                          <span className="serif-luxury text-[13px] font-bold tracking-[0.12em] text-[#DDA0DD] uppercase">Maison Guidelines &amp; Policies</span>
+                          <span className="text-[#4A126D] text-xs">📄</span>
+                          <span className="serif-luxury text-[13px] font-bold tracking-[0.12em] text-[#4A126D] uppercase">Maison Guidelines &amp; Policies</span>
                         </div>
                         <button
                           type="button"
                           onClick={() => { triggerAudio('click'); setPdpTcExpanded(!pdpTcExpanded); }}
-                          className="text-[9.5px] uppercase tracking-[0.15em] text-[#DDA0DD] hover:text-white font-extrabold focus:outline-none cursor-pointer transition-colors duration-300"
+                          className="text-[9.5px] uppercase tracking-[0.15em] text-[#4A126D] hover:text-[#4A126D]/80 font-extrabold focus:outline-none cursor-pointer transition-colors duration-300"
                         >
                           {pdpTcExpanded ? 'Hide Details' : 'View Complete Details'}
                         </button>
                       </div>
 
                       {/* expandable terms summary */}
-                      <div className={`overflow-hidden transition-all duration-500 ease-in-out text-[11px] text-white/75 leading-relaxed space-y-3 text-justify border-t border-white/10 pt-3.5 font-sans ${pdpTcExpanded ? 'max-h-[300px] opacity-100 mt-2' : 'max-h-0 opacity-0'
+                      <div className={`overflow-hidden transition-all duration-500 ease-in-out text-[11px] text-gray-700 leading-relaxed space-y-3 text-justify border-t border-gray-250 pt-3.5 font-sans ${pdpTcExpanded ? 'max-h-[300px] opacity-100 mt-2' : 'max-h-0 opacity-0'
                         }`}>
                         <p className="flex items-start gap-2">
-                          <span className="text-[#DDA0DD] font-semibold mt-0.5">•</span>
+                          <span className="text-[#4A126D] font-semibold mt-0.5">•</span>
                           <span><strong>Exchange Integrity:</strong> Standard items carry 100% metal weight buyback protections. Custom customized sets shape unique non-cancellation matrices upon atelier workshop forging commencement.</span>
                         </p>
                         <p className="flex items-start gap-2">
-                          <span className="text-[#DDA0DD] font-semibold mt-0.5">•</span>
+                          <span className="text-[#4A126D] font-semibold mt-0.5">•</span>
                           <span><strong>Lab Certifications:</strong> Official physical certificates containing unique laboratory registration hashes are dispatched securely with transit security teams.</span>
                         </p>
                         <p className="flex items-start gap-2">
-                          <span className="text-[#DDA0DD] font-semibold mt-0.5">•</span>
+                          <span className="text-[#4A126D] font-semibold mt-0.5">•</span>
                           <span><strong>Rajasthan Insured Dispatch:</strong> Hand-couriered within Bikaner and Jaipur regions inside signature steel cases under active transit insurance policies.</span>
                         </p>
                       </div>
@@ -7709,7 +7728,7 @@ export default function App() {
                               ? `Bespoke customization with Engraving: "${customEngraving}" and primary stone "${pdpSelectedStone}"`
                               : `Maison standard custom set configured with "${pdpSelectedStone}"`
                           })}
-                          className="col-span-3 bg-gradient-to-r from-[#DDA0DD] via-[#E7C873] to-[#4A126D] text-[#13071C] font-extrabold text-xs uppercase tracking-[0.2em] py-5 rounded-full transition-all duration-500 hover:scale-[1.02] active:scale-95 shadow-[0_12px_30px_rgba(212,175,55,0.3)] hover:shadow-[0_15px_45px_rgba(212,175,55,0.65)] cursor-pointer text-center relative overflow-hidden shimmer-gold-sweep-hover font-sans"
+                          className="col-span-3 bg-gradient-to-r from-[#4A126D] via-[#BA55D3] to-[#4A126D] text-white font-extrabold text-xs uppercase tracking-[0.2em] py-5 rounded-full transition-all duration-500 hover:scale-[1.02] active:scale-95 shadow-[0_12px_30px_rgba(74,18,109,0.2)] hover:shadow-[0_15px_45px_rgba(74,18,109,0.4)] cursor-pointer text-center relative overflow-hidden shimmer-gold-sweep-hover font-sans"
                         >
                           Buy Masterpiece Now
                         </button>
@@ -7718,8 +7737,8 @@ export default function App() {
                         <button
                           onClick={() => { triggerAudio('click'); setPdpTcExpanded(!pdpTcExpanded); }}
                           className={`col-span-1 border-2 rounded-full font-extrabold text-[10px] uppercase tracking-wider transition-all duration-300 flex items-center justify-center cursor-pointer focus:outline-none shadow-md ${pdpTcExpanded
-                            ? 'bg-[#DDA0DD] text-[#13071C] border-[#DDA0DD] shadow-[0_0_15px_rgba(212,175,55,0.4)] scale-[1.02]'
-                            : 'border-[#DDA0DD]/35 text-[#DDA0DD] hover:bg-[#DDA0DD]/10 hover:border-[#DDA0DD]'
+                            ? 'bg-[#4A126D] text-white border-[#4A126D] shadow-[0_0_15px_rgba(74,18,109,0.3)] scale-[1.02]'
+                            : 'border-[#4A126D]/35 text-[#4A126D] hover:bg-[#4A126D]/10 hover:border-[#4A126D]'
                             }`}
                           title="View Guidelines & Policies"
                         >
@@ -7732,7 +7751,7 @@ export default function App() {
                       <div className="grid grid-cols-2 gap-4">
                         <button
                           onClick={() => { triggerAudio('shimmer'); setConsultationModal(true); }}
-                          className="py-4 border-2 border-[#DDA0DD]/35 hover:border-[#DDA0DD] bg-white/5 hover:bg-[#DDA0DD]/10 rounded-full text-[10px] font-extrabold uppercase tracking-widest text-[#DDA0DD] hover:text-white transition-all duration-300 cursor-pointer text-center focus:outline-none shadow-md"
+                          className="py-4 border-2 border-[#4A126D]/35 hover:border-[#4A126D] bg-white hover:bg-[#4A126D]/10 rounded-full text-[10px] font-extrabold uppercase tracking-widest text-[#4A126D] transition-all duration-300 cursor-pointer text-center focus:outline-none shadow-md"
                         >
                           🎥 Video Consultation
                         </button>
@@ -7741,7 +7760,7 @@ export default function App() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => triggerAudio('shimmer')}
-                          className="py-4 border-2 border-white/10 hover:border-[#DDA0DD]/50 bg-[#1C022B]/85 hover:bg-[#1C022B] rounded-full text-[10px] font-extrabold uppercase tracking-widest text-white/80 hover:text-[#DDA0DD] transition-all duration-300 text-center flex items-center justify-center gap-1.5 shadow-md"
+                          className="py-4 border-2 border-gray-250 hover:border-[#4A126D]/50 bg-white hover:bg-gray-50 rounded-full text-[10px] font-extrabold uppercase tracking-widest text-gray-700 hover:text-[#4A126D] transition-all duration-300 text-center flex items-center justify-center gap-1.5 shadow-md"
                         >
                           <span>💬</span> WhatsApp Expert
                         </a>
@@ -7754,7 +7773,7 @@ export default function App() {
                 </div>
 
                 {/* SECTION 8: Luxury Trust Strip */}
-                <div className="bg-[#1C022B]/75 border border-[#DDA0DD]/25 rounded-[2rem] py-8 px-6 backdrop-blur-md mt-16 shadow-[0_15px_40px_rgba(0,0,0,0.35)] hover:border-[#DDA0DD]/45 transition-colors duration-500">
+                <div className="bg-white border border-[#4A126D]/20 rounded-[2rem] py-8 px-6 backdrop-blur-md mt-16 shadow-[0_15px_40px_rgba(74,18,109,0.03)] hover:border-[#4A126D]/45 transition-colors duration-500">
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-3 text-center">
                     {[
                       { label: 'BIS Hallmarked', desc: '100% Certified Purity' },
@@ -7765,29 +7784,29 @@ export default function App() {
                       { label: 'Trusted Since 1924', desc: 'Sovereign Heritage Trust' }
                     ].map((trust, idx) => (
                       <div key={idx} className="flex flex-col items-center justify-center px-2 group">
-                        <span className="text-[#DDA0DD] text-base font-black mb-1.5 group-hover:scale-125 transition-transform duration-300">✓</span>
-                        <span className="text-[10px] text-white font-extrabold tracking-wider uppercase font-sans">{trust.label}</span>
-                        <span className="text-[8px] text-white/40 font-light font-sans mt-1">{trust.desc}</span>
+                        <span className="text-[#4A126D] text-base font-black mb-1.5 group-hover:scale-125 transition-transform duration-300">✓</span>
+                        <span className="text-[10px] text-[#4A126D] font-extrabold tracking-wider uppercase font-sans">{trust.label}</span>
+                        <span className="text-[8px] text-gray-500 font-light font-sans mt-1">{trust.desc}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* SECTION 9: Product Story editorial narrative Section */}
-                <div className="border border-[#DDA0DD]/25 rounded-[2.5rem] p-8 md:p-14 bg-gradient-to-b from-[#1C022B] to-[#14001F] shadow-[0_20px_50px_rgba(0,0,0,0.5)] space-y-10 hover:border-[#DDA0DD]/45 transition-colors duration-700">
+                <div className="border border-gray-150 rounded-[2.5rem] p-8 md:p-14 bg-white shadow-[0_15px_45px_rgba(74,18,109,0.04)] space-y-10 hover:border-[#4A126D]/30 transition-colors duration-700">
 
                   <div className="text-center space-y-3">
-                    <span className="text-[10px] uppercase tracking-[0.35em] text-[#DDA0DD] font-extrabold block font-sans">EDITORIAL STORYTELLING</span>
-                    <h3 className="serif-luxury text-3.5xl sm:text-4xl font-semibold tracking-wider font-serif">Maison Craftsmanship &amp; Heritage</h3>
+                    <span className="text-[10px] uppercase tracking-[0.35em] text-[#4A126D] font-extrabold block font-sans">EDITORIAL STORYTELLING</span>
+                    <h3 className="serif-luxury text-3.5xl sm:text-4xl font-semibold tracking-wider font-serif text-gray-800">Maison Craftsmanship &amp; Heritage</h3>
                     <div className="flex items-center justify-center gap-2 mt-2">
-                      <div className="w-12 h-[1px] bg-gradient-to-r from-transparent to-[#DDA0DD]" />
-                      <span className="text-[#DDA0DD] text-xs">✦</span>
-                      <div className="w-12 h-[1px] bg-gradient-to-l from-transparent to-[#DDA0DD]" />
+                      <div className="w-12 h-[1px] bg-gradient-to-r from-transparent to-[#4A126D]" />
+                      <span className="text-[#4A126D] text-xs">✦</span>
+                      <div className="w-12 h-[1px] bg-gradient-to-l from-transparent to-[#4A126D]" />
                     </div>
                   </div>
 
                   {/* Editorial Tabs */}
-                  <div className="flex justify-center border-b border-white/10 max-w-lg mx-auto gap-4 md:gap-8">
+                  <div className="flex justify-center border-b border-gray-200 max-w-lg mx-auto gap-4 md:gap-8">
                     {[
                       { tabId: 'craftsmanship', label: 'Artisan Forging' },
                       { tabId: 'inspiration', label: 'Design Inception' },
@@ -7797,8 +7816,8 @@ export default function App() {
                         key={item.tabId}
                         onClick={() => { triggerAudio('click'); setPdpActiveTab(item.tabId); }}
                         className={`pb-3 text-[10px] uppercase font-bold tracking-widest text-center cursor-pointer transition-all focus:outline-none border-b-2 ${pdpActiveTab === item.tabId
-                          ? 'border-[#DDA0DD] text-[#DDA0DD] font-extrabold'
-                          : 'border-transparent text-white/40 hover:text-white/70'
+                          ? 'border-[#4A126D] text-[#4A126D] font-extrabold'
+                          : 'border-transparent text-gray-400 hover:text-gray-650'
                           }`}
                       >
                         {item.label}
@@ -7809,30 +7828,30 @@ export default function App() {
                   {/* Tab content editorial style */}
                   <div className="max-w-3xl mx-auto text-center space-y-6">
                     {pdpActiveTab === 'craftsmanship' && (
-                      <p className="text-xs sm:text-[14px] font-sans font-light leading-relaxed text-white/80 animate-fade-in text-justify sm:text-center">
+                      <p className="text-xs sm:text-[14px] font-sans font-light leading-relaxed text-gray-650 animate-fade-in text-justify sm:text-center">
                         Shaped by generational mastersmiths in our Tilak Nagar ateliers, Bikaner. Every piece begins with solid gold bars melted and refined to BIS Hallmarked specifications. Smiths implement standard Bikaneri filigree (Chitai) work under intense flame grids, setting individual gems with lacquer and gold foils to create a generational seal of luxury.
                       </p>
                     )}
 
                     {pdpActiveTab === 'inspiration' && (
-                      <p className="text-xs sm:text-[14px] font-sans font-light leading-relaxed text-white/80 animate-fade-in text-justify sm:text-center">
+                      <p className="text-xs sm:text-[14px] font-sans font-light leading-relaxed text-gray-650 animate-fade-in text-justify sm:text-center">
                         Inspired directly by the fortress grids and royal palace arches of Bikaner. The structural symmetry highlights classic Rajputana floral grids, presenting a dramatic spotlight that highlights the raw radiance of uncut syndicate diamonds and Maison ruby drops in perfect equilibrium.
                       </p>
                     )}
 
                     {pdpActiveTab === 'heritage' && (
-                      <p className="text-xs sm:text-[14px] font-sans font-light leading-relaxed text-white/80 animate-fade-in text-justify sm:text-center">
+                      <p className="text-xs sm:text-[14px] font-sans font-light leading-relaxed text-gray-650 animate-fade-in text-justify sm:text-center">
                         HR Jewellers &amp; Sons dates back to 1924, crafting sovereign ornaments for Rajputana estates. The signature design carries a serialized laser registration hash, preserving Rajasthan's rich jewellery culture for your family lineage.
                       </p>
                     )}
 
                     {/* Devkishan Quote block */}
-                    <div className="border-t border-b border-[#DDA0DD]/15 py-7 max-w-xl mx-auto mt-8 relative">
-                      <span className="absolute top-1 left-[48%] text-2xl text-[#DDA0DD]/15 font-serif select-none pointer-events-none font-black leading-none font-sans">“</span>
-                      <span className="serif-luxury italic text-base text-[#DDA0DD] font-serif leading-relaxed block px-4 mt-2">
+                    <div className="border-t border-b border-[#4A126D]/15 py-7 max-w-xl mx-auto mt-8 relative">
+                      <span className="absolute top-1 left-[48%] text-2xl text-[#4A126D]/10 font-serif select-none pointer-events-none font-black leading-none font-sans">“</span>
+                      <span className="serif-luxury italic text-base text-[#4A126D] font-serif leading-relaxed block px-4 mt-2">
                         "A jewel is not an ornament; it is a piece of Bikaner's royal history forged in gold."
                       </span>
-                      <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 block mt-3 font-bold font-sans">
+                      <span className="text-[9px] uppercase tracking-[0.2em] text-gray-500 block mt-3 font-bold font-sans">
                         — DEVKISHAN SONI, MASTER GOLDSMITH (EST. 1924)
                       </span>
                     </div>
@@ -7842,23 +7861,23 @@ export default function App() {
                 </div>
 
                 {/* Patron espec reviews sheet */}
-                <div className="border border-[#DDA0DD]/25 rounded-[2.5rem] p-8 md:p-14 bg-[#1C022B]/40 backdrop-blur-md space-y-10 relative overflow-hidden group max-w-4xl mx-auto w-full text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                <div className="border border-gray-150 rounded-[2.5rem] p-8 md:p-14 bg-white space-y-10 relative overflow-hidden group max-w-4xl mx-auto w-full text-center shadow-[0_15px_40px_rgba(74,18,109,0.04)]">
 
                   {/* Gold corner ornaments to match premium PDP aesthetics */}
-                  <div className="absolute top-6 left-6 w-6 h-6 border-t border-l border-[#DDA0DD]/35" />
-                  <div className="absolute top-6 right-6 w-6 h-6 border-t border-r border-[#DDA0DD]/35" />
-                  <div className="absolute bottom-6 left-6 w-6 h-6 border-b border-l border-[#DDA0DD]/35" />
-                  <div className="absolute bottom-6 right-6 w-6 h-6 border-b border-r border-[#DDA0DD]/35" />
+                  <div className="absolute top-6 left-6 w-6 h-6 border-t border-l border-[#4A126D]/20" />
+                  <div className="absolute top-6 right-6 w-6 h-6 border-t border-r border-[#4A126D]/20" />
+                  <div className="absolute bottom-6 left-6 w-6 h-6 border-b border-l border-[#4A126D]/20" />
+                  <div className="absolute bottom-6 right-6 w-6 h-6 border-b border-r border-[#4A126D]/20" />
 
                   <div className="space-y-2">
-                    <span className="text-[9px] uppercase tracking-[0.3em] text-[#DDA0DD] font-extrabold block font-sans">CLIENT PATRONAGE</span>
-                    <h3 className="serif-luxury text-3xl font-semibold font-serif tracking-wider text-white">
+                    <span className="text-[9px] uppercase tracking-[0.3em] text-[#4A126D] font-extrabold block font-sans">CLIENT PATRONAGE</span>
+                    <h3 className="serif-luxury text-3xl font-semibold font-serif tracking-wider text-gray-800">
                       Patron Testimonials
                     </h3>
                     <div className="flex items-center justify-center gap-2 mt-2">
-                      <div className="w-8 h-[1px] bg-gradient-to-r from-transparent to-[#DDA0DD]" />
-                      <span className="text-[#DDA0DD] text-xs">✦</span>
-                      <div className="w-8 h-[1px] bg-gradient-to-l from-transparent to-[#DDA0DD]" />
+                      <div className="w-8 h-[1px] bg-gradient-to-r from-transparent to-[#4A126D]" />
+                      <span className="text-[#4A126D] text-xs">✦</span>
+                      <div className="w-8 h-[1px] bg-gradient-to-l from-transparent to-[#4A126D]" />
                     </div>
                   </div>
 
@@ -7879,18 +7898,18 @@ export default function App() {
                         <div className="w-full animate-fade-in space-y-4">
                           {/* Patron Name & Stars */}
                           <div className="flex flex-col items-center justify-center gap-2">
-                            <span className="text-[#DDA0DD] text-[13px] font-extrabold uppercase tracking-[0.2em] font-sans">
+                            <span className="text-[#4A126D] text-[13px] font-extrabold uppercase tracking-[0.2em] font-sans">
                               {currentReview.patron}
                             </span>
-                            <span className="text-[#DDA0DD] text-xs font-black tracking-[0.15em] animate-pulse-slow">
+                            <span className="text-amber-500 text-xs font-black tracking-[0.15em] animate-pulse-slow">
                               {'★'.repeat(currentReview.stars)}
                             </span>
                           </div>
                           {/* Patron comment with drop-quote styling */}
-                          <p className="font-serif italic text-sm sm:text-base leading-relaxed text-white/80 max-w-lg mx-auto relative px-8 py-2">
-                            <span className="absolute top-[-10px] left-0 text-3xl text-[#DDA0DD]/20 font-serif font-black select-none">“</span>
+                          <p className="font-serif italic text-sm sm:text-base leading-relaxed text-gray-750 max-w-lg mx-auto relative px-8 py-2">
+                            <span className="absolute top-[-10px] left-0 text-3xl text-[#4A126D]/10 font-serif font-black select-none">“</span>
                             "{currentReview.comment}"
-                            <span className="absolute bottom-[-15px] right-2 text-3xl text-[#DDA0DD]/20 font-serif font-black select-none">”</span>
+                            <span className="absolute bottom-[-15px] right-2 text-3xl text-[#4A126D]/10 font-serif font-black select-none">”</span>
                           </p>
 
                           {/* Slider Progress Dots */}
@@ -7900,8 +7919,8 @@ export default function App() {
                                 key={idx}
                                 onClick={() => { triggerAudio('click'); setPdpActiveReviewIdx(idx); }}
                                 className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer focus:outline-none ${idx === (pdpActiveReviewIdx % allReviews.length)
-                                  ? 'w-6 bg-[#DDA0DD]'
-                                  : 'w-1.5 bg-white/20 hover:bg-white/40'
+                                  ? 'w-6 bg-[#4A126D]'
+                                  : 'w-1.5 bg-gray-250 hover:bg-gray-400'
                                   }`}
                                 title={`Review slide ${idx + 1}`}
                               />
@@ -7917,12 +7936,12 @@ export default function App() {
               </div>
 
               {/* RESPONSIVE MOBILE STICKY BUY BAR & FAB (Section 10) */}
-              <div className="fixed bottom-0 left-0 right-0 md:hidden bg-[#14001F]/95 backdrop-filter backdrop-blur-lg border-t border-[#DDA0DD]/45 p-4.5 z-40 flex items-center justify-between shadow-[0_-15px_40px_rgba(0,0,0,0.65)] animate-slide-up select-none">
+              <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white/95 backdrop-filter backdrop-blur-lg border-t border-[#4A126D]/20 p-4.5 z-40 flex items-center justify-between shadow-[0_-10px_30px_rgba(74,18,109,0.08)] animate-slide-up select-none">
                 <div className="flex items-center space-x-3.5">
-                  <img src={detailProduct.img} className="w-11 h-11 object-cover rounded-xl border border-white/20 bg-white/5 shadow-md" alt="" />
+                  <img src={detailProduct.img} className="w-11 h-11 object-cover rounded-xl border border-gray-200 bg-gray-50 shadow-md" alt="" />
                   <div>
-                    <h4 className="font-serif text-[12px] font-bold text-white truncate max-w-[140px] tracking-wide">{detailProduct.name}</h4>
-                    <span className="text-[#DDA0DD] font-extrabold text-[12px] block mt-0.5 font-mono">₹{formatPrice(detailProduct.price)}</span>
+                    <h4 className="font-serif text-[12px] font-bold text-gray-800 truncate max-w-[140px] tracking-wide">{detailProduct.name}</h4>
+                    <span className="text-[#4A126D] font-extrabold text-[12px] block mt-0.5 font-mono">₹{formatPrice(detailProduct.price)}</span>
                   </div>
                 </div>
                 <button
@@ -7931,7 +7950,7 @@ export default function App() {
                     carat: `${selectedCaratPurity} / Size ${selectedRingSize}`,
                     desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc
                   })}
-                  className="bg-gradient-to-r from-[#DDA0DD] via-[#E7C873] to-[#4A126D] text-[#13071C] font-bold text-[10px] uppercase tracking-widest py-3 px-7 rounded-full cursor-pointer shadow-[0_4px_12px_rgba(212,175,55,0.3)] active:scale-95 transition-all duration-300 text-center font-sans"
+                  className="bg-gradient-to-r from-[#4A126D] to-[#BA55D3] text-white font-bold text-[10px] uppercase tracking-widest py-3 px-7 rounded-full cursor-pointer shadow-[0_4px_12px_rgba(74,18,109,0.15)] active:scale-95 transition-all duration-300 text-center font-sans"
                 >
                   Buy Now
                 </button>
@@ -7941,20 +7960,20 @@ export default function App() {
               {pdpTcExpanded && (
                 <div className="fixed inset-0 z-50 md:hidden flex flex-col justify-end">
                   <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={() => setPdpTcExpanded(false)} />
-                  <div className="bg-[#13071C] border-t-2 border-[#DDA0DD]/45 rounded-t-[2.5rem] p-7 relative z-10 space-y-4 max-h-[60vh] overflow-y-auto font-sans animate-slide-up">
-                    <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-2" />
-                    <div className="flex justify-between items-center border-b border-white/5 pb-3">
-                      <h4 className="serif-luxury text-base font-bold text-white uppercase tracking-wider">Maison Guidelines</h4>
-                      <button onClick={() => setPdpTcExpanded(false)} className="text-white/50 hover:text-white text-sm font-bold p-1">✕</button>
+                  <div className="bg-white border-t-2 border-[#4A126D] rounded-t-[2.5rem] p-7 relative z-10 space-y-4 max-h-[60vh] overflow-y-auto font-sans animate-slide-up">
+                    <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-2" />
+                    <div className="flex justify-between items-center border-b border-gray-150 pb-3">
+                      <h4 className="serif-luxury text-base font-bold text-gray-800 uppercase tracking-wider">Maison Guidelines</h4>
+                      <button onClick={() => setPdpTcExpanded(false)} className="text-gray-500 hover:text-gray-800 text-sm font-bold p-1">✕</button>
                     </div>
-                    <div className="text-[11px] text-white/70 leading-relaxed space-y-3.5 text-justify">
+                    <div className="text-[11px] text-gray-600 leading-relaxed space-y-3.5 text-justify">
                       <p>• <strong>Exchange Integrity:</strong> Standard items carry 100% metal weight buyback protections. Custom customized sets shape unique non-cancellation matrices upon atelier workshop forging commencement.</p>
                       <p>• <strong>Lab Certifications:</strong> Official physical certificates containing unique laboratory registration hashes are dispatched securely with transit security teams.</p>
                       <p>• <strong>Rajasthan Insured Dispatch:</strong> Hand-couriered within Bikaner and Jaipur regions inside signature steel cases under active transit insurance policies.</p>
                     </div>
                     <button
                       onClick={() => setPdpTcExpanded(false)}
-                      className="w-full bg-[#DDA0DD] text-black font-bold py-3.5 rounded-full text-xs uppercase tracking-widest text-center cursor-pointer mt-4 shadow-lg"
+                      className="w-full bg-[#4A126D] text-white font-bold py-3.5 rounded-full text-xs uppercase tracking-widest text-center cursor-pointer mt-4 shadow-lg"
                     >
                       Acknowledge
                     </button>
@@ -12793,208 +12812,83 @@ export default function App() {
                     <div className="space-y-4 animate-fade-in">
                       <h4 className="font-bold text-gray-700 text-xs border-b border-gray-100 pb-1.5">Step 3: Attachment Reference Sketch</h4>
 
-                      <div className={`border-2 border-dashed rounded-2xl p-6 text-center space-y-2 transition-colors relative ${firebaseDiagnostics.checked && !firebaseDiagnostics.valid
-                        ? 'border-rose-200 bg-rose-50/10'
-                        : 'border-gray-200 hover:border-[#DDA0DD] bg-[#FBF9FF]'
-                        }`}>
-                        {firebaseDiagnostics.checked && !firebaseDiagnostics.valid ? (
+                      <div className="border-2 border-dashed rounded-2xl p-6 text-center space-y-2 transition-colors relative border-gray-200 hover:border-[#DDA0DD] bg-[#FBF9FF]">
+                        {customDesignForm.referenceImageUrl ? (
                           <>
-                            <span className="text-3xl block">⚠️</span>
-                            <span className="font-serif text-rose-700 block text-xs tracking-wide">Firebase Storage is not configured correctly. Please contact administrator.</span>
-                            <span className="text-[9px] text-gray-400 block leading-tight">Upload disabled due to configuration mismatch.</span>
+                            <span className="text-3xl block">✅</span>
+                            <span className="font-bold text-[#006361] block text-[11px]">Image Uploaded Successfully!</span>
+                            <span className="text-[9px] text-gray-400 block leading-tight">Tap below to change the image</span>
                           </>
                         ) : (
                           <>
                             <span className="text-3xl block">📁</span>
                             <span className="font-bold text-gray-700 block text-[11px]">Upload Sketch or Reference</span>
-                            <span className="text-[9px] text-gray-400 block leading-tight">Supports PNG, JPG, or PDF (Max 4MB)</span>
+                            <span className="text-[9px] text-gray-400 block leading-tight">Supports PNG, JPG (Max 10MB) — Optional</span>
                           </>
                         )}
 
                         <input
                           type="file"
-                          accept="image/*,.pdf"
-                          disabled={firebaseDiagnostics.checked && !firebaseDiagnostics.valid}
-                          onChange={(e) => {
+                          accept="image/*"
+                          onChange={async (e) => {
                             const file = e.target.files[0];
-                            if (file) {
-                              console.log("DEBUG [1/5]: File selection triggered. File selected:", file.name, "size:", file.size);
-                              setCustomDesignUploadProgress("Optimizing sketch for fast transmission...");
-                              setCustomDesignUploading(true);
-                              try {
+                            if (!file) return;
+                            if (file.size > 10 * 1024 * 1024) {
+                              setCustomDesignUploadProgress('File too large. Please choose an image under 10MB.');
+                              return;
+                            }
+                            setCustomDesignUploadProgress('Uploading image...');
+                            setCustomDesignUploading(true);
+                            try {
+                              // Compress image before upload
+                              const compressedBlob = await new Promise((resolve) => {
                                 const reader = new FileReader();
-                                reader.readAsDataURL(file);
-                                reader.onload = (event) => {
-                                  console.log("DEBUG: FileReader readAsDataURL completed successfully.");
+                                reader.onload = (ev) => {
                                   const img = new Image();
-                                  img.src = event.target.result;
-                                  img.onload = async () => {
-                                    console.log("DEBUG: Image object loaded. original size:", img.width, "x", img.height);
+                                  img.onload = () => {
+                                    const MAX = 1200;
+                                    let w = img.width, h = img.height;
+                                    if (w > MAX) { h = (h * MAX) / w; w = MAX; }
+                                    if (h > MAX) { w = (w * MAX) / h; h = MAX; }
                                     const canvas = document.createElement('canvas');
-                                    const MAX_WIDTH = 600;
-                                    const MAX_HEIGHT = 600;
-                                    let width = img.width;
-                                    let height = img.height;
-
-                                    if (width > height) {
-                                      if (width > MAX_WIDTH) {
-                                        height *= MAX_WIDTH / width;
-                                        width = MAX_WIDTH;
-                                      }
-                                    } else {
-                                      if (height > MAX_HEIGHT) {
-                                        width *= MAX_HEIGHT / height;
-                                        height = MAX_HEIGHT;
-                                      }
-                                    }
-
-                                    canvas.width = width;
-                                    canvas.height = height;
-                                    const ctx = canvas.getContext('2d');
-                                    ctx.drawImage(img, 0, 0, width, height);
-
-                                    // Compressed base64 string
-                                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
-                                    console.log("DEBUG: Image optimized and compressed on canvas.");
-
-                                    setCustomDesignUploadProgress("Uploading reference image to secure server...");
-                                    try {
-                                      console.log("DEBUG: Layer 1 backend upload starting...");
-                                      // LAYER 1: Try serverless backend upload (extremely fast, CORS-free, works on localhost via proxy!)
-                                      const response = await fetch('/api/upload-image', {
-                                        method: 'POST',
-                                        headers: {
-                                          'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify({
-                                          fileName: file.name,
-                                          fileData: compressedDataUrl
-                                        })
-                                      });
-
-                                      const resData = await response.json();
-                                      console.log("DEBUG [2/5]: Layer 1 backend upload finished. status:", response.status, "success:", resData.success);
-
-                                      if (response.ok && resData.success) {
-                                        console.log("DEBUG [3/5]: Layer 1 getDownloadURL() returned:", resData.downloadURL);
-                                        console.log("DEBUG [4/5]: Storing URL in customDesignForm state via functional updater.");
-                                        setCustomDesignForm(prev => {
-                                          const nextState = {
-                                            ...prev,
-                                            fileName: file.name,
-                                            fileData: resData.downloadURL,
-                                            referenceImageUrl: resData.downloadURL
-                                          };
-                                          console.log("AFTER UPLOAD", nextState);
-                                          return nextState;
-                                        });
-                                        setCustomDesignUploadProgress("Sketch uploaded and linked successfully!");
-                                        setCustomDesignUploading(false);
-                                      } else {
-                                        throw new Error(resData.error || 'Server upload failed');
-                                      }
-                                    } catch (apiErr) {
-                                      console.warn("Backend upload failed, attempting direct storage upload...", apiErr);
-                                      console.log("DEBUG: Layer 2 direct storage upload starting...");
-
-                                      // LAYER 2: Direct storage upload with robust 15-second failsafe timeout
-                                      const directUploadPromise = (async () => {
-                                        // Ensure customer has authenticated session to write to Firebase Storage
-                                        try {
-                                          console.log("DEBUG: Signing in anonymously for Firebase Storage write permissions...");
-                                          if (auth && !auth.currentUser) {
-                                            await signInAnonymously(auth);
-                                            console.log("DEBUG: Anonymous sign in successful.");
-                                          }
-                                        } catch (authErr) {
-                                          console.warn("Anonymous auth failed, uploading anonymously anyway:", authErr);
-                                        }
-
-                                        const storageRef = ref(storage, `custom-designs/${Date.now()}_${file.name}`);
-
-                                        // Robust synchronous base64 dataURL-to-blob conversion
-                                        const parts = compressedDataUrl.split(',');
-                                        const mime = parts[0].match(/:(.*?);/)[1];
-                                        const bstr = atob(parts[1]);
-                                        let n = bstr.length;
-                                        const u8arr = new Uint8Array(n);
-                                        while (n--) {
-                                          u8arr[n] = bstr.charCodeAt(n);
-                                        }
-                                        const blobData = new Blob([u8arr], { type: mime });
-
-                                        console.log("DEBUG: Uploading bytes direct to Firebase Storage...");
-                                        await uploadBytes(storageRef, blobData);
-                                        console.log("DEBUG [2/5]: Layer 2 Firebase upload completed successfully.");
-                                        const downloadURL = await getDownloadURL(storageRef);
-                                        console.log("DEBUG [3/5]: Layer 2 getDownloadURL() returned:", downloadURL);
-                                        return downloadURL;
-                                      })();
-
-                                      const timeoutPromise = new Promise((_, reject) =>
-                                        setTimeout(() => reject(new Error("Storage upload timed out after 15 seconds")), 15000)
-                                      );
-
-                                      try {
-                                        const downloadURL = await Promise.race([directUploadPromise, timeoutPromise]);
-                                        console.log("DEBUG [4/5]: Storing direct storage URL in state via functional updater.");
-                                        setCustomDesignForm(prev => {
-                                          const nextState = {
-                                            ...prev,
-                                            fileName: file.name,
-                                            fileData: downloadURL,
-                                            referenceImageUrl: downloadURL
-                                          };
-                                          console.log("AFTER UPLOAD", nextState);
-                                          return nextState;
-                                        });
-                                        setCustomDesignUploadProgress("Sketch uploaded and linked successfully!");
-                                        setCustomDesignUploading(false);
-                                      } catch (directErr) {
-                                        console.error("Direct storage upload failed or timed out:", directErr);
-                                        console.log("DEBUG: Both serverless and direct Firebase uploads failed.");
-
-                                        setCustomDesignForm(prev => {
-                                          const nextState = {
-                                            ...prev,
-                                            fileName: '',
-                                            fileData: '',
-                                            referenceImageUrl: ''
-                                          };
-                                          console.log("AFTER UPLOAD FAILED", nextState);
-                                          return nextState;
-                                        });
-                                        setCustomDesignUploadProgress("Image upload failed. Please try again.");
-                                        setCustomDesignUploading(false);
-                                      }
-                                    }
+                                    canvas.width = w; canvas.height = h;
+                                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                                    canvas.toBlob(resolve, 'image/jpeg', 0.80);
                                   };
-                                  img.onerror = (err) => {
-                                    console.error("DEBUG: Image loading failed:", err);
-                                    setCustomDesignForm(prev => {
-                                      const nextState = {
-                                        ...prev,
-                                        fileName: '',
-                                        fileData: '',
-                                        referenceImageUrl: ''
-                                      };
-                                      console.log("AFTER UPLOAD", nextState);
-                                      return nextState;
-                                    });
-                                    setCustomDesignUploadProgress("Image upload failed. Please try again.");
-                                    setCustomDesignUploading(false);
-                                  };
+                                  img.src = ev.target.result;
                                 };
-                                reader.onerror = (err) => {
-                                  console.error("DEBUG: FileReader error:", err);
-                                  setCustomDesignUploadProgress("File reading failed. Please try again.");
-                                  setCustomDesignUploading(false);
-                                };
-                              } catch (err) {
-                                console.error("Image optimization error:", err);
-                                setCustomDesignUploadProgress("Optimization failed. Please try again.");
-                                setCustomDesignUploading(false);
+                                reader.readAsDataURL(file);
+                              });
+
+                              // Upload to Cloudinary via unsigned preset (cloud: dcraweoxj)
+                              const formData = new FormData();
+                              formData.append('file', compressedBlob, file.name);
+                              formData.append('upload_preset', 'hr_jewellers_unsigned');
+                              formData.append('folder', 'custom_designs');
+                              const res = await fetch(
+                                'https://api.cloudinary.com/v1_1/dcraweoxj/image/upload',
+                                { method: 'POST', body: formData }
+                              );
+                              const data = await res.json();
+                              if (res.ok && data.secure_url) {
+                                setCustomDesignForm(prev => ({
+                                  ...prev,
+                                  fileName: file.name,
+                                  fileData: data.secure_url,
+                                  referenceImageUrl: data.secure_url
+                                }));
+                                setCustomDesignUploadProgress('✅ Sketch uploaded successfully!');
+                              } else {
+                                // Show actual Cloudinary error for debugging
+                                const errMsg = data.error?.message || JSON.stringify(data);
+                                console.error('Cloudinary error response:', data);
+                                throw new Error(errMsg);
                               }
+                            } catch (err) {
+                              console.error('Cloudinary upload error:', err);
+                              setCustomDesignUploadProgress(`❌ Error: ${err.message}`);
+                            } finally {
+                              setCustomDesignUploading(false);
                             }
                           }}
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -13028,49 +12922,10 @@ export default function App() {
                         </div>
                       )}
 
-                      {/* Development Diagnostics Panel */}
-                      {import.meta.env.DEV && (
-                        <div className="mt-4 p-4 rounded-xl bg-[#0F0A0A] border border-[#DDA0DD]/20 font-sans text-xs space-y-3">
-                          <div className="flex items-center justify-between border-b border-[#DDA0DD]/10 pb-2">
-                            <span className="font-serif text-[#DDA0DD] tracking-wider text-[11px] font-semibold">ATELIER CORE DIAGNOSTICS</span>
-                            <span className="px-2 py-0.5 rounded text-[8px] bg-[#DDA0DD]/10 text-[#DDA0DD] font-semibold">DEV MODE</span>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 text-left text-[10px]">
-                            <div className="space-y-0.5">
-                              <p className="text-gray-400">Project ID:</p>
-                              <p className="font-mono text-[#F5E6C4]">{firebaseDiagnostics.projectId}</p>
-                            </div>
-                            <div className="space-y-0.5">
-                              <p className="text-gray-400">Active Bucket:</p>
-                              <p className="font-mono text-[#F5E6C4] truncate" title={firebaseDiagnostics.bucketName}>{firebaseDiagnostics.bucketName}</p>
-                            </div>
-                            <div className="space-y-0.5">
-                              <p className="text-gray-400">Auth Status:</p>
-                              <p className="font-medium text-[#F5E6C4] flex items-center gap-1">
-                                <span className={`w-1.5 h-1.5 rounded-full ${firebaseDiagnostics.valid ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
-                                {firebaseDiagnostics.authStatus}
-                              </p>
-                            </div>
-                            <div className="space-y-0.5">
-                              <p className="text-gray-400">Storage Status:</p>
-                              <p className="font-medium text-[#F5E6C4] flex items-center gap-1">
-                                <span className={`w-1.5 h-1.5 rounded-full ${firebaseDiagnostics.valid ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
-                                {firebaseDiagnostics.storageStatus}
-                              </p>
-                            </div>
-                          </div>
-                          {firebaseDiagnostics.error && (
-                            <div className="p-2 rounded bg-rose-950/20 border border-rose-500/20 text-rose-300 leading-normal text-left text-[9px]">
-                              <strong>Error details:</strong> {firebaseDiagnostics.error}
-                              {(firebaseDiagnostics.error.includes("notFound") || firebaseDiagnostics.error.includes("does not exist") || firebaseDiagnostics.error.includes("No active storage buckets")) ? (
-                                <p className="mt-1 text-rose-400 italic">
-                                  💡 Tip: Open the <a href="https://console.firebase.google.com/project/hr-jewellery/storage" target="_blank" rel="noopener noreferrer" className="underline font-bold text-[#DDA0DD]">Firebase Storage Console</a> and click "Get Started" to initialize the bucket!
-                                </p>
-                              ) : null}
-                            </div>
-                          )}
-                        </div>
-                      )}
+                      {/* Cloudinary powered note */}
+                      <p className="text-[9px] text-gray-400 text-center leading-relaxed">
+                        🔒 Images securely hosted via <span className="font-semibold text-[#DDA0DD]">Cloudinary</span> CDN · Upload is optional
+                      </p>
 
                       <div className="flex gap-2">
                         <button
