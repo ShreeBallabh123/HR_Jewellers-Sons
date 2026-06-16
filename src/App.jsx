@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { db, storage, auth } from './firebase';
 import { signInAnonymously } from 'firebase/auth';
 import {
@@ -3432,7 +3432,7 @@ export default function App() {
                         </section>
 
                         {/* ── CUSTOM DESIGN BUTTON ── */}
-                        <div className="flex justify-center py-8">
+                        <div className="w-full flex justify-center py-8">
                           <button
                             onClick={() => { triggerAudio('shimmer'); setCustomDesignOpen(true); }}
                             id="custom-design-cta"
