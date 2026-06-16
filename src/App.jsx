@@ -6763,6 +6763,42 @@ export default function App() {
 
                     <div className="px-3 sm:px-5 py-2 sm:py-4 space-y-0 lg:max-h-[calc(100vh-180px)] lg:overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: '#DDA0DD transparent' }}>
 
+                      {/* ── METAL TYPE — Quick Select (Gold / Silver) ── */}
+                      <div className="border-b border-gray-100 py-2 sm:py-3">
+                        <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2 sm:mb-3">Metal Type</span>
+                        <div className="grid grid-cols-2 gap-2">
+                          {/* Gold */}
+                          <button
+                            onClick={() => setMetalFilter(prev => prev === 'gold' ? 'all' : 'gold')}
+                            className={`relative flex flex-col items-center justify-center gap-1 py-2.5 sm:py-3 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${metalFilter === 'gold' ? 'border-[#C8960C] shadow-[0_4px_14px_rgba(200,150,12,0.30)]' : 'border-gray-200 hover:border-[#C8960C]/50'}`}
+                            style={{ background: metalFilter === 'gold' ? 'linear-gradient(135deg, #FFF8E7 0%, #FFF0B3 100%)' : 'white' }}
+                          >
+                            <span className="text-xl">🥇</span>
+                            <span className={`text-[9px] sm:text-[11px] font-extrabold tracking-wide font-sans ${metalFilter === 'gold' ? 'text-[#A07820]' : 'text-gray-500'}`}>GOLD</span>
+                            {metalFilter === 'gold' && (
+                              <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-[#C8960C] rounded-full flex items-center justify-center">
+                                <svg viewBox="0 0 10 10" className="w-2 h-2" fill="white"><path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              </span>
+                            )}
+                          </button>
+
+                          {/* Silver */}
+                          <button
+                            onClick={() => setMetalFilter(prev => prev === 'silver' ? 'all' : 'silver')}
+                            className={`relative flex flex-col items-center justify-center gap-1 py-2.5 sm:py-3 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${metalFilter === 'silver' ? 'border-[#718096] shadow-[0_4px_14px_rgba(113,128,150,0.25)]' : 'border-gray-200 hover:border-gray-400'}`}
+                            style={{ background: metalFilter === 'silver' ? 'linear-gradient(135deg, #F7FAFC 0%, #E2E8F0 100%)' : 'white' }}
+                          >
+                            <span className="text-xl">🥈</span>
+                            <span className={`text-[9px] sm:text-[11px] font-extrabold tracking-wide font-sans ${metalFilter === 'silver' ? 'text-[#4A5568]' : 'text-gray-500'}`}>SILVER</span>
+                            {metalFilter === 'silver' && (
+                              <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-[#718096] rounded-full flex items-center justify-center">
+                                <svg viewBox="0 0 10 10" className="w-2 h-2" fill="white"><path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              </span>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
                       {/* PRICE */}
                       <div className="border-b border-gray-100 py-1.5 sm:py-3">
                         <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-1.5 sm:mb-2.5">Price</span>
@@ -7026,6 +7062,31 @@ export default function App() {
 
                           {/* Scrollable Filter Body */}
                           <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#DDA0DD transparent' }}>
+
+                            {/* ── METAL TYPE — Quick Select (Gold / Silver) ── */}
+                            <div className="border-b border-gray-100 py-2">
+                              <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Metal Type</span>
+                              <div className="grid grid-cols-2 gap-2">
+                                <button
+                                  onClick={() => setMetalFilter(prev => prev === 'gold' ? 'all' : 'gold')}
+                                  className={`relative flex flex-col items-center justify-center gap-1 py-3 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${metalFilter === 'gold' ? 'border-[#C8960C] shadow-[0_4px_12px_rgba(200,150,12,0.25)]' : 'border-gray-200'}`}
+                                  style={{ background: metalFilter === 'gold' ? 'linear-gradient(135deg, #FFF8E7, #FFF0B3)' : 'white' }}
+                                >
+                                  <span className="text-2xl">🥇</span>
+                                  <span className={`text-[10px] font-extrabold tracking-wide font-sans ${metalFilter === 'gold' ? 'text-[#A07820]' : 'text-gray-500'}`}>GOLD</span>
+                                  {metalFilter === 'gold' && <span className="absolute top-1 right-1 w-4 h-4 bg-[#C8960C] rounded-full flex items-center justify-center"><svg viewBox="0 0 10 10" className="w-2.5 h-2.5" fill="white"><path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg></span>}
+                                </button>
+                                <button
+                                  onClick={() => setMetalFilter(prev => prev === 'silver' ? 'all' : 'silver')}
+                                  className={`relative flex flex-col items-center justify-center gap-1 py-3 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${metalFilter === 'silver' ? 'border-[#718096] shadow-[0_4px_12px_rgba(113,128,150,0.20)]' : 'border-gray-200'}`}
+                                  style={{ background: metalFilter === 'silver' ? 'linear-gradient(135deg, #F7FAFC, #E2E8F0)' : 'white' }}
+                                >
+                                  <span className="text-2xl">🥈</span>
+                                  <span className={`text-[10px] font-extrabold tracking-wide font-sans ${metalFilter === 'silver' ? 'text-[#4A5568]' : 'text-gray-500'}`}>SILVER</span>
+                                  {metalFilter === 'silver' && <span className="absolute top-1 right-1 w-4 h-4 bg-[#718096] rounded-full flex items-center justify-center"><svg viewBox="0 0 10 10" className="w-2.5 h-2.5" fill="white"><path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg></span>}
+                                </button>
+                              </div>
+                            </div>
 
                             {/* PRICE */}
                             <div className="border-b border-gray-100 py-2">
