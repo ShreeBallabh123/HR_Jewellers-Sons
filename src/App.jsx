@@ -64,7 +64,7 @@ import bannerSavings11_1 from './assets/banner_savings_11_1.webp';
 import savingsHeroJewellery from './assets/savings_hero_jewellery.png';
 import goldReserveBanner from './assets/gold_reserve_banner.png';
 import offerSavingsBanner from './assets/1778492620039-BS--MCPG--Offer---Desktop-Responsive----2400-x-778.webp';
-import atelierManifestoBanner from './assets/f604b099-b1cd-4941-b277-94d746277ae8.jpg';
+import showroomManifestoBanner from './assets/f604b099-b1cd-4941-b277-94d746277ae8.jpg';
 import bannerOldGold from './assets/banner_old_gold.webp';
 import bannerDiamond50 from './assets/Gemini_Generated_Image_11boa611boa611bo.png';
 import offerSavings11_1Banner from './assets/Gemini_Generated_Image_rw2cj3rw2cj3rw2c.png';
@@ -358,8 +358,8 @@ const GOLD_COINS_DATA = [
     weightGm: 10,
     img: laxmiGoldCoin,
     makingChargePercent: 4.0,
-    description: 'Generational 22K (916) pure gold medallion carrying the official atelier emblem of HR Jewellers & Sons. Extremely durable alloy structure made for custom jewellery settings.',
-    certification: 'BIS 916 Hallmarked & Lifetime Atelier Buyback Guarantee',
+    description: 'Generational 22K (916) pure gold medallion carrying the official showroom emblem of HR Jewellers & Sons. Extremely durable alloy structure made for custom jewellery settings.',
+    certification: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
     available: true,
     category: '22K Coin'
   },
@@ -371,7 +371,7 @@ const GOLD_COINS_DATA = [
     img: goldBullionCoin,
     makingChargePercent: 4.2,
     description: 'Stately 8g sovereign weight gold medallion embossed with the ancient shield crest of Rajputana warriors. A spectacular symbol of lineage, heritage, and pride.',
-    certification: 'BIS 916 Hallmarked & Lifetime Atelier Buyback Guarantee',
+    certification: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
     available: true,
     category: '22K Coin'
   },
@@ -383,7 +383,7 @@ const GOLD_COINS_DATA = [
     img: laxmiGoldCoin,
     makingChargePercent: 4.5,
     description: 'Beautiful 5g gold coin featuring the sacred Kalash, mango leaves, and coconut, symbolizing life, health, and spiritual abundance.',
-    certification: 'BIS 916 Hallmarked & Lifetime Atelier Buyback Guarantee',
+    certification: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
     available: true,
     category: 'Gift Coin'
   },
@@ -419,7 +419,7 @@ const GOLD_COINS_DATA = [
     img: goldBullionCoin,
     makingChargePercent: 3.2,
     description: 'Premium 20g 22K durable gold coin designed for investors looking for heavier weight with royal finish, perfect for melting or passing down as an heirloom.',
-    certification: 'BIS 916 Hallmarked & Lifetime Atelier Buyback Guarantee',
+    certification: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
     available: true,
     category: '22K Coin'
   }
@@ -757,7 +757,7 @@ class ErrorBoundary extends React.Component {
     return { hasError: true, error };
   }
   componentDidCatch(error, errorInfo) {
-    console.error("Atelier Error Boundary caught an exception:", error, errorInfo);
+    console.error("Showroom Error Boundary caught an exception:", error, errorInfo);
   }
   render() {
     if (this.state.hasError) {
@@ -1429,7 +1429,7 @@ export default function App() {
         desc = 'Browse our modern interactive catalog of certified gold, platinum, uncut diamonds, and pooja silverwares.';
         break;
       case 'heritage':
-        title = 'Legacy and Royal Atelier — HR Jewellers';
+        title = 'Legacy and Royal Showroom — HR Jewellers';
         desc = 'Discover the legacy and certified royal lineage of our master goldsmiths working in Bikaner since 1924.';
         break;
       case 'valuation':
@@ -1968,7 +1968,7 @@ export default function App() {
   // 2. Showroom Lounge Appointment
   const handleLoungeBookingSubmit = async (e) => {
     e.preventDefault();
-    const pass = `BS-ATELIER-${Math.floor(1000 + Math.random() * 9000)}`;
+    const pass = `BS-SHOWROOM-${Math.floor(1000 + Math.random() * 9000)}`;
     setConsultationPassCode(pass);
 
     const waMsg = `Hello HR Jewellers, I have registered a private Showroom Suite consultation.\n\n*Suite Pass:* ${pass}\n*Patron Name:* ${consultationForm?.name}\n*Phone:* ${consultationForm?.phone}\n*Appt Date:* ${consultationForm?.date}\n*Time Slot:* ${consultationForm?.time}\n*Inquiry Scope:* ${consultationForm?.type}`;
@@ -2019,7 +2019,7 @@ export default function App() {
     const matureInstallments = 12; // 11 Paid + 1 Bonus
     const matureWeight = (monthlySavingsInput * matureInstallments) / rate22K;
 
-    let waMsg = `Hello HR Jewellers & Sons, I would like to enroll in the 11+1 Gold Saving Scheme.\n\n*Patron Name:* ${savingsForm?.name}\n*Phone:* ${savingsForm?.phone}\n*Email:* ${savingsForm?.email}\n*City:* ${savingsForm?.city}\n*Aadhaar:* ${savingsForm?.aadhaar}\n*Monthly Installment:* ₹${monthlySavingsInput.toLocaleString('en-IN')}/month\n*11 Months Payment:* ₹${(monthlySavingsInput * 11).toLocaleString('en-IN')}\n*Atelier Bonus (Month 12):* ₹${monthlySavingsInput.toLocaleString('en-IN')}\n*Total mature value:* ₹${(monthlySavingsInput * 12).toLocaleString('en-IN')}\n*Est. Gold Weight Yield:* ${matureWeight.toFixed(2)} g\n*Preferred Branch:* ${savingsForm?.branch}`;
+    let waMsg = `Hello HR Jewellers & Sons, I would like to enroll in the 11+1 Gold Saving Scheme.\n\n*Patron Name:* ${savingsForm?.name}\n*Phone:* ${savingsForm?.phone}\n*Email:* ${savingsForm?.email}\n*City:* ${savingsForm?.city}\n*Aadhaar:* ${savingsForm?.aadhaar}\n*Monthly Installment:* ₹${monthlySavingsInput.toLocaleString('en-IN')}/month\n*11 Months Payment:* ₹${(monthlySavingsInput * 11).toLocaleString('en-IN')}\n*Showroom Bonus (Month 12):* ₹${monthlySavingsInput.toLocaleString('en-IN')}\n*Total mature value:* ₹${(monthlySavingsInput * 12).toLocaleString('en-IN')}\n*Est. Gold Weight Yield:* ${matureWeight.toFixed(2)} g\n*Preferred Branch:* ${savingsForm?.branch}`;
 
     const waUrl = `https://wa.me/919783843978?text=${encodeURIComponent(waMsg)}`;
 
@@ -3267,7 +3267,7 @@ export default function App() {
               },
               {
                 q: "What security measures protect home delivery across Rajasthan?",
-                a: "For Rajasthan pin codes, we bypass standard courier routes. Your parcel is personally hand-delivered in a secure, tamper-proof premium briefcase by armed showroom security agents, fully insured from our atelier to your doorstep."
+                a: "For Rajasthan pin codes, we bypass standard courier routes. Your parcel is personally hand-delivered in a secure, tamper-proof premium briefcase by armed showroom security agents, fully insured from our showroom to your doorstep."
               }
             ];
 
@@ -4086,7 +4086,7 @@ export default function App() {
                           className="w-full overflow-hidden relative group cursor-pointer shadow-md hover:shadow-xl transition-all duration-500 border-y border-[#DDA0DD]/10"
                         >
                           <img
-                            src={atelierManifestoBanner}
+                            src={showroomManifestoBanner}
                             alt="A trusted HR Jeweller & Sons store is closer than you think! Visit Our Main Branch FIND THIS STORE"
                             loading="lazy"
                             className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.015]"
@@ -4299,10 +4299,10 @@ export default function App() {
                       {(() => {
                         const timelineItems = [
                           { yr: 1952, title: "Bikaneri Workshop Inception", desc: "Devkishan Soni establishes the first traditional workshop in Bikaner, carving ornaments for local Rajput estates. Setting absolute purity standards in handcrafting, utilizing dense gold bars and local gems." },
-                          { yr: 1974, title: "Pioneering Purity Benchmarks", desc: "The atelier institutes formal testing procedures and establishes official guild metrics in Western Rajasthan, decades before national hallmarking laws were standardized." },
-                          { yr: 1998, title: "Uncut Diamond & Polki Expansion", desc: "Atelier introduces premium Syndicate Polki diamond collections, fusioning ancient Bikaneri carvings with Jaipuri royal color aesthetics, catering to high-fashion bridal demands." },
+                          { yr: 1974, title: "Pioneering Purity Benchmarks", desc: "The showroom institutes formal testing procedures and establishes official guild metrics in Western Rajasthan, decades before national hallmarking laws were standardized." },
+                          { yr: 1998, title: "Uncut Diamond & Polki Expansion", desc: "Showroom introduces premium Syndicate Polki diamond collections, fusioning ancient Bikaneri carvings with Jaipuri royal color aesthetics, catering to high-fashion bridal demands." },
                           { yr: 2014, title: "Flagship Showroom Fitting Lounge", desc: "Opening of the grand flagship showroom at Tilak Nagar in Bikaner. Offering specialized custom-design tables, fitting chambers, and private lounges for family bridal viewings." },
-                          { yr: 2026, title: "HR Jewellery accredited Atelier Partnership", desc: "Transitioning to a fully accredited BlueStone partner boutique, integrating advanced live gold API conversion matrices, digital certification catalogs, and instant WhatsApp booking." }
+                          { yr: 2026, title: "HR Jewellery accredited Showroom Partnership", desc: "Transitioning to a fully accredited BlueStone partner boutique, integrating advanced live gold API conversion matrices, digital certification catalogs, and instant WhatsApp booking." }
                         ];
 
                         const years = timelineItems.map(t => t.yr);
@@ -7435,12 +7435,12 @@ export default function App() {
                         className="relative w-[85%] h-[85%] object-contain transition-transform duration-[1500ms] cubic-bezier(0.16, 1, 0.3, 1) group-hover:scale-105 filter drop-shadow-[0_8px_30px_rgba(0,0,0,0.15)] select-none pointer-events-none"
                       />
 
-                      {/* Atelier Certified Medallion */}
+                      {/* Showroom Certified Medallion */}
                       <div className="absolute bottom-8 right-8 flex items-center gap-2 bg-white border border-[#4A126D]/30 px-3 py-1.5 rounded-full shadow-md z-10 transition-transform duration-500 group-hover:scale-105">
                         <svg className="w-3.5 h-3.5 text-[#4A126D] animate-[spin_12s_linear_infinite]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                         </svg>
-                        <span className="text-[8px] uppercase tracking-widest font-extrabold text-[#4A126D] font-sans">Atelier Certified</span>
+                        <span className="text-[8px] uppercase tracking-widest font-extrabold text-[#4A126D] font-sans">Showroom Certified</span>
                       </div>
 
                     </div>
@@ -7451,7 +7451,7 @@ export default function App() {
                         { img: detailProduct.img, label: 'Signature Angle' },
                         { img: udaipurFiligreeSolitaire, label: 'Alternative Perspective' },
                         { img: royalChitaiKadas, label: 'Detail Showcase' },
-                        { img: emeraldSovereignRing, label: 'Atelier Spotlight' }
+                        { img: emeraldSovereignRing, label: 'Showroom Spotlight' }
                       ].map((thumb, idx) => {
                         const isActive = (detailActiveImg || detailProduct.img) === thumb.img;
                         return (
@@ -7478,7 +7478,7 @@ export default function App() {
                       <div className="flex items-center justify-between border-b border-gray-200 pb-3">
                         <div className="flex items-center space-x-2.5">
                           <span className="text-[#4A126D] text-sm animate-pulse-slow">✦</span>
-                          <span className="serif-luxury text-sm font-bold tracking-[0.15em] text-[#4A126D] uppercase">Atelier Authenticity Ledger</span>
+                          <span className="serif-luxury text-sm font-bold tracking-[0.15em] text-[#4A126D] uppercase">Showroom Authenticity Ledger</span>
                         </div>
                         <span className="text-[8px] tracking-widest px-2.5 py-0.5 rounded-full font-bold uppercase bg-[#4A126D]/10 text-[#4A126D] border border-[#4A126D]/20">
                           NABL Certified
@@ -7512,7 +7512,7 @@ export default function App() {
                       <div className="flex justify-between items-center border-b border-gray-200 pb-3">
                         <div className="flex items-center space-x-2.5">
                           <span className="text-[#4A126D] text-xs">📈</span>
-                          <span className="serif-luxury text-sm font-bold tracking-[0.15em] text-[#4A126D] uppercase">Dynamic Atelier EMI Calculator</span>
+                          <span className="serif-luxury text-sm font-bold tracking-[0.15em] text-[#4A126D] uppercase">Dynamic Showroom EMI Calculator</span>
                         </div>
                         <span className="text-[8px] tracking-widest px-2.5 py-0.5 rounded-full font-bold uppercase bg-[#4A126D]/10 text-[#4A126D] border border-[#4A126D]/20">
                           9.5% Compound Interest
@@ -7618,7 +7618,7 @@ export default function App() {
 
                       <div className="bg-[#4A126D]/5 border border-gray-200 p-4 rounded-2xl text-center sm:text-right shrink-0 relative z-10 shadow-inner max-w-[200px] hover:border-[#4A126D]/30 transition-all duration-300">
                         <span className="text-[9px] uppercase font-bold tracking-[0.15em] block text-[#4A126D] font-sans">Lifetime Exchange Lock</span>
-                        <span className="text-[9px] font-light block mt-1 text-gray-600 font-sans leading-normal">100% Value Buyback Assured by Ateliers</span>
+                        <span className="text-[9px] font-light block mt-1 text-gray-600 font-sans leading-normal">100% Value Buyback Assured by Showrooms</span>
                       </div>
                     </div>
 
@@ -7627,13 +7627,13 @@ export default function App() {
                       {detailProduct.desc}
                     </p>
 
-                    {/* Atelier Bespoke Options Customizer (Section 5) */}
+                    {/* Showroom Bespoke Options Customizer (Section 5) */}
                     <div className="bg-white rounded-[2.5rem] p-8 space-y-6 border border-gray-150 shadow-[0_15px_40px_rgba(74,18,109,0.04)] relative overflow-hidden group">
                       <div className="absolute top-0 right-0 w-24 h-24 bg-[#4A126D]/5 rounded-bl-full pointer-events-none" />
 
                       <div className="flex items-center space-x-2 border-b border-gray-200 pb-3">
                         <span className="text-[#4A126D] text-xs">✦</span>
-                        <span className="font-serif text-sm tracking-[0.2em] font-bold text-[#4A126D] uppercase">Bespoke Atelier Customizer</span>
+                        <span className="font-serif text-sm tracking-[0.2em] font-bold text-[#4A126D] uppercase">Bespoke Showroom Customizer</span>
                       </div>
 
                       <div className="space-y-5 text-xs font-sans">
@@ -7642,7 +7642,7 @@ export default function App() {
 
                           {/* Metal Type custom Selector */}
                           <div className="space-y-2">
-                            <label className="text-[9px] uppercase tracking-wider font-extrabold block text-gray-500">Atelier Metal Type</label>
+                            <label className="text-[9px] uppercase tracking-wider font-extrabold block text-gray-500">Showroom Metal Type</label>
                             <div className="flex flex-col gap-2">
                               {['22K Yellow Gold', '18K Rose Gold', 'PT 950 Platinum'].map((metal) => {
                                 const isActive = pdpSelectedMetal === metal;
@@ -7768,7 +7768,7 @@ export default function App() {
                         }`}>
                         <p className="flex items-start gap-2">
                           <span className="text-[#4A126D] font-semibold mt-0.5">•</span>
-                          <span><strong>Exchange Integrity:</strong> Standard items carry 100% metal weight buyback protections. Custom customized sets shape unique non-cancellation matrices upon atelier workshop forging commencement.</span>
+                          <span><strong>Exchange Integrity:</strong> Standard items carry 100% metal weight buyback protections. Custom customized sets shape unique non-cancellation matrices upon showroom workshop forging commencement.</span>
                         </p>
                         <p className="flex items-start gap-2">
                           <span className="text-[#4A126D] font-semibold mt-0.5">•</span>
@@ -7847,7 +7847,7 @@ export default function App() {
                       { label: 'Certified Diamonds', desc: 'IGI Appraisal Registry' },
                       { label: 'Secure Payments', desc: 'Encrypted Vault Ports' },
                       { label: 'Insured Delivery', desc: 'Transit Doorway Cover' },
-                      { label: 'Lifetime Service', desc: 'Atelier Polishing checks' },
+                      { label: 'Lifetime Service', desc: 'Showroom Polishing checks' },
                       { label: 'Trusted Since 1924', desc: 'Sovereign Heritage Trust' }
                     ].map((trust, idx) => (
                       <div key={idx} className="flex flex-col items-center justify-center px-2 group">
@@ -7896,7 +7896,7 @@ export default function App() {
                   <div className="max-w-3xl mx-auto text-center space-y-6">
                     {pdpActiveTab === 'craftsmanship' && (
                       <p className="text-xs sm:text-[14px] font-sans font-light leading-relaxed text-gray-650 animate-fade-in text-justify sm:text-center">
-                        Shaped by generational mastersmiths in our Tilak Nagar ateliers, Bikaner. Every piece begins with solid gold bars melted and refined to BIS Hallmarked specifications. Smiths implement standard Bikaneri filigree (Chitai) work under intense flame grids, setting individual gems with lacquer and gold foils to create a generational seal of luxury.
+                        Shaped by generational mastersmiths in our Tilak Nagar showrooms, Bikaner. Every piece begins with solid gold bars melted and refined to BIS Hallmarked specifications. Smiths implement standard Bikaneri filigree (Chitai) work under intense flame grids, setting individual gems with lacquer and gold foils to create a generational seal of luxury.
                       </p>
                     )}
 
@@ -8034,7 +8034,7 @@ export default function App() {
                       <button onClick={() => setPdpTcExpanded(false)} className="text-gray-500 hover:text-gray-800 text-sm font-bold p-1">✕</button>
                     </div>
                     <div className="text-[11px] text-gray-600 leading-relaxed space-y-3.5 text-justify">
-                      <p>• <strong>Exchange Integrity:</strong> Standard items carry 100% metal weight buyback protections. Custom customized sets shape unique non-cancellation matrices upon atelier workshop forging commencement.</p>
+                      <p>• <strong>Exchange Integrity:</strong> Standard items carry 100% metal weight buyback protections. Custom customized sets shape unique non-cancellation matrices upon showroom workshop forging commencement.</p>
                       <p>• <strong>Lab Certifications:</strong> Official physical certificates containing unique laboratory registration hashes are dispatched securely with transit security teams.</p>
                       <p>• <strong>Rajasthan Insured Dispatch:</strong> Hand-couriered within Bikaner and Jaipur regions inside signature steel cases under active transit insurance policies.</p>
                     </div>
@@ -8155,7 +8155,7 @@ export default function App() {
                         </svg>
                         <div>
                           <span className="text-[10px] font-bold uppercase tracking-wider text-[#DDA0DD] block font-sans">Masterwork</span>
-                          <span className={`text-[8px] block font-sans tracking-wide transition-colors duration-500 ${isCatalogDark ? "text-[#F8F4EE]/60" : "text-[#4A126D]/60"}`}>Atelier Anil Soni</span>
+                          <span className={`text-[8px] block font-sans tracking-wide transition-colors duration-500 ${isCatalogDark ? "text-[#F8F4EE]/60" : "text-[#4A126D]/60"}`}>Showroom Anil Soni</span>
                         </div>
                       </div>
                     </div>
@@ -8193,7 +8193,7 @@ export default function App() {
                         {/* Campaign Stamp/Plate at bottom */}
                         <div className="absolute bottom-6 left-6 right-6 z-20 text-center space-y-1.5 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
                           <span className="text-[8px] font-black tracking-[0.4em] text-[#DDA0DD] uppercase block">
-                            Atelier Campaign 2026
+                            Showroom Campaign 2026
                           </span>
                           <h3 className="serif-luxury text-sm font-bold text-white tracking-widest uppercase">
                             The Royal Rajputi Bride
@@ -8269,16 +8269,16 @@ export default function App() {
                           {/* Narrative copy that morphs based on selected year */}
                           <div className={`min-h-[160px] border border-gold/10 p-6 rounded-3xl space-y-4 shadow-inner transition-all duration-500 ${isCatalogDark ? 'bg-white/5' : 'bg-[#4A126D]/5'}`}>
                             <h3 className="serif-luxury text-lg sm:text-xl font-bold text-[#DDA0DD]">
-                              {activeStoryTimeline === 1952 && "1952: Atelier Foundations in Bikaner"}
+                              {activeStoryTimeline === 1952 && "1952: Showroom Foundations in Bikaner"}
                               {activeStoryTimeline === 1974 && "1974: Purity Guild Standardization"}
                               {activeStoryTimeline === 1998 && "1998: Syndicate Uncut Diamonds Polki"}
                               {activeStoryTimeline === 2014 && "2014: Flagship Showroom Fitting Lounge"}
                               {activeStoryTimeline === 2026 && "2026: High-Luxury BlueStone accredited Partner"}
                             </h3>
                             <p className="text-xs sm:text-sm font-light leading-relaxed tracking-wide opacity-80 font-sans">
-                              {activeStoryTimeline === 1952 && "Our lineage began inside the fort town of Bikaner, where native goldsmith atelier masters began hand-sculpting pristine ornaments for noble families. Driven by absolute purity and deep-rooted artistry, they established a lineage of royal goldsmith craftsmanship."}
-                              {activeStoryTimeline === 1974 && "The atelier institutes formal testing procedures and establishes official guild metrics in Western Rajasthan, pioneering metal purity and absolute trust decades before national hallmarking laws were standardized."}
-                              {activeStoryTimeline === 1998 && "Atelier introduces premium Syndicate Polki diamond collections, fusioning ancient Bikaneri carvings with Jaipuri royal color aesthetics, catering to high-fashion bridal demands."}
+                              {activeStoryTimeline === 1952 && "Our lineage began inside the fort town of Bikaner, where native goldsmith showroom masters began hand-sculpting pristine ornaments for noble families. Driven by absolute purity and deep-rooted artistry, they established a lineage of royal goldsmith craftsmanship."}
+                              {activeStoryTimeline === 1974 && "The showroom institutes formal testing procedures and establishes official guild metrics in Western Rajasthan, pioneering metal purity and absolute trust decades before national hallmarking laws were standardized."}
+                              {activeStoryTimeline === 1998 && "Showroom introduces premium Syndicate Polki diamond collections, fusioning ancient Bikaneri carvings with Jaipuri royal color aesthetics, catering to high-fashion bridal demands."}
                               {activeStoryTimeline === 2014 && "Opening of the grand flagship showroom at Tilak Nagar in Bikaner. Offering specialized custom-design tables, fitting chambers, and private lounges for family bridal viewings."}
                               {activeStoryTimeline === 2026 && "Transitioning to a fully accredited BlueStone partner boutique, integrating advanced live gold API conversion matrices, digital certification catalogs, and instant WhatsApp booking."}
                             </p>
@@ -8309,7 +8309,7 @@ export default function App() {
                                   </span>
                                   <span className={`text-[7px] uppercase tracking-wider font-extrabold transition-all duration-300 block ${activeStoryTimeline === yr ? 'opacity-100 text-[#DDA0DD]' : 'opacity-0 sm:opacity-40 sm:group-hover:opacity-75'
                                     }`}>
-                                    {yr === 1952 ? "Genesis" : yr === 1974 ? "Standard" : yr === 1998 ? "Polki" : yr === 2014 ? "Atelier" : "Lounge"}
+                                    {yr === 1952 ? "Genesis" : yr === 1974 ? "Standard" : yr === 1998 ? "Polki" : yr === 2014 ? "Showroom" : "Lounge"}
                                   </span>
                                 </button>
                               ))}
@@ -8677,7 +8677,7 @@ export default function App() {
                     </section>
 
                     {/* ==========================================
-                SECTION 08: FOUNDER MESSAGE (EDITORIAL ATELIER BLOCK)
+                SECTION 08: FOUNDER MESSAGE (EDITORIAL SHOWROOM BLOCK)
                 ========================================== */}
                     <section className="py-20 sm:py-28 max-w-5xl mx-auto px-6 select-none">
                       <div className={`border border-gold/15 p-8 sm:p-12 rounded-[2.5rem] grid grid-cols-1 md:grid-cols-12 gap-8 items-center shadow-lg relative overflow-hidden ${isCatalogDark ? 'bg-[#140920]/45 border-[#DDA0DD]/30' : 'bg-[#4A126D]/5'}`}>
@@ -8696,7 +8696,7 @@ export default function App() {
                           </div>
                           <div className="space-y-0.5">
                             <h4 className="serif-luxury text-sm font-bold tracking-wider text-[#DDA0DD]">Anil Soni</h4>
-                            <span className={`text-[8px] uppercase tracking-widest font-black block font-sans ${isCatalogDark ? 'text-white/55' : 'text-[#4A126D]/70'}`}>MASTER ATELIER DESIGNER & SMITH</span>
+                            <span className={`text-[8px] uppercase tracking-widest font-black block font-sans ${isCatalogDark ? 'text-white/55' : 'text-[#4A126D]/70'}`}>MASTER SHOWROOM DESIGNER & SMITH</span>
                           </div>
                         </div>
 
@@ -8711,7 +8711,7 @@ export default function App() {
                           </h3>
 
                           <p className={`text-xs sm:text-sm font-light leading-relaxed tracking-wide font-sans text-center md:text-left ${isCatalogDark ? 'text-white/80' : 'text-[#4A126D]/90'}`}>
-                            "Every ornament that leaves our ateliers represents an extension of Bikaneri heritage. We carefully weigh not just the gold and diamonds, but the trust that Rajput homes have invested in our name since 1952. We invite you to experience craftsmanship designed to stay beautiful forever."
+                            "Every ornament that leaves our showrooms represents an extension of Bikaneri heritage. We carefully weigh not just the gold and diamonds, but the trust that Rajput homes have invested in our name since 1952. We invite you to experience craftsmanship designed to stay beautiful forever."
                           </p>
 
                           <div className="flex items-center justify-center md:justify-start gap-4">
@@ -9037,7 +9037,7 @@ export default function App() {
                 <div className="max-w-[1440px] mx-auto relative z-20">
                   {/* Header text */}
                   <div className="text-center space-y-3 mb-12">
-                    <span className="text-[10px] tracking-[0.25em] font-extrabold text-[#DDA0DD] uppercase block">ATELIER WORKSPACE</span>
+                    <span className="text-[10px] tracking-[0.25em] font-extrabold text-[#DDA0DD] uppercase block">SHOWROOM WORKSPACE</span>
                     <h2 className="serif-luxury text-3xl sm:text-4xl font-bold text-[#2C1A3A] font-serif">Interactive Valuation Simulator</h2>
                     <div className="w-16 h-[1px] bg-[#DDA0DD] mx-auto mt-3"></div>
                     <p className="text-[#2C1A3A]/70 text-xs sm:text-sm font-light max-w-xl mx-auto tracking-wide mt-2">
@@ -9268,7 +9268,7 @@ export default function App() {
 
                         <div className="flex justify-between items-center border-b border-white/10 pb-4">
                           <div>
-                            <span className="text-[8px] text-[#DDA0DD] tracking-[0.25em] font-extrabold block">LIVE ATELIER QUOTE</span>
+                            <span className="text-[8px] text-[#DDA0DD] tracking-[0.25em] font-extrabold block">LIVE SHOWROOM QUOTE</span>
                             <span className="text-xs font-bold font-mono text-white/90">
                               {selectedMetal === 'gold' ? `Gold ${selectedPurity}` : `Silver ${selectedPurity}`}
                             </span>
@@ -9428,7 +9428,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 4. ATELIER VALUATION CALCULATOR MODAL */}
+              {/* 4. SHOWROOM VALUATION CALCULATOR MODAL */}
               {calculatorModalOpen && (
                 <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
                   <div className="absolute inset-0 bg-[#220033]/60 backdrop-blur-md transition-opacity" onClick={() => setCalculatorModalOpen(false)} />
@@ -9442,7 +9442,7 @@ export default function App() {
                     </button>
 
                     <div className="text-center space-y-2 mb-8 select-none">
-                      <span className="text-[9px] tracking-[0.25em] font-extrabold text-[#DDA0DD] uppercase block">ATELIER VALUATION SYSTEM</span>
+                      <span className="text-[9px] tracking-[0.25em] font-extrabold text-[#DDA0DD] uppercase block">SHOWROOM VALUATION SYSTEM</span>
                       <h3 className="serif-luxury text-2xl sm:text-3xl font-bold text-[#2C1A3A] font-serif">Interactive Valuation Simulator</h3>
                       <div className="w-12 h-[1px] bg-[#DDA0DD] mx-auto mt-2"></div>
                     </div>
@@ -9668,7 +9668,7 @@ export default function App() {
 
                           <div className="flex justify-between items-center border-b border-white/10 pb-4 select-none">
                             <div>
-                              <span className="text-[8px] text-[#DDA0DD] tracking-[0.25em] font-extrabold block">LIVE ATELIER QUOTE</span>
+                              <span className="text-[8px] text-[#DDA0DD] tracking-[0.25em] font-extrabold block">LIVE SHOWROOM QUOTE</span>
                               <span className="text-xs font-bold font-mono text-white/90">
                                 {selectedMetal === 'gold' ? `Gold ${selectedPurity}` : `Silver ${selectedPurity}`}
                               </span>
@@ -10198,7 +10198,7 @@ export default function App() {
 
                           {/* Technical specification details table */}
                           <div className={`p-4 rounded-2xl text-xs space-y-2.5 ${isCatalogDark ? 'bg-white/5 border border-white/5' : 'bg-gray-50 border border-gray-100'}`}>
-                            <h4 className="text-[10px] font-bold text-gold uppercase tracking-wider mb-1.5">ATELIER SPEC SHEET:</h4>
+                            <h4 className="text-[10px] font-bold text-gold uppercase tracking-wider mb-1.5">SHOWROOM SPEC SHEET:</h4>
                             <div className="grid grid-cols-2 gap-y-2 text-[10px]">
                               <div className="opacity-60">Metal Material:</div>
                               <div className="font-bold">Fine Solid Gold ({coin.purity})</div>
@@ -10211,7 +10211,7 @@ export default function App() {
                               <div className="opacity-60">Refining Process:</div>
                               <div className="font-bold">Serialized High-Pressure Mint Cast</div>
                               <div className="opacity-60">Buyback Guarantee:</div>
-                              <div className="font-bold text-gold">100% Lifetime Atelier Assured</div>
+                              <div className="font-bold text-gold">100% Lifetime Showroom Assured</div>
                             </div>
                           </div>
 
@@ -10228,7 +10228,7 @@ export default function App() {
                                 <span className="font-sans">₹{prices.baseMetalValue.toLocaleString('en-IN')}</span>
                               </div>
                               <div className="flex justify-between items-center">
-                                <span className="opacity-75">Atelier Minting Charges ({coin.makingChargePercent}%):</span>
+                                <span className="opacity-75">Showroom Minting Charges ({coin.makingChargePercent}%):</span>
                                 <span className="font-sans">₹{prices.makingCharges.toLocaleString('en-IN')}</span>
                               </div>
                               <div className="flex justify-between items-center border-b pb-1.5" style={{ borderColor: isCatalogDark ? '#FFFFFF10' : '#EAE6E1' }}>
@@ -10297,7 +10297,7 @@ export default function App() {
                 <div className="max-w-7xl mx-auto px-6 sm:px-8 text-center space-y-12">
                   <div className="space-y-3">
                     <span className="text-[10px] uppercase tracking-[0.25em] text-gold font-bold">Absolute Security Assured</span>
-                    <h2 className="serif-luxury text-3xl sm:text-4xl font-semibold animate-fade-in">Atelier Minting Security & Trust Guarantees</h2>
+                    <h2 className="serif-luxury text-3xl sm:text-4xl font-semibold animate-fade-in">Showroom Minting Security & Trust Guarantees</h2>
                     <div className="w-12 h-[1px] bg-gold mx-auto mt-2"></div>
                   </div>
 
@@ -10448,8 +10448,8 @@ export default function App() {
                     <div>
                       <h3 className="serif-luxury text-xl text-[#4A126D] font-bold mb-4">Flagship Bikaner Showroom</h3>
                       <div className="space-y-4 text-xs font-light text-gray-600 leading-relaxed">
-                        <p>📍 <strong>Atelier Address:</strong> 4-D-37, Near Murti Circle, J.N.V. Colony, Bikaner, Rajasthan (334001)</p>
-                        <p>📞 <strong>Direct Atelier Phone:</strong> +91 97838 43978 / +91 76108 43978</p>
+                        <p>📍 <strong>Showroom Address:</strong> 4-D-37, Near Murti Circle, J.N.V. Colony, Bikaner, Rajasthan (334001)</p>
+                        <p>📞 <strong>Direct Showroom Phone:</strong> +91 97838 43978 / +91 76108 43978</p>
                         <p>✉️ <strong>Electronic Support:</strong> notifications@hrjewellers.com</p>
                         <p>⏰ <strong>Visiting Hours:</strong> Monday - Sunday (11:00 AM - 08:30 PM)</p>
                       </div>
@@ -10469,7 +10469,7 @@ export default function App() {
                     {loungeSuccess ? (
                       <div className="bg-[#006361]/10 border border-[#006361]/20 p-6 rounded-2xl text-center space-y-4">
                         <h4 className="serif-luxury text-xl font-bold text-[#006361]">Appointment Suite Confirmed!</h4>
-                        <p className="text-xs text-gray-600">Your private booking pass <strong>{consultationPassCode}</strong> has been logged and sent to our atelier masters.</p>
+                        <p className="text-xs text-gray-600">Your private booking pass <strong>{consultationPassCode}</strong> has been logged and sent to our showroom masters.</p>
                         <div className="bg-white border border-gray-100 rounded-xl p-3 inline-block font-mono text-sm text-[#006361] font-bold">
                           {consultationPassCode}
                         </div>
@@ -10592,7 +10592,7 @@ export default function App() {
                     <div className="space-y-2">
                       <h2 className="serif-luxury text-3xl font-bold text-[#031838]">Enrollment Initiated Successfully!</h2>
                       <p className="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">
-                        Your application for the 11+1 Gold Saving scheme is processed. An Atelier Specialist will contact you on WhatsApp to finalize direct bank mandate links.
+                        Your application for the 11+1 Gold Saving scheme is processed. An Showroom Specialist will contact you on WhatsApp to finalize direct bank mandate links.
                       </p>
                     </div>
 
@@ -10603,7 +10603,7 @@ export default function App() {
                       <div className="flex justify-between text-xs text-gray-600"><span className="font-bold">Nominee Name</span><span>{savingsEnrollForm.nomineeName} ({savingsEnrollForm.nomineeRelationship})</span></div>
                       <div className="h-[1px] bg-gray-200 my-2" />
                       <div className="flex justify-between text-sm text-[#031838] font-bold"><span>Monthly Installment</span><span>₹ {monthlySavingsInput.toLocaleString('en-IN')}</span></div>
-                      <div className="flex justify-between text-sm text-[#006361] font-bold"><span>12th Month Bonus (Atelier)</span><span>₹ {monthlySavingsInput.toLocaleString('en-IN')}</span></div>
+                      <div className="flex justify-between text-sm text-[#006361] font-bold"><span>12th Month Bonus (Showroom)</span><span>₹ {monthlySavingsInput.toLocaleString('en-IN')}</span></div>
                     </div>
 
                     <button onClick={() => navigateTo('home')} className="px-8 py-3.5 rounded-xl bg-[#031838] hover:bg-[#0c2b5c] text-white text-xs uppercase font-black tracking-widest transition-all shadow-md">
@@ -11597,7 +11597,7 @@ export default function App() {
                                     <thead>
                                       <tr className="bg-[#4A126D] text-white text-[9px] uppercase tracking-wider font-bold">
                                         <th className="p-3">Installments Successfully Paid</th>
-                                        <th className="p-3">Atelier GRP Bonus Earned</th>
+                                        <th className="p-3">Showroom GRP Bonus Earned</th>
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-150 text-[10px] font-normal text-gray-700 bg-white">
@@ -12321,7 +12321,7 @@ export default function App() {
             <div className="absolute inset-0 bg-[#4A126D]/60 backdrop-blur-sm transition-opacity" onClick={() => setConsultationModal(false)} />
             <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 max-w-lg w-full relative z-10 shadow-2xl space-y-6 animate-fade-in text-xs">
               <div className="text-center space-y-1">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-[#006361] font-bold">ATELIER PRIVILEGE SUITE</span>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#006361] font-bold">SHOWROOM PRIVILEGE SUITE</span>
                 <h3 className="serif-luxury text-2xl font-bold text-[#4A126D]">Book Fitting Advisory Lounge</h3>
                 <div className="w-12 h-[1px] bg-[#DDA0DD] mx-auto mt-2"></div>
               </div>
@@ -12329,7 +12329,7 @@ export default function App() {
               {loungeSuccess ? (
                 <div className="bg-[#006361]/10 border border-[#006361]/20 p-6 rounded-2xl text-center space-y-4">
                   <h4 className="serif-luxury text-xl font-bold text-[#006361]">Lounge Suite Appointment Set!</h4>
-                  <p className="text-xs text-gray-600">Your unique suite pass has been synced with WhatsApp atelier logs.</p>
+                  <p className="text-xs text-gray-600">Your unique suite pass has been synced with WhatsApp showroom logs.</p>
                   <div className="bg-white border border-gray-100 rounded-xl p-3 inline-block font-mono text-sm text-[#006361] font-bold">
                     {consultationPassCode}
                   </div>
@@ -12640,7 +12640,7 @@ export default function App() {
                 <p><strong>Carat Quality:</strong> {selectedProduct.carat}</p>
                 <p><strong>Ornament Weight:</strong> {selectedProduct.weight}</p>
                 <p><strong>Authenticity badge:</strong> {selectedProduct.purityInfo || 'BIS Hallmark Bureau Stamps'}</p>
-                <p><strong>Atelier handcrafting:</strong> {selectedProduct.makingCharges || '₹380/gram setting charges included'}</p>
+                <p><strong>Showroom handcrafting:</strong> {selectedProduct.makingCharges || '₹380/gram setting charges included'}</p>
               </div>
 
               <div className="flex gap-2">
@@ -13076,7 +13076,7 @@ export default function App() {
                     <p>Next-day secure logistics operate within Bikaner, Jaipur, and general Rajasthan regions. Premium out-of-state shipments conclude within 3–5 working days.</p>
 
                     <p className="font-semibold text-[#DDA0DD] text-xs font-serif mt-3">3. Security Auditing</p>
-                    <p>Atelier dispatch logs physical tamper check signatures. We advice clients to refuse packets displaying seal discrepancies.</p>
+                    <p>Showroom dispatch logs physical tamper check signatures. We advice clients to refuse packets displaying seal discrepancies.</p>
                   </>
                 )}
 
