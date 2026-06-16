@@ -3356,6 +3356,29 @@ export default function App() {
                             </div>
                           </div>
 
+                          {/* ── CUSTOM DESIGN BUTTON (Mobile) ── */}
+                          <div className="flex justify-center py-6 lg:hidden">
+                            <button
+                              onClick={() => { triggerAudio('shimmer'); setCustomDesignOpen(true); }}
+                              id="custom-design-cta-mobile"
+                              className="group relative inline-flex items-center gap-3 px-7 py-3 rounded-full font-sans font-bold text-[12px] tracking-[0.15em] uppercase text-white overflow-hidden cursor-pointer select-none active:scale-95"
+                              style={{
+                                background: 'linear-gradient(135deg, #C8960C 0%, #E8B84B 40%, #A07820 100%)',
+                                boxShadow: '0 4px 18px rgba(180,120,20,0.30)',
+                              }}
+                            >
+                              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out pointer-events-none" />
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-4 h-4 shrink-0">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                              </svg>
+                              Custom Design
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5 shrink-0">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                              </svg>
+                            </button>
+                          </div>
+
+
                           {/* ── DESKTOP: Original staggered grid ── */}
                           <motion.div
                             variants={{
