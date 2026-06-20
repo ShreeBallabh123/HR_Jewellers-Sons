@@ -2,6 +2,8 @@
 
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-serif: 'Playfair Display', serif;
   --font-sans: 'Poppins', sans-serif;
@@ -22,7 +24,7 @@ body {
   background-color: #0A0A0A;
   color: #FFFFFF;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Hide scrollbars utility */
@@ -350,5 +352,17 @@ body {
 }
 .goldmine-slider::-moz-range-thumb:hover {
   transform: scale(1.15);
+}
+
+/* Infinite Ticker Marquee Animation */
+@keyframes marquee {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
 }
 
