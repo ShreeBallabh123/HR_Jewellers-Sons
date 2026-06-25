@@ -75,6 +75,7 @@ import campaignDaintyDreams from './assets/campaign_dainty_dreams.webp';
 import campaignRawReverie from './assets/campaign_raw_reverie.webp';
 import campaignClayWhispers from './assets/campaign_clay_whispers.webp';
 import productSketch from './assets/product_sketch.png';
+import jewelrySketchDesk from './assets/jewelry_sketch_desk.png';
 import process3dDesign from './assets/process_3d_design.png';
 import processCasting from './assets/process_casting.png';
 import processPolishing from './assets/process_polishing.png';
@@ -94,6 +95,7 @@ import testimonial2 from './assets/testimonial_2.png';
 import testimonial3 from './assets/testimonial_3.png';
 import testimonial4 from './assets/testimonial_4.png';
 import testimonial5 from './assets/testimonial_5.png';
+import fingerViewRing from './assets/finger_view_ring.png';
 
 
 
@@ -119,6 +121,46 @@ const resolveProcessImage = (imgSrc) => {
   
   return imgSrc;
 };
+
+// Data-driven Process steps for Our Process section
+const processStepsData = [
+  {
+    num: "01",
+    title: "Design Consultation",
+    desc: "Our design experts translate your vision into initial concepts, sketches, and detailed engineering requirements.",
+    img: productSketch,
+  },
+  {
+    num: "02",
+    title: "Modeling & Casting",
+    desc: "We bring designs to life with precise 3D CAD modeling and cast the raw form in precious 22K/18K gold bullion.",
+    img: processCasting,
+  },
+  {
+    num: "03",
+    title: "Stone Setting",
+    desc: "Master setters delicately select and embed each certified diamond, polki, or gemstone with flawless precision.",
+    img: processSetting,
+  },
+  {
+    num: "04",
+    title: "Filing & Polishing",
+    desc: "Raw cast parts are meticulously hand-filed and polished to bring out the metal's high-shine royal luster.",
+    img: processPolishing,
+  },
+  {
+    num: "05",
+    title: "Quality Inspection",
+    desc: "Every ornament undergoes rigorous laser testing and micro-inspections to guarantee absolute structural integrity.",
+    img: processQuality,
+  },
+  {
+    num: "06",
+    title: "Final Delivery",
+    desc: "Packaged in premium, signature velvet jewelry caskets, ready for safe transit or physical showroom pick-up.",
+    img: processPackaging,
+  }
+];
 
 // Helper for PDP price breakup calculation
 const getPriceBreakup = (price) => {
@@ -180,6 +222,27 @@ function BannerCarousel({ banners }) {
           />
         ))}
       </div>
+    </div>
+  );
+}
+
+// Local Accordion Item helper for redesigned PDP
+function AccordionItem({ title, children, defaultOpen = false }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  return (
+    <div className="border border-gray-150 rounded-xl overflow-hidden bg-white shadow-sm transition-all duration-300">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-5 py-4 bg-gray-50/60 flex items-center justify-between text-xs font-bold text-gray-855 focus:outline-none cursor-pointer hover:bg-gray-50 transition-colors"
+      >
+        <span className="uppercase tracking-wider font-sans">{title}</span>
+        <span className="text-sm font-light transition-transform duration-200">{isOpen ? '▼' : '▶'}</span>
+      </button>
+      {isOpen && (
+        <div className="p-5 text-xs text-gray-655 bg-white border-t border-gray-50 animate-fade-in">
+          {children}
+        </div>
+      )}
     </div>
   );
 }
@@ -887,6 +950,7 @@ export default function App() {
 
   const [currentPage, setCurrentPage] = useState(getInitialPage);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showStickyBuyBar, setShowStickyBuyBar] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Carousel Slider States & Handlers
@@ -1017,6 +1081,34 @@ export default function App() {
   const [timelineAutoplay, setTimelineAutoplay] = useState(true);
   const [timelineResetTrigger, setTimelineResetTrigger] = useState(0);
   const [timelineDirection, setTimelineDirection] = useState(1);
+  const [activeProcessStep, setActiveProcessStep] = useState(0);
+  const [processPaused, setProcessPaused] = useState(false);
+  const processScrollRef = useRef(null);
+
+  useEffect(() => {
+    if (processPaused) return;
+    const timer = setInterval(() => {
+      setActiveProcessStep((prev) => (prev + 1) % 6);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [processPaused]);
+
+  useEffect(() => {
+    const container = processScrollRef.current;
+    if (!container) return;
+    const activeCard = container.children[activeProcessStep];
+    if (!activeCard) return;
+    
+    const containerWidth = container.offsetWidth;
+    const cardWidth = activeCard.offsetWidth;
+    const cardLeft = activeCard.offsetLeft;
+    
+    container.scrollTo({
+      left: cardLeft - (containerWidth / 2) + (cardWidth / 2),
+      behavior: 'smooth'
+    });
+  }, [activeProcessStep]);
+
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [processSteps, setProcessSteps] = useState([]);
@@ -1062,7 +1154,7 @@ export default function App() {
     const y = ((e.clientY - top) / height) * 100;
     setPdpZoomStyle({
       transformOrigin: `${x}% ${y}%`,
-      transform: 'scale(1.5)',
+      transform: 'scale(1.2)',
     });
   };
 
@@ -1375,6 +1467,10 @@ export default function App() {
   const [pdpTcExpanded, setPdpTcExpanded] = useState(false);
   const [pdpActiveTab, setPdpActiveTab] = useState('craftsmanship');
   const [pdpActiveReviewIdx, setPdpActiveReviewIdx] = useState(0);
+  const [pdpPincode, setPdpPincode] = useState('');
+  const [pdpPincodeChecked, setPdpPincodeChecked] = useState(null);
+  const [customerSpeakIdx, setCustomerSpeakIdx] = useState(0);
+  const [pdpCustomizeOpen, setPdpCustomizeOpen] = useState(false);
 
   // ==========================================
   // SYNC & STORAGE HOOKS
@@ -1469,6 +1565,7 @@ export default function App() {
 
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 30);
+      setShowStickyBuyBar(window.scrollY > 150);
       const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
       if (totalScroll > 0) {
         setScrollProgress((window.scrollY / totalScroll) * 100);
@@ -4221,6 +4318,149 @@ export default function App() {
                           />
                           {/* Hover Shimmer effect */}
                           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none" />
+                        </div>
+                      </section>
+
+                      {/* ==========================================================
+                        FEATURE: PREMIUM OUR PROCESS SECTION
+                        ========================================================== */}
+                      <section 
+                        onMouseEnter={() => setProcessPaused(true)}
+                        onMouseLeave={() => setProcessPaused(false)}
+                        className="bg-white py-20 px-6 sm:px-12 select-none border-b border-gray-100 overflow-hidden text-left"
+                      >
+                        <div className="max-w-[1836px] mx-auto relative px-4">
+                          
+                          {/* Heading */}
+                          <div className="text-center md:text-left mb-12 space-y-4">
+                            <span className="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-[#C8A24A] font-bold font-sans block">
+                              Craftsmanship Journey
+                            </span>
+                            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight font-sans">
+                              Our Process
+                            </h2>
+                          </div>
+
+                          {/* Horizontal Timeline Navigation on Top */}
+                          <div className="flex items-center justify-between max-w-5xl mx-auto mb-20 relative px-4 select-none">
+                            {/* Connecting progress line */}
+                            <div className="absolute top-1/2 -translate-y-1/2 left-[24px] right-[24px] h-[2px] bg-gray-200 z-0">
+                              <div 
+                                className="h-full bg-[#C8A24A] transition-all duration-500 ease-out origin-left"
+                                style={{ width: `${(activeProcessStep / 5) * 100}%` }}
+                              />
+                            </div>
+                            
+                            {processStepsData.map((step, idx) => {
+                              const isActive = activeProcessStep === idx;
+                              return (
+                                <button
+                                  key={step.num}
+                                  onClick={() => {
+                                    triggerAudio('click');
+                                    setActiveProcessStep(idx);
+                                  }}
+                                  className="relative z-10 flex flex-col items-center group focus:outline-none cursor-pointer"
+                                >
+                                  {/* Dot/Number */}
+                                  <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-all duration-300 ${
+                                    isActive
+                                      ? 'bg-[#C8A24A] border-[#C8A24A] text-white shadow-[0_0_15px_rgba(200,162,74,0.35)] scale-110'
+                                      : 'bg-white border-gray-300 text-gray-500 hover:border-[#C8A24A] hover:text-[#C8A24A]'
+                                  }`}>
+                                    {step.num}
+                                  </div>
+                                  {/* Hover Step Label */}
+                                  <span className={`absolute top-14 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all duration-300 hidden md:block ${
+                                    isActive ? 'text-[#C8A24A] opacity-100 translate-y-0' : 'text-gray-400 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0'
+                                  }`}>
+                                    {step.title}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {/* Showcase Card */}
+                          <div className="w-full bg-white border border-gray-100 rounded-[32px] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_80px_rgba(0,0,0,0.05)] transition-shadow duration-500 flex flex-col lg:flex-row relative">
+                            {/* Left: Image with custom transition and zoom */}
+                            <div className="w-full lg:w-[55%] relative aspect-[16/10] lg:aspect-auto lg:h-[550px] overflow-hidden bg-gray-50 shrink-0">
+                              <div className="absolute inset-0 w-full h-full overflow-hidden">
+                                <img
+                                  key={activeProcessStep}
+                                  src={processStepsData[activeProcessStep].img}
+                                  alt={processStepsData[activeProcessStep].title}
+                                  className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out animate-zoomIn"
+                                  style={{
+                                    animation: 'zoomIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                                  }}
+                                />
+                              </div>
+                              <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black/10 via-transparent to-transparent pointer-events-none" />
+                              
+                              {/* Step Number Badge */}
+                              <div className="absolute top-8 left-8 bg-white/90 backdrop-blur-md text-[#C8A24A] border border-[#C8A24A]/20 px-4 py-2 rounded-full font-bold text-xs tracking-widest shadow-md">
+                                STEP {processStepsData[activeProcessStep].num}
+                              </div>
+                            </div>
+
+                            {/* Right: Text details */}
+                            <div className="w-full lg:w-[45%] p-8 sm:p-12 lg:p-16 flex flex-col justify-center text-left space-y-6 relative bg-white overflow-hidden">
+                              {/* Background watermark number */}
+                              <div className="absolute right-8 top-4 text-[120px] sm:text-[160px] font-extrabold text-gray-50 pointer-events-none select-none font-sans leading-none z-0">
+                                {processStepsData[activeProcessStep].num}
+                              </div>
+
+                              <div className="relative z-10 space-y-3">
+                                <span className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#C8A24A] font-bold font-sans">
+                                  Step {processStepsData[activeProcessStep].num} of 06
+                                </span>
+                                <h3 
+                                  key={`title-${activeProcessStep}`}
+                                  className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight font-sans animate-fadeSlideIn"
+                                >
+                                  {processStepsData[activeProcessStep].title}
+                                </h3>
+                                <div className="w-12 h-1 bg-[#C8A24A] rounded-full" />
+                              </div>
+
+                              <p 
+                                key={`desc-${activeProcessStep}`}
+                                className="text-[#555] text-sm sm:text-base leading-relaxed font-sans font-medium relative z-10 max-w-lg animate-fadeSlideIn [animation-delay:150ms]"
+                              >
+                                {processStepsData[activeProcessStep].desc}
+                              </p>
+
+                              {/* Navigation arrows */}
+                              <div className="flex items-center space-x-4 pt-6 relative z-10">
+                                <button
+                                  onClick={() => {
+                                    triggerAudio('click');
+                                    setActiveProcessStep((prev) => (prev - 1 + 6) % 6);
+                                  }}
+                                  className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-[#C8A24A] hover:border-[#C8A24A] hover:text-white transition-all duration-300 cursor-pointer shadow-sm"
+                                  aria-label="Previous step"
+                                >
+                                  <svg className="w-5 h-5 stroke-current fill-none stroke-2" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    triggerAudio('click');
+                                    setActiveProcessStep((prev) => (prev + 1) % 6);
+                                  }}
+                                  className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-[#C8A24A] hover:border-[#C8A24A] hover:text-white transition-all duration-300 cursor-pointer shadow-sm"
+                                  aria-label="Next step"
+                                >
+                                  <svg className="w-5 h-5 stroke-current fill-none stroke-2" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
                         </div>
                       </section>
 
@@ -7452,14 +7692,7 @@ export default function App() {
                                     </div>
                                   )}
 
-                                  <div className="absolute inset-0 bg-gradient-to-t from-[#1B1B1B]/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-5 z-20">
-                                    <button
-                                      onClick={(e) => { e.stopPropagation(); triggerAudio('click'); setSelectedProduct(prod); }}
-                                      className="bg-white text-[#1B1B1B] text-[10px] uppercase font-bold tracking-widest px-5 py-2.5 rounded-full shadow-lg hover:bg-[#DDA0DD] hover:text-white transition-all transform translate-y-3 group-hover:translate-y-0 duration-500 cursor-pointer"
-                                    >
-                                      Quick View
-                                    </button>
-                                  </div>
+
 
                                   {prod.badge && (
                                     <span className="absolute top-1.5 left-1.5 sm:top-3 sm:left-3 bg-[#1B1B1B] text-[#DDA0DD] text-[6px] sm:text-[8px] font-bold px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full tracking-wider uppercase border border-[#DDA0DD]/30 z-20 shadow-sm animate-pulse-slow">
@@ -7602,943 +7835,933 @@ export default function App() {
           )}
 
           {currentPage === 'product-detail' && detailProduct && (
-            <div className="bg-white text-gray-800 min-h-screen pb-24 relative select-none">
-              <div className="max-w-[1440px] mx-auto px-6 pt-6 pb-12 space-y-6 relative z-10">
+            <div className="bg-white text-[#181818] min-h-screen pb-24 relative select-none font-sans">
+              <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 py-8 space-y-16 animate-fade-in">
 
-                {/* Luxury Breadcrumbs */}
-                <div className="flex flex-wrap items-center gap-2 text-[10px] tracking-wider uppercase font-bold text-gray-400 font-sans">
-                  <button onClick={() => navigateTo('home')} className="hover:text-[#111111] transition-colors duration-300">Maison Home</button>
-                  <span className="text-[#5D4037]/50 text-xs leading-none mt-[-2px]">✦</span>
-                  <button onClick={() => handleCategoryNav(detailProduct.category)} className="hover:text-[#111111] transition-colors duration-300 capitalize">{detailProduct.category} Collection</button>
-                  <span className="text-[#5D4037]/50 text-xs leading-none mt-[-2px]">✦</span>
-                  <span className="text-gray-600 truncate font-extrabold">{detailProduct.name}</span>
-                </div>
+                {/* Breadcrumbs */}
+                <nav className="flex flex-wrap items-center gap-2 text-[10px] tracking-[0.2em] text-[#888888] uppercase font-sans text-left pb-4 select-none font-medium">
+                  <button onClick={() => navigateTo('home')} className="hover:text-[#B8893C] transition-colors duration-300">HOME</button>
+                  <span className="text-[#E7DED2]">·</span>
+                  <button onClick={() => handleCategoryNav(detailProduct.category)} className="hover:text-[#B8893C] transition-colors duration-300">{(detailProduct.category || 'JEWELLERY').toUpperCase()}</button>
+                  <span className="text-[#E7DED2]">·</span>
+                  <span className="text-[#181818] font-semibold">{detailProduct.name.toUpperCase()}</span>
+                </nav>
 
-                {/* Two-Column Split Grid: Left 55% / Right 45% (using 12-column template: Left col-span-7, Right col-span-5) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-
-                  {/* LEFT COLUMN: Gallery View (Single Main Image with Thumbnails) */}
-                  <div className="lg:col-span-7 space-y-6 lg:sticky lg:top-24 self-start">
-                    {/* Main Image Box */}
+                {/* Main Two-Column Split Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-12 lg:gap-20 items-start">
+                  
+                  {/* LEFT COLUMN: Sticky Gallery View */}
+                  <div className="space-y-8 lg:sticky lg:top-[120px] self-start">
+                    
+                    {/* Hero Display Card */}
                     <div
-                      className="relative bg-white border border-gray-150 rounded-[2.5rem] p-0 overflow-hidden aspect-square flex items-center justify-center shadow-sm w-full group cursor-zoom-in"
+                      className="relative bg-white flex items-center justify-center p-0 w-full group cursor-zoom-in transition-all duration-500"
                       onMouseMove={handleZoomMouseMove}
                       onMouseLeave={handleZoomMouseLeave}
                     >
-                      {/* Corner Accent Brackets */}
-                      <div className="absolute top-6 left-6 w-10 h-10 border-t border-l border-[#5D4037]/20 pointer-events-none rounded-tl-lg" />
-                      <div className="absolute top-6 right-6 w-10 h-10 border-t border-r border-[#5D4037]/20 pointer-events-none rounded-tr-lg" />
-                      <div className="absolute bottom-6 left-6 w-10 h-10 border-b border-l border-[#5D4037]/20 pointer-events-none rounded-bl-lg" />
-                      <div className="absolute bottom-6 right-6 w-10 h-10 border-b border-r border-[#5D4037]/20 pointer-events-none rounded-br-lg" />
-
-                      {/* Gold FAST SHIPPING badge */}
-                      <span className="absolute top-6 left-6 text-[9px] font-bold px-2.5 py-0.5 bg-[#FDF9E7] border border-[#B8962E]/30 text-[#B8962E] uppercase tracking-widest rounded-md z-10 animate-pulse-slow">
-                        Fast Shipping
-                      </span>
-
                       {/* Floating Wishlist Button */}
                       <button
                         onClick={(e) => { e.stopPropagation(); triggerAudio('click'); toggleWishlist(detailProduct); }}
-                        className="absolute top-6 right-6 w-9 h-9 bg-white border border-gray-150 rounded-full flex items-center justify-center shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 z-10 cursor-pointer focus:outline-none"
+                        className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center transition-all duration-300 cursor-pointer focus:outline-none z-10 group/wish"
                         title="Add to Wishlist"
                       >
                         <svg
-                          className={`w-4 h-4 transition-colors duration-300 ${wishlistItems.some(i => i.id === detailProduct.id) ? 'fill-red-500 text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+                          className={`w-6 h-6 transition-colors duration-300 ${wishlistItems.some(i => i.id === detailProduct.id) ? 'fill-red-500 text-red-500' : 'text-[#888888] hover:text-red-500'}`}
                           fill={wishlistItems.some(i => i.id === detailProduct.id) ? "currentColor" : "none"}
                           stroke="currentColor"
-                          strokeWidth="2"
+                          strokeWidth="1.2"
                           viewBox="0 0 24 24"
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                       </button>
 
-                      {/* Showroom Certified Pill Badge (bottom-right) */}
-                      <div className="absolute bottom-6 right-6 bg-white/80 backdrop-blur-sm border border-[#5D4037]/35 rounded-full py-1.5 px-4 flex items-center gap-1.5 shadow-sm text-[9px] font-bold text-[#5D4037] tracking-widest uppercase z-10">
-                        <svg className="w-3.5 h-3.5 text-[#5D4037]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.907c.961 0 1.36 1.24.588 1.81l-3.97 2.883a1 1 0 00-.364 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.971-2.883a1 1 0 00-1.175 0l-3.97 2.883c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.364-1.118l-3.97-2.883c-.773-.57-.373-1.81.588-1.81h4.906a1 1 0 00.95-.69l1.519-4.674z" />
-                        </svg>
-                        <span>Showroom Certified</span>
-                      </div>
-
-                      {/* Main Image with Hover Zoom */}
-                      <img
-                        src={detailActiveImg || detailProduct.img}
-                        alt={detailProduct.name}
-                        className="w-full h-full object-cover select-none pointer-events-none"
-                        style={{
-                          ...pdpZoomStyle,
-                          transition: 'transform 0.15s ease-out, transform-origin 0.15s ease-out',
-                        }}
-                      />
+                      {/* Render Media */}
+                      {detailActiveImg === 'video1' ? (
+                        <div className="w-full h-full flex items-center justify-center bg-black rounded-none overflow-hidden">
+                          <video src={heroBgVideo} autoPlay loop muted controls className="w-full h-full object-contain" />
+                        </div>
+                      ) : detailActiveImg === 'video2' ? (
+                        <div className="w-full h-full flex items-center justify-center bg-black rounded-none overflow-hidden">
+                          <video src={strokesOfGeniusVideo} autoPlay loop muted controls className="w-full h-full object-contain" />
+                        </div>
+                      ) : detailActiveImg === 'fingerView' ? (
+                        <div className="w-full h-full flex items-center justify-center p-0">
+                          <img src={fingerViewRing} className="w-full h-full object-contain select-none pointer-events-none rounded-none" alt="On Finger View" />
+                        </div>
+                      ) : (
+                        <img
+                          src={detailActiveImg || detailProduct.img}
+                          alt={detailProduct.name}
+                          className="w-[90%] h-[90%] object-contain select-none pointer-events-none transition-all duration-300 mix-blend-multiply"
+                          style={{
+                            ...pdpZoomStyle,
+                            transition: 'transform 0.15s ease-out, transform-origin 0.15s ease-out',
+                            filter: 'brightness(1.06) contrast(1.04)',
+                          }}
+                        />
+                      )}
                     </div>
 
-                    {/* Horizontal Thumbnails Row */}
-                    <div className="flex flex-wrap gap-3 justify-center pt-2">
-                      {[
-                        { img: detailProduct.img, label: 'Angle 1' },
-                        { img: udaipurFiligreeSolitaire, label: 'Angle 2' },
-                        { img: royalChitaiKadas, label: 'Angle 3' },
-                        { img: emeraldSovereignRing, label: 'Angle 4' },
-                        { img: sapphireHeritageSet, label: 'Angle 5' }
-                      ].map((thumb, idx) => {
-                        const isSelected = (detailActiveImg || detailProduct.img) === thumb.img;
-                        return (
+                    {/* Thumbnails Strip */}
+                    <div className="relative flex items-center justify-between w-full bg-transparent py-1">
+                      {/* Left scroll button */}
+                      <button
+                        onClick={() => {
+                          const container = document.getElementById('pdp-thumb-list');
+                          if (container) container.scrollBy({ left: -100, behavior: 'smooth' });
+                        }}
+                        className="w-8 h-8 rounded-full border border-[#E7DED2] bg-white hover:bg-[#F7F3EE] flex items-center justify-center text-[#888888] hover:text-[#181818] transition-all duration-300 focus:outline-none shrink-0 cursor-pointer"
+                      >
+                        <svg className="w-4 h-4 stroke-current fill-none stroke-2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+
+                      {/* Thumbnails container */}
+                      <div id="pdp-thumb-list" className="flex-1 flex gap-4 overflow-x-auto no-scrollbar py-2 mx-3 justify-center select-none">
+                        {/* Main Image */}
+                        <button
+                          onClick={() => { triggerAudio('click'); setDetailActiveImg(detailProduct.img); }}
+                          className={`w-16 h-16 flex items-center justify-center p-0 bg-transparent shrink-0 focus:outline-none transition-all duration-300 hover:scale-105 cursor-pointer relative ${detailActiveImg === detailProduct.img ? 'after:content-[""] after:absolute after:bottom-0 after:left-1/4 after:right-1/4 after:h-[1.5px] after:bg-[#B8893C]' : ''}`}
+                        >
+                          <img src={detailProduct.img} className="w-14 h-14 object-contain rounded-none mix-blend-multiply" style={{ filter: 'brightness(1.06) contrast(1.04)' }} alt="Main View" />
+                        </button>
+
+                        {/* Video 1 */}
+                        <button
+                          onClick={() => { triggerAudio('click'); setDetailActiveImg('video1'); }}
+                          className={`w-16 h-16 flex flex-col items-center justify-center p-0 bg-transparent shrink-0 focus:outline-none transition-all duration-300 hover:scale-105 cursor-pointer relative ${detailActiveImg === 'video1' ? 'after:content-[""] after:absolute after:bottom-0 after:left-1/4 after:right-1/4 after:h-[1.5px] after:bg-[#B8893C]' : ''}`}
+                        >
+                          <div className="w-6 h-6 rounded-full border border-[#E7DED2] flex items-center justify-center bg-white mb-1 shrink-0">
+                            <svg className="w-2.5 h-2.5 text-[#B8893C] ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </div>
+                          <span className="text-[7px] font-semibold text-[#888888] tracking-wider uppercase leading-none">VIDEO</span>
+                        </button>
+
+                        {/* Video 2 */}
+                        <button
+                          onClick={() => { triggerAudio('click'); setDetailActiveImg('video2'); }}
+                          className={`w-16 h-16 flex flex-col items-center justify-center p-0 bg-transparent shrink-0 focus:outline-none transition-all duration-300 hover:scale-105 cursor-pointer relative ${detailActiveImg === 'video2' ? 'after:content-[""] after:absolute after:bottom-0 after:left-1/4 after:right-1/4 after:h-[1.5px] after:bg-[#B8893C]' : ''}`}
+                        >
+                          <div className="w-6 h-6 rounded-full border border-[#E7DED2] flex items-center justify-center bg-white mb-1 shrink-0">
+                            <svg className="w-2.5 h-2.5 text-[#B8893C] ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </div>
+                          <span className="text-[7px] font-semibold text-[#888888] tracking-wider uppercase leading-none">VIDEO</span>
+                        </button>
+
+                        {/* Finger View */}
+                        <button
+                          onClick={() => { triggerAudio('click'); setDetailActiveImg('fingerView'); }}
+                          className={`w-16 h-16 flex flex-col items-center justify-center p-0 bg-transparent shrink-0 focus:outline-none transition-all duration-300 hover:scale-105 cursor-pointer relative ${detailActiveImg === 'fingerView' ? 'after:content-[""] after:absolute after:bottom-0 after:left-1/4 after:right-1/4 after:h-[1.5px] after:bg-[#B8893C]' : ''}`}
+                        >
+                          <img src={fingerViewRing} className="w-full h-8 object-contain rounded-none mb-0.5" alt="Finger View" />
+                          <span className="text-[6px] font-semibold text-[#888888] tracking-wider uppercase leading-none shrink-0">ON FINGER</span>
+                        </button>
+
+                        {/* Sub Images */}
+                        {detailProduct.subImages && detailProduct.subImages.map((subImg, idx) => (
                           <button
                             key={idx}
-                            onClick={() => { triggerAudio('click'); setDetailActiveImg(thumb.img); }}
-                            className={`w-[90px] h-[90px] rounded-2xl bg-white p-2 overflow-hidden flex items-center justify-center border-2 transition-all duration-200 hover:shadow-md cursor-pointer focus:outline-none shrink-0 ${isSelected ? 'border-[#5D4037] shadow-sm' : 'border-gray-250 hover:border-gray-300'}`}
+                            onClick={() => { triggerAudio('click'); setDetailActiveImg(subImg); }}
+                            className={`w-16 h-16 flex items-center justify-center p-0 bg-transparent shrink-0 focus:outline-none transition-all duration-300 hover:scale-105 cursor-pointer relative ${detailActiveImg === subImg ? 'after:content-[""] after:absolute after:bottom-0 after:left-1/4 after:right-1/4 after:h-[1.5px] after:bg-[#B8893C]' : ''}`}
                           >
-                            <img src={thumb.img} className="w-[90%] h-[90%] object-contain select-none pointer-events-none" alt={`Thumbnail ${idx + 1}`} />
+                            <img src={subImg} className="w-14 h-14 object-contain rounded-none mix-blend-multiply" style={{ filter: 'brightness(1.06) contrast(1.04)' }} alt={`Sub ${idx + 1}`} />
                           </button>
-                        );
-                      })}
+                        ))}
+                      </div>
+
+                      {/* Right scroll button */}
+                      <button
+                        onClick={() => {
+                          const container = document.getElementById('pdp-thumb-list');
+                          if (container) container.scrollBy({ left: 100, behavior: 'smooth' });
+                        }}
+                        className="w-10 h-10 rounded-full border border-[#E7DED2] bg-white hover:bg-[#F7F3EE] flex items-center justify-center text-[#888888] hover:text-[#181818] transition-all duration-300 focus:outline-none shrink-0 cursor-pointer"
+                      >
+                        <svg className="w-4 h-4 stroke-current fill-none stroke-2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
                     </div>
 
-                    {/* Styled Certificate Card */}
-                    <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4 shadow-sm w-full font-sans">
-                      <div className="flex justify-between items-center border-b border-gray-150 pb-2">
-                        <span className="text-[10px] font-black tracking-widest text-[#156B7A] uppercase">Sample Certificate</span>
-                        <span className="text-[10px] text-[#156B7A] font-bold tracking-wider">IGI CERTIFIED</span>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-                        <div className="md:col-span-8 space-y-2.5 text-xs">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-gray-800 text-[11px] uppercase tracking-wide">INTERNATIONAL GEMOLOGICAL INSTITUTE</span>
-                          </div>
-                          <div className="space-y-1 text-[11px] text-gray-600">
-                            <div className="flex justify-between border-b border-gray-50 pb-1">
-                              <span className="text-gray-400 font-medium">Report No:</span>
-                              <span className="font-bold text-gray-800">21J488282502</span>
-                            </div>
-                            <div className="flex justify-between border-b border-gray-50 pb-1">
-                              <span className="text-gray-400 font-medium">Description:</span>
-                              <span className="font-bold text-gray-800">One {pdpSelectedMetal ? pdpSelectedMetal.split(' ').slice(1).join(' ') : 'Yellow Gold'} Ring</span>
-                            </div>
-                            <div className="flex justify-between border-b border-gray-50 pb-1">
-                              <span className="text-gray-400 font-medium">Est. Weight:</span>
-                              <span className="font-bold text-gray-800">{detailProduct.weight || '1.687 g'}</span>
-                            </div>
-                            <div className="flex justify-between border-b border-gray-50 pb-1">
-                              <span className="text-gray-400 font-medium">Carat:</span>
-                              <span className="font-bold text-gray-800">{detailProduct.diamondWeight || '0.339ct'}</span>
-                            </div>
-                            <div className="flex justify-between border-b border-gray-50 pb-1">
-                              <span className="text-gray-400 font-medium">Clarity &amp; Color:</span>
-                              <span className="font-bold text-gray-800">VVS-VS, EF</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="md:col-span-4 flex justify-center border border-gray-100 rounded-lg p-2 bg-gray-50/50">
-                          <img src={detailProduct.img} className="h-20 object-contain select-none pointer-events-none" alt="Certificate Product View" />
-                        </div>
-                      </div>
-                      <div className="bg-[#F0F9FA] text-center py-2.5 rounded-lg border border-dashed border-[#156B7A]/20">
-                        <span className="text-[10px] font-bold text-[#156B7A] tracking-wider uppercase">Official physical certificate will be shipped with order</span>
-                      </div>
-                    </div>
-
-                    {/* Value Proposition Grid */}
-                    <div className="grid grid-cols-3 gap-3 pt-2">
-                      <div className="flex flex-col items-center justify-center p-4 border border-gray-150 rounded-2xl bg-white text-center space-y-1.5 shadow-sm">
-                        <span className="text-xl">🔄</span>
-                        <span className="text-[10px] font-bold text-gray-900 tracking-wide uppercase font-sans">100% Exchange</span>
-                        <span className="text-[9px] text-gray-400 font-sans leading-none">Guaranteed weight value</span>
-                      </div>
-                      <div className="flex flex-col items-center justify-center p-4 border border-gray-150 rounded-2xl bg-white text-center space-y-1.5 shadow-sm">
-                        <span className="text-xl">💰</span>
-                        <span className="text-[10px] font-bold text-gray-900 tracking-wide uppercase font-sans">90% Buyback</span>
-                        <span className="text-[9px] text-gray-400 font-sans leading-none">Lifetime assured returns</span>
-                      </div>
-                      <div className="flex flex-col items-center justify-center p-4 border border-gray-150 rounded-2xl bg-white text-center space-y-1.5 shadow-sm">
-                        <span className="text-xl">📅</span>
-                        <span className="text-[10px] font-bold text-gray-900 tracking-wide uppercase font-sans">15 Days Return</span>
-                        <span className="text-[9px] text-gray-400 font-sans leading-none">No questions asked</span>
-                      </div>
+                    {/* Certified seals row */}
+                    <div className="pt-6 flex flex-wrap items-center justify-center gap-6 text-[10px] text-[#5E5E5E] tracking-[0.2em] font-medium uppercase select-none w-full">
+                      <span>BIS HALLMARKED</span>
+                      <span className="text-[#B8893C] text-xs">✦</span>
+                      <span>SGL CERTIFIED</span>
+                      <span className="text-[#B8893C] text-xs">✦</span>
+                      <span>GSI CERTIFIED</span>
                     </div>
 
                   </div>
 
-                  {/* RIGHT COLUMN: Details */}
-                  <div className="lg:col-span-5 space-y-6">
-
-                    {/* Product Name */}
-                    <div className="space-y-2">
-                      <h1 className="text-[38px] font-bold text-gray-900 leading-tight font-sans">
+                  {/* RIGHT COLUMN: Configuration & Buy Section */}
+                  <div className="space-y-8 text-left lg:pl-4">
+                    
+                    {/* Collection Name & Product Name */}
+                    <div className="space-y-2.5">
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-[#B8893C] font-semibold block font-sans">
+                        {((detailProduct.category || "Exclusive") + " Collection").toUpperCase()}
+                      </span>
+                      <h1 className="text-[34px] md:text-[44px] lg:text-[54px] font-semibold text-[#181818] tracking-tight leading-tight font-serif serif-luxury">
                         {detailProduct.name}
                       </h1>
-                      <div className="flex items-center justify-between gap-3 flex-wrap pt-0.5">
-                        <span className="text-xs text-gray-500 font-sans">
-                          {detailProduct.subCategory || "VVS-VS, EF"}
-                          {detailProduct.weight ? <> &middot; {detailProduct.weight}</> : null}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          <span className="text-amber-400 text-sm font-bold">&#9733;</span>
-                          <span className="text-xs font-semibold text-gray-700 font-sans">4.7</span>
-                          <span className="text-[10px] text-gray-400 font-sans">(7)</span>
+                      
+                      {/* Premium Review Badge */}
+                      <div className="flex items-center gap-2 text-xs font-light text-[#5E5E5E] font-sans">
+                        <div className="flex items-center text-[#B8893C] gap-0.5">
+                          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                         </div>
+                        <span className="text-[#181818] font-semibold ml-1">4.8</span>
+                        <span className="text-[#E7DED2]">|</span>
+                        <span className="text-[#5E5E5E] hover:text-[#B8893C] transition-colors duration-300 underline decoration-[#E7DED2] underline-offset-4 cursor-pointer">128 client reviews</span>
                       </div>
                     </div>
-
-                    <div className="h-px bg-gray-100" />
 
                     {/* Price Block */}
-                    <div className="space-y-0.5">
-                      <div className="flex items-baseline gap-3.5 flex-wrap">
-                        <span className="text-[42px] font-bold text-gray-900 font-sans leading-none">
-                          &#8377;{Number(detailProduct.price).toLocaleString("en-IN")}
+                    <div className="space-y-3 pt-2">
+                      <div className="flex flex-wrap items-baseline gap-3.5">
+                        {/* Current Price */}
+                        <span className="text-4xl lg:text-[42px] font-light text-[#181818] font-sans tracking-tight">
+                          ₹{formatPrice(detailProduct.price)}
                         </span>
-                        {detailProduct.originalPrice && (
-                          <>
-                            <span className="text-lg text-gray-400 line-through font-sans">
-                              &#8377;{Number(detailProduct.originalPrice).toLocaleString("en-IN")}
-                            </span>
-                            <span className="text-xs font-bold text-green-600 font-sans">
-                              {Math.round((1 - detailProduct.price / detailProduct.originalPrice) * 100)}% OFF
-                            </span>
-                            <button className="text-xs text-[#5D4037] font-semibold underline underline-offset-2 ml-auto whitespace-nowrap font-sans">
-                              See Savings Breakup
-                            </button>
-                          </>
-                        )}
+                        {/* Original Price */}
+                        <span className="text-base text-[#888888] line-through font-light">
+                          ₹{formatPrice(Math.round(detailProduct.price * 1.25))}
+                        </span>
+                        {/* Savings Badge */}
+                        <span className="text-[10px] font-semibold text-[#B8893C] tracking-[0.15em] uppercase">
+                          20% OFF
+                        </span>
                       </div>
-                      <p className="text-[11px] text-gray-400 font-sans pt-0.5">Inclusive of all taxes.</p>
+
+                      {/* Tax Info */}
+                      <p className="text-[10px] text-[#888888] tracking-wider font-light uppercase">MRP inclusive of all taxes &amp; delivery insurance</p>
+
+                      {/* EMI Information */}
+                      <p className="text-xs text-[#5E5E5E] font-light leading-relaxed">
+                        No Cost EMI starts at <span className="font-semibold text-[#181818]">₹{formatPrice(Math.round(detailProduct.price / 6))}/month</span> for 6 months · <button onClick={() => { triggerAudio('click'); navigateTo('savings'); }} className="text-[#B8893C] hover:text-[#A8772D] font-medium transition-colors duration-300 hover:underline cursor-pointer">View Plans</button>
+                      </p>
                     </div>
 
-                    {/* Offer Badges */}
-                    <div className="flex flex-wrap gap-3 py-1">
-                      <div className="flex items-center gap-2 bg-[#FAF6F4] border border-dashed border-slate-300 rounded-[14px] px-3.5 py-2.5 text-[11px] font-sans text-gray-700">
-                        <span className="text-sm shrink-0">💎</span>
-                        <span>You're saving flat <strong className="font-bold text-gray-900">25% OFF</strong> on diamond prices.</span>
-                      </div>
-                      <div className="flex items-center gap-2 bg-[#FAF6F4] border border-dashed border-slate-300 rounded-[14px] px-3.5 py-2.5 text-[11px] font-sans text-gray-700">
-                        <span className="text-sm shrink-0">⚒️</span>
-                        <span>You're saving flat <strong className="font-bold text-gray-900">30% OFF</strong> on making charges.</span>
-                      </div>
+                    {/* Promotions & Offers Section */}
+                    <div className="pt-4 border-t border-[#E7DED2] space-y-3.5">
+                      <h4 className="text-[9px] font-semibold text-[#888888] uppercase tracking-[0.2em]">Available Offers</h4>
+                      <ul className="space-y-3 text-xs text-[#5E5E5E] font-light">
+                        <li className="flex items-start gap-2">
+                          <span className="text-[#B8893C]">•</span>
+                          <span>Use code <span className="font-semibold text-[#181818]">ALLURE50</span> for a complimentary 50% waiver on handcrafted making charges.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[#B8893C]">•</span>
+                          <span>Connect with a personal client curator for a bespoke live video showcase · <button onClick={(e) => { e.preventDefault(); triggerAudio('shimmer'); setConsultationModal(true); }} className="text-[#B8893C] hover:text-[#A8772D] transition-colors duration-300 hover:underline cursor-pointer">Book Consultation</button></span>
+                        </li>
+                      </ul>
                     </div>
-
-                    <div className="h-px bg-gray-100" />
-
-                    {/* Gold Color & Karat Selector */}
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-sm font-semibold text-gray-800 font-sans">Select Gold Color &amp; Karat:</span>
-                        <span className="text-sm font-bold text-gray-900 font-sans">{pdpSelectedMetal || "14KT Yellow Gold"}</span>
-                      </div>
-                      <div className="flex flex-wrap gap-3">
-                        {[
-                          { label: "9KT\nYellow Gold",  color: "#D4A017", id: "9KT Yellow Gold"  },
-                          { label: "14KT\nYellow Gold", color: "#C9A84C", id: "14KT Yellow Gold" },
-                          { label: "14KT\nRose Gold",   color: "#D4836A", id: "14KT Rose Gold"   },
-                          { label: "18KT\nYellow Gold", color: "#B8962E", id: "18KT Yellow Gold" },
-                          { label: "18KT\nRose Gold",   color: "#C47A5A", id: "18KT Rose Gold"   },
-                        ].map((metal) => {
-                          const selected = (pdpSelectedMetal || "14KT Yellow Gold") === metal.id;
-                          return (
-                            <button
-                              key={metal.id}
-                              onClick={() => { triggerAudio("click"); setPdpSelectedMetal(metal.id); }}
-                              className={`relative w-[170px] h-[95px] flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 transition-all duration-250 cursor-pointer focus:outline-none hover:shadow-md hover:-translate-y-0.5 ${selected ? "border-[#5D4037] bg-white shadow-sm" : "border-gray-250 bg-white hover:border-gray-300"}`}
-                            >
-                              {selected && (
-                                <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 rounded-full bg-green-500 shadow-sm border border-white" />
-                              )}
-                              <span
-                                className="w-8 h-8 rounded-full border border-gray-150 shadow-inner block shrink-0"
-                                style={{ background: `radial-gradient(circle at 35% 35%, rgba(255,255,255,0.4), transparent 60%), ${metal.color}` }}
-                              />
-                              <span className="text-[10px] font-bold text-center text-gray-700 uppercase leading-snug whitespace-pre-line font-sans">
-                                {metal.label}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    <div className="h-px bg-gray-100" />
-
-                    {/* Ring Size Selector */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-gray-800 font-sans">Select Ring Size:</span>
-                          <span className="text-sm font-bold text-gray-900 font-sans">{selectedRingSize} IND</span>
-                        </div>
-                        <button onClick={() => { console.log("Size Guide clicked"); triggerAudio("click"); setSizeGuideOpen(true); }} className="text-xs text-[#5D4037] font-semibold underline underline-offset-2 hover:text-[#4e342e] transition-colors cursor-pointer font-sans">Size Guide</button>
-                      </div>
+                    <div className="pt-6 border-t border-[#E7DED2] space-y-6">
+                      <button
+                        onClick={() => setPdpCustomizeOpen(!pdpCustomizeOpen)}
+                        className="w-full flex items-center justify-between text-[10px] font-semibold text-[#181818] tracking-[0.2em] uppercase focus:outline-none cursor-pointer"
+                      >
+                        <span>Metal &amp; Size Customization</span>
+                        <svg 
+                          className={`w-3 h-3 text-[#B8893C] transform transition-transform duration-300 ${pdpCustomizeOpen ? 'rotate-180' : ''}`}
+                          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
                       
-                      {/* Video info banner */}
-                      <div className="flex items-center gap-3 bg-gray-50/80 border border-gray-150 rounded-xl px-4 py-2.5">
-                        <div className="w-10 h-7 rounded bg-gray-200 flex items-center justify-center shrink-0">
-                          <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M6.3 2.841A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
-                          </svg>
+                      {pdpCustomizeOpen && (
+                        <div className="space-y-6 pt-2 font-sans text-xs">
+                          {/* Metal Selection */}
+                          <div className="space-y-3">
+                            <span className="text-[#888888] font-medium uppercase tracking-[0.15em] text-[9px] block">Select Metal Option:</span>
+                            <div className="flex flex-wrap gap-4">
+                              {['18KT Yellow Gold', '14KT Yellow Gold', '22KT Yellow Gold', '18KT Rose Gold', '18KT White Gold'].map(metal => {
+                                const active = pdpSelectedMetal === metal;
+                                return (
+                                  <button
+                                    key={metal}
+                                    onClick={() => {
+                                      triggerAudio('click');
+                                      setPdpSelectedMetal(metal);
+                                    }}
+                                    className={`text-[11px] font-semibold tracking-wider uppercase pb-1 transition-all cursor-pointer border-b ${active ? 'text-[#181818] border-[#181818]' : 'text-[#888888] border-transparent hover:text-[#5E5E5E]'}`}
+                                  >
+                                    {metal}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Ring Size Selection */}
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[#888888] font-medium uppercase tracking-[0.15em] text-[9px]">Select Size (IND):</span>
+                              <button onClick={() => { triggerAudio("click"); setSizeGuideOpen(true); }} className="text-[#B8893C] hover:text-[#A8772D] font-medium transition-colors duration-300 hover:underline cursor-pointer text-[10px] tracking-[0.15em] uppercase">
+                                Size Guide
+                              </button>
+                            </div>
+                            <div className="flex gap-2.5 flex-wrap max-h-28 overflow-y-auto pr-1">
+                              {["05","06","07","08","09","10","11","12","13","14","15","16","17","18"].map((sz) => {
+                                const active = selectedRingSize === sz;
+                                return (
+                                  <button
+                                    key={sz}
+                                    onClick={() => { triggerAudio("click"); setSelectedRingSize(sz); }}
+                                    className={`w-10 h-10 border flex items-center justify-center text-xs font-light transition-all duration-300 cursor-pointer ${active ? 'bg-[#181818] text-white border-[#181818]' : 'bg-transparent text-[#5E5E5E] border-[#E7DED2] hover:border-[#888888]'}`}
+                                  >
+                                    {sz}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Engraving input */}
+                          <div className="space-y-2 pt-2">
+                            <label htmlFor="engraving-input" className="text-[#888888] font-medium uppercase tracking-[0.15em] text-[9px] block">Custom Engraving Text (Max 15 characters):</label>
+                            <input
+                              id="engraving-input"
+                              type="text"
+                              maxLength="15"
+                              placeholder="e.g. FOREVER / AMOUR"
+                              value={customEngraving}
+                              onChange={(e) => setCustomEngraving(e.target.value)}
+                              className="w-full border-b border-[#E7DED2] py-2.5 text-xs focus:outline-none focus:border-[#181818] text-[#181818] placeholder-[#888888] bg-transparent font-light"
+                            />
+                          </div>
                         </div>
-                        <span className="text-[11px] text-gray-600 font-sans">Watch this quick video to measure your ring right.</span>
-                      </div>
-
-                      <div className="grid grid-cols-7 gap-2">
-                        {["05","06","07","08","09","10","11","12","13","14","15","16","17","18"].map((size) => {
-                          const isSelected = selectedRingSize === size;
-                          return (
-                            <button
-                              key={size}
-                              onClick={() => { triggerAudio("click"); setSelectedRingSize(size); }}
-                              className={`h-[48px] rounded-[8px] text-xs font-bold border transition-all duration-200 cursor-pointer focus:outline-none font-sans ${isSelected ? "bg-[#111111] text-white border-transparent shadow-sm" : "bg-white border-gray-200 text-gray-800 hover:border-gray-400"}`}
-                            >
-                              {size}
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      {/* Sizing exchange note and made-to-order calendar warning card */}
-                      <div className="space-y-2.5 pt-1.5">
-                        <p className="text-[11px] text-gray-500 font-sans italic">Didn't get the size right? We'll exchange it.</p>
-                        <div className="bg-[#FEFBF7] border border-dashed border-[#F4E3A5] rounded-xl p-4 flex items-start gap-3">
-                          <span className="text-lg shrink-0">📅</span>
-                          <span className="text-[11px] text-gray-600 font-sans leading-relaxed">
-                            This combination will be made to order. Estimated free dispatch by <strong className="text-gray-900 font-bold">July 4, 2026</strong>.
-                          </span>
-                        </div>
-                      </div>
-
+                      )}
                     </div>
 
-                    <div className="h-px bg-gray-100" />
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-col gap-3.5 pt-1">
-                      <div className="flex items-center gap-3">
+                    {/* Purchase Actions CTA */}
+                    <div className="space-y-4 pt-4 border-t border-[#E7DED2]">
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        {/* Primary: BUY NOW */}
                         <button
-                          onClick={() => handleAddToCart({ ...detailProduct, carat: `${pdpSelectedMetal || "14KT Yellow Gold"} / Size ${selectedRingSize}`, desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc })}
-                          className="flex-1 h-[60px] bg-[#4E342E] hover:bg-[#3D2823] text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 hover:shadow-lg active:scale-[0.98] cursor-pointer font-sans"
+                          onClick={() => {
+                            handleAddToCart({ ...detailProduct, carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedRingSize}`, desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc });
+                            navigateTo('cart');
+                          }}
+                          className="flex-1 h-[60px] bg-[#181818] hover:bg-[#181818]/90 text-white font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 rounded-none flex items-center justify-center hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                         >
-                          Add to Cart
+                          BUY NOW
                         </button>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); triggerAudio('click'); toggleWishlist(detailProduct); }}
-                          className="w-14 h-[60px] bg-white border border-gray-200 rounded-xl flex items-center justify-center shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 cursor-pointer focus:outline-none"
-                          title="Add to Wishlist"
-                        >
-                          <svg
-                            className={`w-5 h-5 transition-colors duration-300 ${wishlistItems.some(i => i.id === detailProduct.id) ? 'fill-red-500 text-red-500' : 'text-gray-400 hover:text-red-500'}`}
-                            fill={wishlistItems.some(i => i.id === detailProduct.id) ? "currentColor" : "none"}
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            viewBox="0 0 24 24"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                          </svg>
-                        </button>
-                      </div>
 
-                      {/* WhatsApp and Scheme Button Row */}
-                      <div className="flex items-center gap-3">
-                        {/* WhatsApp Icon Button */}
-                        <a
-                          href="https://wa.me/919783843978?text=Hello%20H.R.%20Jewellers,%20I%27d%20like%20to%20inquire%20about%20your%20signature%20piece."
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={() => triggerAudio('shimmer')}
-                          className="w-14 h-[50px] rounded-xl bg-[#25D366] hover:bg-[#20ba59] flex items-center justify-center transition-colors cursor-pointer shrink-0"
-                          title="WhatsApp Inquire"
-                        >
-                          <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M17.472 14.382c-.022-.08-.085-.184-.245-.26-.159-.077-.945-.467-1.09-.518-.147-.052-.253-.076-.36.076-.107.152-.416.518-.51.625-.093.108-.188.12-.348.044-.16-.078-.675-.249-1.286-.795-.475-.424-.796-.947-.89-1.107-.094-.16-.01-.246.07-.324.072-.07.159-.184.238-.277.08-.093.107-.16.159-.265.053-.105.027-.197-.013-.277-.04-.08-.36-.867-.494-1.19-.13-.314-.26-.272-.36-.277-.098-.005-.21-.005-.32-.005-.11 0-.288.04-.44.205-.152.166-.58.567-.58 1.384 0 .817.595 1.606.678 1.718.083.112 1.17 1.786 2.83 2.502.396.17.705.27.945.347.399.127.762.109 1.05.066.32-.048.945-.386 1.077-.758.132-.372.132-.69.093-.758zM12 2C6.477 2 2 6.477 2 12c0 2.187.7 4.29 2 6.07L3 22l4.13-1.07c1.7.93 3.58 1.07 4.87 1.07 5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18c-1.877 0-3.72-.5-5.322-1.455l-.382-.228-2.453.64.65-2.39-.25-.397C3.256 14.73 2.7 12.877 2.7 12c0-5.128 4.172-9.3 9.3-9.3 5.128 0 9.3 4.172 9.3 9.3 0 5.128-4.172 9.3-9.3 9.3z" />
-                          </svg>
-                        </a>
-
-                        {/* Scheme Info Button */}
-                        <button
-                          onClick={() => { triggerAudio('shimmer'); navigateTo('savings'); }}
-                          className="flex-1 h-[50px] bg-white border border-gray-250 rounded-xl px-5 flex items-center justify-between text-[11px] font-bold text-gray-800 hover:bg-gray-50 hover:border-gray-300 transition-colors cursor-pointer focus:outline-none font-sans"
-                        >
-                          <span>SAVE ₹2,500 WITH SCHEME</span>
-                          <span className="text-gray-400 font-extrabold text-xs">&gt;</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="h-px bg-gray-100" />
-
-                    {/* Value Highlights Grid */}
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-3.5 py-1 text-[11px] font-sans text-gray-700">
-                      <div className="flex items-center gap-2">
-                        <span className="text-base text-gray-400">📦</span>
-                        <span>Free and secure shipping</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-base text-gray-400">🔄</span>
-                        <span>15-day free returns</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-base text-gray-400">🏆</span>
-                        <span>Lifetime exchange &amp; 100% value</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-base text-gray-400">📜</span>
-                        <span>IGI and Hallmark certified</span>
-                      </div>
-                    </div>
-
-                    {/* Loyalty Rewards Lucira Coins */}
-                    <div className="bg-[#FEF9E6] border border-[#F5E1A4] rounded-xl p-4 flex items-start gap-3 select-none">
-                      <div className="w-8 h-8 rounded-full bg-[#E5B842] flex items-center justify-center shrink-0 shadow-sm text-sm">
-                        🪙
-                      </div>
-                      <div className="space-y-0.5">
-                        <p className="text-xs font-bold text-gray-800 font-sans">
-                          Earn {Math.round(detailProduct.price * 0.04)} Lucira Coins worth ₹{Math.round(detailProduct.price * 0.04)} with this order
-                        </p>
-                        <p className="text-[10px] text-gray-500 font-sans">1 Lucira Coin = ₹1</p>
-                      </div>
-                    </div>
-
-                    {/* Pincode Checker */}
-                    <div className="bg-gray-50 border border-gray-150 rounded-xl p-4 space-y-3">
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="Enter Pincode"
-                          value={pincode || ''}
-                          onChange={(e) => setPincode(e.target.value)}
-                          className="flex-1 bg-white border border-gray-250 rounded-lg px-3 py-2 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400 font-sans"
-                        />
+                        {/* Secondary: ADD TO BAG */}
                         <button
                           onClick={() => {
                             triggerAudio('click');
-                            setPincodeChecked(true);
+                            handleAddToCart({ ...detailProduct, carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedRingSize}`, desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc });
                           }}
-                          className="px-5 bg-white border border-gray-250 rounded-lg text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                          className="flex-1 h-[60px] border border-[#181818] text-[#181818] bg-white hover:bg-[#F7F3EE] font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 rounded-none flex items-center justify-center hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                         >
-                          CHECK
+                          ADD TO BAG
                         </button>
                       </div>
-                      {pincodeChecked && (
-                        <div className="space-y-2.5 pt-1">
-                          <div className="flex items-start gap-2.5">
-                            <span className="text-[#25D366] text-sm font-bold">✓</span>
-                            <div>
-                              <p className="text-xs font-bold text-gray-800 font-sans">Nearest Store - Borivali</p>
-                              <p className="text-[11px] text-gray-500 font-sans mt-0.5">Design Available &middot; Also available in 2 other stores</p>
-                            </div>
-                          </div>
-                          <button className="w-full py-2.5 bg-white border border-gray-250 hover:bg-gray-50 text-gray-700 text-xs font-bold rounded-lg transition-colors cursor-pointer font-sans uppercase">
-                            Find In Store
-                          </button>
-                        </div>
-                      )}
-                    </div>
 
-                    <div className="h-px bg-gray-100" />
-
-                    {/* Product Details Section Accordion */}
-                    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
+                      {/* Scheme Enroll Button */}
                       <button
-                        onClick={() => setPdpDetailsOpen(!pdpDetailsOpen)}
-                        className="w-full px-5 py-4 flex items-center justify-between text-xs font-bold text-gray-800 hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none font-sans uppercase"
+                        onClick={() => { triggerAudio('shimmer'); navigateTo('savings'); }}
+                        className="w-full h-[60px] border border-[#E7DED2] text-[#5E5E5E] bg-transparent hover:bg-[#F7F3EE] hover:border-[#B8893C] font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 rounded-none flex items-center justify-center gap-2 cursor-pointer"
                       >
-                        <span>Product Details</span>
-                        <span className="text-gray-400 font-extrabold text-[10px]">{pdpDetailsOpen ? '▲' : '▼'}</span>
+                        ENROLL IN GRP SAVING PLAN &amp; BENEFIT
                       </button>
-                      {pdpDetailsOpen && (
-                        <div className="px-5 pb-5 pt-1 border-t border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-5 text-xs font-sans text-gray-700">
-                          {/* Metal */}
-                          <div className="space-y-1.5 border-r border-gray-100 last:border-r-0 pr-2">
-                            <div className="flex items-center gap-1.5 border-b border-gray-50 pb-1">
-                              <span className="text-sm">⚖️</span>
-                              <span className="font-bold text-gray-900">METAL</span>
-                            </div>
-                            <div className="space-y-1 text-[10.5px] text-gray-600">
-                              <div className="flex justify-between"><span>Purity:</span><span className="font-semibold text-gray-800">{pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : '14KT'}</span></div>
-                              <div className="flex justify-between"><span>Color:</span><span className="font-semibold text-gray-800">{pdpSelectedMetal ? pdpSelectedMetal.split(' ').slice(1).join(' ') : 'Yellow Gold'}</span></div>
-                              <div className="flex justify-between"><span>Net Wt:</span><span className="font-semibold text-gray-800">{detailProduct.weight || '1.687 g'}</span></div>
-                            </div>
-                          </div>
-                          {/* Dimension */}
-                          <div className="space-y-1.5 border-r border-gray-100 last:border-r-0 pr-2">
-                            <div className="flex items-center gap-1.5 border-b border-gray-50 pb-1">
-                              <span className="text-sm">📐</span>
-                              <span className="font-bold text-gray-900">DIMENSION</span>
-                            </div>
-                            <div className="space-y-1 text-[10.5px] text-gray-600">
-                              <div className="flex justify-between"><span>Gross Wt:</span><span className="font-semibold text-gray-800">{detailProduct.grossWeight || '1.75 g'}</span></div>
-                            </div>
-                          </div>
-                          {/* Diamond */}
-                          <div className="space-y-1.5 pr-2">
-                            <div className="flex items-center gap-1.5 border-b border-gray-50 pb-1">
-                              <span className="text-sm">💎</span>
-                              <span className="font-bold text-gray-900">DIAMOND</span>
-                            </div>
-                            <div className="space-y-1 text-[10.5px] text-gray-600">
-                              <div className="flex justify-between"><span>Shape:</span><span className="font-semibold text-gray-800">Round</span></div>
-                              <div className="flex justify-between"><span>Est. Weight:</span><span className="font-semibold text-gray-800">{detailProduct.diamondWeight || '0.034ct'}</span></div>
-                              <div className="flex justify-between"><span>Color &amp; Clarity:</span><span className="font-semibold text-gray-800">EF, VVS-VS</span></div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
                     </div>
 
-                    {/* Price & Savings Details Section Accordion */}
-                    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
-                      <button
-                        onClick={() => setPdpPriceDetailsOpen(!pdpPriceDetailsOpen)}
-                        className="w-full px-5 py-4 flex items-center justify-between text-xs font-bold text-gray-800 hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none font-sans uppercase"
-                      >
-                        <span>Price &amp; Savings Details</span>
-                        <span className="text-gray-400 font-extrabold text-[10px]">{pdpPriceDetailsOpen ? '▲' : '▼'}</span>
-                      </button>
-                      {pdpPriceDetailsOpen && (
-                        <div className="px-5 pb-5 pt-3 border-t border-gray-100 space-y-4 font-sans text-xs text-gray-700">
-                          {/* Tabs */}
-                          <div className="flex border-b border-gray-200 gap-4">
-                            <button className="pb-1.5 border-b-2 border-amber-600 font-bold text-gray-800 text-[11px] focus:outline-none">Price Breakup</button>
-                            <button className="pb-1.5 text-gray-400 text-[11px] focus:outline-none">Price Comparison</button>
-                          </div>
-                          
-                          {/* Table */}
-                          <table className="w-full text-[11px]">
-                            <thead>
-                              <tr className="text-gray-400 border-b border-gray-100">
-                                <th className="pb-2 text-left font-semibold">Component</th>
-                                <th className="pb-2 text-right font-semibold">Price</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                              {(() => {
-                                const breakup = getPriceBreakup(detailProduct.price);
-                                return (
-                                  <>
-                                    <tr>
-                                      <td className="py-2 text-gray-700">Metal Cost ({pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : '14KT'} Gold)</td>
-                                      <td className="py-2 text-right text-gray-900 font-semibold">₹{breakup.metal.toLocaleString('en-IN')}</td>
-                                    </tr>
-                                    <tr>
-                                      <td className="py-2 text-gray-700 flex items-center gap-1.5">
-                                        <span>Diamond Cost</span>
-                                        <span className="bg-green-50 border border-green-100 text-green-700 text-[9px] font-bold px-1.5 py-0.5 rounded">25% OFF</span>
-                                      </td>
-                                      <td className="py-2 text-right text-gray-900 font-semibold">₹{breakup.diamond.toLocaleString('en-IN')}</td>
-                                    </tr>
-                                    <tr>
-                                      <td className="py-2 text-gray-700 flex items-center gap-1.5">
-                                        <span>Making Charges</span>
-                                        <span className="bg-green-50 border border-green-100 text-green-700 text-[9px] font-bold px-1.5 py-0.5 rounded">30% OFF</span>
-                                      </td>
-                                      <td className="py-2 text-right text-gray-900 font-semibold">₹{breakup.making.toLocaleString('en-IN')}</td>
-                                    </tr>
-                                    <tr>
-                                      <td className="py-2 text-gray-700">GST (3% standard)</td>
-                                      <td className="py-2 text-right text-gray-900 font-semibold">₹{breakup.gst.toLocaleString('en-IN')}</td>
-                                    </tr>
-                                    <tr className="font-bold border-t border-gray-200 text-xs text-gray-900">
-                                      <td className="py-2.5">Total</td>
-                                      <td className="py-2.5 text-right">₹{breakup.total.toLocaleString('en-IN')}</td>
-                                    </tr>
-                                  </>
-                                );
-                              })()}
-                            </tbody>
-                          </table>
-                          
-                          {/* Save Card */}
-                          <div className="bg-[#FAF6F4] border border-[#DDA0DD]/20 rounded-xl p-3 flex items-center justify-between">
-                            <span className="font-bold text-gray-800 text-[10px] uppercase tracking-wide">Save on this jewelry</span>
-                            <span className="text-[#25D366] font-extrabold text-xs">₹{Math.round(detailProduct.price * 0.15).toLocaleString('en-IN')} OFF</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Warranty & Return Policy Accordion */}
-                    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
-                      <button
-                        onClick={() => setPdpWarrantyOpen(!pdpWarrantyOpen)}
-                        className="w-full px-5 py-4 flex items-center justify-between text-xs font-bold text-gray-800 hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none font-sans uppercase"
-                      >
-                        <span>Warranty &amp; Return Policy</span>
-                        <span className="text-gray-400 font-extrabold text-[10px]">{pdpWarrantyOpen ? '▲' : '▼'}</span>
-                      </button>
-                      {pdpWarrantyOpen && (
-                        <div className="px-5 pb-5 pt-3 border-t border-gray-100 font-sans text-xs text-gray-600 leading-relaxed space-y-2">
-                          <p>• <strong>15-Day Return:</strong> We offer a 15-day no-questions-asked return policy on all standard jewelry. If you are not fully satisfied, you can return it for a full refund.</p>
-                          <p>• <strong>Lifetime Warranty:</strong> Every piece is protected by our lifetime exchange guarantee, offering up to 100% value on metal weight and diamonds under standard exchange rules.</p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Care & Maintenance Accordion */}
-                    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
-                      <button
-                        onClick={() => setPdpCareOpen(!pdpCareOpen)}
-                        className="w-full px-5 py-4 flex items-center justify-between text-xs font-bold text-gray-800 hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none font-sans uppercase"
-                      >
-                        <span>Care &amp; Maintenance</span>
-                        <span className="text-gray-400 font-extrabold text-[10px]">{pdpCareOpen ? '▲' : '▼'}</span>
-                      </button>
-                      {pdpCareOpen && (
-                        <div className="px-5 pb-5 pt-3 border-t border-gray-100 font-sans text-xs text-gray-600 leading-relaxed space-y-2">
-                          <p>• <strong>Daily Wear:</strong> Avoid exposing jewelry to harsh chemicals, perfumes, hairsprays, or chlorine pool water, which can dull the polish of gold and gemstones.</p>
-                          <p>• <strong>Cleaning:</strong> Use our complimentary velvet polishing cloth to gently rub off dirt. Never use abrasive cleaners or rough materials.</p>
-                          <p>• <strong>Storage:</strong> Store your pieces separately in their soft-lined brand jewelry box to prevent scratch friction between metals.</p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* What's In The Package Accordion */}
-                    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
-                      <button
-                        onClick={() => setPdpPackageOpen(!pdpPackageOpen)}
-                        className="w-full px-5 py-4 flex items-center justify-between text-xs font-bold text-gray-800 hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none font-sans uppercase"
-                      >
-                        <span>What's In The Package</span>
-                        <span className="text-gray-400 font-extrabold text-[10px]">{pdpPackageOpen ? '▲' : '▼'}</span>
-                      </button>
-                      {pdpPackageOpen && (
-                        <div className="px-5 pb-5 pt-3 border-t border-gray-100 space-y-4 font-sans text-xs text-gray-600 leading-relaxed">
-                          <div className="grid grid-cols-3 gap-2">
-                            <div className="flex flex-col items-center gap-1">
-                              <img src={testimonial1} className="w-full h-16 object-cover rounded-lg border border-gray-100 shadow-sm" alt="Box" />
-                              <span className="text-[9px] font-bold text-gray-700 uppercase">Jewelry Box</span>
-                            </div>
-                            <div className="flex flex-col items-center gap-1">
-                              <img src={testimonial2} className="w-full h-16 object-cover rounded-lg border border-gray-100 shadow-sm" alt="Cloth" />
-                              <span className="text-[9px] font-bold text-gray-700 uppercase">Polishing Cloth</span>
-                            </div>
-                            <div className="flex flex-col items-center gap-1">
-                              <img src={testimonial3} className="w-full h-16 object-cover rounded-lg border border-gray-100 shadow-sm" alt="Card" />
-                              <span className="text-[9px] font-bold text-gray-700 uppercase">Thank You Card</span>
-                            </div>
-                          </div>
-                          <p className="text-justify text-[11px] text-gray-500 font-sans">
-                            Your jewelry piece arrives inside a signature premium jewelry box, accompanied by a soft velvet polishing cloth and a personalized thank-you card, crafted to make every unboxing feel truly special.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Wear This With Section */}
-                    <div className="space-y-3 pt-2">
-                      <span className="text-xs font-bold text-gray-800 tracking-wide uppercase font-sans">Wear This With:</span>
-                      <div className="grid grid-cols-2 gap-3">
-                        {products.filter(p => p.id !== detailProduct?.id && p.category === detailProduct?.category).slice(0, 2).map((relProd) => (
-                          <div key={relProd.id} onClick={() => { triggerAudio('click'); setDetailProduct(relProd); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="border border-gray-200 rounded-xl p-3 bg-white hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col justify-between">
-                            <div className="relative aspect-square flex items-center justify-center bg-gray-50/50 rounded-lg p-2 overflow-hidden mb-2 group">
-                              <span className="absolute top-1.5 left-1.5 text-[7.5px] font-bold px-1.5 py-0.5 bg-[#FDF9E7] border border-[#B8962E]/20 text-[#B8962E] uppercase rounded z-10">Fast Shipping</span>
-                              <img src={relProd.img} className="w-[80%] h-[80%] object-contain group-hover:scale-105 transition-transform duration-300" alt={relProd.name} />
-                            </div>
-                            <div className="space-y-1">
-                              <h5 className="font-sans font-bold text-[10px] text-gray-800 line-clamp-1">{relProd.name}</h5>
-                              <div className="flex items-center gap-1.5">
-                                <span className="font-bold text-xs text-gray-900 font-sans">₹{relProd.price.toLocaleString('en-IN')}</span>
-                                {relProd.originalPrice && (
-                                  <span className="text-[9px] text-gray-400 line-through">₹{relProd.originalPrice.toLocaleString('en-IN')}</span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                  </div>
-
-                  </div>
-
-                </div>
-
-                {/* Section: Infinite Marquee Announcement Ticker */}
-                <div className="-mx-6 bg-[#4E342E] text-white py-3.5 overflow-hidden select-none relative z-10 border-y border-white/5 font-sans">
-                  <div className="animate-marquee flex items-center gap-12 whitespace-nowrap">
-                    {/* Set 1 */}
-                    {Array(4).fill([
-                      "Bespoke Experience",
-                      "Personalized Jewelry, Made For You",
-                      "Fast & Secure Shipping",
-                      "Quality Control & Assurance"
-                    ]).flat().map((text, idx) => (
-                      <div key={`set1-${idx}`} className="flex items-center gap-12 text-[10px] sm:text-xs font-bold tracking-[0.25em] uppercase">
-                        <span>{text}</span>
-                        <span className="text-white/40 text-xs leading-none mt-[-2px]">✦</span>
-                      </div>
-                    ))}
-                    {/* Set 2 (duplicate for seamless loop) */}
-                    {Array(4).fill([
-                      "Bespoke Experience",
-                      "Personalized Jewelry, Made For You",
-                      "Fast & Secure Shipping",
-                      "Quality Control & Assurance"
-                    ]).flat().map((text, idx) => (
-                      <div key={`set2-${idx}`} className="flex items-center gap-12 text-[10px] sm:text-xs font-bold tracking-[0.25em] uppercase">
-                        <span>{text}</span>
-                        <span className="text-white/40 text-xs leading-none mt-[-2px]">✦</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Wrapper for the rest of the sections to prevent touching the edges */}
-                <div className="max-w-[1440px] mx-auto px-6 relative z-10">
-
-                  {/* Section: Story Behind The Product */}
-                  <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center py-10 font-sans border-b border-gray-100 select-none">
-                  {/* Left Column: Text */}
-                  <div className="md:col-span-6 space-y-4 pr-0 md:pr-4">
-                    <h3 className="font-bold text-2xl sm:text-3xl text-gray-900 tracking-tight leading-tight">
-                      Story Behind The Product
-                    </h3>
-                    <p className="text-xs sm:text-sm text-gray-500 leading-relaxed text-justify">
-                      {detailProduct.name && detailProduct.name.toLowerCase().includes("ring") ? (
-                        "A classic Solitaire with a modern twist. Our Ribbed Shoulder Round Solitaire Ring features a brilliant diamond with unique, grooved detailing on the band. This design combines timeless sparkle with contemporary sophistication, a beautiful symbol of love."
-                      ) : (
-                        `A classic masterpiece with a modern twist. Our ${detailProduct.name} features exceptional design with unique, hand-chiseled detailing. This design combines timeless sparkle with contemporary sophistication, a beautiful symbol of love.`
-                      )}
+                    {/* Assistance advisor */}
+                    <p className="text-center text-[10px] text-[#888888] tracking-[0.15em] mt-4 uppercase font-sans font-light">
+                      Need assistance? Call boutique advisor: <a href="tel:18004190066" className="font-semibold text-[#B8893C] hover:underline hover:text-[#A8772D] transition-colors">1800-419-0066</a> (Toll-Free)
                     </p>
-                  </div>
-                  {/* Right Column: Sketch Illustration Image */}
-                  <div className="md:col-span-6 flex justify-center">
-                    <div className="w-full aspect-[16/9] rounded-3xl overflow-hidden bg-gray-50 border border-gray-150 shadow-sm">
-                      <img src={productSketch} className="w-full h-full object-cover select-none pointer-events-none hover:scale-102 transition-transform duration-500" alt="Product Sketch Blueprint" />
-                    </div>
-                  </div>
-                </div>
-                </div> {/* Close the max-w-[1440px] wrapper */}
 
-                {/* Section: Our Process - Full Bleed */}
-                <div className="w-full bg-white py-12 border-t border-b border-gray-100 select-none relative z-10">
-                  <div className="max-w-[1440px] mx-auto px-6 mb-8">
-                    <h3 className="font-sans font-bold text-lg text-gray-900 tracking-wide uppercase">Our Process</h3>
-                  </div>
-                  <div className="w-full overflow-x-auto pb-6 scrollbar-hide select-none flex gap-6 px-6 [@media(min-width:1440px)]:px-[calc((100vw-1440px)/2+24px)]">
-                    {(processSteps.length > 0 ? processSteps : [
-                      { name: "Inspiration & Moodboard", desc: "Curating heritage themes and traditional Indian motifs.", img: processInspiration },
-                      { name: "Ideation & Sketching", desc: "We shape the initial hand-drawn design concept.", img: productSketch },
-                      { name: "Gemstone Selection", desc: "Sourcing and grading D-flawless diamonds and emeralds.", img: processGemstone },
-                      { name: "3D CAD Designing", desc: "Creating precise digital models for perfect proportions.", img: process3dDesign },
-                      { name: "3D Wax Printing", desc: "Printing high-resolution resin prototypes for fitting.", img: processWaxPrint },
-                      { name: "Gold Alloy Prep", desc: "Pure 24K gold is alloyed for 18K/22K purity.", img: processRefining },
-                      { name: "Modeling & Casting", desc: "Molten gold is cast into the hand-crafted base.", img: processCasting },
-                      { name: "Filing & Polishing", desc: "Band is refined and pre-polished smooth.", img: processPolishing },
-                      { name: "Diamond Setting", desc: "Stones handset under microscope precision.", img: processSetting },
-                      { name: "Laser Engraving", desc: "Official hallmark and HR brand signature are etched.", img: processEngraving },
-                      { name: "Ultrasonic Cleaning", desc: "Microscopic residues are cleared in a sonic bath.", img: processCleaning },
-                      { name: "Quality Testing", desc: "Every stone seat and clasp is certified.", img: processQuality },
-                      { name: "Premium Packaging", desc: "Placed in our signature velvet-lined luxury chest.", img: processPackaging }
-                    ]).map((stepItem, idx) => (
-                      <div key={idx} className="w-[200px] sm:w-[240px] shrink-0 space-y-3 group cursor-pointer">
-                        <div className="w-full aspect-[4/5] rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
-                          <img
-                            src={resolveProcessImage(stepItem.img)}
-                            className="w-full h-full object-cover select-none pointer-events-none group-hover:scale-105 transition-transform duration-500"
-                            alt={stepItem.name}
-                          />
+                    {/* Premium Product Details & Specifications Accordion Section */}
+                    <div className="border-t border-[#E7DED2] pt-8 space-y-4">
+                      {/* Description Accordion Tab */}
+                      <details className="group border-b border-[#E7DED2] pb-4" open>
+                        <summary className="flex items-center justify-between text-[10px] font-semibold text-[#181818] uppercase tracking-[0.2em] cursor-pointer select-none py-2">
+                          <span>Product Details &amp; Story</span>
+                          <svg 
+                            className="w-3 h-3 text-[#B8893C] transform transition-transform duration-300 group-open:rotate-180"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </summary>
+                        <div className="pt-2 text-xs text-[#5E5E5E] leading-relaxed space-y-3 font-light">
+                          {detailProduct.desc && detailProduct.desc.toLowerCase() !== 'test' ? (
+                            <p>{detailProduct.desc}</p>
+                          ) : !detailProduct.desc ? (
+                            <p>A classic Solitaire with a modern twist. Our {detailProduct.name} features a brilliant diamond with unique, grooved detailing on the band. This design combines timeless sparkle with contemporary sophistication, a beautiful symbol of love.</p>
+                          ) : null}
+                          <p>Jewellery is more than an ornament—it's a symbol of love, celebration, and unforgettable memories. At HR Jewellers & Sons, we carefully design and handcraft every piece with passion, precision, and dedication. Whether it's a wedding, festival, or special milestone, our jewellery is created to make every occasion truly memorable.</p>
                         </div>
-                        <div className="space-y-1">
-                          <span className="text-[9px] font-bold text-[#5D4037] font-mono leading-none bg-[#FAF6F4] px-2 py-0.5 rounded border border-[#DDA0DD]/10 uppercase">Step {idx < 9 ? `0${idx + 1}` : idx + 1}</span>
-                          <h4 className="font-sans font-bold text-xs sm:text-sm text-gray-855 leading-tight pt-1">{stepItem.name}</h4>
-                          <p className="text-[10px] sm:text-xs text-gray-500 font-sans leading-relaxed">{stepItem.desc}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                      </details>
 
-                {/* Reopen the max-w-[1440px] wrapper for subsequent sections */}
-                <div className="max-w-[1440px] mx-auto px-6 relative z-10 space-y-12">
-
-                {/* Section: 7 Verified Reviews */}
-                <div className="space-y-8 select-none">
-                  <div className="text-center space-y-2">
-                    <span className="text-[9px] uppercase tracking-[0.3em] text-gray-400 font-extrabold block font-sans">CLIENT PATRONAGE</span>
-                    <h3 className="serif-luxury text-2xl font-bold font-serif text-gray-800 tracking-wider">7 Verified Reviews</h3>
-                    <div className="w-12 h-0.5 bg-[#5D4037] mx-auto mt-2" />
-                  </div>
-
-                  {/* Summary Dashboard */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center border border-gray-200 rounded-2xl p-6 sm:p-8 bg-white shadow-sm font-sans text-xs">
-                    {/* Score */}
-                    <div className="flex flex-col items-center justify-center text-center space-y-1.5 border-r border-gray-100 last:border-r-0 pb-4 md:pb-0">
-                      <span className="text-[48px] font-bold text-gray-900 leading-none">4.7</span>
-                      <span className="text-amber-500 text-sm tracking-[0.1em] font-black">★★★★★</span>
-                      <span className="text-[10px] text-gray-400 font-bold tracking-wider uppercase">7 verified customer reviews</span>
-                    </div>
-                    {/* Bars */}
-                    <div className="space-y-1.5 border-r border-gray-100 last:border-r-0 px-0 md:px-6 pb-4 md:pb-0">
-                      {[
-                        { label: "5 Stars", pct: "71%" },
-                        { label: "4 Stars", pct: "29%" },
-                        { label: "3 Stars", pct: "0%" },
-                        { label: "2 Stars", pct: "0%" },
-                        { label: "1 Star",  pct: "0%" }
-                      ].map((bar, idx) => (
-                        <div key={idx} className="flex items-center gap-3">
-                          <span className="w-12 text-[10px] text-gray-500 font-bold whitespace-nowrap">{bar.label}</span>
-                          <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                            <div className="h-full bg-amber-500" style={{ width: bar.pct }} />
-                          </div>
-                          <span className="w-8 text-[10px] text-gray-400 font-bold text-right">{bar.pct}</span>
-                        </div>
-                      ))}
-                    </div>
-                    {/* Recommend Card */}
-                    <div className="flex flex-col items-center justify-center text-center space-y-2.5">
-                      <div className="w-12 h-12 rounded-full bg-[#E8F8EE] flex items-center justify-center text-green-700 font-black text-lg">✓</div>
-                      <span className="text-[18px] font-bold text-gray-900 leading-none">100%</span>
-                      <span className="text-[10px] text-gray-450 font-bold tracking-wide uppercase">Would recommend this product</span>
-                    </div>
-                  </div>
-
-                  {/* Reviews Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-sans text-xs">
-                    {[
-                      { name: "Mitali Jain", date: "NOVEMBER 4, 2025", stars: 5, text: "I wear this ring to work everyday and it matches everything Indian outfits and western. Really happy with the style and comfort." },
-                      { name: "Rajiv Gupta", date: "NOVEMBER 10, 2025", stars: 5, text: "I gifted this to my wife on our anniversary, and she loved it! The design feels luxurious, and the ribbed shoulder adds a unique touch to the solitaire setting." },
-                      { name: "Aryan Sharma", date: "NOVEMBER 10, 2025", stars: 5, text: "The Ribbed Shoulder Round Solitaire Ring is simply stunning. The craftsmanship is exceptional, and the solitaire stone is vibrant and eye-catching. It is perfect for a special occasion or daily wear." },
-                      { name: "Vikram Singh", date: "NOVEMBER 10, 2025", stars: 5, text: "Elegant, timeless, and exactly as shown in the pictures. The attention to detail is impressive, making this ring a perfect gift or a personal indulgence." },
-                      { name: "Aanya Jain", date: "NOVEMBER 3, 2025", stars: 5, text: "Loved the subtle elegance of this ring. I got in 14k yellow gold and it looks beautiful on my hand." },
-                      { name: "Anjali Patel", date: "NOVEMBER 10, 2025", stars: 4, text: "The solitaire's shine is amazing, and the ring feels lightweight yet durable. I wish the shipping had been faster, but overall, I'm very satisfied with my purchase." }
-                    ].map((rev, idx) => (
-                      <div key={idx} className="border border-gray-150 rounded-2xl p-5 bg-white space-y-3.5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-200">
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center gap-2">
-                              <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-800 uppercase text-[10px]">{rev.name[0]}</span>
-                              <div>
-                                <span className="font-bold text-gray-800 text-[10.5px] block">{rev.name}</span>
-                                <span className="text-[9px] text-green-600 font-bold tracking-wide uppercase">✓ Verified Buyer</span>
-                              </div>
+                      {/* Specifications Accordion Tab */}
+                      <details className="group border-b border-[#E7DED2] pb-4">
+                        <summary className="flex items-center justify-between text-[10px] font-semibold text-[#181818] uppercase tracking-[0.2em] cursor-pointer select-none py-2">
+                          <span>Specifications</span>
+                          <svg 
+                            className="w-3 h-3 text-[#B8893C] transform transition-transform duration-300 group-open:rotate-180"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </summary>
+                        <div className="pt-2">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-xs pt-2">
+                            <div className="flex justify-between py-2 border-b border-[#E7DED2]/50 font-light">
+                              <span className="text-[#888888]">Metal Purity</span>
+                              <span className="text-[#181818] font-semibold">{pdpSelectedMetal || '18Kt White Gold'}</span>
                             </div>
-                            <span className="text-[9px] text-gray-400 font-bold whitespace-nowrap">{rev.date}</span>
+                            <div className="flex justify-between py-2 border-b border-[#E7DED2]/50 font-light">
+                              <span className="text-[#888888]">Est. Weight</span>
+                              <span className="text-[#181818] font-semibold">{detailProduct.weight || '2.68 Grams'}</span>
+                            </div>
+                            <div className="flex justify-between py-2 border-b border-[#E7DED2]/50 font-light">
+                              <span className="text-[#888888]">Carat Weight</span>
+                              <span className="text-[#181818] font-semibold">{detailProduct.diamondWeight || '0.3380 Ct'}</span>
+                            </div>
+                            <div className="flex justify-between py-2 border-b border-[#E7DED2]/50 font-light">
+                              <span className="text-[#888888]">Setting Style</span>
+                              <span className="text-[#181818] font-semibold">Prong Setting</span>
+                            </div>
+                            <div className="flex justify-between py-2 border-b border-[#E7DED2]/50 font-light">
+                              <span className="text-[#888888]">Certificate</span>
+                              <span className="text-[#181818] font-semibold">SGL / GSI Certified</span>
+                            </div>
+                            <div className="flex justify-between py-2 border-b border-[#E7DED2]/50 font-light">
+                              <span className="text-[#888888]">Product SKU</span>
+                              <span className="text-[#181818] font-semibold">{detailProduct.sku || 'HRJS-PD-' + detailProduct.id}</span>
+                            </div>
                           </div>
-                          <span className="text-amber-500 text-[10px] font-black tracking-wider block">{"★".repeat(rev.stars)}</span>
-                          <p className="text-gray-600 leading-relaxed text-justify text-[11px] italic">"{rev.text}"</p>
                         </div>
-                      </div>
-                    ))}
+                      </details>
+
+                      {/* Shipping & Boutique Delivery Accordion Tab */}
+                      <details className="group border-b border-[#E7DED2] pb-4">
+                        <summary className="flex items-center justify-between text-[10px] font-semibold text-[#181818] uppercase tracking-[0.2em] cursor-pointer select-none py-2">
+                          <span>Shipping &amp; Boutique Pick-up</span>
+                          <svg 
+                            className="w-3 h-3 text-[#B8893C] transform transition-transform duration-300 group-open:rotate-180"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </summary>
+                        <div className="pt-2 text-xs text-[#5E5E5E] leading-relaxed font-light">
+                          <p>We offer free insured shipping to all pincodes within India. Estimated dispatch: 3-5 business days. You can also opt for physical collection from our showrooms in Jaipur or Tilak Nagar branch.</p>
+                        </div>
+                      </details>
+                    </div>
+
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex flex-col items-center justify-center gap-4 pt-2">
-                    <button onClick={() => triggerAudio('click')} className="text-xs text-gray-850 font-bold underline uppercase tracking-widest hover:text-[#5D4037] transition-colors cursor-pointer font-sans">Write a Review</button>
-                    <button onClick={() => triggerAudio('click')} className="px-8 py-3 bg-[#4E342E] hover:bg-[#3D2823] text-white font-bold text-[10px] uppercase tracking-widest rounded-xl transition-all duration-300 shadow-md cursor-pointer font-sans">View All Reviews</button>
+                </div>
+
+                {/* Horizontal Scrolling Text Ticker */}
+                <div className="bg-[#F7F3EE] border-t border-b border-[#E7DED2] py-4 overflow-hidden select-none my-12" style={{width: '100vw', position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw'}}>
+                  <div className="animate-marquee flex whitespace-nowrap">
+                    <div className="flex items-center gap-8 px-4 text-[9px] tracking-[0.25em] uppercase font-bold text-[#5E5E5E] shrink-0">
+                      <span>Bespoke Jewelry, Handcrafted For You</span>
+                      <span className="text-[#B8893C]">✦</span>
+                      <span>Free Fully Insured Express Shipping</span>
+                      <span className="text-[#B8893C]">✦</span>
+                      <span>100% Certified Diamonds &amp; Hallmarked Gold</span>
+                      <span className="text-[#B8893C]">✦</span>
+                      <span>Virtual Concierge &amp; Live Video Consultation</span>
+                      <span className="text-[#B8893C]">✦</span>
+                      <span>Bespoke Jewelry, Handcrafted For You</span>
+                      <span className="text-[#B8893C]">✦</span>
+                      <span>Free Fully Insured Express Shipping</span>
+                      <span className="text-[#B8893C]">✦</span>
+                      <span>100% Certified Diamonds &amp; Hallmarked Gold</span>
+                      <span className="text-[#B8893C]">✦</span>
+                      <span>Virtual Concierge &amp; Live Video Consultation</span>
+                      <span className="text-[#B8893C]">✦</span>
+                    </div>
+                    <div className="flex items-center gap-8 px-4 text-[9px] tracking-[0.25em] uppercase font-bold text-[#5E5E5E] shrink-0">
+                      <span>Bespoke Jewelry, Handcrafted For You</span>
+                      <span className="text-[#B8893C]">✦</span>
+                      <span>Free Fully Insured Express Shipping</span>
+                      <span className="text-[#B8893C]">✦</span>
+                      <span>100% Certified Diamonds &amp; Hallmarked Gold</span>
+                      <span className="text-[#B8893C]">✦</span>
+                      <span>Virtual Concierge &amp; Live Video Consultation</span>
+                      <span className="text-[#B8893C]">✦</span>
+                      <span>Bespoke Jewelry, Handcrafted For You</span>
+                      <span className="text-[#B8893C]">✦</span>
+                      <span>Free Fully Insured Express Shipping</span>
+                      <span className="text-[#B8893C]">✦</span>
+                      <span>100% Certified Diamonds &amp; Hallmarked Gold</span>
+                      <span className="text-[#B8893C]">✦</span>
+                      <span>Virtual Concierge &amp; Live Video Consultation</span>
+                      <span className="text-[#B8893C]">✦</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Section: Your Questions Answered */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-8 border-t border-gray-100 select-none">
-                  {/* Left accordion */}
-                  <div className="lg:col-span-7 space-y-6">
-                    <h3 className="font-sans font-bold text-lg text-gray-900 tracking-wide uppercase">Your Questions Answered</h3>
-                    <div className="space-y-4 font-sans text-xs">
-                      {[
-                        { q: "Are HR Jewellers diamonds certified and graded?", a: "Yes. Every single HR Jewellers diamond is certified and graded for cut, clarity, color, and quality. Each diamond piece is shipped with an official, internationally recognized hallmark certificate from independent labs like IGI or SGL." },
-                        { q: "Do you offer a lifetime exchange policy and how much value will I receive?", a: "Yes, we offer up to 100% exchange credit on standard gold and diamond weights at current marker values under our signature Lifetime Exchange guarantee." },
-                        { q: "Do you offer a buyback option and how much value will I receive?", a: "Yes. We offer up to 90% immediate cash buyback on diamonds and 100% metal value protection on our hallmarked jewelry items." },
-                        { q: "Will a lab-grown diamond test as real?", a: "Yes. Lab-grown diamonds are chemically, physically, and optically identical to mined diamonds, and will test positive on all thermo-conductivity diamond testing tools." },
-                        { q: "Are lab-grown diamonds suitable for everyday wear?", a: "Yes. Lab-grown diamonds share the same level 10 Mohs hardness scale rating as natural diamonds, offering ultimate resistance to scratches and abrasions under daily wear conditions." }
-                      ].map((faq, idx) => {
-                        const isOpen = pdpFaqIdx === idx;
+                {/* STORY BEHIND THE PRODUCT */}
+                <div className="bg-[#F7F3EE] py-12 select-none" style={{width: '100vw', position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw'}}>
+                  <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 flex flex-col md:flex-row items-center gap-12 md:gap-20">
+
+                    {/* LEFT: Text Content */}
+                    <div className="flex-1 min-w-0 text-left space-y-6">
+                      <h2 className="text-3xl font-light text-[#181818] tracking-wide font-serif serif-luxury">
+                        Story Behind The Product
+                      </h2>
+                      <div className="space-y-5 text-[#5E5E5E] text-xs sm:text-sm font-light leading-relaxed max-w-xl">
+                        {detailProduct.desc && detailProduct.desc.toLowerCase() !== 'test' ? (
+                          <p className="text-sm text-[#5E5E5E] leading-relaxed font-sans">
+                            {detailProduct.desc}
+                          </p>
+                        ) : !detailProduct.desc ? (
+                          <p className="text-sm text-[#5E5E5E] leading-relaxed font-sans">
+                            A classic Solitaire with a modern twist. Our {detailProduct.name} features a brilliant diamond with unique, grooved detailing on the band. This design combines timeless sparkle with contemporary sophistication, a beautiful symbol of love.
+                          </p>
+                        ) : null}
+                        <p className="text-sm text-[#5E5E5E] leading-relaxed font-sans">
+                          Jewellery is more than an ornament—it's a symbol of love, celebration, and unforgettable memories. At HR Jewellers & Sons, we carefully design and handcraft every piece with passion, precision, and dedication. Whether it's a wedding, festival, or special milestone, our jewellery is created to make every occasion truly memorable.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* RIGHT: Image */}
+                    <div className="w-full md:w-[480px] shrink-0 bg-[#F3EEE7] overflow-hidden">
+                      <img
+                        src={jewelrySketchDesk}
+                        alt="Story Behind The Product"
+                        className="w-full h-[280px] md:h-[320px] object-cover rounded-none"
+                      />
+                    </div>
+
+                  </div>
+                </div>
+                {/* ── END STORY BEHIND THE PRODUCT ── */}
+
+                {/* ==========================================================
+                  FEATURE: PREMIUM OUR PROCESS SECTION
+                  ========================================================== */}
+                <section 
+                  onMouseEnter={() => setProcessPaused(true)}
+                  onMouseLeave={() => setProcessPaused(false)}
+                  className="bg-[#FCFAF7] py-20 px-6 sm:px-12 select-none border-b border-[#E7DED2] overflow-hidden text-left"
+                >
+                  <div className="max-w-[1836px] mx-auto relative px-4">
+                    
+                    {/* Heading */}
+                    <div className="text-center md:text-left mb-12 space-y-4">
+                      <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[#B8893C] font-semibold font-sans block">
+                        Craftsmanship Journey
+                      </span>
+                      <h2 className="text-3xl sm:text-4xl font-light text-[#181818] tracking-wide font-serif serif-luxury">
+                        Our Process
+                      </h2>
+                    </div>
+
+                     {/* Horizontal Timeline Navigation on Top */}
+                    <div className="flex items-center justify-between max-w-5xl mx-auto mb-16 relative px-4 select-none">
+                      {/* Connecting progress line */}
+                      <div className="absolute top-1/2 -translate-y-1/2 left-[20px] right-[20px] h-[1px] bg-[#E7DED2] z-0">
+                        <div 
+                          className="h-full bg-[#B8893C] transition-all duration-500 ease-out origin-left"
+                          style={{ width: `${(activeProcessStep / 5) * 100}%` }}
+                        />
+                      </div>
+                      
+                      {processStepsData.map((step, idx) => {
+                        const isActive = activeProcessStep === idx;
                         return (
-                          <div key={idx} className="border-b border-gray-100 pb-3">
-                            <button
-                              onClick={() => { triggerAudio('click'); setPdpFaqIdx(isOpen ? -1 : idx); }}
-                              className="w-full flex justify-between items-center text-left py-2.5 font-bold text-gray-800 hover:text-[#5D4037] transition-colors cursor-pointer focus:outline-none"
-                            >
-                              <span>{faq.q}</span>
-                              <span className="text-gray-400 font-extrabold text-[10px]">{isOpen ? '▲' : '▼'}</span>
-                            </button>
-                            {isOpen && (
-                              <p className="text-[11px] text-gray-500 leading-relaxed pt-1 pr-6 text-justify animate-fade-in">{faq.a}</p>
-                            )}
-                          </div>
+                          <button
+                            key={step.num}
+                            onClick={() => {
+                              triggerAudio('click');
+                              setActiveProcessStep(idx);
+                            }}
+                            className="relative z-10 flex flex-col items-center group focus:outline-none cursor-pointer"
+                          >
+                            {/* Dot/Number */}
+                            <div className={`w-10 h-10 rounded-full border flex items-center justify-center font-sans text-xs transition-all duration-300 ${
+                              isActive
+                                ? 'bg-[#B8893C] border-[#B8893C] text-white scale-110'
+                                : 'bg-white border-[#E7DED2] text-[#888888] hover:border-[#B8893C] hover:text-[#B8893C]'
+                            }`}>
+                              {step.num}
+                            </div>
+                            {/* Hover Step Label */}
+                            <span className={`absolute top-12 text-[9px] font-semibold tracking-wider uppercase whitespace-nowrap transition-all duration-300 hidden md:block ${
+                              isActive ? 'text-[#B8893C] opacity-100 translate-y-0' : 'text-[#888888] opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0'
+                            }`}>
+                              {step.title}
+                            </span>
+                          </button>
                         );
                       })}
                     </div>
-                  </div>
 
-                  {/* Right Showcase Image */}
-                  <div className="lg:col-span-5 flex justify-center">
-                    <img src={luxuryShowroom} className="w-[85%] rounded-2xl shadow-sm border border-gray-100 object-cover aspect-[4/3] select-none pointer-events-none" alt="Showroom Box Showcase" />
-                  </div>
-                </div>
-
-                {/* Section: Recently Viewed */}
-                <div className="space-y-6 pt-8 border-t border-gray-100 select-none">
-                  <h3 className="font-sans font-bold text-lg text-gray-900 tracking-wide uppercase">Recently Viewed</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {products.filter(p => p.id === detailProduct?.id || p.id === 'hrj-gold-2').slice(0, 4).map((recentProd) => (
-                      <div key={recentProd.id} onClick={() => { triggerAudio('click'); setDetailProduct(recentProd); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="border border-gray-200 rounded-2xl p-4 bg-white hover:shadow-md transition-all duration-300 cursor-pointer flex flex-col justify-between">
-                        <div className="relative aspect-square flex items-center justify-center bg-gray-50 rounded-xl p-3 overflow-hidden mb-3 group">
-                          <span className="absolute top-2 left-2 text-[7.5px] font-bold px-2 py-0.5 bg-[#FDF9E7] border border-[#B8962E]/20 text-[#B8962E] uppercase rounded z-10 animate-pulse-slow">Fast Shipping</span>
-                          <img src={recentProd.img} className="w-[85%] h-[85%] object-contain group-hover:scale-105 transition-transform duration-300 select-none pointer-events-none" alt={recentProd.name} />
+                    {/* Showcase Card */}
+                    <div className="w-full bg-transparent flex flex-col lg:flex-row relative gap-8 lg:gap-16 pt-8 pb-12">
+                      {/* Left: Image with custom transition and zoom */}
+                      <div className="w-full lg:w-[55%] relative aspect-[16/10] lg:aspect-auto lg:h-[500px] overflow-hidden bg-[#F3EEE7] shrink-0">
+                        <div className="absolute inset-0 w-full h-full overflow-hidden">
+                          <img
+                            key={activeProcessStep}
+                            src={processStepsData[activeProcessStep].img}
+                            alt={processStepsData[activeProcessStep].title}
+                            className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out animate-zoomIn"
+                            style={{
+                              animation: 'zoomIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                            }}
+                          />
                         </div>
-                        <div className="space-y-1.5">
-                          <span className="text-amber-500 text-[9px] font-black tracking-wider block">★★★★★ <span className="text-gray-400 font-bold ml-1">(7)</span></span>
-                          <h4 className="font-sans font-bold text-[11px] text-gray-800 line-clamp-1">{recentProd.name}</h4>
-                          <p className="text-[10px] text-gray-400">{recentProd.subCategory || "VVS-VS, EF"}</p>
-                          <div className="flex items-center gap-2 pt-0.5">
-                            <span className="font-bold text-xs text-gray-900 font-sans">₹{recentProd.price.toLocaleString('en-IN')}</span>
-                            {recentProd.originalPrice && (
-                              <>
-                                <span className="text-[9px] text-gray-400 line-through">₹{recentProd.originalPrice.toLocaleString('en-IN')}</span>
-                                <span className="text-[8px] text-green-600 font-bold whitespace-nowrap">{Math.round((1 - recentProd.price / recentProd.originalPrice) * 100)}% OFF</span>
-                              </>
-                            )}
-                          </div>
+                        <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black/5 via-transparent to-transparent pointer-events-none" />
+                        
+                        {/* Step Number Badge */}
+                        <div className="absolute top-6 left-6 bg-[#FCFAF7]/90 backdrop-blur-md text-[#B8893C] border border-[#B8893C]/20 px-3.5 py-1.5 rounded-none font-semibold text-[10px] tracking-widest uppercase shadow-none">
+                          STEP {processStepsData[activeProcessStep].num}
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
 
-              </div>
+                      {/* Right: Text details */}
+                      <div className="w-full lg:w-[45%] flex flex-col justify-center text-left space-y-6 relative bg-transparent overflow-hidden py-4">
+                        {/* Background watermark number */}
+                        <div className="absolute right-8 top-4 text-[120px] font-light text-[#E7DED2]/30 select-none font-sans leading-none z-0 pointer-events-none">
+                          {processStepsData[activeProcessStep].num}
+                        </div>
 
-              {/* RESPONSIVE MOBILE STICKY BUY BAR & FAB (Section 10) */}
-              <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white/95 backdrop-filter backdrop-blur-lg border-t border-gray-200 p-4.5 z-40 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.05)] animate-slide-up select-none">
-                <div className="flex items-center space-x-3.5">
-                  <img src={detailProduct.img} className="w-11 h-11 object-cover rounded-xl border border-gray-200 bg-gray-50 shadow-md" alt="" />
-                  <div>
-                    <h4 className="font-serif text-[12px] font-bold text-gray-800 truncate max-w-[140px] tracking-wide">{detailProduct.name}</h4>
-                    <span className="text-[#111111] font-extrabold text-[12px] block mt-0.5 font-mono">₹{formatPrice(detailProduct.price)}</span>
+                        <div className="relative z-10 space-y-3">
+                          <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[#B8893C] font-semibold font-sans">
+                            Step {processStepsData[activeProcessStep].num} of 06
+                          </span>
+                          <h3 
+                            key={`title-${activeProcessStep}`}
+                            className="text-3xl sm:text-4xl font-light text-[#181818] tracking-wide font-serif serif-luxury animate-fadeSlideIn"
+                          >
+                            {processStepsData[activeProcessStep].title}
+                          </h3>
+                          <div className="w-12 h-[1px] bg-[#B8893C]" />
+                        </div>
+
+                        <p 
+                          key={`desc-${activeProcessStep}`}
+                          className="text-[#5E5E5E] text-xs sm:text-sm leading-relaxed font-sans font-light relative z-10 max-w-lg animate-fadeSlideIn [animation-delay:150ms]"
+                        >
+                          {processStepsData[activeProcessStep].desc}
+                        </p>
+
+                        {/* Navigation arrows */}
+                        <div className="flex items-center space-x-4 pt-4 relative z-10">
+                          <button
+                            onClick={() => {
+                              triggerAudio('click');
+                              setActiveProcessStep((prev) => (prev - 1 + 6) % 6);
+                            }}
+                            className="w-10 h-10 rounded-full border border-[#E7DED2] flex items-center justify-center text-[#888888] hover:border-[#181818] hover:text-[#181818] transition-all duration-300 cursor-pointer"
+                            aria-label="Previous step"
+                          >
+                            <svg className="w-4 h-4 stroke-current fill-none stroke-2" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => {
+                              triggerAudio('click');
+                              setActiveProcessStep((prev) => (prev + 1) % 6);
+                            }}
+                            className="w-10 h-10 rounded-full border border-[#E7DED2] flex items-center justify-center text-[#888888] hover:border-[#181818] hover:text-[#181818] transition-all duration-300 cursor-pointer"
+                            aria-label="Next step"
+                          >
+                            <svg className="w-4 h-4 stroke-current fill-none stroke-2" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <button
-                  onClick={() => handleAddToCart({
-                    ...detailProduct,
-                    carat: `${pdpSelectedMetal || "14KT Yellow Gold"} / Size ${selectedRingSize}`,
-                    desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc
-                  })}
-                  className="bg-[#111111] hover:bg-black text-white font-bold text-[10px] uppercase tracking-widest py-3 px-7 rounded-full cursor-pointer shadow-md active:scale-95 transition-all duration-300 text-center font-sans"
+                </section>
+
+                {/* ── POLAROID CUSTOMER TESTIMONIALS (same as homepage) ── */}
+                <section
+                  className="py-20 select-none bg-[#FCFAF7] border-b border-[#E7DED2]"
                 >
-                  Buy Now
-                </button>
+                  <div className="max-w-7xl mx-auto px-4 text-center space-y-3 mb-12">
+                    <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[#B8893C] font-semibold font-sans block">
+                      OUR CUSTOMERS' STORIES
+                    </span>
+                    <h2 className="serif-luxury text-3xl sm:text-4xl font-light text-[#181818] tracking-wide text-center">
+                      More Than Just Jewellery
+                    </h2>
+                    <p className="font-sans text-xs sm:text-sm text-[#5E5E5E] font-light max-w-2xl mx-auto leading-relaxed text-center">
+                      Every piece tells a story. Every memory shines forever.
+                    </p>
+                  </div>
+
+                  {/* Testimonials Grid Container */}
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                      {[
+                        {
+                          name: "Aarohi Sharma, 27",
+                          quote: "My dream engagement ring became a reality with HR Jewellers & Sons. The craftsmanship and sparkle are beyond expectations.",
+                          img: testimonial1
+                        },
+                        {
+                          name: "Priya Mehta, 31",
+                          quote: "The quality, finishing, and personalized service made my purchase truly memorable. A perfect luxury experience.",
+                          img: testimonial2
+                        },
+                        {
+                          name: "Neha Kapoor, 29",
+                          quote: "I wear my bracelet every day and it still looks stunning. Timeless craftsmanship and exceptional quality.",
+                          img: testimonial3
+                        },
+                        {
+                          name: "Riya Verma, 26",
+                          quote: "My husband gifted me this beautiful necklace and I receive compliments everywhere. Absolutely love it.",
+                          img: testimonial4
+                        }
+                      ].map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="group flex flex-col items-center text-center space-y-4"
+                        >
+                          {/* Image Frame */}
+                          <div className="w-full aspect-[4/5] overflow-hidden bg-[#F3EEE7]">
+                            <img 
+                              src={item.img} 
+                              alt={item.name} 
+                              loading="lazy" 
+                              className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out" 
+                            />
+                          </div>
+                          {/* Quote */}
+                          <p className="font-serif text-sm italic leading-relaxed text-[#181818] max-w-[260px] font-light">
+                            &ldquo;{item.quote}&rdquo;
+                          </p>
+                          {/* Name */}
+                          <span className="block text-[10px] tracking-[0.2em] uppercase font-sans text-[#888888] font-medium">
+                            {item.name}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Explore Collection Button */}
+                  <div className="flex justify-center pt-8">
+                    <button
+                      onClick={() => { triggerAudio('click'); navigateTo('collections'); }}
+                      className="px-8 py-3.5 border border-[#181818] text-[#181818] bg-transparent hover:bg-[#F7F3EE] hover:text-[#181818] transition-all duration-300 rounded-none text-xs font-semibold tracking-[0.2em] uppercase cursor-pointer"
+                    >
+                      Explore Collection
+                    </button>
+                  </div>
+                </section>
+                {/* ── END POLAROID TESTIMONIALS ── */}
+
+                {/* ── CUSTOMER REVIEWS (Cartier / Tiffany Style) ── */}
+                <section className="bg-white py-16 px-4 select-none border-b border-[#E7DED2] text-left">
+                  <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 space-y-10">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E7DED2] pb-6">
+                      <div>
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-[#B8893C] font-semibold font-sans block mb-2">
+                          Client Appraisals
+                        </span>
+                        <h2 className="text-3xl font-light text-[#181818] tracking-wide font-serif serif-luxury">
+                          Customer Reviews
+                        </h2>
+                      </div>
+                      <div className="flex items-center gap-6">
+                        <div className="text-left font-sans">
+                          <div className="flex items-center gap-1.5 text-[#B8893C] text-lg font-semibold">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                            <span className="text-[#181818] font-semibold ml-1">4.8</span>
+                          </div>
+                          <p className="text-[10px] text-[#888888] font-light uppercase mt-0.5 tracking-wider">Based on 128 appraisals</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Review Cards Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12 pt-6">
+                      {[
+                        {
+                          name: "Ananya Iyer",
+                          date: "June 20, 2026",
+                          rating: 5,
+                          title: "An Absolute Masterpiece",
+                          comment: "The precision and level of detail is simply breathtaking. The diamonds are brilliant and reflect light beautifully. Exceeded my high expectations in every way.",
+                          verified: true
+                        },
+                        {
+                          name: "Vikram Malhotra",
+                          date: "May 14, 2026",
+                          rating: 5,
+                          title: "World Class Craftsmanship",
+                          comment: "Bought this for my wife on our anniversary. The design looks elegant and extremely premium. The packaging box with HR Jewellers branding is a work of art itself.",
+                          verified: true
+                        },
+                        {
+                          name: "Shreya Ghoshal",
+                          date: "April 08, 2026",
+                          rating: 5,
+                          title: "Perfect Fitting & Luxury Feeling",
+                          comment: "The size fits perfectly. Custom engraving is neat and readable. Live video consultation helped me choose the right metal variant. Highly recommended scheme!",
+                          verified: true
+                        },
+                        {
+                          name: "Kabir Sen",
+                          date: "March 29, 2026",
+                          rating: 4,
+                          title: "Highly Satisfied with Purchase",
+                          comment: "A solid weight and sturdy build. The stones are set perfectly. Delivery took 4 days to Bangalore but it was fully insured. Splendid customer support.",
+                          verified: true
+                        }
+                      ].map((rev, idx) => (
+                        <div key={idx} className="flex flex-col space-y-4 text-left border-b border-[#E7DED2]/50 pb-8 last:border-b-0">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              {/* Initials Monogram */}
+                              <div className="w-9 h-9 rounded-full bg-[#F7F3EE] flex items-center justify-center text-[10px] font-semibold text-[#5E5E5E] tracking-wider uppercase">
+                                {rev.name.split(' ').map(n => n[0]).join('')}
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-[#181818] text-xs tracking-wider uppercase font-sans">{rev.name}</h4>
+                                <p className="text-[9px] text-[#888888] font-light tracking-widest uppercase mt-0.5">{rev.date}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center text-[#B8893C] gap-0.5 text-[10px] font-semibold">
+                              {"★".repeat(rev.rating)}
+                              {rev.rating < 5 && <span className="text-[#E7DED2]">{"★".repeat(5 - rev.rating)}</span>}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 pl-1">
+                            {rev.verified && (
+                              <span className="text-[#B8893C] text-[9px] tracking-widest uppercase font-semibold block">
+                                ✓ Verified Appraisal
+                              </span>
+                            )}
+                            <h5 className="font-serif text-sm font-semibold text-[#181818] tracking-wide">{rev.title}</h5>
+                            <p className="text-[#5E5E5E] text-xs sm:text-xs leading-relaxed font-sans font-light">{rev.comment}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+
+
+
               </div>
 
-              {/* Mobile Bottom sheet trigger for Terms & Conditions */}
-              {pdpTcExpanded && (
-                <div className="fixed inset-0 z-50 md:hidden flex flex-col justify-end">
-                  <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={() => setPdpTcExpanded(false)} />
-                  <div className="bg-white border-t-2 border-[#111111] rounded-t-[2.5rem] p-7 relative z-10 space-y-4 max-h-[60vh] overflow-y-auto font-sans animate-slide-up">
-                    <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-2" />
-                    <div className="flex justify-between items-center border-b border-gray-150 pb-3">
-                      <h4 className="serif-luxury text-base font-bold text-gray-800 uppercase tracking-wider">Maison Guidelines</h4>
-                      <button onClick={() => setPdpTcExpanded(false)} className="text-gray-500 hover:text-gray-800 text-sm font-bold p-1">✕</button>
+              {/* RESPONSIVE MOBILE STICKY BUY BAR */}
+              <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-white/95 backdrop-blur-md border-t border-[#E7DED2] p-4 z-40 flex items-center justify-between shadow-[0_-4px_20px_rgba(0,0,0,0.02)] animate-slide-up select-none">
+                <div className="flex items-center space-x-3">
+                  <img src={detailProduct.img} className="w-10 h-10 object-cover rounded-none border border-[#E7DED2] bg-[#F7F3EE]" alt="" />
+                  <div className="text-left">
+                    <h4 className="font-sans text-[11px] font-medium text-[#181818] truncate max-w-[110px] tracking-tight">{detailProduct.name}</h4>
+                    <span className="text-[#181818] font-semibold text-[12px] block mt-0.5 font-sans">₹{Number(detailProduct.price).toLocaleString("en-IN")}</span>
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-1 justify-end ml-4">
+                  <button
+                    onClick={() => handleAddToCart({
+                      ...detailProduct,
+                      carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedRingSize}`,
+                      desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc
+                    })}
+                    className="flex-1 max-w-[100px] py-2.5 bg-white border border-[#181818] text-[#181818] font-medium text-[9px] uppercase tracking-widest rounded-none transition-all duration-250 text-center font-sans active:scale-95 cursor-pointer"
+                  >
+                    Add
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleAddToCart({
+                        ...detailProduct,
+                        carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedRingSize}`,
+                        desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc
+                      });
+                      navigateTo('cart');
+                    }}
+                    className="flex-1 max-w-[120px] py-2.5 bg-[#181818] hover:bg-[#181818]/90 text-white font-medium text-[9px] uppercase tracking-widest rounded-none transition-all duration-250 text-center font-sans active:scale-95 cursor-pointer"
+                  >
+                    Buy Now
+                  </button>
+                </div>
+              </div>
+
+              {/* DESKTOP STICKY TOP BUY BAR */}
+              {showStickyBuyBar && (
+                <div className="fixed top-0 left-0 right-0 hidden lg:flex bg-white/95 backdrop-blur-md border-b border-[#E7DED2] py-3.5 px-6 z-[100] shadow-[0_4px_25px_rgba(0,0,0,0.03)] animate-slide-down select-none items-center justify-between">
+                  <div className="max-w-[1400px] w-full mx-auto flex items-center justify-between">
+                    {/* Left: Thumbnail & Name & Price */}
+                    <div className="flex items-center space-x-4">
+                      <img src={detailProduct.img} className="w-12 h-12 object-contain rounded-none border border-[#E7DED2] bg-white mix-blend-multiply" style={{ filter: 'brightness(1.06) contrast(1.04)' }} alt="" />
+                      <div className="text-left">
+                        <h4 className="font-sans text-xs font-semibold text-[#181818] tracking-tight">{detailProduct.name}</h4>
+                        <div className="flex items-center gap-2.5 mt-0.5 font-sans">
+                          <span className="text-[#181818] font-bold text-sm">₹{Number(detailProduct.price).toLocaleString("en-IN")}</span>
+                          <span className="text-xs text-[#888888] line-through font-light">₹{formatPrice(Math.round(detailProduct.price * 1.25))}</span>
+                          <span className="text-[10px] text-[#B8893C] font-semibold">20% OFF</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-[11px] text-gray-600 leading-relaxed space-y-3.5 text-justify">
-                      <p>• <strong>Exchange Integrity:</strong> Standard items carry 100% metal weight buyback protections. Custom customized sets shape unique non-cancellation matrices upon showroom forging commencement.</p>
-                      <p>• <strong>Lab Certifications:</strong> Official physical certificates containing unique laboratory registration hashes are dispatched securely with transit security teams.</p>
-                      <p>• <strong>Rajasthan Insured Dispatch:</strong> Hand-couriered within Bikaner and Jaipur regions inside signature steel cases under active transit insurance policies.</p>
-                    </div>
-                    <div className="flex gap-2">
+
+                    {/* Right: Scheme Savings Tag + Actions */}
+                    <div className="flex items-center gap-4">
+                      {/* GRP Scheme Savings Benefit tag */}
                       <button
-                        onClick={() => setPdpTcExpanded(false)}
-                        className="w-full bg-[#111111] text-white font-bold py-3.5 rounded-full text-xs uppercase tracking-widest text-center cursor-pointer mt-4 shadow-lg"
+                        onClick={() => { triggerAudio('shimmer'); navigateTo('savings'); }}
+                        className="h-10 px-4 border border-[#E7DED2] text-[#B8893C] bg-white hover:bg-[#F7F3EE] hover:border-[#B8893C] font-semibold text-[10px] uppercase tracking-[0.15em] transition-all duration-300 rounded-none flex items-center justify-center gap-1.5 cursor-pointer"
                       >
-                        Acknowledge
+                        YOU SAVE ₹{formatPrice(Math.round(detailProduct.price / 12))} WITH SCHEME
+                      </button>
+
+                      {/* Add to Cart button */}
+                      <button
+                        onClick={() => {
+                          triggerAudio('click');
+                          handleAddToCart({
+                            ...detailProduct,
+                            carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedRingSize}`,
+                            desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc
+                          });
+                        }}
+                        className="h-10 px-6 bg-[#181818] hover:bg-[#181818]/90 text-white font-semibold text-[10px] uppercase tracking-[0.2em] transition-all duration-300 rounded-none flex items-center justify-center cursor-pointer"
+                      >
+                        ADD TO CART
+                      </button>
+
+                      {/* Home icon button */}
+                      <button
+                        onClick={() => { triggerAudio('click'); navigateTo('home'); }}
+                        className="w-10 h-10 border border-[#E7DED2] text-[#181818] hover:border-[#181818] hover:bg-[#F7F3EE] transition-all duration-300 rounded-none flex items-center justify-center cursor-pointer"
+                        title="Back to Home"
+                      >
+                        <svg className="w-4 h-4 text-[#181818]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                      </button>
+
+                      {/* Store locator / Boutique advisor button */}
+                      <button
+                        onClick={() => { triggerAudio('click'); navigateTo('showrooms'); }}
+                        className="w-10 h-10 border border-[#E7DED2] text-[#181818] hover:border-[#181818] hover:bg-[#F7F3EE] transition-all duration-300 rounded-none flex items-center justify-center cursor-pointer"
+                        title="Our Boutique Showrooms"
+                      >
+                        <svg className="w-4 h-4 text-[#181818]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
                       </button>
                     </div>
                   </div>
@@ -8547,6 +8770,7 @@ export default function App() {
 
             </div>
           )}
+
 
           {currentPage === 'heritage' && (
             <div className={`transition-colors duration-500 min-h-screen pb-8 ${isCatalogDark

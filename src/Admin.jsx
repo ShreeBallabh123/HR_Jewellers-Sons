@@ -93,10 +93,12 @@ export default function Admin() {
     name: '', category: 'gold', subCategory: '', desc: '', price: 0,
     carat: '22K Gold', weight: '', img: '', badge: '', purityInfo: '', 
     makingCharges: '', sku: '', stoneInfo: '', hallmark: 'BIS 916 Government Certified', 
-    tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10
+    tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
+    subImages: []
   });
   const [editingProduct, setEditingProduct] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
+  const [subImagesUploadProgress, setSubImagesUploadProgress] = useState(null);
 
   // Search & Filter States
   const [productSearch, setProductSearch] = useState('');
@@ -285,7 +287,8 @@ export default function Admin() {
         name: '', category: 'gold', subCategory: '', desc: '', price: 0,
         carat: '22K Gold', weight: '', img: '', badge: '', purityInfo: '', 
         makingCharges: '', sku: '', stoneInfo: '', hallmark: 'BIS 916 Government Certified', 
-        tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10
+        tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
+        subImages: []
       });
       alert("New jewellery item added successfully!");
     } catch (err) {
@@ -339,7 +342,7 @@ export default function Admin() {
     }
   };
 
-  // Upload asset directly to Firebase Storage
+  // Upload asset directly to Cloudinary
   const handleImageUpload = async (e, mode) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -374,7 +377,70 @@ export default function Admin() {
       setImageUploadProgress("Image upload complete!");
     } catch (err) {
       console.error("Cloudinary upload error:", err);
-      setImageUploadProgress("Image upload failed.");
+      setImageUploadProgress(`Image upload failed: ${err.message}`);
+    }
+  };
+
+  const handleSubImagesUpload = async (e, mode) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    setSubImagesUploadProgress(`Uploading ${files.length} sub-images...`);
+    try {
+      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dcraweoxj';
+      const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'hr_jewellers_unsigned';
+      
+      const urls = [];
+      for (let i = 0; i < files.length; i++) {
+        setSubImagesUploadProgress(`Uploading sub-image ${i + 1}/${files.length}...`);
+        const file = files[i];
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', uploadPreset);
+        formData.append('folder', 'products');
+        
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error?.message || 'Failed to upload sub-image');
+        }
+
+        const data = await response.json();
+        urls.push(data.secure_url);
+      }
+
+      if (mode === 'new') {
+        setNewProduct(prev => ({
+          ...prev,
+          subImages: [...(prev.subImages || []), ...urls]
+        }));
+      } else {
+        setEditingProduct(prev => ({
+          ...prev,
+          subImages: [...(prev.subImages || []), ...urls]
+        }));
+      }
+      setSubImagesUploadProgress("Sub-images upload complete!");
+    } catch (err) {
+      console.error("Cloudinary sub-images upload error:", err);
+      setSubImagesUploadProgress(`Sub-images upload failed: ${err.message}`);
+    }
+  };
+
+  const handleRemoveSubImage = (indexToRemove, mode) => {
+    if (mode === 'new') {
+      setNewProduct(prev => ({
+        ...prev,
+        subImages: (prev.subImages || []).filter((_, idx) => idx !== indexToRemove)
+      }));
+    } else {
+      setEditingProduct(prev => ({
+        ...prev,
+        subImages: (prev.subImages || []).filter((_, idx) => idx !== indexToRemove)
+      }));
     }
   };
 
@@ -1156,18 +1222,7 @@ export default function Admin() {
                           ))}
                         </select>
                       </div>
-                      <div>
-                        <label htmlFor="prod-subcat-form" className="text-[9px] uppercase tracking-wider text-gray-400 block mb-1 font-bold">Subcategory Type</label>
-                        <input 
-                          id="prod-subcat-form"
-                          type="text" 
-                          required
-                          placeholder="e.g. Rings"
-                          value={editingProduct ? editingProduct.subCategory : newProduct.subCategory}
-                          onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, subCategory: e.target.value}) : setNewProduct({...newProduct, subCategory: e.target.value})}
-                          className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
-                        />
-                      </div>
+
                       <div>
                         <label htmlFor="prod-hallmark-form" className="text-[9px] uppercase tracking-wider text-gray-400 block mb-1 font-bold">Hallmark Stamp</label>
                         <input 
@@ -1248,6 +1303,48 @@ export default function Admin() {
                           />
                         )}
                       </div>
+
+                      {/* Sub-images Upload Area */}
+                      {(editingProduct ? editingProduct.img : newProduct.img) && (
+                        <div className="sm:col-span-3 bg-[#FAF9F6] dark:bg-gray-800/40 border border-gray-200/50 dark:border-gray-700 p-4 rounded-2xl space-y-4">
+                          <div>
+                            <label className="text-[10px] uppercase tracking-wider text-gray-400 font-bold block mb-1">
+                              Upload Sub Images / Gallery (Cloudinary)
+                            </label>
+                            <input 
+                              type="file" 
+                              accept="image/*"
+                              multiple
+                              onChange={(e) => handleSubImagesUpload(e, editingProduct ? 'edit' : 'new')}
+                              className="text-xs text-gray-500 font-semibold"
+                            />
+                            {subImagesUploadProgress && <p className="text-[9px] text-[#BCA057] mt-1 font-semibold">{subImagesUploadProgress}</p>}
+                          </div>
+                          
+                          {/* List of sub-images */}
+                          {((editingProduct ? editingProduct.subImages : newProduct.subImages) || []).length > 0 && (
+                            <div className="flex flex-wrap gap-3">
+                              {((editingProduct ? editingProduct.subImages : newProduct.subImages) || []).map((subImg, idx) => (
+                                <div key={idx} className="relative group w-16 h-20">
+                                  <img 
+                                    src={subImg} 
+                                    alt={`Sub-image ${idx + 1}`} 
+                                    className="w-full h-full object-cover rounded-xl border border-gray-250 shadow-sm"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveSubImage(idx, editingProduct ? 'edit' : 'new')}
+                                    className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600 transition-colors shadow-md flex items-center justify-center cursor-pointer"
+                                    style={{ width: '16px', height: '16px', fontSize: '8px', lineHeight: 1 }}
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       <div className="sm:col-span-3 flex gap-3 pt-2">
                         <button
