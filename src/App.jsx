@@ -1524,6 +1524,17 @@ export default function App() {
   const [pdpPincodeChecked, setPdpPincodeChecked] = useState(null);
   const [customerSpeakIdx, setCustomerSpeakIdx] = useState(0);
   const [pdpCustomizeOpen, setPdpCustomizeOpen] = useState(false);
+  // Auto-redirect to collections page after checkout success
+  useEffect(() => {
+    if (checkoutSuccess) {
+      const timer = setTimeout(() => {
+        setCheckoutSuccess(false);
+        setCheckoutFlowStep(1);
+        navigateTo('collections');
+      }, 7000);
+      return () => clearTimeout(timer);
+    }
+  }, [checkoutSuccess]);
 
   // ==========================================
   // SYNC & STORAGE HOOKS
@@ -8042,11 +8053,11 @@ export default function App() {
                         </span>
                         {/* Original Price */}
                         <span className="text-base text-[#888888] line-through font-light">
-                          ₹{formatPrice(Math.round(detailProduct.price * 1.25))}
+                          ₹{formatPrice(Math.round(detailProduct.price / (1 - (Number(detailProduct.discountPercent) || 20) / 100)))}
                         </span>
                         {/* Savings Badge */}
                         <span className="text-[10px] font-semibold text-[#B8893C] tracking-[0.15em] uppercase">
-                          20% OFF
+                          {Number(detailProduct.discountPercent) || 20}% OFF
                         </span>
                       </div>
 
@@ -8712,8 +8723,8 @@ export default function App() {
                         <h4 className="font-sans text-xs font-semibold text-[#181818] tracking-tight">{detailProduct.name}</h4>
                         <div className="flex items-center gap-2.5 mt-0.5 font-sans">
                           <span className="text-[#181818] font-bold text-sm">₹{Number(detailProduct.price).toLocaleString("en-IN")}</span>
-                          <span className="text-xs text-[#888888] line-through font-light">₹{formatPrice(Math.round(detailProduct.price * 1.25))}</span>
-                          <span className="text-[10px] text-[#B8893C] font-semibold">20% OFF</span>
+                          <span className="text-xs text-[#888888] line-through font-light">₹{formatPrice(Math.round(detailProduct.price / (1 - (Number(detailProduct.discountPercent) || 20) / 100)))}</span>
+                          <span className="text-[10px] text-[#B8893C] font-semibold">{Number(detailProduct.discountPercent) || 20}% OFF</span>
                         </div>
                       </div>
                     </div>
@@ -11235,6 +11246,21 @@ export default function App() {
                             />
                           </div>
                         </div>
+                        <div>
+                          <label htmlFor="lounge-type" className="text-[9px] uppercase tracking-wider text-[#4A126D]/75 font-bold block mb-1">Select Category of Interest</label>
+                          <select
+                            id="lounge-type"
+                            value={consultationForm.type}
+                            onChange={(e) => setConsultationForm({ ...consultationForm, type: e.target.value })}
+                            className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-[#4A126D] focus:ring-1 focus:ring-[#4A126D]/20 transition-all"
+                          >
+                            <option value="Solitaire Festival Consultation">Solitaire Festival Consultation</option>
+                            <option value="Custom Design Consultation">Custom Design Consultation</option>
+                            {categories.map(cat => (
+                              <option key={cat.id} value={cat.name}>{cat.name}</option>
+                            ))}
+                          </select>
+                        </div>
                         <button
                           type="submit"
                           className="w-full bg-[#4A126D] hover:bg-[#2C133C] text-white font-bold text-xs uppercase tracking-widest py-3.5 rounded-xl transition-all shadow-md"
@@ -11792,7 +11818,7 @@ export default function App() {
                               <div key={item.id} className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row gap-4 sm:gap-6 relative">
                                 {/* Product Image */}
                                 <div className="w-full sm:w-32 h-32 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0">
-                                  <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
+                                  <img src={item.img || item.image} alt={item.name} className="w-full h-full object-contain" />
                                 </div>
 
                                 {/* Product Info */}
@@ -13280,6 +13306,22 @@ export default function App() {
                     </div>
                   </div>
 
+                  <div>
+                    <label htmlFor="modal-lounge-type" className="text-[9px] uppercase tracking-wider text-[#4A126D]/75 font-bold block mb-1">Select Category of Interest</label>
+                    <select
+                      id="modal-lounge-type"
+                      value={consultationForm.type}
+                      onChange={(e) => setConsultationForm({ ...consultationForm, type: e.target.value })}
+                      className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-[#4A126D] focus:ring-1 focus:ring-[#4A126D]/30 transition-all duration-300"
+                    >
+                      <option value="Solitaire Festival Consultation">Solitaire Festival Consultation</option>
+                      <option value="Custom Design Consultation">Custom Design Consultation</option>
+                      {categories.map(cat => (
+                        <option key={cat.id} value={cat.name}>{cat.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
                   <button type="submit" className="w-full bg-[#4A126D] hover:bg-[#2C133C] text-white font-bold text-xs uppercase tracking-widest py-3.5 rounded-xl transition-all shadow-md">
                     Secure Lounge Suite Key
                   </button>
@@ -13358,6 +13400,43 @@ export default function App() {
                   </button>
                 </form>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* F. THANK YOU & ORDER SUCCESS MODAL */}
+        {checkoutSuccess && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-[#031838]/60 backdrop-blur-sm transition-opacity" onClick={() => {
+              setCheckoutSuccess(false);
+              setCheckoutFlowStep(1);
+              navigateTo('collections');
+            }} />
+            <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 max-w-md w-full relative z-10 shadow-2xl space-y-6 animate-fade-in text-xs text-center">
+              <div className="space-y-2">
+                <div className="w-16 h-16 bg-[#006361]/10 rounded-full flex items-center justify-center mx-auto text-[#006361] text-3xl">
+                  ✓
+                </div>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#006361] font-bold block">ORDER RECEIVED</span>
+                <h3 className="serif-luxury text-2xl font-bold text-[#4A126D]">Thank You for Your Order!</h3>
+                <div className="w-12 h-[1px] bg-[#DDA0DD] mx-auto mt-2"></div>
+              </div>
+
+              <div className="space-y-3 text-xs text-gray-600 font-light leading-relaxed">
+                <p>Your luxury jewellery inquiry has been compiled successfully.</p>
+                <p>Our catalog concierge agents will connect with you on WhatsApp shortly to confirm availability, lock purity rates, and coordinate secure delivery/showroom pick-up.</p>
+              </div>
+
+              <button
+                onClick={() => {
+                  setCheckoutSuccess(false);
+                  setCheckoutFlowStep(1);
+                  navigateTo('collections');
+                }}
+                className="w-full bg-[#4A126D] hover:bg-[#2C133C] text-white font-bold text-xs uppercase tracking-widest py-3.5 rounded-xl transition-all shadow-md cursor-pointer"
+              >
+                Continue Shopping
+              </button>
             </div>
           </div>
         )}
@@ -13513,7 +13592,7 @@ export default function App() {
                 <p><strong>Carat Quality:</strong> {selectedProduct.carat}</p>
                 <p><strong>Est. Weight:</strong> {selectedProduct.weight}</p>
                 <p><strong>Authenticity badge:</strong> {selectedProduct.purityInfo || 'BIS Hallmark Bureau Stamps'}</p>
-                <p><strong>Showroom handcrafting:</strong> {selectedProduct.makingCharges || '₹380/gram setting charges included'}</p>
+                <p><strong>Showroom handcrafting:</strong> {selectedProduct.makingCharges ? (String(selectedProduct.makingCharges).includes('%') ? selectedProduct.makingCharges : `${selectedProduct.makingCharges}%`) : '₹380/gram setting charges included'}</p>
               </div>
 
               <div className="flex gap-2">

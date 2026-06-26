@@ -584,6 +584,32 @@ export default function Admin() {
     }
   };
 
+  const handleDeleteOrder = async (orderId) => {
+    if (!window.confirm("Are you sure you want to permanently delete this order?")) {
+      return;
+    }
+    try {
+      await deleteDoc(doc(db, 'orders', orderId));
+      showAdminNotification("Order deleted successfully!", "success");
+    } catch (err) {
+      console.error("Error deleting order:", err);
+      showAdminNotification("Error deleting order: " + err.message, "error");
+    }
+  };
+
+  const handleDeleteConsult = async (consultId) => {
+    if (!window.confirm("Are you sure you want to permanently delete this booking request?")) {
+      return;
+    }
+    try {
+      await deleteDoc(doc(db, 'consultations', consultId));
+      showAdminNotification("Booking request deleted successfully!", "success");
+    } catch (err) {
+      console.error("Error deleting booking request:", err);
+      showAdminNotification("Error deleting booking request: " + err.message, "error");
+    }
+  };
+
   const handleUpdateConsultStatus = async (consultId, newStatus) => {
     try {
       await updateDoc(doc(db, 'consultations', consultId), { status: newStatus });
@@ -1357,15 +1383,18 @@ export default function Admin() {
                         />
                       </div>
                       <div>
-                        <label htmlFor="prod-charges-form" className="text-[9px] uppercase tracking-wider text-gray-400 block mb-1 font-bold">Making Charges</label>
-                        <input 
-                          id="prod-charges-form"
-                          type="text" 
-                          placeholder="e.g. ₹380/gram handcrafted charges"
-                          value={editingProduct ? editingProduct.makingCharges : newProduct.makingCharges}
-                          onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, makingCharges: e.target.value}) : setNewProduct({...newProduct, makingCharges: e.target.value})}
-                          className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
-                        />
+                        <label htmlFor="prod-charges-form" className="text-[9px] uppercase tracking-wider text-gray-400 block mb-1 font-bold">Making Percentage Charge</label>
+                        <div className="relative">
+                          <input 
+                            id="prod-charges-form"
+                            type="text" 
+                            placeholder="e.g. 12"
+                            value={editingProduct ? editingProduct.makingCharges : newProduct.makingCharges}
+                            onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, makingCharges: e.target.value}) : setNewProduct({...newProduct, makingCharges: e.target.value})}
+                            className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl pl-3 pr-8 py-2 text-xs text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                          />
+                          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500 font-bold select-none pointer-events-none">%</span>
+                        </div>
                       </div>
                       <div className="sm:col-span-3">
                         <label htmlFor="prod-desc-form" className="text-[9px] uppercase tracking-wider text-gray-400 block mb-1 font-bold">Jewellery Description</label>
@@ -1380,29 +1409,6 @@ export default function Admin() {
                         ></textarea>
                       </div>
 
-                      {/* SEO Fields */}
-                      <div>
-                        <label htmlFor="prod-seo-title" className="text-[9px] uppercase tracking-wider text-gray-400 block mb-1 font-bold">SEO Title</label>
-                        <input 
-                          id="prod-seo-title"
-                          type="text" 
-                          placeholder="Google Search title tag"
-                          value={editingProduct ? editingProduct.seoTitle : newProduct.seoTitle}
-                          onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, seoTitle: e.target.value}) : setNewProduct({...newProduct, seoTitle: e.target.value})}
-                          className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
-                        />
-                      </div>
-                      <div className="sm:col-span-2">
-                        <label htmlFor="prod-seo-desc" className="text-[9px] uppercase tracking-wider text-gray-400 block mb-1 font-bold">SEO Meta Description</label>
-                        <input 
-                          id="prod-seo-desc"
-                          type="text" 
-                          placeholder="Catchy marketing overview for web crawler search previews"
-                          value={editingProduct ? editingProduct.seoDesc : newProduct.seoDesc}
-                          onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, seoDesc: e.target.value}) : setNewProduct({...newProduct, seoDesc: e.target.value})}
-                          className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
-                        />
-                      </div>
 
                       {/* Image Upload Area */}
                       <div className="sm:col-span-3 bg-[#FAF9F6] dark:bg-gray-800/40 border border-gray-200/50 dark:border-gray-700 p-4 rounded-2xl flex flex-col sm:flex-row gap-4 items-center justify-between">
@@ -1569,56 +1575,62 @@ export default function Admin() {
                             )}
                           </div>
 
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {filtered.map(prod => (
-                              <div key={prod.id} className="bg-[#FAF9F6] dark:bg-gray-800/20 border border-gray-200/50 dark:border-gray-800/80 p-4 rounded-2xl flex gap-3 items-center justify-between text-xs hover:border-[#3F1F54]/30 transition-colors shadow-sm">
-                                <div className="flex items-center space-x-3">
-                                  <input 
-                                    type="checkbox"
-                                    checked={selectedCatalogIds.includes(prod.id)}
-                                    onChange={(e) => {
-                                      if (e.target.checked) {
-                                        setSelectedCatalogIds([...selectedCatalogIds, prod.id]);
-                                      } else {
-                                        setSelectedCatalogIds(selectedCatalogIds.filter(id => id !== prod.id));
-                                      }
-                                    }}
-                                    className="rounded border-gray-300 text-[#3F1F54] focus:ring-0 focus:ring-offset-0 bg-transparent cursor-pointer w-4 h-4 shrink-0"
-                                  />
-                                  <img src={prod.img} className="w-10 h-12 object-cover rounded-lg border border-gray-200 shrink-0" alt="" />
-                                  <div>
-                                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                                      <h4 className="font-bold text-gray-900 dark:text-gray-100 leading-tight">{prod.name}</h4>
-                                      {(() => {
-                                        const catObj = categories.find(c => c.id === prod.category);
-                                        if (!catObj && !prod.category) return null;
-                                        return (
-                                          <span className="inline-block px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 text-[8px] font-bold uppercase tracking-wider leading-none">
-                                            {catObj?.name || prod.category}
-                                          </span>
-                                        );
-                                      })()}
+                          {filtered.length === 0 ? (
+                            <div className="bg-[#FAF9F6] dark:bg-gray-800/10 border border-dashed border-gray-250 dark:border-gray-800 p-8 rounded-2xl text-center">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Data is not Available</p>
+                            </div>
+                          ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {filtered.map(prod => (
+                                <div key={prod.id} className="bg-[#FAF9F6] dark:bg-gray-800/20 border border-gray-200/50 dark:border-gray-800/80 p-4 rounded-2xl flex gap-3 items-center justify-between text-xs hover:border-[#3F1F54]/30 transition-colors shadow-sm">
+                                  <div className="flex items-center space-x-3">
+                                    <input 
+                                      type="checkbox"
+                                      checked={selectedCatalogIds.includes(prod.id)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          setSelectedCatalogIds([...selectedCatalogIds, prod.id]);
+                                        } else {
+                                          setSelectedCatalogIds(selectedCatalogIds.filter(id => id !== prod.id));
+                                        }
+                                      }}
+                                      className="rounded border-gray-300 text-[#3F1F54] focus:ring-0 focus:ring-offset-0 bg-transparent cursor-pointer w-4 h-4 shrink-0"
+                                    />
+                                    <img src={prod.img} className="w-10 h-12 object-cover rounded-lg border border-gray-200 shrink-0" alt="" />
+                                    <div>
+                                      <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                                        <h4 className="font-bold text-gray-900 dark:text-gray-100 leading-tight">{prod.name}</h4>
+                                        {(() => {
+                                          const catObj = categories.find(c => c.id === prod.category);
+                                          if (!catObj && !prod.category) return null;
+                                          return (
+                                            <span className="inline-block px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 text-[8px] font-bold uppercase tracking-wider leading-none">
+                                              {catObj?.name || prod.category}
+                                            </span>
+                                          );
+                                        })()}
+                                      </div>
+                                      <span className="text-[9px] text-[#BCA057] block mt-0.5">₹{prod.price.toLocaleString('en-IN')} · {prod.weight || 'Gold'} · {prod.sku || 'N/A'}</span>
                                     </div>
-                                    <span className="text-[9px] text-[#BCA057] block mt-0.5">₹{prod.price.toLocaleString('en-IN')} · {prod.weight || 'Gold'} · {prod.sku || 'N/A'}</span>
+                                  </div>
+                                  <div className="flex gap-3">
+                                    <button 
+                                      onClick={() => { setEditingProduct(prod); window.scrollTo({ top: 120, behavior: 'smooth' }); }}
+                                      className="text-xs text-[#3F1F54] dark:text-purple-300 hover:underline font-bold"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button 
+                                      onClick={() => handleDeleteProduct(prod.id)}
+                                      className="text-xs text-red-500 hover:underline font-bold"
+                                    >
+                                      Delete
+                                    </button>
                                   </div>
                                 </div>
-                                <div className="flex gap-3">
-                                  <button 
-                                    onClick={() => { setEditingProduct(prod); window.scrollTo({ top: 120, behavior: 'smooth' }); }}
-                                    className="text-xs text-[#3F1F54] dark:text-purple-300 hover:underline font-bold"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button 
-                                    onClick={() => handleDeleteProduct(prod.id)}
-                                    className="text-xs text-red-500 hover:underline font-bold"
-                                  >
-                                    Delete
-                                  </button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
+                              ))}
+                            </div>
+                          )}
                         </>
                       );
                     })()}
@@ -1705,40 +1717,46 @@ export default function Admin() {
                     
                     <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
                       <h4 className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">Active Categories</h4>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                        {categories.map(cat => (
-                          <div key={cat.id} className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 rounded-2xl flex items-center justify-between gap-3 shadow-sm hover:border-[#3F1F54]/30 transition-colors">
-                            <div className="flex items-center gap-2 min-w-0">
-                              {cat.img ? (
-                                <img src={cat.img} alt={cat.name} className="w-8 h-8 rounded-lg object-contain bg-white border border-gray-100 shrink-0" />
-                              ) : (
-                                <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-xs shrink-0">💎</div>
-                              )}
-                              <span className="text-xs text-gray-700 dark:text-gray-300 font-semibold truncate">{cat.name}</span>
+                      {categories.length === 0 ? (
+                        <div className="bg-[#FAF9F6] dark:bg-gray-800/10 border border-dashed border-gray-250 dark:border-gray-800 p-8 rounded-2xl text-center">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Data is not Available</p>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                          {categories.map(cat => (
+                            <div key={cat.id} className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 rounded-2xl flex items-center justify-between gap-3 shadow-sm hover:border-[#3F1F54]/30 transition-colors">
+                              <div className="flex items-center gap-2 min-w-0">
+                                {cat.img ? (
+                                  <img src={cat.img} alt={cat.name} className="w-8 h-8 rounded-lg object-contain bg-white border border-gray-100 shrink-0" />
+                                ) : (
+                                  <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-xs shrink-0">💎</div>
+                                )}
+                                <span className="text-xs text-gray-700 dark:text-gray-300 font-semibold truncate">{cat.name}</span>
+                              </div>
+                              <div className="flex items-center gap-2.5 shrink-0">
+                                <button 
+                                  onClick={() => {
+                                    setEditingCategory(cat);
+                                    setNewCategoryName(cat.name);
+                                    setNewCategoryImage(cat.img || '');
+                                    window.scrollTo({ top: 120, behavior: 'smooth' });
+                                  }} 
+                                  className="text-xs text-[#3F1F54] dark:text-purple-300 hover:underline font-bold cursor-pointer"
+                                >
+                                  Edit
+                                </button>
+                                <button 
+                                  onClick={() => handleDeleteCategory(cat.id)} 
+                                  className="text-red-500 hover:text-red-700 font-bold text-sm cursor-pointer p-0.5"
+                                  title="Delete"
+                                >
+                                  ✕
+                                </button>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2.5 shrink-0">
-                              <button 
-                                onClick={() => {
-                                  setEditingCategory(cat);
-                                  setNewCategoryName(cat.name);
-                                  setNewCategoryImage(cat.img || '');
-                                  window.scrollTo({ top: 120, behavior: 'smooth' });
-                                }} 
-                                className="text-xs text-[#3F1F54] dark:text-purple-300 hover:underline font-bold cursor-pointer"
-                              >
-                                Edit
-                              </button>
-                              <button 
-                                onClick={() => handleDeleteCategory(cat.id)} 
-                                className="text-red-500 hover:text-red-700 font-bold text-sm cursor-pointer p-0.5"
-                                title="Delete"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -1781,10 +1799,20 @@ export default function Admin() {
                     <div className="lg:col-span-7 bg-white dark:bg-[#1E1F29] border border-gray-200/50 dark:border-gray-800 p-6 rounded-3xl space-y-4 shadow-sm">
                       <h3 className="serif-luxury text-lg text-[#3F1F54] dark:text-[#E6C687] font-bold">Signature Catalog Orders ({adminOrders.length})</h3>
                       <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
-                        {adminOrders
-                          .filter(o => orderStatusFilter === 'all' || o.orderStatus === orderStatusFilter)
-                          .filter(o => o.customerDetails?.name?.toLowerCase().includes(orderSearch.toLowerCase()) || o.orderId?.toLowerCase().includes(orderSearch.toLowerCase()))
-                          .map(order => (
+                        {(() => {
+                          const filteredOrders = adminOrders
+                            .filter(o => orderStatusFilter === 'all' || o.orderStatus === orderStatusFilter)
+                            .filter(o => o.customerDetails?.name?.toLowerCase().includes(orderSearch.toLowerCase()) || o.orderId?.toLowerCase().includes(orderSearch.toLowerCase()));
+                          
+                          if (filteredOrders.length === 0) {
+                            return (
+                              <div className="bg-[#FAF9F6] dark:bg-gray-800/10 border border-dashed border-gray-250 dark:border-gray-800 p-8 rounded-2xl text-center">
+                                <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Data is not Available</p>
+                              </div>
+                            );
+                          }
+                          
+                          return filteredOrders.map(order => (
                             <div key={order.id} className="bg-gray-50 dark:bg-gray-800/20 border border-gray-200/50 dark:border-gray-800/85 p-4 rounded-2xl space-y-3 text-xs shadow-sm">
                               <div className="flex justify-between items-start">
                                 <div>
@@ -1827,11 +1855,18 @@ export default function Admin() {
                                   >
                                     🚚 Secure Dispatch Ping
                                   </button>
+                                  <button 
+                                    onClick={() => handleDeleteOrder(order.id)}
+                                    className="bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50 px-3 py-1.5 rounded-lg transition-colors font-bold text-[9px] uppercase tracking-wider cursor-pointer"
+                                  >
+                                    ✕ Delete Order
+                                  </button>
                                 </div>
                                 <p className="font-bold text-[#3F1F54] dark:text-purple-300 text-right mt-1 text-xs">Total Amount: ₹{order.amount?.toLocaleString('en-IN')}</p>
                               </div>
                             </div>
-                          ))}
+                          ));
+                        })()}
                       </div>
                     </div>
 
@@ -1839,70 +1874,86 @@ export default function Admin() {
                     <div className="lg:col-span-5 bg-white dark:bg-[#1E1F29] border border-gray-200/50 dark:border-gray-800 p-6 rounded-3xl space-y-4 shadow-sm">
                       <h3 className="serif-luxury text-lg text-[#3F1F54] dark:text-[#E6C687] font-bold">Lounge & Try-on Consults ({adminConsults.length})</h3>
                       <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
-                        {adminConsults.map(con => (
-                          <div key={con.id} className="bg-gray-50 dark:bg-gray-800/20 border border-gray-200/50 dark:border-gray-800/85 p-4 rounded-2xl space-y-3 text-xs shadow-sm">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <span className="text-[10px] font-bold text-gray-800 dark:text-gray-200 block">
-                                  {con.requestType || (con.jewelryType ? "Custom Design Request" : "Lounge Booking")}
-                                </span>
-                                <span className="text-[9px] text-gray-400 block mt-0.5">{con.createdDate?.toDate().toLocaleString()}</span>
-                              </div>
-                              <select 
-                                value={con.status}
-                                onChange={(e) => handleUpdateConsultStatus(con.id, e.target.value)}
-                                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded px-1.5 py-0.5 text-[9px] font-bold text-[#BCA057] focus:outline-none cursor-pointer"
-                              >
-                                <option value="Pending">Pending</option>
-                                <option value="Confirmed">Confirmed</option>
-                                <option value="Processing">Processing</option>
-                                <option value="Completed">Completed</option>
-                              </select>
-                            </div>
-                            <div className="border-t border-gray-200/60 dark:border-gray-800/60 pt-2 text-[10px] text-gray-600 dark:text-gray-400 space-y-1.5 normal-case">
-                              <p><strong>Customer:</strong> {con.name} ({con.phone}) {con.email ? `· ${con.email}` : ''}</p>
-                              {con.city && <p><strong>City:</strong> {con.city}</p>}
-                              {con.date && <p><strong>Schedule:</strong> {con.date} {con.time ? `at ${con.time}` : ''}</p>}
-                              {con.notes && <p><strong>Notes:</strong> {con.notes}</p>}
-                              
-                              {/* Custom Design Details */}
-                              {con.jewelryType && (
-                                <div className="mt-2 pt-2 border-t border-dashed border-gray-200 dark:border-gray-700 space-y-1">
-                                  <p className="text-[#3F1F54] dark:text-[#E6C687] font-bold">💎 Design Specifications</p>
-                                  <p><strong>Type:</strong> {con.jewelryType} · <strong>Material:</strong> {con.material}</p>
-                                  <p><strong>Budget:</strong> {con.budget}</p>
-                                  <p><strong>Requirements:</strong> {con.description}</p>
-                                </div>
-                              )}
-                              
-                              {/* Uploaded Sketch Reference Photo */}
-                              {(con.referenceImageUrl || con.fileData) && (
-                                <div className="mt-2 pt-2 border-t border-dashed border-gray-200 dark:border-gray-700 space-y-1.5">
-                                  <p className="font-semibold text-[9px] uppercase tracking-wider text-[#BCA057]">Uploaded Reference Sketch:</p>
-                                  <div className="flex flex-col gap-2 items-start">
-                                    <div className="relative max-w-[120px] aspect-square rounded-xl overflow-hidden border border-gray-200 dark:border-[#3F1F54] bg-white shadow-sm hover:border-[#3F1F54] transition-all">
-                                      <img 
-                                        src={con.referenceImageUrl || con.fileData} 
-                                        alt={con.fileName || "Custom design sketch"} 
-                                        className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform"
-                                        onClick={() => window.open(con.referenceImageUrl || con.fileData, '_blank')}
-                                        title="Click to view full size"
-                                      />
-                                    </div>
-                                    <button 
-                                      type="button"
-                                      onClick={() => window.open(con.referenceImageUrl || con.fileData, '_blank')}
-                                      className="bg-white border border-gray-200 dark:border-gray-700 hover:bg-gray-50 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-1 shadow-xs pr-4 pl-3"
-                                    >
-                                      <span>👁️</span> View Full Image
-                                    </button>
-                                  </div>
-                                  <span className="text-[8px] text-gray-400 block truncate max-w-[180px]">📎 {con.fileName}</span>
-                                </div>
-                              )}
-                            </div>
+                        {adminConsults.length === 0 ? (
+                          <div className="bg-[#FAF9F6] dark:bg-gray-800/10 border border-dashed border-gray-250 dark:border-gray-800 p-8 rounded-2xl text-center">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Data is not Available</p>
                           </div>
-                        ))}
+                        ) : (
+                          adminConsults.map(con => (
+                            <div key={con.id} className="bg-gray-50 dark:bg-gray-800/20 border border-gray-200/50 dark:border-gray-800/85 p-4 rounded-2xl space-y-3 text-xs shadow-sm">
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <span className="text-[10px] font-bold text-gray-800 dark:text-gray-200 block">
+                                    {con.requestType || (con.jewelryType ? "Custom Design Request" : "Lounge Booking")}
+                                  </span>
+                                  <span className="text-[9px] text-gray-400 block mt-0.5">{con.createdDate?.toDate().toLocaleString()}</span>
+                                </div>
+                                <select 
+                                  value={con.status}
+                                  onChange={(e) => handleUpdateConsultStatus(con.id, e.target.value)}
+                                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded px-1.5 py-0.5 text-[9px] font-bold text-[#BCA057] focus:outline-none cursor-pointer"
+                                >
+                                  <option value="Pending">Pending</option>
+                                  <option value="Confirmed">Confirmed</option>
+                                  <option value="Processing">Processing</option>
+                                  <option value="Completed">Completed</option>
+                                </select>
+                              </div>
+                              <div className="border-t border-gray-200/60 dark:border-gray-800/60 pt-2 text-[10px] text-gray-600 dark:text-gray-400 space-y-1.5 normal-case">
+                                <p><strong>Customer:</strong> {con.name} ({con.phone}) {con.email ? `· ${con.email}` : ''}</p>
+                                {con.city && <p><strong>City:</strong> {con.city}</p>}
+                                {con.date && <p><strong>Schedule:</strong> {con.date} {con.time ? `at ${con.time}` : ''}</p>}
+                                {con.notes && <p><strong>Notes:</strong> {con.notes}</p>}
+                                
+                                {/* Custom Design Details */}
+                                {con.jewelryType && (
+                                  <div className="mt-2 pt-2 border-t border-dashed border-gray-200 dark:border-gray-700 space-y-1">
+                                    <p className="text-[#3F1F54] dark:text-[#E6C687] font-bold">💎 Design Specifications</p>
+                                    <p><strong>Type:</strong> {con.jewelryType} · <strong>Material:</strong> {con.material}</p>
+                                    <p><strong>Budget:</strong> {con.budget}</p>
+                                    <p><strong>Requirements:</strong> {con.description}</p>
+                                  </div>
+                                )}
+                                
+                                {/* Uploaded Sketch Reference Photo */}
+                                {(con.referenceImageUrl || con.fileData) && (
+                                  <div className="mt-2 pt-2 border-t border-dashed border-gray-200 dark:border-gray-700 space-y-1.5">
+                                    <p className="font-semibold text-[9px] uppercase tracking-wider text-[#BCA057]">Uploaded Reference Sketch:</p>
+                                    <div className="flex flex-col gap-2 items-start">
+                                      <div className="relative max-w-[120px] aspect-square rounded-xl overflow-hidden border border-gray-200 dark:border-[#3F1F54] bg-white shadow-sm hover:border-[#3F1F54] transition-all">
+                                        <img 
+                                          src={con.referenceImageUrl || con.fileData} 
+                                          alt={con.fileName || "Custom design sketch"} 
+                                          className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform"
+                                          onClick={() => window.open(con.referenceImageUrl || con.fileData, '_blank')}
+                                          title="Click to view full size"
+                                        />
+                                      </div>
+                                      <button 
+                                        type="button"
+                                        onClick={() => window.open(con.referenceImageUrl || con.fileData, '_blank')}
+                                        className="bg-white border border-gray-200 dark:border-gray-700 hover:bg-gray-50 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-1 shadow-xs pr-4 pl-3"
+                                      >
+                                        <span>👁️</span> View Full Image
+                                      </button>
+                                    </div>
+                                    <span className="text-[8px] text-gray-400 block truncate max-w-[180px]">📎 {con.fileName}</span>
+                                  </div>
+                                )}
+
+                                {/* Action Buttons */}
+                                <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-200/60 dark:border-gray-800/60">
+                                  <button 
+                                    onClick={() => handleDeleteConsult(con.id)}
+                                    className="bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50 px-3 py-1.5 rounded-lg transition-colors font-bold text-[9px] uppercase tracking-wider cursor-pointer"
+                                  >
+                                    ✕ Delete Request
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </div>
 
@@ -1952,29 +2003,39 @@ export default function Admin() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                       {/* Unique patrons extracted from consultations booking records */}
-                      {Array.from(new Set(adminConsults.map(c => c.phone)))
-                        .map(phone => {
-                          const consultationsList = adminConsults.filter(c => c.phone === phone);
-                          const representative = consultationsList[0];
-                          
-                          // Calculate total simulated spends based on whether they had custom design intents
-                          const designIntent = consultationsList.some(c => c.jewelryType);
-                          const spendFactor = designIntent ? 85000 : 25000;
-                          const vipSegment = spendFactor > 50000 ? 'VIP' : 'Standard';
+                      {(() => {
+                        const filteredClients = Array.from(new Set(adminConsults.map(c => c.phone)))
+                          .map(phone => {
+                            const consultationsList = adminConsults.filter(c => c.phone === phone);
+                            const representative = consultationsList[0];
+                            
+                            // Calculate total simulated spends based on whether they had custom design intents
+                            const designIntent = consultationsList.some(c => c.jewelryType);
+                            const spendFactor = designIntent ? 85000 : 25000;
+                            const vipSegment = spendFactor > 50000 ? 'VIP' : 'Standard';
 
-                          return {
-                            name: representative.name,
-                            phone: phone,
-                            email: representative.email,
-                            city: representative.city,
-                            totalOrders: consultationsList.length,
-                            totalSpend: spendFactor * consultationsList.length,
-                            segment: vipSegment
-                          };
-                        })
-                        .filter(client => crmSegment === 'all' || client.segment === crmSegment)
-                        .filter(client => client.name?.toLowerCase().includes(crmSearch.toLowerCase()) || client.phone?.includes(crmSearch))
-                        .map((client, idx) => (
+                            return {
+                              name: representative.name,
+                              phone: phone,
+                              email: representative.email,
+                              city: representative.city,
+                              totalOrders: consultationsList.length,
+                              totalSpend: spendFactor * consultationsList.length,
+                              segment: vipSegment
+                            };
+                          })
+                          .filter(client => crmSegment === 'all' || client.segment === crmSegment)
+                          .filter(client => client.name?.toLowerCase().includes(crmSearch.toLowerCase()) || client.phone?.includes(crmSearch));
+                        
+                        if (filteredClients.length === 0) {
+                          return (
+                            <div className="bg-[#FAF9F6] dark:bg-gray-800/10 border border-dashed border-gray-250 dark:border-gray-800 p-8 rounded-2xl text-center col-span-3 w-full">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Data is not Available</p>
+                            </div>
+                          );
+                        }
+
+                        return filteredClients.map((client, idx) => (
                           <div 
                             key={idx} 
                             onClick={() => setSelectedClient(client)}
@@ -2000,7 +2061,8 @@ export default function Admin() {
                               {client.segment}
                             </span>
                           </div>
-                        ))}
+                        ));
+                      })()}
                     </div>
                   </div>
                 </div>
