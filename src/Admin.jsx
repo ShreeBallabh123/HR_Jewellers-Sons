@@ -109,7 +109,7 @@ export default function Admin() {
   const [editingCategory, setEditingCategory] = useState(null);
   const [newProduct, setNewProduct] = useState({
     name: '', category: 'gold', subCategory: '', desc: '', price: 0,
-    carat: '22K Gold', weight: '', img: '', badge: '', purityInfo: '', 
+    carat: '22K', weight: '', img: '', badge: '', purityInfo: '', 
     makingCharges: '', sku: '', stoneInfo: '', hallmark: 'BIS 916 Government Certified', 
     tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
     subImages: [],
@@ -304,7 +304,7 @@ export default function Admin() {
       });
       setNewProduct({
         name: '', category: 'gold', subCategory: '', desc: '', price: 0,
-        carat: '22K Gold', weight: '', img: '', badge: '', purityInfo: '', 
+        carat: '22K', weight: '', img: '', badge: '', purityInfo: '', 
         makingCharges: '', sku: '', stoneInfo: '', hallmark: 'BIS 916 Government Certified', 
         tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
         subImages: [],
@@ -1325,15 +1325,16 @@ export default function Admin() {
                       </div>
                       <div>
                         <label htmlFor="prod-carat-form" className="text-[9px] uppercase tracking-wider text-gray-400 block mb-1 font-bold">Carat & Purity</label>
-                        <input 
+                        <select 
                           id="prod-carat-form"
-                          type="text" 
-                          required
-                          placeholder="e.g. 18K Yellow Gold / VVS"
                           value={editingProduct ? editingProduct.carat : newProduct.carat}
                           onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, carat: e.target.value}) : setNewProduct({...newProduct, carat: e.target.value})}
-                          className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
-                        />
+                          className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-100 focus:outline-none cursor-pointer"
+                        >
+                          <option value="20K">20K</option>
+                          <option value="22K">22K</option>
+                          <option value="24K">24K</option>
+                        </select>
                       </div>
                       <div>
                         <label htmlFor="prod-weight-form" className="text-[9px] uppercase tracking-wider text-gray-400 block mb-1 font-bold">Est. Weight (Grams)</label>
