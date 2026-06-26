@@ -112,7 +112,8 @@ export default function Admin() {
     carat: '22K Gold', weight: '', img: '', badge: '', purityInfo: '', 
     makingCharges: '', sku: '', stoneInfo: '', hallmark: 'BIS 916 Government Certified', 
     tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
-    subImages: []
+    subImages: [],
+    discountPercent: 20
   });
   const [editingProduct, setEditingProduct] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
@@ -306,7 +307,8 @@ export default function Admin() {
         carat: '22K Gold', weight: '', img: '', badge: '', purityInfo: '', 
         makingCharges: '', sku: '', stoneInfo: '', hallmark: 'BIS 916 Government Certified', 
         tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
-        subImages: []
+        subImages: [],
+        discountPercent: 20
       });
       showAdminNotification("New jewellery item added successfully!", "success");
     } catch (err) {
@@ -1396,6 +1398,22 @@ export default function Admin() {
                           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500 font-bold select-none pointer-events-none">%</span>
                         </div>
                       </div>
+                      <div>
+                        <label htmlFor="prod-discount-form" className="text-[9px] uppercase tracking-wider text-gray-400 block mb-1 font-bold">Discount Off on Item (%)</label>
+                        <div className="relative">
+                          <input 
+                            id="prod-discount-form"
+                            type="number" 
+                            min="0"
+                            max="100"
+                            placeholder="e.g. 20"
+                            value={editingProduct ? (editingProduct.discountPercent !== undefined ? editingProduct.discountPercent : 20) : (newProduct.discountPercent !== undefined ? newProduct.discountPercent : 20)}
+                            onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, discountPercent: e.target.value === '' ? '' : +e.target.value}) : setNewProduct({...newProduct, discountPercent: e.target.value === '' ? '' : +e.target.value})}
+                            className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl pl-3 pr-8 py-2 text-xs text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                          />
+                          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500 font-bold select-none pointer-events-none">% OFF</span>
+                        </div>
+                      </div>
                       <div className="sm:col-span-3">
                         <label htmlFor="prod-desc-form" className="text-[9px] uppercase tracking-wider text-gray-400 block mb-1 font-bold">Jewellery Description</label>
                         <textarea 
@@ -1610,7 +1628,13 @@ export default function Admin() {
                                           );
                                         })()}
                                       </div>
-                                      <span className="text-[9px] text-[#BCA057] block mt-0.5">₹{prod.price.toLocaleString('en-IN')} · {prod.weight || 'Gold'} · {prod.sku || 'N/A'}</span>
+                                      <span className="text-[9px] text-[#BCA057] block mt-0.5">
+                                        ₹{prod.price.toLocaleString('en-IN')} 
+                                        {prod.discountPercent !== undefined && prod.discountPercent !== '' 
+                                          ? ` (${prod.discountPercent}% OFF)` 
+                                          : ' (20% OFF default)'
+                                        } · {prod.weight || 'Gold'} · {prod.sku || 'N/A'}
+                                      </span>
                                     </div>
                                   </div>
                                   <div className="flex gap-3">

@@ -8051,14 +8051,17 @@ export default function App() {
                         <span className="text-4xl lg:text-[42px] font-light text-[#181818] font-sans tracking-tight">
                           ₹{formatPrice(detailProduct.price)}
                         </span>
-                        {/* Original Price */}
-                        <span className="text-base text-[#888888] line-through font-light">
-                          ₹{formatPrice(Math.round(detailProduct.price / (1 - (Number(detailProduct.discountPercent) || 20) / 100)))}
-                        </span>
-                        {/* Savings Badge */}
-                        <span className="text-[10px] font-semibold text-[#B8893C] tracking-[0.15em] uppercase">
-                          {Number(detailProduct.discountPercent) || 20}% OFF
-                        </span>
+                        {/* Original Price & Badge (Only if discount is active) */}
+                        {(detailProduct.discountPercent === undefined || detailProduct.discountPercent === null || detailProduct.discountPercent === '' || Number(detailProduct.discountPercent) > 0) && (
+                          <>
+                            <span className="text-base text-[#888888] line-through font-light">
+                              ₹{formatPrice(Math.round(detailProduct.price / (1 - (Number(detailProduct.discountPercent) || 20) / 100)))}
+                            </span>
+                            <span className="text-[10px] font-semibold text-[#B8893C] tracking-[0.15em] uppercase">
+                              {Number(detailProduct.discountPercent) || 20}% OFF
+                            </span>
+                          </>
+                        )}
                       </div>
 
                       {/* Tax Info */}
@@ -8723,8 +8726,12 @@ export default function App() {
                         <h4 className="font-sans text-xs font-semibold text-[#181818] tracking-tight">{detailProduct.name}</h4>
                         <div className="flex items-center gap-2.5 mt-0.5 font-sans">
                           <span className="text-[#181818] font-bold text-sm">₹{Number(detailProduct.price).toLocaleString("en-IN")}</span>
-                          <span className="text-xs text-[#888888] line-through font-light">₹{formatPrice(Math.round(detailProduct.price / (1 - (Number(detailProduct.discountPercent) || 20) / 100)))}</span>
-                          <span className="text-[10px] text-[#B8893C] font-semibold">{Number(detailProduct.discountPercent) || 20}% OFF</span>
+                          {(detailProduct.discountPercent === undefined || detailProduct.discountPercent === null || detailProduct.discountPercent === '' || Number(detailProduct.discountPercent) > 0) && (
+                            <>
+                              <span className="text-xs text-[#888888] line-through font-light">₹{formatPrice(Math.round(detailProduct.price / (1 - (Number(detailProduct.discountPercent) || 20) / 100)))}</span>
+                              <span className="text-[10px] text-[#B8893C] font-semibold">{Number(detailProduct.discountPercent) || 20}% OFF</span>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
