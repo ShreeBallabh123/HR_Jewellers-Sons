@@ -953,6 +953,12 @@ const getCategoryFallbackImage = (catNameOrId) => {
   return ringsImg; // default fallback
 };
 
+const isVideoUrl = (url) => {
+  if (!url) return false;
+  const lower = url.toLowerCase();
+  return lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.ogg') || lower.endsWith('.mov') || lower.includes('/video/upload/');
+};
+
 export default function App() {
   // ==========================================
   // STATE MANAGEMENT
@@ -1164,6 +1170,7 @@ export default function App() {
   // PDP Gallery & Customizer
   const [detailProduct, setDetailProduct] = useState(null);
   const [detailActiveImg, setDetailActiveImg] = useState(null);
+  const [pdpHovered, setPdpHovered] = useState(false);
 
   // Sync first product to detail views once loaded from db
   useEffect(() => {
@@ -1173,9 +1180,27 @@ export default function App() {
     }
   }, [products, detailProduct]);
 
+  // Auto-slide PDP images/videos every 5 seconds
+  useEffect(() => {
+    if (currentPage !== 'product-detail' || !detailProduct || pdpHovered) return;
+
+    const mediaList = [detailProduct.img, ...(detailProduct.subImages || [])].filter(Boolean);
+    if (mediaList.length <= 1) return;
+
+    const currentIdx = mediaList.indexOf(detailActiveImg || detailProduct.img);
+    const nextIdx = currentIdx === -1 ? 0 : (currentIdx + 1) % mediaList.length;
+
+    const timer = setTimeout(() => {
+      setDetailActiveImg(mediaList[nextIdx]);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [currentPage, detailProduct, detailActiveImg, pdpHovered]);
+
   const [pdpZoomStyle, setPdpZoomStyle] = useState({ transformOrigin: 'center center', transform: 'scale(1)' });
 
   const handleZoomMouseMove = (e) => {
+    setPdpHovered(true);
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - left) / width) * 100;
     const y = ((e.clientY - top) / height) * 100;
@@ -1186,6 +1211,7 @@ export default function App() {
   };
 
   const handleZoomMouseLeave = () => {
+    setPdpHovered(false);
     setPdpZoomStyle({
       transformOrigin: 'center center',
       transform: 'scale(1)',
@@ -7912,39 +7938,39 @@ export default function App() {
                       </button>
 
                       {/* Render Media */}
-                      <img
-                        src={detailActiveImg || detailProduct.img}
-                        alt={detailProduct.name}
-                        className="w-full h-full object-contain object-top mt-[-8%] select-none pointer-events-none transition-all duration-300 mix-blend-multiply"
-                        style={{
-                          ...pdpZoomStyle,
-                          transition: 'transform 0.15s ease-out, transform-origin 0.15s ease-out',
-                          filter: 'brightness(1.06) contrast(1.04)',
-                        }}
-                      />
+                      {isVideoUrl(detailActiveImg || detailProduct.img) ? (
+                        <div className="w-full h-full flex items-center justify-center bg-black rounded-none overflow-hidden">
+                          <video 
+                            src={detailActiveImg || detailProduct.img} 
+                            autoPlay 
+                            loop 
+                            muted 
+                            controls 
+                            className="w-full h-full object-contain" 
+                          />
+                        </div>
+                      ) : (
+                        <img
+                          src={detailActiveImg || detailProduct.img}
+                          alt={detailProduct.name}
+                          className="w-full h-full object-contain object-top mt-[-8%] select-none pointer-events-none transition-all duration-300 mix-blend-multiply"
+                          style={{
+                            ...pdpZoomStyle,
+                            transition: 'transform 0.15s ease-out, transform-origin 0.15s ease-out',
+                            filter: 'brightness(1.06) contrast(1.04)',
+                          }}
+                        />
+                      )}
                     </div>
 
                     {/* Thumbnails Strip */}
-                    <div className="relative flex items-center justify-between w-full bg-transparent py-1">
-                      {/* Left scroll button */}
-                      <button
-                        onClick={() => {
-                          const container = document.getElementById('pdp-thumb-list');
-                          if (container) container.scrollBy({ left: -100, behavior: 'smooth' });
-                        }}
-                        className="w-8 h-8 rounded-full border border-[#E7DED2] bg-white hover:bg-[#F7F3EE] flex items-center justify-center text-[#888888] hover:text-[#181818] transition-all duration-300 focus:outline-none shrink-0 cursor-pointer"
-                      >
-                        <svg className="w-4 h-4 stroke-current fill-none stroke-2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                        </svg>
-                      </button>
-
+                    <div className="relative flex items-center justify-center w-full bg-transparent py-1">
                       {/* Thumbnails container */}
                       <div id="pdp-thumb-list" className="flex-1 flex gap-4 overflow-x-auto no-scrollbar py-2 mx-3 justify-center select-none">
                         {/* Main Image */}
                         <button
                           onClick={() => { triggerAudio('click'); setDetailActiveImg(detailProduct.img); }}
-                          className={`w-16 h-16 flex items-center justify-center p-0 bg-transparent shrink-0 focus:outline-none transition-all duration-300 hover:scale-105 cursor-pointer relative ${detailActiveImg === detailProduct.img ? 'after:content-[""] after:absolute after:bottom-0 after:left-1/4 after:right-1/4 after:h-[1.5px] after:bg-[#B8893C]' : ''}`}
+                          className={`w-16 h-16 flex items-center justify-center p-0 bg-transparent shrink-0 focus:outline-none transition-all duration-300 hover:scale-105 cursor-pointer relative ${(detailActiveImg || detailProduct.img) === detailProduct.img ? 'after:content-[""] after:absolute after:bottom-0 after:left-1/4 after:right-1/4 after:h-[1.5px] after:bg-[#B8893C]' : ''}`}
                         >
                           <img src={detailProduct.img} className="w-14 h-14 object-contain rounded-none mix-blend-multiply" style={{ filter: 'brightness(1.06) contrast(1.04)' }} alt="Main View" />
                         </button>
@@ -7954,25 +7980,23 @@ export default function App() {
                           <button
                             key={idx}
                             onClick={() => { triggerAudio('click'); setDetailActiveImg(subImg); }}
-                            className={`w-16 h-16 flex items-center justify-center p-0 bg-transparent shrink-0 focus:outline-none transition-all duration-300 hover:scale-105 cursor-pointer relative ${detailActiveImg === subImg ? 'after:content-[""] after:absolute after:bottom-0 after:left-1/4 after:right-1/4 after:h-[1.5px] after:bg-[#B8893C]' : ''}`}
+                            className={`w-16 h-16 flex items-center justify-center p-0 bg-transparent shrink-0 focus:outline-none transition-all duration-300 hover:scale-105 cursor-pointer relative ${(detailActiveImg || detailProduct.img) === subImg ? 'after:content-[""] after:absolute after:bottom-0 after:left-1/4 after:right-1/4 after:h-[1.5px] after:bg-[#B8893C]' : ''}`}
                           >
-                            <img src={subImg} className="w-14 h-14 object-contain rounded-none mix-blend-multiply" style={{ filter: 'brightness(1.06) contrast(1.04)' }} alt={`Sub ${idx + 1}`} />
+                            {isVideoUrl(subImg) ? (
+                              <div className="w-16 h-16 flex flex-col items-center justify-center relative bg-black overflow-hidden rounded-none shadow-sm border border-gray-150">
+                                <video src={subImg} className="w-14 h-14 object-cover" muted playsInline />
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/35">
+                                  <svg className="w-4.5 h-4.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z" />
+                                  </svg>
+                                </div>
+                              </div>
+                            ) : (
+                              <img src={subImg} className="w-14 h-14 object-contain rounded-none mix-blend-multiply" style={{ filter: 'brightness(1.06) contrast(1.04)' }} alt={`Sub ${idx + 1}`} />
+                            )}
                           </button>
                         ))}
                       </div>
-
-                      {/* Right scroll button */}
-                      <button
-                        onClick={() => {
-                          const container = document.getElementById('pdp-thumb-list');
-                          if (container) container.scrollBy({ left: 100, behavior: 'smooth' });
-                        }}
-                        className="w-10 h-10 rounded-full border border-[#E7DED2] bg-white hover:bg-[#F7F3EE] flex items-center justify-center text-[#888888] hover:text-[#181818] transition-all duration-300 focus:outline-none shrink-0 cursor-pointer"
-                      >
-                        <svg className="w-4 h-4 stroke-current fill-none stroke-2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
-                      </button>
                     </div>
 
                     {/* Certified seals row */}

@@ -57,6 +57,12 @@ import {
   Moon
 } from 'lucide-react';
 
+const isVideoUrl = (url) => {
+  if (!url) return false;
+  const lower = url.toLowerCase();
+  return lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.ogg') || lower.endsWith('.mov') || lower.includes('/video/upload/');
+};
+
 export default function Admin() {
   const [adminUser, setAdminUser] = useState(() => {
     try {
@@ -438,7 +444,7 @@ export default function Admin() {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
     const largeFilesCount = files.filter(f => f.size > 500 * 1024).length;
-    setSubImagesUploadProgress(largeFilesCount > 0 ? `⚠️ Warning: ${largeFilesCount} sub-image(s) exceed 500KB. Uploading...` : `Uploading ${files.length} sub-images...`);
+    setSubImagesUploadProgress(largeFilesCount > 0 ? `⚠️ Warning: ${largeFilesCount} file(s) exceed 500KB. Uploading...` : `Uploading ${files.length} files...`);
     try {
       const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dcraweoxj';
       const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'hr_jewellers_unsigned';
@@ -451,7 +457,10 @@ export default function Admin() {
         formData.append('upload_preset', uploadPreset);
         formData.append('folder', 'products');
         
-        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        const isVideo = file.type.startsWith('video/');
+        const resourceType = isVideo ? 'video' : 'image';
+        
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
           method: 'POST',
           body: formData,
         });
@@ -476,10 +485,10 @@ export default function Admin() {
           subImages: [...(prev.subImages || []), ...urls]
         }));
       }
-      setSubImagesUploadProgress(largeFilesCount > 0 ? "⚠️ Upload complete (Some sub-images exceeded 500KB)!" : "Sub-images upload complete!");
+      setSubImagesUploadProgress(largeFilesCount > 0 ? "⚠️ Upload complete (Some files exceeded 500KB)!" : "Files upload complete!");
     } catch (err) {
       console.error("Cloudinary sub-images upload error:", err);
-      setSubImagesUploadProgress(`Sub-images upload failed: ${err.message}`);
+      setSubImagesUploadProgress(`Upload failed: ${err.message}`);
     }
   };
 
@@ -1426,7 +1435,7 @@ export default function Admin() {
                             </label>
                             <input 
                               type="file" 
-                              accept="image/*"
+                              accept="image/*,video/*"
                               multiple
                               onChange={(e) => handleSubImagesUpload(e, editingProduct ? 'edit' : 'new')}
                               className="text-xs text-gray-500 font-semibold"
@@ -1439,11 +1448,25 @@ export default function Admin() {
                             <div className="flex flex-wrap gap-3">
                               {((editingProduct ? editingProduct.subImages : newProduct.subImages) || []).map((subImg, idx) => (
                                 <div key={idx} className="relative group w-16 h-20">
-                                  <img 
-                                    src={subImg} 
-                                    alt={`Sub-image ${idx + 1}`} 
-                                    className="w-full h-full object-cover rounded-xl border border-gray-250 shadow-sm"
-                                  />
+                                  {isVideoUrl(subImg) ? (
+                                    <div className="w-full h-full relative rounded-xl border border-gray-250 overflow-hidden bg-black shadow-sm">
+                                      <video 
+                                        src={subImg} 
+                                        className="w-full h-full object-cover"
+                                        muted
+                                        playsInline
+                                      />
+                                      <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
+                                        <span className="text-white text-xs">🎥</span>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <img 
+                                      src={subImg} 
+                                      alt={`Sub-image ${idx + 1}`} 
+                                      className="w-full h-full object-cover rounded-xl border border-gray-250 shadow-sm"
+                                    />
+                                  )}
                                   <button
                                     type="button"
                                     onClick={() => handleRemoveSubImage(idx, editingProduct ? 'edit' : 'new')}
