@@ -52,7 +52,9 @@ import {
   Info,
   Clock,
   ChevronDown,
-  Wallet
+  Wallet,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 export default function Admin() {
@@ -80,6 +82,13 @@ export default function Admin() {
   });
   const [darkMode, setDarkMode] = useState(false);
   const [aiAnalysisResult, setAiAnalysisResult] = useState('');
+  const [adminNotification, setAdminNotification] = useState({ message: '', type: 'success' });
+  const showAdminNotification = (message, type = 'success') => {
+    setAdminNotification({ message, type });
+    setTimeout(() => {
+      setAdminNotification({ message: '', type: 'success' });
+    }, 4000);
+  };
 
   // Loaded database elements
   const [products, setProducts] = useState([]);
@@ -89,6 +98,9 @@ export default function Admin() {
 
   // Form parameters
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategoryImage, setNewCategoryImage] = useState('');
+  const [categoryUploadProgress, setCategoryUploadProgress] = useState(null);
+  const [editingCategory, setEditingCategory] = useState(null);
   const [newProduct, setNewProduct] = useState({
     name: '', category: 'gold', subCategory: '', desc: '', price: 0,
     carat: '22K Gold', weight: '', img: '', badge: '', purityInfo: '', 
@@ -198,7 +210,7 @@ export default function Admin() {
 
     // Listen to Categories
     const unsubscribeCategories = onSnapshot(collection(db, 'categories'), (snap) => {
-      setCategories(snap.docs.map(d => d.data()));
+      setCategories(snap.docs.map(d => ({ id: d.id, ...d.data() })));
     });
 
     // Listen to Orders
@@ -272,7 +284,7 @@ export default function Admin() {
     e.preventDefault();
     // RBAC Security Check
     if (adminRole === 'Manager' || adminRole === 'Marketing Manager') {
-      alert("Role Permission Error: Only Super Admin and Inventory Managers can add products.");
+      showAdminNotification("Role Permission Error: Only Super Admin and Inventory Managers can add products.", "error");
       return;
     }
     try {
@@ -290,43 +302,47 @@ export default function Admin() {
         tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
         subImages: []
       });
-      alert("New jewellery item added successfully!");
+      showAdminNotification("New jewellery item added successfully!", "success");
     } catch (err) {
       console.error("Error adding product:", err);
+      showAdminNotification("Error adding product: " + err.message, "error");
     }
   };
 
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
     if (adminRole === 'Manager' || adminRole === 'Marketing Manager') {
-      alert("Role Permission Error: Only Super Admin and Inventory Managers can edit products.");
+      showAdminNotification("Role Permission Error: Only Super Admin and Inventory Managers can edit products.", "error");
       return;
     }
     try {
       await updateDoc(doc(db, 'products', editingProduct.id), editingProduct);
       setEditingProduct(null);
-      alert("Catalog product updated successfully!");
+      showAdminNotification("Catalog product updated successfully!", "success");
     } catch (err) {
       console.error("Error updating product:", err);
+      showAdminNotification("Error updating product: " + err.message, "error");
     }
   };
 
   const handleDeleteProduct = async (prodId) => {
     if (adminRole === 'Manager' || adminRole === 'Marketing Manager') {
-      alert("Role Permission Error: Only Super Admin and Inventory Managers can delete products.");
+      showAdminNotification("Role Permission Error: Only Super Admin and Inventory Managers can delete products.", "error");
       return;
     }
     if (!window.confirm("Are you sure you want to delete this jewellery item?")) return;
     try {
       await deleteDoc(doc(db, 'products', prodId));
+      showAdminNotification("Product deleted successfully!", "success");
     } catch (err) {
       console.error("Error deleting product:", err);
+      showAdminNotification("Error deleting product: " + err.message, "error");
     }
   };
 
   const handleDeleteSelectedCatalog = async () => {
     if (adminRole === 'Manager' || adminRole === 'Marketing Manager') {
-      alert("Role Permission Error: Only Super Admin and Inventory Managers can delete products.");
+      showAdminNotification("Role Permission Error: Only Super Admin and Inventory Managers can delete products.", "error");
       return;
     }
     if (selectedCatalogIds.length === 0) return;
@@ -336,9 +352,45 @@ export default function Admin() {
         await deleteDoc(doc(db, 'products', prodId));
       }
       setSelectedCatalogIds([]);
-      alert("Selected jewellery items deleted successfully!");
+      showAdminNotification("Selected jewellery items deleted successfully!", "success");
     } catch (err) {
       console.error("Error deleting selected products:", err);
+      showAdminNotification("Error deleting selected products: " + err.message, "error");
+    }
+  };
+
+  // Upload category cover image directly to Cloudinary
+  const handleCategoryImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const isLarge = file.size > 500 * 1024;
+    setCategoryUploadProgress(isLarge ? "⚠️ Warning: Image exceeds 500KB. Uploading..." : "Uploading category image...");
+    try {
+      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dcraweoxj';
+      const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'hr_jewellers_unsigned';
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', uploadPreset);
+      formData.append('folder', 'categories');
+      
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || 'Failed to upload to Cloudinary');
+      }
+
+      const data = await response.json();
+      const downloadURL = data.secure_url;
+      setNewCategoryImage(downloadURL);
+      setCategoryUploadProgress(isLarge ? "⚠️ Upload complete (Image exceeds 500KB)!" : "Image upload complete!");
+    } catch (err) {
+      console.error("Cloudinary category upload error:", err);
+      setCategoryUploadProgress(`Image upload failed: ${err.message}`);
     }
   };
 
@@ -346,7 +398,8 @@ export default function Admin() {
   const handleImageUpload = async (e, mode) => {
     const file = e.target.files[0];
     if (!file) return;
-    setImageUploadProgress("Uploading master image...");
+    const isLarge = file.size > 500 * 1024;
+    setImageUploadProgress(isLarge ? "⚠️ Warning: Image exceeds 500KB. Uploading..." : "Uploading master image...");
     try {
       const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dcraweoxj';
       const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'hr_jewellers_unsigned';
@@ -374,7 +427,7 @@ export default function Admin() {
       } else {
         setEditingProduct(prev => ({ ...prev, img: downloadURL }));
       }
-      setImageUploadProgress("Image upload complete!");
+      setImageUploadProgress(isLarge ? "⚠️ Upload complete (Image exceeds 500KB)!" : "Image upload complete!");
     } catch (err) {
       console.error("Cloudinary upload error:", err);
       setImageUploadProgress(`Image upload failed: ${err.message}`);
@@ -384,14 +437,14 @@ export default function Admin() {
   const handleSubImagesUpload = async (e, mode) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
-    setSubImagesUploadProgress(`Uploading ${files.length} sub-images...`);
+    const largeFilesCount = files.filter(f => f.size > 500 * 1024).length;
+    setSubImagesUploadProgress(largeFilesCount > 0 ? `⚠️ Warning: ${largeFilesCount} sub-image(s) exceed 500KB. Uploading...` : `Uploading ${files.length} sub-images...`);
     try {
       const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dcraweoxj';
       const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'hr_jewellers_unsigned';
       
       const urls = [];
       for (let i = 0; i < files.length; i++) {
-        setSubImagesUploadProgress(`Uploading sub-image ${i + 1}/${files.length}...`);
         const file = files[i];
         const formData = new FormData();
         formData.append('file', file);
@@ -423,7 +476,7 @@ export default function Admin() {
           subImages: [...(prev.subImages || []), ...urls]
         }));
       }
-      setSubImagesUploadProgress("Sub-images upload complete!");
+      setSubImagesUploadProgress(largeFilesCount > 0 ? "⚠️ Upload complete (Some sub-images exceeded 500KB)!" : "Sub-images upload complete!");
     } catch (err) {
       console.error("Cloudinary sub-images upload error:", err);
       setSubImagesUploadProgress(`Sub-images upload failed: ${err.message}`);
@@ -448,7 +501,7 @@ export default function Admin() {
   const handleAddCategory = async (e) => {
     e.preventDefault();
     if (adminRole === 'Manager' || adminRole === 'Marketing Manager') {
-      alert("Role Permission Error: Access Denied.");
+      showAdminNotification("Role Permission Error: Access Denied.", "error");
       return;
     }
     if (!newCategoryName.trim()) return;
@@ -456,47 +509,79 @@ export default function Admin() {
       const catId = newCategoryName.toLowerCase().replace(/\s+/g, '-');
       await setDoc(doc(db, 'categories', catId), {
         name: newCategoryName,
-        id: catId
+        id: catId,
+        img: newCategoryImage || ''
       });
       setNewCategoryName('');
+      setNewCategoryImage('');
+      setCategoryUploadProgress(null);
+      showAdminNotification("Category added successfully!", "success");
     } catch (err) {
       console.error("Error adding category:", err);
+      showAdminNotification("Error adding category: " + err.message, "error");
+    }
+  };
+
+  const handleUpdateCategory = async (e) => {
+    e.preventDefault();
+    if (adminRole === 'Manager' || adminRole === 'Marketing Manager') {
+      showAdminNotification("Role Permission Error: Access Denied.", "error");
+      return;
+    }
+    if (!newCategoryName.trim()) return;
+    try {
+      await updateDoc(doc(db, 'categories', editingCategory.id), {
+        name: newCategoryName,
+        img: newCategoryImage || ''
+      });
+      setNewCategoryName('');
+      setNewCategoryImage('');
+      setCategoryUploadProgress(null);
+      setEditingCategory(null);
+      showAdminNotification("Category updated successfully!", "success");
+    } catch (err) {
+      console.error("Error updating category:", err);
+      showAdminNotification("Error updating category: " + err.message, "error");
     }
   };
 
   const handleDeleteCategory = async (catId) => {
     if (adminRole === 'Manager' || adminRole === 'Marketing Manager') {
-      alert("Role Permission Error: Access Denied.");
+      showAdminNotification("Role Permission Error: Access Denied.", "error");
       return;
     }
     if (!window.confirm("Are you sure you want to delete this category?")) return;
     try {
       await deleteDoc(doc(db, 'categories', catId));
+      showAdminNotification("Category deleted successfully!", "success");
     } catch (err) {
       console.error("Error deleting category:", err);
+      showAdminNotification("Error deleting category: " + err.message, "error");
     }
   };
 
   // Status Modifiers
   const handleUpdateOrderStatus = async (orderId, newStatus) => {
     if (adminRole === 'Inventory Manager' || adminRole === 'Marketing Manager') {
-      alert("Role Permission Error: Only Super Admin and Managers can modify orders.");
+      showAdminNotification("Role Permission Error: Only Super Admin and Managers can modify orders.", "error");
       return;
     }
     try {
       await updateDoc(doc(db, 'orders', orderId), { orderStatus: newStatus });
-      alert(`Order status updated to: ${newStatus}`);
+      showAdminNotification(`Order status updated to: ${newStatus}`, "success");
     } catch (err) {
       console.error("Error updating order status:", err);
+      showAdminNotification("Error updating order status: " + err.message, "error");
     }
   };
 
   const handleUpdateConsultStatus = async (consultId, newStatus) => {
     try {
       await updateDoc(doc(db, 'consultations', consultId), { status: newStatus });
-      alert(`Consultation status updated to: ${newStatus}`);
+      showAdminNotification(`Consultation status updated to: ${newStatus}`, "success");
     } catch (err) {
       console.error("Error updating consultation status:", err);
+      showAdminNotification("Error updating consultation status: " + err.message, "error");
     }
   };
 
@@ -733,7 +818,7 @@ export default function Admin() {
                 className="w-full bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none resize-none"
               ></textarea>
               <button 
-                onClick={() => { alert("Staff logs updated successfully!"); setSelectedClient(null); }}
+                onClick={() => { showAdminNotification("Staff logs updated successfully!", "success"); setSelectedClient(null); }}
                 className="w-full bg-[#3F1F54] hover:bg-[#2C133C] text-white font-bold text-xs uppercase tracking-widest py-3 rounded-xl transition-all"
               >
                 Save Timeline Log
@@ -996,7 +1081,7 @@ export default function Admin() {
                       }`}
                     >
                       <Gem className={`w-4.5 h-4.5 ${activeTab === 'products' ? 'text-[#E6C687]' : 'text-white/60'}`} />
-                      <span>Add Jewellery</span>
+                      <span>Add jewellery</span>
                     </button>
 
                     <button 
@@ -1066,10 +1151,21 @@ export default function Admin() {
           </aside>
 
           {/* MAIN VIEW CONTAINER GRID */}
-          <main className="flex-1 min-w-0 p-4 sm:p-10 flex flex-col justify-between">
+          <main className="flex-1 min-w-0 p-4 sm:p-10 pb-24 md:pb-10 flex flex-col justify-between">
             
+            {adminNotification.message && (
+              <div className={`mb-6 p-4 rounded-2xl flex items-center justify-between border ${
+                adminNotification.type === 'error' 
+                  ? 'bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400' 
+                  : 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400'
+              }`}>
+                <span className="text-xs font-bold uppercase tracking-wider">{adminNotification.message}</span>
+                <button onClick={() => setAdminNotification({ message: '', type: 'success' })} className="font-bold text-sm">✕</button>
+              </div>
+            )}
+
             {/* UPPER CONSOLE HEADER */}
-            <header className="flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-[#1E1F29] border border-gray-150/40 dark:border-gray-800 p-4 sm:px-6 rounded-[24px] gap-4 shadow-[0_8px_32px_rgba(15,23,42,0.05)] min-h-[110px] h-[110px] mb-8 select-none">
+            <header className="flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-[#1E1F29] border border-gray-150/40 dark:border-gray-800 p-4 sm:px-6 rounded-[24px] gap-4 shadow-[0_8px_32px_rgba(15,23,42,0.05)] min-h-[110px] md:h-[110px] py-6 md:py-4 mb-8 select-none">
               
               <div className="flex items-center space-x-3.5">
                 <div>
@@ -1081,7 +1177,14 @@ export default function Admin() {
               <div className="flex flex-wrap gap-3.5 items-center justify-end w-full sm:w-auto">
 
                 {adminUser && (
-                  <div className="flex gap-2 w-full sm:w-auto font-sans">
+                  <div className="flex gap-2 w-full sm:w-auto font-sans items-center">
+                    <button
+                      onClick={() => setDarkMode(!darkMode)}
+                      className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1E1F29] hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-350 p-2.5 rounded-[12px] transition-all flex items-center justify-center shadow-sm cursor-pointer"
+                      title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                    >
+                      {darkMode ? <Sun className="w-4 h-4 text-yellow-500" /> : <Moon className="w-4 h-4 text-[#3F1F54]" />}
+                    </button>
                     <a 
                       href="/"
                       className="flex-1 sm:flex-none border border-gray-200 dark:border-gray-800 hover:border-[#3F1F54] text-gray-700 dark:text-gray-300 bg-white dark:bg-[#1E1F29] font-bold text-[12px] px-4.5 py-2.5 rounded-[12px] transition-all text-center flex items-center gap-1.5 shadow-sm"
@@ -1142,11 +1245,21 @@ export default function Admin() {
               {activeTab === 'products' && (
                 <div className="space-y-8">
                   
-                  {/* Form to add or edit signature products */}
+                   {/* Form to add or edit signature products */}
                   <div className="bg-white dark:bg-[#1E1F29] border border-gray-200/50 dark:border-gray-800 rounded-3xl p-6 space-y-6 shadow-sm">
                     <h3 className="serif-luxury text-lg text-[#3F1F54] dark:text-[#E6C687] font-bold">
                       {editingProduct ? 'Edit Jewellery' : 'Add Jewellery'}
                     </h3>
+
+                    {categories.length === 0 && (
+                      <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-250 dark:border-amber-900 text-amber-700 dark:text-amber-400 rounded-2xl flex items-start gap-3 text-xs">
+                        <AlertTriangle className="w-5 h-5 shrink-0 text-amber-500 mt-0.5" />
+                        <div className="space-y-1">
+                          <p className="font-bold">⚠️ Warning: No Categories Found!</p>
+                          <p>You must create at least one category before adding signature jewellery. Please navigate to the <button type="button" onClick={() => setActiveTab('inventory')} className="font-bold underline hover:text-amber-800 dark:hover:text-amber-300 cursor-pointer">Manage Categories</button> tab to create one.</p>
+                        </div>
+                      </div>
+                    )}
                     
                     <form onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div>
@@ -1349,7 +1462,12 @@ export default function Admin() {
                       <div className="sm:col-span-3 flex gap-3 pt-2">
                         <button
                           type="submit"
-                          className="flex-1 bg-[#3F1F54] hover:bg-[#2C133C] text-white font-bold text-xs uppercase tracking-widest py-3.5 rounded-full transition-all shadow-md"
+                          disabled={categories.length === 0 && !editingProduct}
+                          className={`flex-1 font-bold text-xs uppercase tracking-widest py-3.5 rounded-full transition-all shadow-md ${
+                            categories.length === 0 && !editingProduct
+                              ? 'bg-gray-300 dark:bg-gray-800 text-gray-500 dark:text-gray-500 cursor-not-allowed'
+                              : 'bg-[#3F1F54] hover:bg-[#2C133C] text-white cursor-pointer'
+                          }`}
                         >
                           {editingProduct ? 'Save Jewellery Changes' : 'Add Jewellery'}
                         </button>
@@ -1370,17 +1488,31 @@ export default function Admin() {
                   <div className="bg-white dark:bg-[#1E1F29] border border-gray-200/50 dark:border-gray-800 rounded-3xl p-6 space-y-4 shadow-sm">
                     <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                       <h3 className="serif-luxury text-lg text-[#3F1F54] dark:text-[#E6C687] font-bold">Active Catalog Items ({products.length})</h3>
-                      <input 
-                        type="text" 
-                        placeholder="Search jewellery by name or code..."
-                        value={productSearch}
-                        onChange={(e) => setProductSearch(e.target.value)}
-                        className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-4 py-2 text-xs w-64 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
-                      />
+                      <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto items-center">
+                        <select
+                          value={productCategoryFilter}
+                          onChange={(e) => setProductCategoryFilter(e.target.value)}
+                          className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-4 py-2 text-xs text-gray-700 dark:text-gray-200 focus:outline-none cursor-pointer w-full sm:w-auto font-sans font-semibold"
+                        >
+                          <option value="all">All Categories</option>
+                          {categories.map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                          ))}
+                        </select>
+                        <input 
+                          type="text" 
+                          placeholder="Search jewellery by name or code..."
+                          value={productSearch}
+                          onChange={(e) => setProductSearch(e.target.value)}
+                          className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-4 py-2 text-xs w-full sm:w-64 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                        />
+                      </div>
                     </div>
 
                     {(() => {
-                      const filtered = products.filter(p => p.name?.toLowerCase().includes(productSearch.toLowerCase()) || p.sku?.toLowerCase().includes(productSearch.toLowerCase()));
+                      const filtered = products
+                        .filter(p => productCategoryFilter === 'all' || p.category === productCategoryFilter)
+                        .filter(p => p.name?.toLowerCase().includes(productSearch.toLowerCase()) || p.sku?.toLowerCase().includes(productSearch.toLowerCase()));
                       return (
                         <>
                           {/* Select All and Delete Selected row */}
@@ -1432,7 +1564,18 @@ export default function Admin() {
                                   />
                                   <img src={prod.img} className="w-10 h-12 object-cover rounded-lg border border-gray-200 shrink-0" alt="" />
                                   <div>
-                                    <h4 className="font-bold text-gray-900 dark:text-gray-100 leading-tight">{prod.name}</h4>
+                                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                                      <h4 className="font-bold text-gray-900 dark:text-gray-100 leading-tight">{prod.name}</h4>
+                                      {(() => {
+                                        const catObj = categories.find(c => c.id === prod.category);
+                                        if (!catObj && !prod.category) return null;
+                                        return (
+                                          <span className="inline-block px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 text-[8px] font-bold uppercase tracking-wider leading-none">
+                                            {catObj?.name || prod.category}
+                                          </span>
+                                        );
+                                      })()}
+                                    </div>
                                     <span className="text-[9px] text-[#BCA057] block mt-0.5">₹{prod.price.toLocaleString('en-IN')} · {prod.weight || 'Gold'} · {prod.sku || 'N/A'}</span>
                                   </div>
                                 </div>
@@ -1469,28 +1612,110 @@ export default function Admin() {
 
                   {/* Categories setup */}
                   <div className="bg-white dark:bg-[#1E1F29] border border-gray-200/50 dark:border-gray-800 rounded-3xl p-6 space-y-4 shadow-sm">
-                    <h3 className="serif-luxury text-lg text-[#3F1F54] dark:text-[#E6C687] font-bold">Add Categories</h3>
-                    <form onSubmit={handleAddCategory} className="flex gap-3">
-                      <input 
-                        type="text" 
-                        placeholder="Category Name (e.g. Solitaire Bands)"
-                        value={newCategoryName}
-                        onChange={(e) => setNewCategoryName(e.target.value)}
-                        className="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
-                      />
-                      <button type="submit" className="bg-[#3F1F54] hover:bg-[#2C133C] text-white px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-colors shadow-sm">
-                        Add
-                      </button>
-                    </form>
-                    <div className="flex flex-wrap gap-2">
-                      {categories.map(cat => (
-                        <span key={cat.id} className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3.5 py-1.5 rounded-full text-xs text-gray-700 dark:text-gray-300 font-semibold flex items-center gap-2 shadow-sm">
-                          {cat.name}
-                          <button onClick={() => handleDeleteCategory(cat.id)} className="text-red-500 font-bold hover:underline ml-1">
+                    <h3 className="serif-luxury text-lg text-[#3F1F54] dark:text-[#E6C687] font-bold">
+                      {editingCategory ? 'Edit Category' : 'Add Categories'}
+                    </h3>
+                    <form onSubmit={editingCategory ? handleUpdateCategory : handleAddCategory} className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+                        <input 
+                          type="text" 
+                          placeholder="Category Name (e.g. Solitaire Bands)"
+                          value={newCategoryName}
+                          onChange={(e) => setNewCategoryName(e.target.value)}
+                          className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                        />
+                        <input 
+                          type="text" 
+                          placeholder="Category Image URL (Paste URL here)"
+                          value={newCategoryImage}
+                          onChange={(e) => setNewCategoryImage(e.target.value)}
+                          className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                        />
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-gray-400 dark:text-gray-550 font-bold uppercase shrink-0">OR</span>
+                          <input 
+                            type="file" 
+                            accept="image/*"
+                            onChange={handleCategoryImageUpload}
+                            className="text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer w-full"
+                          />
+                        </div>
+                      </div>
+                      
+                      {categoryUploadProgress && (
+                        <p className="text-[10px] text-gray-400 font-semibold">{categoryUploadProgress}</p>
+                      )}
+                      
+                      {newCategoryImage && (
+                        <div className="relative w-16 h-16 rounded-xl border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center">
+                          <img src={newCategoryImage} alt="Category preview" className="w-full h-full object-contain" />
+                          <button 
+                            type="button" 
+                            onClick={() => setNewCategoryImage('')}
+                            className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold"
+                          >
                             ✕
                           </button>
-                        </span>
-                      ))}
+                        </div>
+                      )}
+
+                      <div className="flex gap-3">
+                        <button type="submit" className="bg-[#3F1F54] hover:bg-[#2C133C] text-white px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-colors shadow-sm cursor-pointer">
+                          {editingCategory ? 'Save Changes' : 'Add Category'}
+                        </button>
+                        {editingCategory && (
+                          <button 
+                            type="button" 
+                            onClick={() => {
+                              setEditingCategory(null);
+                              setNewCategoryName('');
+                              setNewCategoryImage('');
+                              setCategoryUploadProgress(null);
+                            }}
+                            className="bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-gray-50 transition-colors cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </div>
+                    </form>
+                    
+                    <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
+                      <h4 className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">Active Categories</h4>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                        {categories.map(cat => (
+                          <div key={cat.id} className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 rounded-2xl flex items-center justify-between gap-3 shadow-sm hover:border-[#3F1F54]/30 transition-colors">
+                            <div className="flex items-center gap-2 min-w-0">
+                              {cat.img ? (
+                                <img src={cat.img} alt={cat.name} className="w-8 h-8 rounded-lg object-contain bg-white border border-gray-100 shrink-0" />
+                              ) : (
+                                <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-xs shrink-0">💎</div>
+                              )}
+                              <span className="text-xs text-gray-700 dark:text-gray-300 font-semibold truncate">{cat.name}</span>
+                            </div>
+                            <div className="flex items-center gap-2.5 shrink-0">
+                              <button 
+                                onClick={() => {
+                                  setEditingCategory(cat);
+                                  setNewCategoryName(cat.name);
+                                  setNewCategoryImage(cat.img || '');
+                                  window.scrollTo({ top: 120, behavior: 'smooth' });
+                                }} 
+                                className="text-xs text-[#3F1F54] dark:text-purple-300 hover:underline font-bold cursor-pointer"
+                              >
+                                Edit
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteCategory(cat.id)} 
+                                className="text-red-500 hover:text-red-700 font-bold text-sm cursor-pointer p-0.5"
+                                title="Delete"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
@@ -1550,12 +1775,14 @@ export default function Admin() {
                                 >
                                   <option value="Pending">Pending</option>
                                   <option value="Confirmed">Confirmed</option>
+                                  <option value="Dispatched">Dispatched</option>
                                   <option value="Processing">Manufacturing</option>
                                   <option value="Completed">Delivered</option>
                                 </select>
                               </div>
                               <div className="border-t border-gray-200/60 dark:border-gray-800/60 pt-2 text-[10px] text-gray-600 dark:text-gray-400 space-y-1.5 normal-case">
                                 <p><strong>Customer:</strong> {order.customerDetails?.name} ({order.customerDetails?.phone})</p>
+                                <p><strong>Payment ID:</strong> <span className="font-mono text-purple-600 dark:text-purple-400 font-bold">{order.customerDetails?.paymentId || 'N/A (COD)'}</span></p>
                                 <p><strong>Secure Location:</strong> {order.customerDetails?.address}</p>
                                 <p><strong>Signature Items:</strong> {order.productDetails?.map(p => `${p.name} (x${p.quantity})`).join(', ')}</p>
                                 <div className="flex flex-wrap gap-2 pt-1.5">
@@ -1760,6 +1987,35 @@ export default function Admin() {
 
             </div>
           </main>
+
+          {/* MOBILE FLOATING BOTTOM NAVIGATION BAR */}
+          <div className="md:hidden fixed bottom-5 left-4 right-4 z-50 bg-[#14052F]/95 border border-white/10 rounded-2xl py-2 px-3 flex justify-around items-center shadow-2xl backdrop-blur-md select-none font-sans">
+            {[
+              { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
+              { id: 'products', label: 'Jewellery', icon: Gem },
+              { id: 'inventory', label: 'Categories', icon: Boxes },
+              { id: 'orders', label: 'Orders', icon: ShoppingBag },
+              { id: 'customers', label: 'CRM', icon: Users }
+            ].map(tab => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className="flex flex-col items-center gap-1 focus:outline-none transition-all cursor-pointer relative py-1.5 px-2 rounded-xl hover:bg-white/5 active:scale-90"
+                >
+                  <Icon className={`w-4.5 h-4.5 transition-transform ${isActive ? 'text-[#E6C687] scale-110' : 'text-white/50'}`} />
+                  <span className={`text-[8.5px] font-bold tracking-wider ${isActive ? 'text-white font-extrabold' : 'text-white/40 font-medium'}`}>
+                    {tab.label}
+                  </span>
+                  {isActive && (
+                    <span className="absolute bottom-0 w-1.5 h-1.5 bg-[#E6C687] rounded-full shadow-[0_0_8px_#E6C687]"></span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
 
         </div>
       )}

@@ -8,6 +8,7 @@ import {
   doc,
   setDoc,
   getDoc,
+  deleteDoc,
   serverTimestamp,
   query,
   orderBy,
@@ -927,6 +928,31 @@ const promoBanners = [
   }
 ];
 
+const getCategoryFallbackImage = (catNameOrId) => {
+  const norm = String(catNameOrId || '').toLowerCase().replace(/\s+/g, '');
+  if (norm.includes('solitaire')) return solitariesImg;
+  if (norm.includes('watch')) return watchJewelleryImg;
+  if (norm.includes('men')) return mensJewelleryImg;
+  if (norm.includes('mangalsutra')) return mangalsutrasImg;
+  if (norm.includes('nose')) return nosePinsImg;
+  if (norm.includes('kids')) return kidsJewelleryImg;
+  if (norm.includes('coin')) return goldCoinsImg;
+  if (norm.includes('anklet')) return ankletsImg;
+  if (norm.includes('pendant')) return pendantsImg;
+  if (norm.includes('ring')) return ringsImg;
+  if (norm.includes('necklace')) return necklacesImg;
+  if (norm.includes('earring')) return sapphireHeritageSet;
+  if (norm.includes('bangle')) return goldKada;
+  if (norm.includes('bracelet')) return diamondBracelet;
+  if (norm.includes('chain')) return goldChainsImg;
+  if (norm.includes('kada')) return kadaImg;
+  if (norm.includes('gold')) return goldKada;
+  if (norm.includes('silver')) return silverPoojaThali;
+  if (norm.includes('diamond')) return diamondEmeraldChoker;
+  if (norm.includes('platinum')) return emeraldSovereignRing;
+  return ringsImg; // default fallback
+};
+
 export default function App() {
   // ==========================================
   // STATE MANAGEMENT
@@ -1111,6 +1137,7 @@ export default function App() {
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const [processSteps, setProcessSteps] = useState([]);
   if (categories.length === -1) {
     console.log(categories);
@@ -1775,27 +1802,26 @@ export default function App() {
       console.error("Firestore Catalog sync failed:", err);
     });
 
-    const unsubscribeCategories = onSnapshot(collection(db, 'categories'), async (snap) => {
-      if (snap.empty) {
-        // Seed initial categories if empty
-        const initialCats = [
-          { id: 'gold', name: 'Fine Gold' },
-          { id: 'silver', name: 'Sterling Silver' },
-          { id: 'diamond', name: 'Diamonds & Polki' },
-          { id: 'platinum', name: 'Luxury Platinum' },
-          { id: 'bridal', name: 'Grand Bridal Suites' },
-          { id: 'custom', name: 'Custom Bespoke' }
-        ];
-        const catCol = collection(db, 'categories');
-        for (const cat of initialCats) {
-          await setDoc(doc(catCol, cat.id), cat);
-        }
-      } else {
-        setCategories(snap.docs.map(d => d.data()));
-      }
+    const unsubscribeCategories = onSnapshot(collection(db, 'categories'), (snap) => {
+      setCategories(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setCategoriesLoaded(true);
     }, (err) => {
       console.error("Firestore Categories sync failed:", err);
+      setCategoriesLoaded(true);
     });
+
+    // One-time cleanup of old seeded categories
+    const cleanupOldCats = async () => {
+      const oldCatIds = ['gold', 'silver', 'diamond', 'platinum', 'bridal', 'custom'];
+      for (const id of oldCatIds) {
+        try {
+          await deleteDoc(doc(db, 'categories', id));
+        } catch (e) {
+          console.error("Cleanup error for category:", id, e);
+        }
+      }
+    };
+    cleanupOldCats();
 
     return () => {
       unsubscribeProducts();
@@ -3187,7 +3213,7 @@ export default function App() {
 
 
         {/* Mobile Sticky bottom navigation bar */}
-        <div className={`lg:hidden fixed bottom-0 left-0 w-full border-t z-40 backdrop-blur-md flex justify-around py-1.5 sm:py-3 text-[7px] sm:text-[9px] uppercase tracking-wider font-bold shadow-lg transition-colors duration-500 ${isCatalogDark ? "bg-[#1D0E29]/95 border-gold/15 text-white/70 shadow-2xl" : "bg-[#FCFAFF]/95 border-[#DDA0DD]/20 text-[#4A126D]/70"}`}>
+        <div className={`lg:hidden fixed bottom-0 left-0 w-full h-[56px] border-t z-40 backdrop-blur-md flex items-center justify-around text-[7px] sm:text-[9px] uppercase tracking-wider font-bold shadow-lg transition-colors duration-500 ${isCatalogDark ? "bg-[#1D0E29]/95 border-gold/15 text-white/70 shadow-2xl" : "bg-[#FCFAFF]/95 border-[#DDA0DD]/20 text-[#4A126D]/70"}`}>
           <button onClick={() => navigateTo('home')} className={`flex flex-col items-center gap-0.5 cursor-pointer ${currentPage === 'home' ? 'text-[#DDA0DD]' : isCatalogDark ? 'hover:text-white' : 'hover:text-[#4A126D]'}`}>
             <span className="text-sm sm:text-base">🏠</span><span>Home</span>
           </button>
@@ -3202,6 +3228,300 @@ export default function App() {
             <span className="text-sm sm:text-base">📅</span><span>Suite</span>
           </button>
         </div>
+
+        {/* ═══════════════════════════════════════════
+          MOBILE: Sticky Sort + Filter Action Bar
+          ═══════════════════════════════════════════ */}
+        {currentPage === 'collections' && (
+          <div className={`lg:hidden fixed bottom-[56px] left-0 w-full z-30 border-t flex items-center justify-center shadow-[0_-4px_20px_rgba(0,0,0,0.12)] backdrop-blur-md transition-colors duration-500 ${isCatalogDark
+            ? "bg-[#1D0E29]/95 border-gold/15 text-white shadow-2xl"
+            : "bg-[#FCFAFF]/95 border-[#DDA0DD]/20 text-[#4A126D]"
+            }`}>
+            {/* Pincode */}
+            <button
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[9px] font-bold uppercase tracking-widest border-r active:bg-black/5 transition-colors ${isCatalogDark ? "border-gold/15 text-white active:bg-white/5" : "border-[#DDA0DD]/20 text-[#4A126D] active:bg-black/5"
+                }`}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+              Pincode
+            </button>
+            {/* Sort */}
+            <button
+              onClick={() => { triggerAudio('click'); setMobileSortOpen(true); }}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[9px] font-bold uppercase tracking-widest border-r active:bg-black/5 transition-colors ${isCatalogDark ? "border-gold/15 text-white active:bg-white/5" : "border-[#DDA0DD]/20 text-[#4A126D] active:bg-black/5"
+                }`}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" /></svg>
+              Sort
+            </button>
+            {/* Filter */}
+            <button
+              onClick={() => { triggerAudio('click'); setMobileFilterOpen(true); }}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[9px] font-bold uppercase tracking-widest active:bg-black/5 transition-colors ${isCatalogDark ? "text-white active:bg-white/5" : "text-[#4A126D] active:bg-black/5"
+                }`}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
+              Filter
+            </button>
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════════════
+          MOBILE: Sort Popup Drawer
+          ═══════════════════════════════════════════ */}
+        <AnimatePresence>
+          {mobileSortOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/40 z-[60]"
+                onClick={() => setMobileSortOpen(false)}
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                className="fixed bottom-0 left-0 right-0 z-[61] bg-white rounded-t-2xl shadow-2xl max-h-[50vh] overflow-hidden"
+              >
+                {/* Drag handle */}
+                <div className="flex justify-center pt-2 pb-1">
+                  <div className="w-10 h-1 rounded-full bg-gray-300" />
+                </div>
+                <div className="px-5 pb-2 flex justify-between items-center border-b border-gray-100">
+                  <h3 className="text-sm font-bold text-[#4A126D] serif-luxury">Sort By</h3>
+                  <button onClick={() => setMobileSortOpen(false)} className="text-gray-400 hover:text-[#4A126D] transition-colors p-1 cursor-pointer">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+                <div className="py-2 px-5 space-y-0">
+                  {[
+                    { val: 'popularity', label: 'Popularity' },
+                    { val: 'newest', label: 'Newest First' },
+                    { val: 'price_low', label: 'Price: Low to High' },
+                    { val: 'price_high', label: 'Price: High to Low' },
+                  ].map(opt => (
+                    <button
+                      key={opt.val}
+                      onClick={() => { setSortFilter(opt.val); setMobileSortOpen(false); triggerAudio('click'); }}
+                      className={`w-full text-left py-3 px-3 rounded-lg text-xs font-sans transition-colors cursor-pointer ${sortFilter === opt.val ? 'bg-[#4A126D]/8 text-[#4A126D] font-bold' : 'text-gray-600 hover:bg-gray-50'}`}
+                    >
+                      {sortFilter === opt.val && <span className="mr-2">✓</span>}
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="h-6" />
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* ═══════════════════════════════════════════
+          MOBILE: Full-Screen Filter Drawer
+          ═══════════════════════════════════════════ */}
+        <AnimatePresence>
+          {mobileFilterOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/40 z-[60]"
+                onClick={() => setMobileFilterOpen(false)}
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                className="fixed bottom-0 left-0 right-0 z-[61] bg-white rounded-t-2xl shadow-2xl flex flex-col"
+                style={{ maxHeight: '85vh' }}
+              >
+                {/* Drag handle */}
+                <div className="flex justify-center pt-2 pb-1 shrink-0">
+                  <div className="w-10 h-1 rounded-full bg-gray-300" />
+                </div>
+
+                {/* Header */}
+                <div className="px-4 pb-2 flex justify-between items-center border-b border-gray-100 shrink-0">
+                  <h3 className="text-sm font-bold text-[#4A126D] serif-luxury flex items-center gap-1.5">
+                    <span className="text-xs">✨</span> Filters
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => { setMetalFilter('all'); setPurityFilter('all'); setMaxPriceFilter(1000000); setPriceFilter('all'); setTypeFilter('all'); setGenderFilter('all'); setStoneFilter('all'); setOccasionFilter('all'); }}
+                      className="text-[8px] uppercase tracking-widest font-black text-[#DDA0DD] hover:text-[#4A126D] transition-colors cursor-pointer"
+                    >
+                      Clear All
+                    </button>
+                    <button onClick={() => setMobileFilterOpen(false)} className="text-gray-400 hover:text-[#4A126D] transition-colors p-1 cursor-pointer">
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Scrollable Filter Body */}
+                <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#DDA0DD transparent' }}>
+
+                  {/* ── METAL TYPE — Quick Select (Gold / Silver) ── */}
+                  <div className="border-b border-gray-100 py-2">
+                    <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Metal Type</span>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => setMetalFilter(prev => prev === 'gold' ? 'all' : 'gold')}
+                        className={`relative flex flex-col items-center justify-center gap-1 py-3 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${metalFilter === 'gold' ? 'border-[#C8960C] shadow-[0_4px_12px_rgba(200,150,12,0.25)]' : 'border-gray-200'}`}
+                        style={{ background: metalFilter === 'gold' ? 'linear-gradient(135deg, #FFF8E7, #FFF0B3)' : 'white' }}
+                      >
+                        <span className="text-2xl">🥇</span>
+                        <span className={`text-[10px] font-extrabold tracking-wide font-sans ${metalFilter === 'gold' ? 'text-[#A07820]' : 'text-gray-500'}`}>GOLD</span>
+                        {metalFilter === 'gold' && <span className="absolute top-1 right-1 w-4 h-4 bg-[#C8960C] rounded-full flex items-center justify-center"><svg viewBox="0 0 10 10" className="w-2.5 h-2.5" fill="white"><path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg></span>}
+                      </button>
+                      <button
+                        onClick={() => setMetalFilter(prev => prev === 'silver' ? 'all' : 'silver')}
+                        className={`relative flex flex-col items-center justify-center gap-1 py-3 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${metalFilter === 'silver' ? 'border-[#718096] shadow-[0_4px_12px_rgba(113,128,150,0.20)]' : 'border-gray-200'}`}
+                        style={{ background: metalFilter === 'silver' ? 'linear-gradient(135deg, #F7FAFC, #E2E8F0)' : 'white' }}
+                      >
+                        <span className="text-2xl">🥈</span>
+                        <span className={`text-[10px] font-extrabold tracking-wide font-sans ${metalFilter === 'silver' ? 'text-[#4A5568]' : 'text-gray-500'}`}>SILVER</span>
+                        {metalFilter === 'silver' && <span className="absolute top-1 right-1 w-4 h-4 bg-[#718096] rounded-full flex items-center justify-center"><svg viewBox="0 0 10 10" className="w-2.5 h-2.5" fill="white"><path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg></span>}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* PRICE */}
+                  <div className="border-b border-gray-100 py-2">
+                    <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Price</span>
+                    <div className="space-y-1.5">
+                      {[
+                        { label: 'Below Rs. 10,000', val: 10000 },
+                        { label: 'Rs. 10,000 – Rs. 20,000', val: 20000 },
+                        { label: 'Rs. 20,000 – Rs. 30,000', val: 30000 },
+                        { label: 'Rs. 30,000 – Rs. 40,000', val: 40000 },
+                        { label: 'Rs. 40,000 – Rs. 50,000', val: 50000 },
+                        { label: 'Rs. 50,000 and Above', val: 1000000 },
+                      ].map(({ label, val }) => (
+                        <label key={val} className="flex items-center gap-2 cursor-pointer group">
+                          <input type="radio" name="mob-price" checked={maxPriceFilter === val} onChange={() => setMaxPriceFilter(val)} className="accent-[#4A126D] w-3 h-3 cursor-pointer" />
+                          <span className={`text-[10px] font-sans leading-none ${maxPriceFilter === val ? 'text-[#4A126D] font-bold' : 'text-gray-600'}`}>{label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* TYPE */}
+                  <div className="border-b border-gray-100 py-2">
+                    <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Type</span>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {['Earrings', 'Rings', 'Pendants', 'Necklaces', 'Bangles', 'Bracelets', 'Mangalsutra', 'Chains', 'Nose Pins', 'Anklets', 'Kids Bangles', 'Kids Rings', 'Cufflinks', 'Brooch'].map(t => (
+                        <label key={t} className="flex items-center gap-2 cursor-pointer group">
+                          <input type="radio" name="mob-type" checked={typeFilter === t} onChange={() => setTypeFilter(prev => prev === t ? 'all' : t)} className="accent-[#4A126D] w-3 h-3 cursor-pointer" />
+                          <span className={`text-[10px] font-sans leading-none ${typeFilter === t ? 'text-[#4A126D] font-bold' : 'text-gray-600'}`}>{t}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* METAL */}
+                  <div className="border-b border-gray-100 py-2">
+                    <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Metal</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {['All', 'Gold', 'Silver', 'Rose Gold', 'White Gold', 'Platinum', 'Plain Gold'].map(m => (
+                        <button key={m} onClick={() => setMetalFilter(m.toLowerCase())}
+                          className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer ${metalFilter === m.toLowerCase() ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* GOLD PURITY */}
+                  <div className="border-b border-gray-100 py-2">
+                    <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Gold Purity</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {['All', '14K', '18K', '22K', '24K'].map(p => (
+                        <button key={p} onClick={() => setPurityFilter(p === 'All' ? 'all' : p)}
+                          className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer ${purityFilter === (p === 'All' ? 'all' : p) ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
+                          {p}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* GENDER */}
+                  <div className="border-b border-gray-100 py-2">
+                    <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Gender</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {['All', 'Women', 'Men', 'Unisex'].map(g => (
+                        <button key={g} onClick={() => setGenderFilter(g.toLowerCase())}
+                          className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer ${genderFilter === g.toLowerCase() ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
+                          {g}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* STONES */}
+                  <div className="border-b border-gray-100 py-2">
+                    <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Stones</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {['Diamond', 'Ruby', 'Sapphire', 'Emerald', 'Pearl', 'Topaz', 'Amethyst', 'Garnet', 'Opal', 'Citrine', 'Aquamarine'].map(s => (
+                        <button key={s} onClick={() => setStoneFilter(prev => prev === s ? 'all' : s)}
+                          className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer ${stoneFilter === s ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* OCCASION */}
+                  <div className="border-b border-gray-100 py-2">
+                    <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Occasion</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {['Everyday Wear', 'Festive', 'Wedding', 'Engagement', 'Anniversary', 'Gifting', 'Workwear', 'Romantic', 'Vacation', 'Special Occasion', 'Valentine'].map(o => (
+                        <button key={o} onClick={() => setOccasionFilter(prev => prev === o ? 'all' : o)}
+                          className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer ${occasionFilter === o ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
+                          {o}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* CATEGORY */}
+                  <div className="py-2">
+                    <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Category</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {categoryFilters.map(cat => {
+                        const isActive = activeCategoryTab === cat;
+                        return (
+                          <button key={cat} onClick={() => changeCategoryTab(cat)}
+                            className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer ${isActive ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
+                            {cat}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Apply Button */}
+                <div className="shrink-0 px-4 py-3 border-t border-gray-100 bg-white">
+                  <button
+                    onClick={() => { setMobileFilterOpen(false); triggerAudio('shimmer'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                    className="w-full py-3 rounded-xl bg-[#4A126D] text-white text-[10px] uppercase font-bold tracking-widest shadow-lg hover:bg-[#DDA0DD] transition-all duration-300 cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    Apply Filters
+                  </button>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
 
         {/* ═══════════════════════════════════════════════════════════
            MOBILE MENU DRAWER - HR Jewellers & Sons Exact Style
@@ -3420,41 +3740,24 @@ export default function App() {
           {currentPage === 'home' && (() => {
             const trendingProducts = products.filter(p => p.badge === 'NEW' || p.badge === 'LIMITED EDITION' || p.category === 'diamond').slice(0, 8);
             const bestSellers = products.filter(p => p.badge === 'BESTSELLER').slice(0, 4);
-            const homeCategories = [
-              { name: 'Solitaires', img: solitariesImg, tab: 'Rings' },
-              { name: 'Watch Jewellery', img: watchJewelleryImg, tab: 'Bracelets' },
-              { name: "Men's Jewellery", img: mensJewelleryImg, tab: 'Men Jewellery' },
-              { name: 'Mangalsutras', img: mangalsutrasImg, tab: 'Mangalsutra' },
-              { name: 'Nose Pins', img: nosePinsImg, tab: 'Collections' },
-              { name: 'Kids Jewellery', img: kidsJewelleryImg, tab: 'Kids Jewellery' },
-              { name: 'Gold Coins', img: goldCoinsImg, page: 'gold-coins' },
-              { name: 'Anklets', img: ankletsImg, tab: 'Anklets' },
-              { name: 'Pendants', img: pendantsImg, tab: 'Necklace' },
-              { name: 'Rings', img: ringsImg, tab: 'Rings' },
-              { name: 'Necklaces', img: necklacesImg, tab: 'Necklace' },
-              { name: 'Earrings', img: sapphireHeritageSet, tab: 'Earrings' },
-              { name: 'Bangles', img: goldKada, tab: 'Bangles' },
-              { name: 'Bracelets', img: diamondBracelet, tab: 'Bracelets' },
-              { name: 'Gold Chains', img: goldChainsImg, tab: 'Necklace' },
-              { name: 'Kada', img: kadaImg, tab: 'Bangles' }
-            ];
-            const recommendedCategories = [
-              { name: 'Rings', img: ringsImg, tab: 'Rings' },
-              { name: 'Earrings', img: sapphireHeritageSet, tab: 'Earrings' },
-              { name: 'Pendants', img: pendantsImg, tab: 'Necklace' },
-              { name: 'Chains', img: goldChainsImg, tab: 'Necklace' },
-              { name: 'Necklaces', img: necklacesImg, tab: 'Necklace' },
-              { name: 'Bangles', img: goldKada, tab: 'Bangles' },
-              { name: 'Bracelets', img: diamondBracelet, tab: 'Bracelets' },
-              { name: 'Mangalsutra', img: mangalsutrasImg, tab: 'Mangalsutra' },
-              { name: 'Nose Pins', img: nosePinsImg, tab: 'Collections' },
-              { name: 'Solitaires', img: solitariesImg, tab: 'Rings' },
-              { name: "Kids' Jewellery", img: kidsJewelleryImg, tab: 'Kids Jewellery' },
-              { name: 'Kada', img: kadaImg, tab: 'Bangles' },
-              { name: "Men's Jewellery", img: mensJewelleryImg, tab: 'Men Jewellery' },
-              { name: 'Watch Accessories', img: watchJewelleryImg, tab: 'Bracelets' },
-              { name: 'Anklets', img: ankletsImg, tab: 'Anklets' }
-            ];
+            const activeCategories = (categoriesLoaded && categories.length > 0) ? categories : (!categoriesLoaded ? [
+              { id: 'solitaries', name: 'Solitaires', img: solitariesImg },
+              { id: 'watch-jewellery', name: 'Watch Jewellery', img: watchJewelleryImg },
+              { id: 'mens-jewellery', name: "Men's Jewellery", img: mensJewelleryImg },
+              { id: 'mangalsutras', name: 'Mangalsutras', img: mangalsutrasImg },
+              { id: 'nose-pins', name: 'Nose Pins', img: nosePinsImg },
+              { id: 'kids-jewellery', name: 'Kids Jewellery', img: kidsJewelleryImg },
+              { id: 'gold-coins', name: 'Gold Coins', img: goldCoinsImg },
+              { id: 'anklets', name: 'Anklets', img: ankletsImg },
+              { id: 'pendants', name: 'Pendants', img: pendantsImg },
+              { id: 'rings', name: 'Rings', img: ringsImg },
+              { id: 'necklaces', name: 'Necklaces', img: necklacesImg },
+              { id: 'earrings', name: 'Earrings', img: sapphireHeritageSet },
+              { id: 'bangles', name: 'Bangles', img: goldKada },
+              { id: 'bracelets', name: 'Bracelets', img: diamondBracelet },
+              { id: 'gold-chains', name: 'Gold Chains', img: goldChainsImg },
+              { id: 'kada', name: 'Kada', img: kadaImg }
+            ] : []);
             const testimonialsData = [
               {
                 patron: "Maharani Gayatri Devi",
@@ -3548,13 +3851,18 @@ export default function App() {
                                 gap: '12px',
                               }}
                             >
-                              {homeCategories.map((cat, idx) => {
+                              {activeCategories.map((cat, idx) => {
                                 const handleClick = () => {
                                   triggerAudio('click');
-                                  if (cat.page) navigateTo(cat.page);
-                                  else if (cat.action) cat.action();
-                                  else { changeCategoryTab(cat.tab); navigateTo('collections'); }
+                                  const normName = String(cat.name || '').toLowerCase();
+                                  if (cat.id === 'gold-coins' || normName.includes('coin')) {
+                                    navigateTo('gold-coins');
+                                  } else {
+                                    changeCategoryTab(cat.name);
+                                    navigateTo('collections');
+                                  }
                                 };
+                                const catImg = cat.img || getCategoryFallbackImage(cat.name || cat.id);
                                 return (
                                   <div
                                     key={idx}
@@ -3564,7 +3872,7 @@ export default function App() {
                                   >
                                     <div className="w-full flex-1 flex items-center justify-center">
                                       <img
-                                        src={cat.img}
+                                        src={catImg}
                                         alt={cat.name}
                                         className="w-[68%] h-[68%] object-contain filter drop-shadow-[0_4px_8px_rgba(90,74,74,0.12)]"
                                       />
@@ -3596,13 +3904,18 @@ export default function App() {
                             viewport={{ once: true, margin: "-100px" }}
                             className="hidden lg:grid grid-cols-8 gap-x-[28px] gap-y-[34px] justify-center mx-auto pt-6"
                           >
-                            {homeCategories.map((cat, idx) => {
+                            {activeCategories.map((cat, idx) => {
                               const handleClick = () => {
                                 triggerAudio('click');
-                                if (cat.page) navigateTo(cat.page);
-                                else if (cat.action) cat.action();
-                                else { changeCategoryTab(cat.tab); navigateTo('collections'); }
+                                const normName = String(cat.name || '').toLowerCase();
+                                if (cat.id === 'gold-coins' || normName.includes('coin')) {
+                                  navigateTo('gold-coins');
+                                } else {
+                                  changeCategoryTab(cat.name);
+                                  navigateTo('collections');
+                                }
                               };
+                              const catImg = cat.img || getCategoryFallbackImage(cat.name || cat.id);
 
                               return (
                                 <motion.div
@@ -3630,7 +3943,7 @@ export default function App() {
                                 >
                                   <div className="w-full h-[145px] flex items-center justify-center relative bg-transparent">
                                     <img
-                                      src={cat.img}
+                                      src={catImg}
                                       alt={cat.name}
                                       className="w-[72%] h-[72%] object-contain object-center transition-transform duration-[250ms] ease-out group-hover:scale-[1.03] filter drop-shadow-[0_8px_12px_rgba(90,74,74,0.12)]"
                                     />
@@ -4212,12 +4525,18 @@ export default function App() {
                               ref={categoriesScrollRef}
                               className="flex items-center gap-6 sm:gap-8 overflow-x-auto no-scrollbar scroll-smooth snap-x pb-6 px-4 select-none w-full flex-nowrap justify-start"
                             >
-                              {recommendedCategories.map((cat, idx) => {
+                              {activeCategories.map((cat, idx) => {
                                 const handleClick = () => {
                                   triggerAudio('click');
-                                  changeCategoryTab(cat.tab);
-                                  navigateTo('collections');
+                                  const normName = String(cat.name || '').toLowerCase();
+                                  if (cat.id === 'gold-coins' || normName.includes('coin')) {
+                                    navigateTo('gold-coins');
+                                  } else {
+                                    changeCategoryTab(cat.name);
+                                    navigateTo('collections');
+                                  }
                                 };
+                                const catImg = cat.img || getCategoryFallbackImage(cat.name || cat.id);
 
                                 return (
                                   <div
@@ -4233,7 +4552,7 @@ export default function App() {
                                         }`}
                                     >
                                       <img
-                                        src={cat.img}
+                                        src={catImg}
                                         alt={cat.name}
                                         loading="lazy"
                                         className="w-[72%] h-[72%] object-contain transition-transform duration-300 filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.06)]"
@@ -4397,19 +4716,10 @@ export default function App() {
                                 />
                               </div>
                               <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black/10 via-transparent to-transparent pointer-events-none" />
-                              
-                              {/* Step Number Badge */}
-                              <div className="absolute top-8 left-8 bg-white/90 backdrop-blur-md text-[#C8A24A] border border-[#C8A24A]/20 px-4 py-2 rounded-full font-bold text-xs tracking-widest shadow-md">
-                                STEP {processStepsData[activeProcessStep].num}
-                              </div>
                             </div>
 
                             {/* Right: Text details */}
                             <div className="w-full lg:w-[45%] p-8 sm:p-12 lg:p-16 flex flex-col justify-center text-left space-y-6 relative bg-white overflow-hidden">
-                              {/* Background watermark number */}
-                              <div className="absolute right-8 top-4 text-[120px] sm:text-[160px] font-extrabold text-gray-50 pointer-events-none select-none font-sans leading-none z-0">
-                                {processStepsData[activeProcessStep].num}
-                              </div>
 
                               <div className="relative z-10 space-y-3">
                                 <span className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#C8A24A] font-bold font-sans">
@@ -7294,298 +7604,7 @@ export default function App() {
 
                   </aside>
 
-                  {/* ═══════════════════════════════════════════
-                    MOBILE: Sticky Sort + Filter Action Bar
-                    ═══════════════════════════════════════════ */}
-                  {currentPage === 'collections' && (
-                    <div className={`lg:hidden fixed bottom-[42px] left-0 w-full z-30 border-t flex items-center justify-center shadow-[0_-4px_20px_rgba(0,0,0,0.12)] backdrop-blur-md transition-colors duration-500 ${isCatalogDark
-                      ? "bg-[#1D0E29]/95 border-gold/15 text-white shadow-2xl"
-                      : "bg-[#FCFAFF]/95 border-[#DDA0DD]/20 text-[#4A126D]"
-                      }`}>
-                      {/* Pincode */}
-                      <button
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[9px] font-bold uppercase tracking-widest border-r active:bg-black/5 transition-colors ${isCatalogDark ? "border-gold/15 text-white active:bg-white/5" : "border-[#DDA0DD]/20 text-[#4A126D] active:bg-black/5"
-                          }`}
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                        Pincode
-                      </button>
-                      {/* Sort */}
-                      <button
-                        onClick={() => { triggerAudio('click'); setMobileSortOpen(true); }}
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[9px] font-bold uppercase tracking-widest border-r active:bg-black/5 transition-colors ${isCatalogDark ? "border-gold/15 text-white active:bg-white/5" : "border-[#DDA0DD]/20 text-[#4A126D] active:bg-black/5"
-                          }`}
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" /></svg>
-                        Sort
-                      </button>
-                      {/* Filter */}
-                      <button
-                        onClick={() => { triggerAudio('click'); setMobileFilterOpen(true); }}
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[9px] font-bold uppercase tracking-widest active:bg-black/5 transition-colors ${isCatalogDark ? "text-white active:bg-white/5" : "text-[#4A126D] active:bg-black/5"
-                          }`}
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
-                        Filter
-                      </button>
-                    </div>
-                  )}
 
-                  {/* ═══════════════════════════════════════════
-                    MOBILE: Sort Popup Drawer
-                    ═══════════════════════════════════════════ */}
-                  <AnimatePresence>
-                    {mobileSortOpen && (
-                      <>
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="fixed inset-0 bg-black/40 z-[60]"
-                          onClick={() => setMobileSortOpen(false)}
-                        />
-                        <motion.div
-                          initial={{ y: '100%' }}
-                          animate={{ y: 0 }}
-                          exit={{ y: '100%' }}
-                          transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                          className="fixed bottom-0 left-0 right-0 z-[61] bg-white rounded-t-2xl shadow-2xl max-h-[50vh] overflow-hidden"
-                        >
-                          {/* Drag handle */}
-                          <div className="flex justify-center pt-2 pb-1">
-                            <div className="w-10 h-1 rounded-full bg-gray-300" />
-                          </div>
-                          <div className="px-5 pb-2 flex justify-between items-center border-b border-gray-100">
-                            <h3 className="text-sm font-bold text-[#4A126D] serif-luxury">Sort By</h3>
-                            <button onClick={() => setMobileSortOpen(false)} className="text-gray-400 hover:text-[#4A126D] transition-colors p-1 cursor-pointer">
-                              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                            </button>
-                          </div>
-                          <div className="py-2 px-5 space-y-0">
-                            {[
-                              { val: 'popularity', label: 'Popularity' },
-                              { val: 'newest', label: 'Newest First' },
-                              { val: 'price_low', label: 'Price: Low to High' },
-                              { val: 'price_high', label: 'Price: High to Low' },
-                            ].map(opt => (
-                              <button
-                                key={opt.val}
-                                onClick={() => { setSortFilter(opt.val); setMobileSortOpen(false); triggerAudio('click'); }}
-                                className={`w-full text-left py-3 px-3 rounded-lg text-xs font-sans transition-colors cursor-pointer ${sortFilter === opt.val ? 'bg-[#4A126D]/8 text-[#4A126D] font-bold' : 'text-gray-600 hover:bg-gray-50'}`}
-                              >
-                                {sortFilter === opt.val && <span className="mr-2">✓</span>}
-                                {opt.label}
-                              </button>
-                            ))}
-                          </div>
-                          <div className="h-6" />
-                        </motion.div>
-                      </>
-                    )}
-                  </AnimatePresence>
-
-                  {/* ═══════════════════════════════════════════
-                    MOBILE: Full-Screen Filter Drawer
-                    ═══════════════════════════════════════════ */}
-                  <AnimatePresence>
-                    {mobileFilterOpen && (
-                      <>
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="fixed inset-0 bg-black/40 z-[60]"
-                          onClick={() => setMobileFilterOpen(false)}
-                        />
-                        <motion.div
-                          initial={{ y: '100%' }}
-                          animate={{ y: 0 }}
-                          exit={{ y: '100%' }}
-                          transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                          className="fixed bottom-0 left-0 right-0 z-[61] bg-white rounded-t-2xl shadow-2xl flex flex-col"
-                          style={{ maxHeight: '85vh' }}
-                        >
-                          {/* Drag handle */}
-                          <div className="flex justify-center pt-2 pb-1 shrink-0">
-                            <div className="w-10 h-1 rounded-full bg-gray-300" />
-                          </div>
-
-                          {/* Header */}
-                          <div className="px-4 pb-2 flex justify-between items-center border-b border-gray-100 shrink-0">
-                            <h3 className="text-sm font-bold text-[#4A126D] serif-luxury flex items-center gap-1.5">
-                              <span className="text-xs">✨</span> Filters
-                            </h3>
-                            <div className="flex items-center gap-3">
-                              <button
-                                onClick={() => { setMetalFilter('all'); setPurityFilter('all'); setMaxPriceFilter(1000000); setPriceFilter('all'); setTypeFilter('all'); setGenderFilter('all'); setStoneFilter('all'); setOccasionFilter('all'); }}
-                                className="text-[8px] uppercase tracking-widest font-black text-[#DDA0DD] hover:text-[#4A126D] transition-colors cursor-pointer"
-                              >
-                                Clear All
-                              </button>
-                              <button onClick={() => setMobileFilterOpen(false)} className="text-gray-400 hover:text-[#4A126D] transition-colors p-1 cursor-pointer">
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* Scrollable Filter Body */}
-                          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#DDA0DD transparent' }}>
-
-                            {/* ── METAL TYPE — Quick Select (Gold / Silver) ── */}
-                            <div className="border-b border-gray-100 py-2">
-                              <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Metal Type</span>
-                              <div className="grid grid-cols-2 gap-2">
-                                <button
-                                  onClick={() => setMetalFilter(prev => prev === 'gold' ? 'all' : 'gold')}
-                                  className={`relative flex flex-col items-center justify-center gap-1 py-3 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${metalFilter === 'gold' ? 'border-[#C8960C] shadow-[0_4px_12px_rgba(200,150,12,0.25)]' : 'border-gray-200'}`}
-                                  style={{ background: metalFilter === 'gold' ? 'linear-gradient(135deg, #FFF8E7, #FFF0B3)' : 'white' }}
-                                >
-                                  <span className="text-2xl">🥇</span>
-                                  <span className={`text-[10px] font-extrabold tracking-wide font-sans ${metalFilter === 'gold' ? 'text-[#A07820]' : 'text-gray-500'}`}>GOLD</span>
-                                  {metalFilter === 'gold' && <span className="absolute top-1 right-1 w-4 h-4 bg-[#C8960C] rounded-full flex items-center justify-center"><svg viewBox="0 0 10 10" className="w-2.5 h-2.5" fill="white"><path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg></span>}
-                                </button>
-                                <button
-                                  onClick={() => setMetalFilter(prev => prev === 'silver' ? 'all' : 'silver')}
-                                  className={`relative flex flex-col items-center justify-center gap-1 py-3 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${metalFilter === 'silver' ? 'border-[#718096] shadow-[0_4px_12px_rgba(113,128,150,0.20)]' : 'border-gray-200'}`}
-                                  style={{ background: metalFilter === 'silver' ? 'linear-gradient(135deg, #F7FAFC, #E2E8F0)' : 'white' }}
-                                >
-                                  <span className="text-2xl">🥈</span>
-                                  <span className={`text-[10px] font-extrabold tracking-wide font-sans ${metalFilter === 'silver' ? 'text-[#4A5568]' : 'text-gray-500'}`}>SILVER</span>
-                                  {metalFilter === 'silver' && <span className="absolute top-1 right-1 w-4 h-4 bg-[#718096] rounded-full flex items-center justify-center"><svg viewBox="0 0 10 10" className="w-2.5 h-2.5" fill="white"><path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg></span>}
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* PRICE */}
-                            <div className="border-b border-gray-100 py-2">
-                              <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Price</span>
-                              <div className="space-y-1.5">
-                                {[
-                                  { label: 'Below Rs. 10,000', val: 10000 },
-                                  { label: 'Rs. 10,000 – Rs. 20,000', val: 20000 },
-                                  { label: 'Rs. 20,000 – Rs. 30,000', val: 30000 },
-                                  { label: 'Rs. 30,000 – Rs. 40,000', val: 40000 },
-                                  { label: 'Rs. 40,000 – Rs. 50,000', val: 50000 },
-                                  { label: 'Rs. 50,000 and Above', val: 1000000 },
-                                ].map(({ label, val }) => (
-                                  <label key={val} className="flex items-center gap-2 cursor-pointer group">
-                                    <input type="radio" name="mob-price" checked={maxPriceFilter === val} onChange={() => setMaxPriceFilter(val)} className="accent-[#4A126D] w-3 h-3 cursor-pointer" />
-                                    <span className={`text-[10px] font-sans leading-none ${maxPriceFilter === val ? 'text-[#4A126D] font-bold' : 'text-gray-600'}`}>{label}</span>
-                                  </label>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* TYPE */}
-                            <div className="border-b border-gray-100 py-2">
-                              <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Type</span>
-                              <div className="grid grid-cols-2 gap-1.5">
-                                {['Earrings', 'Rings', 'Pendants', 'Necklaces', 'Bangles', 'Bracelets', 'Mangalsutra', 'Chains', 'Nose Pins', 'Anklets', 'Kids Bangles', 'Kids Rings', 'Cufflinks', 'Brooch'].map(t => (
-                                  <label key={t} className="flex items-center gap-2 cursor-pointer group">
-                                    <input type="radio" name="mob-type" checked={typeFilter === t} onChange={() => setTypeFilter(prev => prev === t ? 'all' : t)} className="accent-[#4A126D] w-3 h-3 cursor-pointer" />
-                                    <span className={`text-[10px] font-sans leading-none ${typeFilter === t ? 'text-[#4A126D] font-bold' : 'text-gray-600'}`}>{t}</span>
-                                  </label>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* METAL */}
-                            <div className="border-b border-gray-100 py-2">
-                              <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Metal</span>
-                              <div className="flex flex-wrap gap-1.5">
-                                {['All', 'Gold', 'Silver', 'Rose Gold', 'White Gold', 'Platinum', 'Plain Gold'].map(m => (
-                                  <button key={m} onClick={() => setMetalFilter(m.toLowerCase())}
-                                    className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer ${metalFilter === m.toLowerCase() ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
-                                    {m}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* GOLD PURITY */}
-                            <div className="border-b border-gray-100 py-2">
-                              <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Gold Purity</span>
-                              <div className="flex flex-wrap gap-1.5">
-                                {['All', '14K', '18K', '22K', '24K'].map(p => (
-                                  <button key={p} onClick={() => setPurityFilter(p === 'All' ? 'all' : p)}
-                                    className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer ${purityFilter === (p === 'All' ? 'all' : p) ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
-                                    {p}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* GENDER */}
-                            <div className="border-b border-gray-100 py-2">
-                              <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Gender</span>
-                              <div className="flex flex-wrap gap-1.5">
-                                {['All', 'Women', 'Men', 'Unisex'].map(g => (
-                                  <button key={g} onClick={() => setGenderFilter(g.toLowerCase())}
-                                    className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer ${genderFilter === g.toLowerCase() ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
-                                    {g}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* STONES */}
-                            <div className="border-b border-gray-100 py-2">
-                              <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Stones</span>
-                              <div className="flex flex-wrap gap-1.5">
-                                {['Diamond', 'Ruby', 'Sapphire', 'Emerald', 'Pearl', 'Topaz', 'Amethyst', 'Garnet', 'Opal', 'Citrine', 'Aquamarine'].map(s => (
-                                  <button key={s} onClick={() => setStoneFilter(prev => prev === s ? 'all' : s)}
-                                    className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer ${stoneFilter === s ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
-                                    {s}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* OCCASION */}
-                            <div className="border-b border-gray-100 py-2">
-                              <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Occasion</span>
-                              <div className="flex flex-wrap gap-1.5">
-                                {['Everyday Wear', 'Festive', 'Wedding', 'Engagement', 'Anniversary', 'Gifting', 'Workwear', 'Romantic', 'Vacation', 'Special Occasion', 'Valentine'].map(o => (
-                                  <button key={o} onClick={() => setOccasionFilter(prev => prev === o ? 'all' : o)}
-                                    className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer ${occasionFilter === o ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
-                                    {o}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* CATEGORY */}
-                            <div className="py-2">
-                              <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Category</span>
-                              <div className="flex flex-wrap gap-1.5">
-                                {categoryFilters.map(cat => {
-                                  const isActive = activeCategoryTab === cat;
-                                  return (
-                                    <button key={cat} onClick={() => changeCategoryTab(cat)}
-                                      className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer ${isActive ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
-                                      {cat}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            </div>
-
-                          </div>
-
-                          {/* Apply Button */}
-                          <div className="shrink-0 px-4 py-3 border-t border-gray-100 bg-white">
-                            <button
-                              onClick={() => { setMobileFilterOpen(false); triggerAudio('shimmer'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                              className="w-full py-3 rounded-xl bg-[#4A126D] text-white text-[10px] uppercase font-bold tracking-widest shadow-lg hover:bg-[#DDA0DD] transition-all duration-300 cursor-pointer flex items-center justify-center gap-2"
-                            >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                              Apply Filters
-                            </button>
-                          </div>
-                        </motion.div>
-                      </>
-                    )}
-                  </AnimatePresence>
 
                   {/* Right Products panel: grid and header sorting actions */}
                   <div className="col-span-12 lg:col-span-9 space-y-3 sm:space-y-6">
@@ -7744,17 +7763,33 @@ export default function App() {
                                   </div>
                                 </div>
 
-                                {/* Add to Cart button */}
-                                <div className="mt-1.5 sm:mt-4 pt-0 sm:pt-1">
+                                {/* Book Video Call / View Details Actions */}
+                                <div className="mt-1.5 sm:mt-4 pt-0 sm:pt-1 flex items-center gap-1.5 sm:gap-2">
+                                  {/* Book Video Call button */}
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      triggerAudio('shimmer');
-                                      handleAddToCart(prod);
+                                      triggerAudio('click');
+                                      setConsultationModal(true);
                                     }}
-                                    className="w-full text-[7px] sm:text-[9px] uppercase font-bold py-2 sm:py-3 rounded-lg sm:rounded-xl transition-all duration-300 tracking-widest shadow-sm flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer focus:outline-none bg-[#1B1B1B] text-white hover:bg-[#DDA0DD]"
+                                    className="w-9 h-9 sm:w-12 sm:h-12 border border-[#4CAF50] bg-transparent hover:bg-[#4CAF50]/5 rounded-lg sm:rounded-xl flex items-center justify-center cursor-pointer focus:outline-none shrink-0 transition-colors duration-300"
+                                    title="Book Video Call"
                                   >
-                                    <span className="text-[8px] sm:text-sm">🛒</span> Add To Bag
+                                    <svg className="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 text-[#4CAF50]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+                                    </svg>
+                                  </button>
+
+                                  {/* View Details button */}
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      triggerAudio('click');
+                                      navigateToPDP(prod);
+                                    }}
+                                    className="flex-grow h-9 sm:h-12 border border-gray-200 hover:border-gray-400 bg-white text-gray-800 hover:text-black font-semibold text-[9px] sm:text-xs rounded-lg sm:rounded-xl transition-all duration-300 cursor-pointer focus:outline-none flex items-center justify-center font-sans"
+                                  >
+                                    View Details
                                   </button>
                                 </div>
                               </div>
@@ -7855,7 +7890,7 @@ export default function App() {
                     
                     {/* Hero Display Card */}
                     <div
-                      className="relative bg-white flex items-center justify-center p-0 w-full group cursor-zoom-in transition-all duration-500"
+                      className="relative bg-white flex items-start justify-center p-0 w-full aspect-square lg:aspect-auto lg:h-[550px] overflow-hidden group cursor-zoom-in transition-all duration-500"
                       onMouseMove={handleZoomMouseMove}
                       onMouseLeave={handleZoomMouseLeave}
                     >
@@ -7877,30 +7912,16 @@ export default function App() {
                       </button>
 
                       {/* Render Media */}
-                      {detailActiveImg === 'video1' ? (
-                        <div className="w-full h-full flex items-center justify-center bg-black rounded-none overflow-hidden">
-                          <video src={heroBgVideo} autoPlay loop muted controls className="w-full h-full object-contain" />
-                        </div>
-                      ) : detailActiveImg === 'video2' ? (
-                        <div className="w-full h-full flex items-center justify-center bg-black rounded-none overflow-hidden">
-                          <video src={strokesOfGeniusVideo} autoPlay loop muted controls className="w-full h-full object-contain" />
-                        </div>
-                      ) : detailActiveImg === 'fingerView' ? (
-                        <div className="w-full h-full flex items-center justify-center p-0">
-                          <img src={fingerViewRing} className="w-full h-full object-contain select-none pointer-events-none rounded-none" alt="On Finger View" />
-                        </div>
-                      ) : (
-                        <img
-                          src={detailActiveImg || detailProduct.img}
-                          alt={detailProduct.name}
-                          className="w-[90%] h-[90%] object-contain select-none pointer-events-none transition-all duration-300 mix-blend-multiply"
-                          style={{
-                            ...pdpZoomStyle,
-                            transition: 'transform 0.15s ease-out, transform-origin 0.15s ease-out',
-                            filter: 'brightness(1.06) contrast(1.04)',
-                          }}
-                        />
-                      )}
+                      <img
+                        src={detailActiveImg || detailProduct.img}
+                        alt={detailProduct.name}
+                        className="w-full h-full object-contain object-top mt-[-8%] select-none pointer-events-none transition-all duration-300 mix-blend-multiply"
+                        style={{
+                          ...pdpZoomStyle,
+                          transition: 'transform 0.15s ease-out, transform-origin 0.15s ease-out',
+                          filter: 'brightness(1.06) contrast(1.04)',
+                        }}
+                      />
                     </div>
 
                     {/* Thumbnails Strip */}
@@ -7926,41 +7947,6 @@ export default function App() {
                           className={`w-16 h-16 flex items-center justify-center p-0 bg-transparent shrink-0 focus:outline-none transition-all duration-300 hover:scale-105 cursor-pointer relative ${detailActiveImg === detailProduct.img ? 'after:content-[""] after:absolute after:bottom-0 after:left-1/4 after:right-1/4 after:h-[1.5px] after:bg-[#B8893C]' : ''}`}
                         >
                           <img src={detailProduct.img} className="w-14 h-14 object-contain rounded-none mix-blend-multiply" style={{ filter: 'brightness(1.06) contrast(1.04)' }} alt="Main View" />
-                        </button>
-
-                        {/* Video 1 */}
-                        <button
-                          onClick={() => { triggerAudio('click'); setDetailActiveImg('video1'); }}
-                          className={`w-16 h-16 flex flex-col items-center justify-center p-0 bg-transparent shrink-0 focus:outline-none transition-all duration-300 hover:scale-105 cursor-pointer relative ${detailActiveImg === 'video1' ? 'after:content-[""] after:absolute after:bottom-0 after:left-1/4 after:right-1/4 after:h-[1.5px] after:bg-[#B8893C]' : ''}`}
-                        >
-                          <div className="w-6 h-6 rounded-full border border-[#E7DED2] flex items-center justify-center bg-white mb-1 shrink-0">
-                            <svg className="w-2.5 h-2.5 text-[#B8893C] ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M8 5v14l11-7z" />
-                            </svg>
-                          </div>
-                          <span className="text-[7px] font-semibold text-[#888888] tracking-wider uppercase leading-none">VIDEO</span>
-                        </button>
-
-                        {/* Video 2 */}
-                        <button
-                          onClick={() => { triggerAudio('click'); setDetailActiveImg('video2'); }}
-                          className={`w-16 h-16 flex flex-col items-center justify-center p-0 bg-transparent shrink-0 focus:outline-none transition-all duration-300 hover:scale-105 cursor-pointer relative ${detailActiveImg === 'video2' ? 'after:content-[""] after:absolute after:bottom-0 after:left-1/4 after:right-1/4 after:h-[1.5px] after:bg-[#B8893C]' : ''}`}
-                        >
-                          <div className="w-6 h-6 rounded-full border border-[#E7DED2] flex items-center justify-center bg-white mb-1 shrink-0">
-                            <svg className="w-2.5 h-2.5 text-[#B8893C] ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M8 5v14l11-7z" />
-                            </svg>
-                          </div>
-                          <span className="text-[7px] font-semibold text-[#888888] tracking-wider uppercase leading-none">VIDEO</span>
-                        </button>
-
-                        {/* Finger View */}
-                        <button
-                          onClick={() => { triggerAudio('click'); setDetailActiveImg('fingerView'); }}
-                          className={`w-16 h-16 flex flex-col items-center justify-center p-0 bg-transparent shrink-0 focus:outline-none transition-all duration-300 hover:scale-105 cursor-pointer relative ${detailActiveImg === 'fingerView' ? 'after:content-[""] after:absolute after:bottom-0 after:left-1/4 after:right-1/4 after:h-[1.5px] after:bg-[#B8893C]' : ''}`}
-                        >
-                          <img src={fingerViewRing} className="w-full h-8 object-contain rounded-none mb-0.5" alt="Finger View" />
-                          <span className="text-[6px] font-semibold text-[#888888] tracking-wider uppercase leading-none shrink-0">ON FINGER</span>
                         </button>
 
                         {/* Sub Images */}
@@ -8423,19 +8409,10 @@ export default function App() {
                           />
                         </div>
                         <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black/5 via-transparent to-transparent pointer-events-none" />
-                        
-                        {/* Step Number Badge */}
-                        <div className="absolute top-6 left-6 bg-[#FCFAF7]/90 backdrop-blur-md text-[#B8893C] border border-[#B8893C]/20 px-3.5 py-1.5 rounded-none font-semibold text-[10px] tracking-widest uppercase shadow-none">
-                          STEP {processStepsData[activeProcessStep].num}
-                        </div>
                       </div>
 
                       {/* Right: Text details */}
                       <div className="w-full lg:w-[45%] flex flex-col justify-center text-left space-y-6 relative bg-transparent overflow-hidden py-4">
-                        {/* Background watermark number */}
-                        <div className="absolute right-8 top-4 text-[120px] font-light text-[#E7DED2]/30 select-none font-sans leading-none z-0 pointer-events-none">
-                          {processStepsData[activeProcessStep].num}
-                        </div>
 
                         <div className="relative z-10 space-y-3">
                           <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[#B8893C] font-semibold font-sans">
