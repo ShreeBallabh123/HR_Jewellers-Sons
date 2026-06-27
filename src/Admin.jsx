@@ -652,7 +652,7 @@ export default function Admin() {
     tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
     subImages: [],
     discountPercent: 20,
-    diamondWeight: '0.3380 Ct',
+    diamondWeight: '',
     settingStyle: 'Prong Setting',
     certificate: 'SGL / GSI Certified',
     metalPurity: '22KT',
@@ -850,7 +850,7 @@ export default function Admin() {
         e.preventDefault();
         const form = e.currentTarget;
         const index = Array.prototype.indexOf.call(form.elements, e.target);
-        
+
         let nextIndex = index + 1;
         while (nextIndex < form.elements.length) {
           const nextElement = form.elements[nextIndex];
@@ -893,7 +893,7 @@ export default function Admin() {
         tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
         subImages: [],
         discountPercent: 20,
-        diamondWeight: '0.3380 Ct',
+        diamondWeight: '',
         settingStyle: 'Prong Setting',
         certificate: 'SGL / GSI Certified',
         metalPurity: '22KT',
@@ -1899,7 +1899,7 @@ export default function Admin() {
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <label htmlFor="prod-pearlsValue-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Pearls Value (₹)</label>
+                            <label htmlFor="prod-pearlsValue-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Other Value (₹)</label>
                             <input
                               id="prod-pearlsValue-form"
                               type="number"
