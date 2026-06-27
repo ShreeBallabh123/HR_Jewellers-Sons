@@ -1569,6 +1569,15 @@ export default function App() {
     setPdpActiveReviewIdx(0);
   }, [detailProduct]);
 
+  useEffect(() => {
+    if (detailProduct) {
+      const defaultCarat = detailProduct.carat || '22K';
+      const options = ['18KT Yellow Gold', '14KT Yellow Gold', '22KT Yellow Gold', '18KT Rose Gold', '18KT White Gold'];
+      const matched = options.find(opt => opt.toLowerCase().includes(defaultCarat.toLowerCase()) || defaultCarat.toLowerCase().includes(opt.toLowerCase()));
+      setPdpSelectedMetal(matched || defaultCarat);
+    }
+  }, [detailProduct]);
+
   // Reset pagination on filter change
   useEffect(() => {
     setCollectionsPage(1);
@@ -8241,30 +8250,135 @@ export default function App() {
                           </svg>
                         </summary>
                         <div className="pt-2">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-xs pt-2">
-                            <div className="flex justify-between py-2 border-b border-[#E7DED2]/50 font-light">
-                              <span className="text-[#888888]">Metal Purity</span>
-                              <span className="text-[#181818] font-semibold">{pdpSelectedMetal || '18Kt White Gold'}</span>
+                          <div className="flex justify-between items-center text-[10px] tracking-wider text-gray-500 uppercase border-b border-gray-200/50 pb-2 mb-4 font-bold">
+                            <span>Product Details</span>
+                            <span className="font-mono flex items-center gap-1">
+                              SKU: {detailProduct.sku || 'HRJS-PD-' + detailProduct.id}
+                              <button 
+                                onClick={(e) => { 
+                                  e.preventDefault(); 
+                                  navigator.clipboard.writeText(detailProduct.sku || 'HRJS-PD-' + detailProduct.id); 
+                                  triggerAudio('click');
+                                  alert('SKU Copied to Clipboard!'); 
+                                }} 
+                                className="text-gray-400 hover:text-gray-600 transition-colors ml-1 cursor-pointer focus:outline-none"
+                                title="Copy SKU"
+                              >
+                                📋
+                              </button>
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {/* Card 1: METAL */}
+                            <div className="bg-[#FAF9F6] border border-[#E7DED2]/60 p-5 rounded-2xl space-y-4 shadow-xs relative">
+                              <div className="flex items-center justify-between text-xs font-bold text-[#3F1F54] uppercase tracking-wider border-b border-gray-200/50 pb-2.5">
+                                <span className="flex items-center gap-2">⚖️ Metal</span>
+                              </div>
+                              <div className="space-y-3 text-xs text-gray-600 font-light">
+                                <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
+                                  <span className="text-gray-400">Purity</span>
+                                  <span className="font-semibold text-gray-900">{detailProduct.metalPurity || pdpSelectedMetal || detailProduct.carat || '22KT'}</span>
+                                </div>
+                                <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
+                                  <span className="text-gray-400">Color</span>
+                                  <span className="font-semibold text-gray-900">{detailProduct.metalColor || 'Yellow Gold'}</span>
+                                </div>
+                                <div className="flex justify-between items-center py-0.5">
+                                  <span className="text-gray-400">Net Wt</span>
+                                  <span className="font-semibold text-gray-900">{detailProduct.netWeight || detailProduct.weight || 'N/A'}</span>
+                                </div>
+                              </div>
                             </div>
-                            <div className="flex justify-between py-2 border-b border-[#E7DED2]/50 font-light">
-                              <span className="text-[#888888]">Est. Weight</span>
-                              <span className="text-[#181818] font-semibold">{detailProduct.weight || '2.68 Grams'}</span>
+
+                            {/* Card 2: DIMENSION */}
+                            <div className="bg-[#FAF9F6] border border-[#E7DED2]/60 p-5 rounded-2xl space-y-4 shadow-xs relative">
+                              <div className="flex items-center justify-between text-xs font-bold text-[#3F1F54] uppercase tracking-wider border-b border-gray-200/50 pb-2.5">
+                                <span className="flex items-center gap-2">📏 Dimension</span>
+                              </div>
+                              <div className="space-y-3 text-xs text-gray-600 font-light">
+                                <div className="flex justify-between items-center py-0.5">
+                                  <span className="text-gray-400">Gross Wt</span>
+                                  <span className="font-semibold text-gray-900">{detailProduct.grossWeight || detailProduct.netWeight || detailProduct.weight || 'N/A'}</span>
+                                </div>
+                              </div>
                             </div>
-                            <div className="flex justify-between py-2 border-b border-[#E7DED2]/50 font-light">
-                              <span className="text-[#888888]">Carat Weight</span>
-                              <span className="text-[#181818] font-semibold">{detailProduct.diamondWeight || '0.3380 Ct'}</span>
+
+                            {/* Card 3: DIAMOND & GEMS */}
+                            {(detailProduct.category === 'diamond' || detailProduct.diamondCarat || detailProduct.diamondColor || detailProduct.diamondClarity || detailProduct.diamondShape || detailProduct.diamondQuantity || detailProduct.stoneCarat || detailProduct.beadsCarat || detailProduct.pearlsCarat || detailProduct.gemstoneCarat) && (
+                              <div className="bg-[#FAF9F6] border border-[#E7DED2]/60 p-5 rounded-2xl space-y-4 shadow-xs relative">
+                                <div className="flex items-center justify-between text-xs font-bold text-[#3F1F54] uppercase tracking-wider border-b border-gray-200/50 pb-2.5">
+                                  <span className="flex items-center gap-2">💎 Diamond & Gems</span>
+                                </div>
+                                <div className="space-y-3 text-xs text-gray-600 font-light">
+                                  {(detailProduct.diamondCarat || detailProduct.diamondColor || detailProduct.diamondClarity || detailProduct.diamondShape || detailProduct.diamondQuantity) && (
+                                    <>
+                                      <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
+                                        <span className="text-gray-400">Shape</span>
+                                        <span className="font-semibold text-gray-900">{detailProduct.diamondShape || 'Round'}</span>
+                                      </div>
+                                      <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
+                                        <span className="text-gray-400">Color</span>
+                                        <span className="font-semibold text-gray-900">{detailProduct.diamondColor || 'GH'}</span>
+                                      </div>
+                                      <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
+                                        <span className="text-gray-400">Clarity</span>
+                                        <span className="font-semibold text-gray-900">{detailProduct.diamondClarity || 'VVS1'}</span>
+                                      </div>
+                                      <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
+                                        <span className="text-gray-400">Cut</span>
+                                        <span className="font-semibold text-gray-900">{detailProduct.diamondCut || 'Excellent'}</span>
+                                      </div>
+                                      <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
+                                        <span className="text-gray-400">Quantity</span>
+                                        <span className="font-semibold text-gray-900">{detailProduct.diamondQuantity || '1pcs'}</span>
+                                      </div>
+                                      <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
+                                        <span className="text-gray-400">Diamond Carat</span>
+                                        <span className="font-semibold text-gray-900">{detailProduct.diamondCarat || detailProduct.diamondWeight || '0.339ct'}</span>
+                                      </div>
+                                    </>
+                                  )}
+                                  {detailProduct.stoneCarat && (
+                                    <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50 last:border-0">
+                                      <span className="text-gray-400">Stones Carat</span>
+                                      <span className="font-semibold text-gray-900">{detailProduct.stoneCarat}</span>
+                                    </div>
+                                  )}
+                                  {detailProduct.beadsCarat && (
+                                    <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50 last:border-0">
+                                      <span className="text-gray-400">Beads Carat</span>
+                                      <span className="font-semibold text-gray-900">{detailProduct.beadsCarat}</span>
+                                    </div>
+                                  )}
+                                  {detailProduct.pearlsCarat && (
+                                    <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50 last:border-0">
+                                      <span className="text-gray-400">Pearls Carat</span>
+                                      <span className="font-semibold text-gray-900">{detailProduct.pearlsCarat}</span>
+                                    </div>
+                                  )}
+                                  {detailProduct.gemstoneCarat && (
+                                    <div className="flex justify-between items-center py-0.5 last:border-0">
+                                      <span className="text-gray-400">Gemstone Carat</span>
+                                      <span className="font-semibold text-gray-900">{detailProduct.gemstoneCarat}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="mt-4 pt-4 border-t border-[#E7DED2]/50 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-gray-600 font-light">
+                            <div>
+                              <span className="text-gray-400 block mb-0.5">Hallmark Stamp</span>
+                              <span className="font-semibold text-gray-900">{detailProduct.hallmark || 'BIS 916 Government Certified'}</span>
                             </div>
-                            <div className="flex justify-between py-2 border-b border-[#E7DED2]/50 font-light">
-                              <span className="text-[#888888]">Setting Style</span>
-                              <span className="text-[#181818] font-semibold">Prong Setting</span>
-                            </div>
-                            <div className="flex justify-between py-2 border-b border-[#E7DED2]/50 font-light">
-                              <span className="text-[#888888]">Certificate</span>
-                              <span className="text-[#181818] font-semibold">SGL / GSI Certified</span>
-                            </div>
-                            <div className="flex justify-between py-2 border-b border-[#E7DED2]/50 font-light">
-                              <span className="text-[#888888]">Product SKU</span>
-                              <span className="text-[#181818] font-semibold">{detailProduct.sku || 'HRJS-PD-' + detailProduct.id}</span>
+                            <div>
+                              <span className="text-gray-400 block mb-0.5">Making Charges / Discount</span>
+                              <span className="font-semibold text-gray-900">
+                                {detailProduct.makingCharges ? `${detailProduct.makingCharges}%` : '12%'} making charge
+                                {detailProduct.discountPercent !== undefined && detailProduct.discountPercent !== '' ? ` · ${detailProduct.discountPercent}% OFF` : ' · 20% OFF'}
+                              </span>
                             </div>
                           </div>
                         </div>
