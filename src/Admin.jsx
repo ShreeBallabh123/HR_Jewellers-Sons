@@ -652,6 +652,8 @@ export default function Admin() {
     tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
     subImages: [],
     discountPercent: 20,
+    discountOffDiamond: '',
+    discountOffMaking: '',
     diamondWeight: '',
     settingStyle: 'Prong Setting',
     certificate: 'SGL / GSI Certified',
@@ -893,6 +895,8 @@ export default function Admin() {
         tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
         subImages: [],
         discountPercent: 20,
+        discountOffDiamond: '',
+        discountOffMaking: '',
         diamondWeight: '',
         settingStyle: 'Prong Setting',
         certificate: 'SGL / GSI Certified',
@@ -1842,7 +1846,7 @@ export default function Admin() {
                         </div>
 
                         {/* Separate Carats fields */}
-                        <div className="grid grid-cols-2 sm:grid-cols-6 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                           <div className="space-y-1.5">
                             <label htmlFor="prod-diamondValue-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Diamond Value (₹)</label>
                             <input
@@ -1909,6 +1913,22 @@ export default function Admin() {
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="prod-discountOffDiamond-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Discount Off Diamond (%)</label>
+                            <div className="relative">
+                              <input
+                                id="prod-discountOffDiamond-form"
+                                type="number"
+                                min="0"
+                                max="100"
+                                placeholder="e.g. 10"
+                                value={editingProduct ? (editingProduct.discountOffDiamond !== undefined ? editingProduct.discountOffDiamond : '') : (newProduct.discountOffDiamond !== undefined ? newProduct.discountOffDiamond : '')}
+                                onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, discountOffDiamond: e.target.value === '' ? '' : +e.target.value }) : setNewProduct({ ...newProduct, discountOffDiamond: e.target.value === '' ? '' : +e.target.value })}
+                                className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl pl-4 pr-16 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
+                              />
+                              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">% OFF</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
 
@@ -1918,7 +1938,7 @@ export default function Admin() {
                           <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-[#E6C687]"></span>
                           <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Pricing & Commercials</h4>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
                           <div className="space-y-1.5">
                             <label htmlFor="prod-price-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Estimated Cost (INR)</label>
                             <input
@@ -1974,6 +1994,22 @@ export default function Admin() {
                                 placeholder="e.g. 20"
                                 value={editingProduct ? (editingProduct.discountPercent !== undefined ? editingProduct.discountPercent : 20) : (newProduct.discountPercent !== undefined ? newProduct.discountPercent : 20)}
                                 onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, discountPercent: e.target.value === '' ? '' : +e.target.value }) : setNewProduct({ ...newProduct, discountPercent: e.target.value === '' ? '' : +e.target.value })}
+                                className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl pl-4 pr-16 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
+                              />
+                              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">% OFF</span>
+                            </div>
+                          </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="prod-discountOffMaking-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Discount Off Making charge (%)</label>
+                            <div className="relative">
+                              <input
+                                id="prod-discountOffMaking-form"
+                                type="number"
+                                min="0"
+                                max="100"
+                                placeholder="e.g. 15"
+                                value={editingProduct ? (editingProduct.discountOffMaking !== undefined ? editingProduct.discountOffMaking : '') : (newProduct.discountOffMaking !== undefined ? newProduct.discountOffMaking : '')}
+                                onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, discountOffMaking: e.target.value === '' ? '' : +e.target.value }) : setNewProduct({ ...newProduct, discountOffMaking: e.target.value === '' ? '' : +e.target.value })}
                                 className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl pl-4 pr-16 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                               />
                               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">% OFF</span>
