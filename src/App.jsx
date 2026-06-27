@@ -7741,7 +7741,7 @@ export default function App() {
                                 className="group rounded-xl sm:rounded-3xl p-2 sm:p-5 flex flex-col justify-between border border-[#EAEAEA] transition-all duration-300 relative cursor-pointer overflow-hidden bg-white text-[#1B1B1B] shadow-sm hover:shadow-[0_15px_30px_rgba(0,0,0,0.06)] hover:border-[#DDA0DD]/45 hover:-translate-y-1.5 h-[300px] sm:h-[530px]"
                               >
                                 {/* Image, Overlays & Spotlight */}
-                                <div className="aspect-square rounded-xl sm:rounded-[1.5rem] overflow-hidden relative image-zoom-container bg-[#FCFAFF] border border-[#DDA0DD]/5">
+                                <div className="aspect-square rounded-xl sm:rounded-[1.5rem] overflow-hidden relative image-zoom-container bg-[#FCFAFF] border border-[#DDA0DD]/5 shrink-0">
                                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.08)_100%)] mix-blend-multiply pointer-events-none z-10"></div>
 
                                   {prod.img ? (
@@ -7794,7 +7794,7 @@ export default function App() {
                                     <h3 className="serif-luxury font-bold text-[10px] sm:text-base leading-tight sm:leading-snug group-hover:text-[#DDA0DD] transition-colors duration-300 line-clamp-1 text-[#1B1B1B]">
                                       {prod.name}
                                     </h3>
-                                    <p className="text-[8px] sm:text-[10px] font-sans font-light leading-relaxed normal-case text-[#666666]/90 line-clamp-1 sm:line-clamp-2 hidden sm:block">
+                                    <p className="text-[8px] sm:text-[10px] font-sans font-light leading-relaxed normal-case text-[#666666]/90 hidden sm:line-clamp-2">
                                       {prod.desc}
                                     </p>
                                   </div>
@@ -8305,13 +8305,13 @@ export default function App() {
                             </div>
 
                             {/* Card 3: DIAMOND & GEMS */}
-                            {(detailProduct.category === 'diamond' || detailProduct.diamondCarat || detailProduct.diamondColor || detailProduct.diamondClarity || detailProduct.diamondShape || detailProduct.diamondQuantity || detailProduct.stoneCarat || detailProduct.beadsCarat || detailProduct.pearlsCarat || detailProduct.gemstoneCarat) && (
+                            {(detailProduct.category === 'diamond' || detailProduct.diamondCarat || detailProduct.diamondValue || detailProduct.diamondColor || detailProduct.diamondClarity || detailProduct.diamondShape || detailProduct.diamondQuantity || detailProduct.stoneCarat || detailProduct.beadsCarat || detailProduct.pearlsCarat || detailProduct.gemstoneCarat) && (
                               <div className="bg-[#FAF9F6] border border-[#E7DED2]/60 p-5 rounded-2xl space-y-4 shadow-xs relative">
                                 <div className="flex items-center justify-between text-xs font-bold text-[#3F1F54] uppercase tracking-wider border-b border-gray-200/50 pb-2.5">
                                   <span className="flex items-center gap-2">💎 Diamond & Gems</span>
                                 </div>
                                 <div className="space-y-3 text-xs text-gray-600 font-light">
-                                  {(detailProduct.diamondCarat || detailProduct.diamondColor || detailProduct.diamondClarity || detailProduct.diamondShape || detailProduct.diamondQuantity) && (
+                                  {(detailProduct.diamondCarat || detailProduct.diamondValue || detailProduct.diamondColor || detailProduct.diamondClarity || detailProduct.diamondShape || detailProduct.diamondQuantity) && (
                                     <>
                                       <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
                                         <span className="text-gray-400">Shape</span>
@@ -8334,32 +8334,41 @@ export default function App() {
                                         <span className="font-semibold text-gray-900">{detailProduct.diamondQuantity || '1pcs'}</span>
                                       </div>
                                       <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
-                                        <span className="text-gray-400">Diamond Carat</span>
-                                        <span className="font-semibold text-gray-900">{detailProduct.diamondCarat || detailProduct.diamondWeight || '0.339ct'}</span>
+                                        {detailProduct.diamondValue ? (
+                                          <>
+                                            <span className="text-gray-400">Diamond Value</span>
+                                            <span className="font-semibold text-gray-900">₹{formatPrice(detailProduct.diamondValue)}</span>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <span className="text-gray-400">Diamond Carat</span>
+                                            <span className="font-semibold text-gray-900">{detailProduct.diamondCarat || detailProduct.diamondWeight || '0.339ct'}</span>
+                                          </>
+                                        )}
                                       </div>
                                     </>
                                   )}
                                   {detailProduct.stoneCarat && (
                                     <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50 last:border-0">
-                                      <span className="text-gray-400">Stones Carat</span>
+                                      <span className="text-gray-400">Stone weight</span>
                                       <span className="font-semibold text-gray-900">{detailProduct.stoneCarat}</span>
                                     </div>
                                   )}
                                   {detailProduct.beadsCarat && (
                                     <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50 last:border-0">
-                                      <span className="text-gray-400">Beads Carat</span>
+                                      <span className="text-gray-400">Beads weight</span>
                                       <span className="font-semibold text-gray-900">{detailProduct.beadsCarat}</span>
                                     </div>
                                   )}
                                   {detailProduct.pearlsCarat && (
                                     <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50 last:border-0">
-                                      <span className="text-gray-400">Pearls Carat</span>
+                                      <span className="text-gray-400">Pearls weight</span>
                                       <span className="font-semibold text-gray-900">{detailProduct.pearlsCarat}</span>
                                     </div>
                                   )}
                                   {detailProduct.gemstoneCarat && (
                                     <div className="flex justify-between items-center py-0.5 last:border-0">
-                                      <span className="text-gray-400">Gemstone Carat</span>
+                                      <span className="text-gray-400">Gemstone weight</span>
                                       <span className="font-semibold text-gray-900">{detailProduct.gemstoneCarat}</span>
                                     </div>
                                   )}

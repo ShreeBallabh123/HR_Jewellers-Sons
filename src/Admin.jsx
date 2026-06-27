@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import { db, auth } from './firebase';
-import { 
-  collection, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  setDoc, 
-  query, 
-  orderBy, 
-  onSnapshot 
+import {
+  collection,
+  updateDoc,
+  deleteDoc,
+  doc,
+  setDoc,
+  query,
+  orderBy,
+  onSnapshot
 } from 'firebase/firestore';
-import { 
-  signInWithEmailAndPassword, 
-  signOut, 
+import {
+  signInWithEmailAndPassword,
+  signOut,
   onAuthStateChanged,
   createUserWithEmailAndPassword
 } from 'firebase/auth';
@@ -22,30 +22,30 @@ import hrLogo from './assets/logo.png';
 
 // Premium 2026 SaaS Dashboard libraries
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  PieChart, 
-  Pie, 
-  Cell 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
 } from 'recharts';
-import { 
-  LayoutDashboard, 
-  Gem, 
-  Boxes, 
-  ShoppingBag, 
-  Users, 
-  LogOut, 
-  ExternalLink, 
-  ChevronRight, 
-  TrendingUp, 
-  DollarSign, 
-  Plus, 
+import {
+  LayoutDashboard,
+  Gem,
+  Boxes,
+  ShoppingBag,
+  Users,
+  LogOut,
+  ExternalLink,
+  ChevronRight,
+  TrendingUp,
+  DollarSign,
+  Plus,
   AlertTriangle,
   ArrowUpRight,
   Calendar,
@@ -91,13 +91,13 @@ function AdminLoginPortal({
 }) {
   return (
     <div className="min-h-screen flex text-[#0F0F15] dark:text-zinc-100 select-none transition-colors duration-200 bg-zinc-50 dark:bg-[#09090B] w-full">
-      
+
       {/* LEFT PANE: Premium Luxury Branding (Hidden on mobile) */}
       <div className="hidden lg:flex w-1/2 bg-zinc-950 p-16 flex-col justify-between relative overflow-hidden">
         {/* Subtle decorative background elements */}
         <div className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full bg-purple-900/10 blur-[120px] pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full bg-yellow-900/5 blur-[100px] pointer-events-none"></div>
-        <div 
+        <div
           className="absolute inset-0 pointer-events-none opacity-20"
           style={{
             background: `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, rgba(132, 72, 255, 0.15) 0%, transparent 60%)`,
@@ -142,12 +142,12 @@ function AdminLoginPortal({
 
       {/* RIGHT PANE: Minimalist Distraction-free Auth Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-zinc-50 dark:bg-[#09090B] relative">
-        
+
         {/* Reset Password Modal Drawer Overlay */}
         {isForgotModalOpen && (
           <div className="fixed inset-0 bg-black/40 backdrop-blur-md z-[60] flex items-center justify-center p-4 animate-fade-in text-zinc-800 dark:text-zinc-200">
             <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 max-w-sm w-full rounded-2xl p-6 shadow-xl relative space-y-6">
-              <button 
+              <button
                 onClick={() => { setIsForgotModalOpen(false); setForgotStatus(''); }}
                 className="absolute top-4 right-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 p-2 rounded-full text-xs focus:outline-none cursor-pointer"
                 aria-label="Close modal"
@@ -161,11 +161,11 @@ function AdminLoginPortal({
                 <h3 className="text-base font-black text-zinc-900 dark:text-[#E6C687] uppercase tracking-wider">Reset Password</h3>
                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed px-2">Enter your verified administrator email below. A password reset link will be sent instantly.</p>
               </div>
-              <form 
+              <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   setForgotStatus('dispatched');
-                }} 
+                }}
                 className="space-y-4 text-xs text-left"
               >
                 {forgotStatus === 'dispatched' ? (
@@ -177,17 +177,17 @@ function AdminLoginPortal({
                   <div className="space-y-4">
                     <div className="space-y-1.5">
                       <label htmlFor="forgot-email-input" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Admin Email Address</label>
-                      <input 
+                      <input
                         id="forgot-email-input"
-                        type="email" 
-                        required 
+                        type="email"
+                        required
                         placeholder="admin@hrjewellers.com"
                         value={forgotEmail}
                         onChange={(e) => setForgotEmail(e.target.value)}
                         className="w-full h-10 bg-white dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 focus:ring-1 focus:ring-zinc-900/5 transition-all"
                       />
                     </div>
-                    <button 
+                    <button
                       type="submit"
                       className="w-full h-10 bg-zinc-950 hover:bg-zinc-850 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-950 font-bold text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer"
                     >
@@ -214,14 +214,14 @@ function AdminLoginPortal({
                 <span>{adminError}</span>
               </div>
             )}
-            
+
             <div className="space-y-1.5">
               <label htmlFor="admin-vault-email" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Admin Email Address</label>
               <div className="relative group">
-                <input 
+                <input
                   id="admin-vault-email"
-                  type="email" 
-                  required 
+                  type="email"
+                  required
                   placeholder="admin@hrjewellers.com"
                   value={adminEmail}
                   onChange={(e) => setAdminEmail(e.target.value)}
@@ -238,7 +238,7 @@ function AdminLoginPortal({
             <div className="space-y-1.5">
               <div className="flex justify-between items-center px-1">
                 <label htmlFor="admin-vault-pass" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block">Admin Password</label>
-                <button 
+                <button
                   type="button"
                   onClick={() => setIsForgotModalOpen(true)}
                   className="text-[9px] uppercase tracking-wider text-[#BCA057] hover:underline font-bold focus:outline-none cursor-pointer"
@@ -247,10 +247,10 @@ function AdminLoginPortal({
                 </button>
               </div>
               <div className="relative group">
-                <input 
+                <input
                   id="admin-vault-pass"
-                  type={showPassword ? "text" : "password"} 
-                  required 
+                  type={showPassword ? "text" : "password"}
+                  required
                   placeholder="••••••••"
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
@@ -283,8 +283,8 @@ function AdminLoginPortal({
 
             <div className="flex items-center justify-between px-1">
               <label className="flex items-center gap-2 cursor-pointer select-none text-zinc-500 dark:text-zinc-400 font-medium">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
                   className="rounded border-zinc-300 dark:border-zinc-700 text-zinc-950 focus:ring-0 focus:ring-offset-0 bg-transparent cursor-pointer w-4 h-4"
@@ -301,7 +301,7 @@ function AdminLoginPortal({
               </button>
             </div>
 
-            <button 
+            <button
               type="submit"
               className="w-full h-10 bg-zinc-950 hover:bg-zinc-850 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-950 font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-150 active:scale-[0.99] mt-2 cursor-pointer"
             >
@@ -312,7 +312,7 @@ function AdminLoginPortal({
           {/* Quick shortcuts */}
           <div className="border-t border-zinc-200 dark:border-zinc-800 pt-6 space-y-3">
             <span className="text-[9px] uppercase tracking-wider text-zinc-400 block font-bold text-center">Demo Quick Shortcuts</span>
-            <button 
+            <button
               type="button"
               onClick={handleAutofillDemo}
               className="w-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-850 dark:text-zinc-100 hover:bg-zinc-55 dark:hover:bg-zinc-800 py-2.5 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
@@ -338,7 +338,7 @@ function Sidebar({
   return (
     <aside className={`bg-white dark:bg-[#09090B] border-r border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-400 flex flex-col justify-between shrink-0 hidden md:flex transition-all duration-200 select-none ${isSidebarCollapsed ? 'w-[72px] p-4' : 'w-[240px] p-6'}`}>
       <div className="space-y-6">
-        
+
         {/* Logo Branding */}
         <div className={`flex items-center gap-3 ${isSidebarCollapsed ? 'justify-center pb-4 border-b border-zinc-100 dark:border-zinc-850' : 'pb-4 border-b border-zinc-100 dark:border-zinc-850'}`}>
           <div className="w-9 h-9 rounded-full bg-zinc-950 dark:bg-zinc-800 flex items-center justify-center shrink-0 shadow-sm border border-zinc-700/50 overflow-hidden">
@@ -360,15 +360,13 @@ function Sidebar({
             ) : (
               <div className="w-8 h-[1px] bg-zinc-200 dark:bg-zinc-800 mx-auto mb-3"></div>
             )}
-            <button 
+            <button
               onClick={() => setActiveTab('dashboard')}
-              className={`w-full flex items-center gap-3 py-2 transition-all relative cursor-pointer ${
-                isSidebarCollapsed ? 'justify-center rounded-lg px-2' : 'px-3 rounded-lg'
-              } ${
-                activeTab === 'dashboard' 
-                  ? 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-950 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 shadow-xs' 
+              className={`w-full flex items-center gap-3 py-2 transition-all relative cursor-pointer ${isSidebarCollapsed ? 'justify-center rounded-lg px-2' : 'px-3 rounded-lg'
+                } ${activeTab === 'dashboard'
+                  ? 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-950 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 shadow-xs'
                   : 'hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 border border-transparent'
-              }`}
+                }`}
               title="Dashboard"
             >
               <LayoutDashboard className={`w-4.5 h-4.5 ${activeTab === 'dashboard' ? 'text-zinc-950 dark:text-[#E6C687]' : 'text-zinc-400 dark:text-zinc-500'}`} />
@@ -386,15 +384,13 @@ function Sidebar({
               <div className="w-8 h-[1px] bg-zinc-200 dark:bg-zinc-800 mx-auto mb-3"></div>
             )}
             <div className="space-y-1">
-              <button 
+              <button
                 onClick={() => setActiveTab('products')}
-                className={`w-full flex items-center gap-3 py-2 transition-all relative cursor-pointer ${
-                  isSidebarCollapsed ? 'justify-center rounded-lg px-2' : 'px-3 rounded-lg'
-                } ${
-                  activeTab === 'products' 
-                    ? 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-950 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 shadow-xs' 
+                className={`w-full flex items-center gap-3 py-2 transition-all relative cursor-pointer ${isSidebarCollapsed ? 'justify-center rounded-lg px-2' : 'px-3 rounded-lg'
+                  } ${activeTab === 'products'
+                    ? 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-950 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 shadow-xs'
                     : 'hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 border border-transparent'
-                }`}
+                  }`}
                 title="Add jewellery"
               >
                 <Gem className={`w-4.5 h-4.5 ${activeTab === 'products' ? 'text-zinc-950 dark:text-[#E6C687]' : 'text-zinc-400 dark:text-zinc-500'}`} />
@@ -404,15 +400,13 @@ function Sidebar({
                 )}
               </button>
 
-              <button 
+              <button
                 onClick={() => setActiveTab('inventory')}
-                className={`w-full flex items-center gap-3 py-2 transition-all relative cursor-pointer ${
-                  isSidebarCollapsed ? 'justify-center rounded-lg px-2' : 'px-3 rounded-lg'
-                } ${
-                  activeTab === 'inventory' 
-                    ? 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-950 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 shadow-xs' 
+                className={`w-full flex items-center gap-3 py-2 transition-all relative cursor-pointer ${isSidebarCollapsed ? 'justify-center rounded-lg px-2' : 'px-3 rounded-lg'
+                  } ${activeTab === 'inventory'
+                    ? 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-950 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 shadow-xs'
                     : 'hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 border border-transparent'
-                }`}
+                  }`}
                 title="Add Categories"
               >
                 <Boxes className={`w-4.5 h-4.5 ${activeTab === 'inventory' ? 'text-zinc-950 dark:text-[#E6C687]' : 'text-zinc-400 dark:text-zinc-500'}`} />
@@ -431,15 +425,13 @@ function Sidebar({
               <div className="w-8 h-[1px] bg-zinc-200 dark:bg-zinc-800 mx-auto mb-3"></div>
             )}
             <div className="space-y-1">
-              <button 
+              <button
                 onClick={() => setActiveTab('orders')}
-                className={`w-full flex items-center gap-3 py-2 transition-all relative cursor-pointer ${
-                  isSidebarCollapsed ? 'justify-center rounded-lg px-2' : 'px-3 rounded-lg'
-                } ${
-                  activeTab === 'orders' 
-                    ? 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-950 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 shadow-xs' 
+                className={`w-full flex items-center gap-3 py-2 transition-all relative cursor-pointer ${isSidebarCollapsed ? 'justify-center rounded-lg px-2' : 'px-3 rounded-lg'
+                  } ${activeTab === 'orders'
+                    ? 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-950 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 shadow-xs'
                     : 'hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 border border-transparent'
-                }`}
+                  }`}
                 title="Consults & Orders"
               >
                 <ShoppingBag className={`w-4.5 h-4.5 ${activeTab === 'orders' ? 'text-zinc-950 dark:text-[#E6C687]' : 'text-zinc-400 dark:text-zinc-500'}`} />
@@ -449,15 +441,13 @@ function Sidebar({
                 )}
               </button>
 
-              <button 
+              <button
                 onClick={() => setActiveTab('customers')}
-                className={`w-full flex items-center gap-3 py-2 transition-all relative cursor-pointer ${
-                  isSidebarCollapsed ? 'justify-center rounded-lg px-2' : 'px-3 rounded-lg'
-                } ${
-                  activeTab === 'customers' 
-                    ? 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-950 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 shadow-xs' 
+                className={`w-full flex items-center gap-3 py-2 transition-all relative cursor-pointer ${isSidebarCollapsed ? 'justify-center rounded-lg px-2' : 'px-3 rounded-lg'
+                  } ${activeTab === 'customers'
+                    ? 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-950 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 shadow-xs'
                     : 'hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 border border-transparent'
-                }`}
+                  }`}
                 title="Customers CRM"
               >
                 <Users className={`w-4.5 h-4.5 ${activeTab === 'customers' ? 'text-zinc-950 dark:text-[#E6C687]' : 'text-zinc-400 dark:text-zinc-500'}`} />
@@ -485,9 +475,8 @@ function Sidebar({
 
         {adminUser && (
           <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-2">
-            <div className={`flex items-center rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-150 dark:border-zinc-800/60 ${
-              isSidebarCollapsed ? 'justify-center p-2' : 'space-x-3 p-3'
-            }`}>
+            <div className={`flex items-center rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-150 dark:border-zinc-800/60 ${isSidebarCollapsed ? 'justify-center p-2' : 'space-x-3 p-3'
+              }`}>
               <div className="w-7 h-7 rounded-lg bg-zinc-250 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 flex items-center justify-center shrink-0 text-zinc-950 dark:text-[#E6C687] font-black text-xs">
                 {adminUser.email?.charAt(0).toUpperCase() || 'A'}
               </div>
@@ -588,7 +577,7 @@ function Header({
             </button>
 
             {/* Storefront redirect */}
-            <a 
+            <a
               href="/"
               className="border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 font-bold text-xs px-3.5 py-2 rounded-lg transition-all text-center flex items-center gap-1.5 shadow-xs"
             >
@@ -597,7 +586,7 @@ function Header({
             </a>
 
             {/* Logout button */}
-            <button 
+            <button
               onClick={handleAdminLogout}
               className="bg-zinc-950 hover:bg-zinc-850 dark:bg-zinc-105 dark:hover:bg-zinc-200 text-white dark:text-zinc-950 font-bold text-xs px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
             >
@@ -658,8 +647,8 @@ export default function Admin() {
   const [editingCategory, setEditingCategory] = useState(null);
   const [newProduct, setNewProduct] = useState({
     name: '', category: 'gold', subCategory: '', desc: '', price: 0,
-    carat: '22K', weight: '', img: '', badge: '', purityInfo: '', 
-    makingCharges: '', sku: '', stoneInfo: '', hallmark: 'BIS 916 Government Certified', 
+    carat: '22K', weight: '', img: '', badge: '', purityInfo: '',
+    makingCharges: '', sku: '', stoneInfo: '', hallmark: 'BIS 916 Government Certified',
     tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
     subImages: [],
     discountPercent: 20,
@@ -873,8 +862,8 @@ export default function Admin() {
       });
       setNewProduct({
         name: '', category: 'gold', subCategory: '', desc: '', price: 0,
-        carat: '22K', weight: '', img: '', badge: '', purityInfo: '', 
-        makingCharges: '', sku: '', stoneInfo: '', hallmark: 'BIS 916 Government Certified', 
+        carat: '22K', weight: '', img: '', badge: '', purityInfo: '',
+        makingCharges: '', sku: '', stoneInfo: '', hallmark: 'BIS 916 Government Certified',
         tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
         subImages: [],
         discountPercent: 20,
@@ -895,7 +884,9 @@ export default function Admin() {
         stoneCarat: '',
         beadsCarat: '',
         pearlsCarat: '',
-        gemstoneCarat: ''
+        gemstoneCarat: '',
+        diamondValue: '',
+        pearlsValue: ''
       });
       showAdminNotification("New jewellery item added successfully!", "success");
     } catch (err) {
@@ -963,12 +954,12 @@ export default function Admin() {
     try {
       const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dcraweoxj';
       const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'hr_jewellers_unsigned';
-      
+
       const formData = new FormData();
       formData.append('file', file);
       formData.append('upload_preset', uploadPreset);
       formData.append('folder', 'categories');
-      
+
       const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
         method: 'POST',
         body: formData,
@@ -998,12 +989,12 @@ export default function Admin() {
     try {
       const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dcraweoxj';
       const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'hr_jewellers_unsigned';
-      
+
       const formData = new FormData();
       formData.append('file', file);
       formData.append('upload_preset', uploadPreset);
       formData.append('folder', 'products');
-      
+
       const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
         method: 'POST',
         body: formData,
@@ -1037,7 +1028,7 @@ export default function Admin() {
     try {
       const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dcraweoxj';
       const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'hr_jewellers_unsigned';
-      
+
       const urls = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -1045,10 +1036,10 @@ export default function Admin() {
         formData.append('file', file);
         formData.append('upload_preset', uploadPreset);
         formData.append('folder', 'products');
-        
+
         const isVideo = file.type.startsWith('video/');
         const resourceType = isVideo ? 'video' : 'image';
-        
+
         const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
           method: 'POST',
           body: formData,
@@ -1251,7 +1242,7 @@ export default function Admin() {
       .replace('{OrderId}', order.orderId)
       .replace('{Tracking}', 'HRJ-SECURE-98342')
       .replace('{Amount}', order.amount?.toLocaleString('en-IN') || '0');
-      
+
     window.open(`https://wa.me/${order.customerDetails?.phone || ''}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
@@ -1262,7 +1253,7 @@ export default function Admin() {
     const completedOrdersCount = adminOrders.filter(o => o.orderStatus === 'Completed').length;
     const totalSalesRevenue = adminOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
     const avgOrderVal = totalOrdersCount > 0 ? Math.round(totalSalesRevenue / totalOrdersCount) : 0;
-    
+
     // VIP counts
     const totalClientsCount = adminConsults.length;
 
@@ -1282,14 +1273,14 @@ export default function Admin() {
 
   return (
     <div className={`${darkMode ? 'dark bg-[#121216] text-white' : 'bg-[#F6F7FB] text-[#1E1F29]'} min-h-screen relative font-sans flex transition-colors duration-300 w-full`}>
-      
+
 
 
       {/* Dynamic Invoice Printable Overlay Modal */}
       {selectedInvoiceOrder && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white text-gray-900 max-w-2xl w-full rounded-3xl p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto print:p-0 print:shadow-none print:max-h-full">
-            <button 
+            <button
               onClick={() => setSelectedInvoiceOrder(null)}
               className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold p-2.5 rounded-full text-xs print:hidden focus:outline-none"
             >
@@ -1298,7 +1289,7 @@ export default function Admin() {
 
             {/* Print trigger button */}
             <div className="flex justify-end gap-3 mb-6 print:hidden">
-              <button 
+              <button
                 onClick={() => window.print()}
                 className="bg-[#3F1F54] hover:bg-[#2C133C] text-white font-bold text-[10px] uppercase tracking-wider px-5 py-2.5 rounded-full shadow-md"
               >
@@ -1381,7 +1372,7 @@ export default function Admin() {
 
               <div className="border-t border-gray-100 pt-6 text-center text-gray-400 text-[9px] uppercase tracking-wider space-y-1">
                 <p className="font-bold text-[#BCA057]">★ Certified Government BIS Hallmark Stamps Provided ★</p>
-                 <p>This is a computer generated invoice. No signature required.</p>
+                <p>This is a computer generated invoice. No signature required.</p>
               </div>
             </div>
           </div>
@@ -1392,7 +1383,7 @@ export default function Admin() {
       {selectedClient && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex justify-end animate-fade-in">
           <div className="bg-white dark:bg-[#1E1F29] text-gray-900 dark:text-gray-100 max-w-md w-full h-full p-8 shadow-2xl relative flex flex-col space-y-6 overflow-y-auto animate-slide-left">
-            <button 
+            <button
               onClick={() => setSelectedClient(null)}
               className="absolute top-4 left-4 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 font-bold p-2 rounded-full text-xs"
             >
@@ -1435,13 +1426,13 @@ export default function Admin() {
 
             <div className="space-y-2.5 pt-4">
               <label htmlFor="crm-notes-input" className="font-bold text-[9px] uppercase tracking-wider text-gray-400 block">Internal Staff Notes</label>
-              <textarea 
+              <textarea
                 id="crm-notes-input"
-                rows="3" 
-                placeholder="Write specific diamond preference notes, sizing constraints..." 
+                rows="3"
+                placeholder="Write specific diamond preference notes, sizing constraints..."
                 className="w-full bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none resize-none"
               ></textarea>
-              <button 
+              <button
                 onClick={() => { showAdminNotification("Staff logs updated successfully!", "success"); setSelectedClient(null); }}
                 className="w-full bg-[#3F1F54] hover:bg-[#2C133C] text-white font-bold text-xs uppercase tracking-widest py-3 rounded-xl transition-all"
               >
@@ -1476,10 +1467,10 @@ export default function Admin() {
           mousePos={mousePos}
         />
       ) : (
-        
+
         /* STANDARD VAULT LAYOUT */
         <div className="flex w-full">
-          
+
           {/* AMETHYST SIDEBAR NAVIGATION GRID */}
           <Sidebar
             activeTab={activeTab}
@@ -1493,13 +1484,12 @@ export default function Admin() {
 
           {/* MAIN VIEW CONTAINER GRID */}
           <main className="flex-1 min-w-0 p-4 sm:p-10 pb-24 md:pb-10 flex flex-col justify-between">
-            
+
             {adminNotification.message && (
-              <div className={`mb-6 p-4 rounded-2xl flex items-center justify-between border ${
-                adminNotification.type === 'error' 
-                  ? 'bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400' 
-                  : 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400'
-              }`}>
+              <div className={`mb-6 p-4 rounded-2xl flex items-center justify-between border ${adminNotification.type === 'error'
+                ? 'bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400'
+                : 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400'
+                }`}>
                 <span className="text-xs font-bold uppercase tracking-wider">{adminNotification.message}</span>
                 <button onClick={() => setAdminNotification({ message: '', type: 'success' })} className="font-bold text-sm">✕</button>
               </div>
@@ -1517,7 +1507,7 @@ export default function Admin() {
 
             {/* ERP DASHBOARD VIEWPORT PANELS */}
             <div className="flex-1 animate-fade-in text-xs">
-              
+
               {activeTab === 'dashboard' && (
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -1553,7 +1543,7 @@ export default function Admin() {
               )}
               {activeTab === 'products' && (
                 <div className="space-y-10">
-                  
+
                   {/* Form to add or edit signature products */}
                   <div className="bg-white dark:bg-[#15151A] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 space-y-8 shadow-xs">
                     <div className="border-b border-zinc-100 dark:border-zinc-850 pb-4 flex justify-between items-center">
@@ -1583,9 +1573,9 @@ export default function Admin() {
                         </div>
                       </div>
                     )}
-                    
+
                     <form onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct} className="space-y-8">
-                      
+
                       {/* Section: General Details */}
                       <div className="space-y-4">
                         <div className="flex items-center gap-2">
@@ -1595,34 +1585,34 @@ export default function Admin() {
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                           <div className="space-y-1.5">
                             <label htmlFor="prod-name-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Jewellery Name</label>
-                            <input 
+                            <input
                               id="prod-name-form"
-                              type="text" 
+                              type="text"
                               required
                               placeholder="e.g. Royal Mayur Solitaire Ring"
                               value={editingProduct ? editingProduct.name : newProduct.name}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, name: e.target.value}) : setNewProduct({...newProduct, name: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, name: e.target.value }) : setNewProduct({ ...newProduct, name: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 focus:ring-1 focus:ring-zinc-900/5"
                             />
                           </div>
                           <div className="space-y-1.5">
                             <label htmlFor="prod-sku-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">SKU Code</label>
-                            <input 
+                            <input
                               id="prod-sku-form"
-                              type="text" 
+                              type="text"
                               required
                               placeholder="e.g. HRJ-RNG-0982"
                               value={editingProduct ? editingProduct.sku : newProduct.sku}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, sku: e.target.value}) : setNewProduct({...newProduct, sku: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, sku: e.target.value }) : setNewProduct({ ...newProduct, sku: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 focus:ring-1 focus:ring-zinc-900/5"
                             />
                           </div>
                           <div className="space-y-1.5">
                             <label htmlFor="prod-category-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Category Portfolio</label>
-                            <select 
+                            <select
                               id="prod-category-form"
                               value={editingProduct ? editingProduct.category : newProduct.category}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, category: e.target.value}) : setNewProduct({...newProduct, category: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, category: e.target.value }) : setNewProduct({ ...newProduct, category: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
                             >
                               {categories.map(cat => (
@@ -1633,13 +1623,13 @@ export default function Admin() {
                         </div>
                         <div className="space-y-1.5">
                           <label htmlFor="prod-desc-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Jewellery Parameters & Details Description</label>
-                          <textarea 
+                          <textarea
                             id="prod-desc-form"
                             rows="2"
                             required
                             placeholder="Complete dimensions details, custom diamond metrics, hallmark stamps details..."
                             value={editingProduct ? editingProduct.desc : newProduct.desc}
-                            onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, desc: e.target.value}) : setNewProduct({...newProduct, desc: e.target.value})}
+                            onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, desc: e.target.value }) : setNewProduct({ ...newProduct, desc: e.target.value })}
                             className="w-full bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 resize-none font-medium"
                           ></textarea>
                         </div>
@@ -1654,10 +1644,10 @@ export default function Admin() {
                         <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
                           <div className="space-y-1.5">
                             <label htmlFor="prod-carat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Carat & Purity</label>
-                            <select 
+                            <select
                               id="prod-carat-form"
                               value={editingProduct ? editingProduct.carat : newProduct.carat}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, carat: e.target.value}) : setNewProduct({...newProduct, carat: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, carat: e.target.value }) : setNewProduct({ ...newProduct, carat: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
                             >
                               <option value="9K">9K</option>
@@ -1670,46 +1660,46 @@ export default function Admin() {
                           </div>
                           <div className="space-y-1.5">
                             <label htmlFor="prod-weight-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Est. Weight (Grams)</label>
-                            <input 
+                            <input
                               id="prod-weight-form"
-                              type="text" 
+                              type="text"
                               required
                               placeholder="e.g. 12.4g"
                               value={editingProduct ? editingProduct.weight : newProduct.weight}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, weight: e.target.value}) : setNewProduct({...newProduct, weight: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, weight: e.target.value }) : setNewProduct({ ...newProduct, weight: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
                           <div className="space-y-1.5">
                             <label htmlFor="prod-metalColor-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Metal Color</label>
-                            <input 
+                            <input
                               id="prod-metalColor-form"
-                              type="text" 
+                              type="text"
                               placeholder="e.g. Yellow Gold"
                               value={editingProduct ? (editingProduct.metalColor || '') : newProduct.metalColor}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, metalColor: e.target.value}) : setNewProduct({...newProduct, metalColor: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, metalColor: e.target.value }) : setNewProduct({ ...newProduct, metalColor: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
                           <div className="space-y-1.5">
                             <label htmlFor="prod-netWeight-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Net Weight</label>
-                            <input 
+                            <input
                               id="prod-netWeight-form"
-                              type="text" 
+                              type="text"
                               placeholder="e.g. 1.687 g"
                               value={editingProduct ? (editingProduct.netWeight || '') : newProduct.netWeight}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, netWeight: e.target.value}) : setNewProduct({...newProduct, netWeight: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, netWeight: e.target.value }) : setNewProduct({ ...newProduct, netWeight: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
                           <div className="space-y-1.5">
                             <label htmlFor="prod-grossWeight-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Gross Weight</label>
-                            <input 
+                            <input
                               id="prod-grossWeight-form"
-                              type="text" 
+                              type="text"
                               placeholder="e.g. 1.75 g"
                               value={editingProduct ? (editingProduct.grossWeight || '') : newProduct.grossWeight}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, grossWeight: e.target.value}) : setNewProduct({...newProduct, grossWeight: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, grossWeight: e.target.value }) : setNewProduct({ ...newProduct, grossWeight: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
@@ -1725,10 +1715,10 @@ export default function Admin() {
                         <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
                           <div className="space-y-1.5">
                             <label htmlFor="prod-diamondShape-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Diamond Shape</label>
-                            <select 
+                            <select
                               id="prod-diamondShape-form"
                               value={editingProduct ? (editingProduct.diamondShape || 'Round') : (newProduct.diamondShape || 'Round')}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, diamondShape: e.target.value}) : setNewProduct({...newProduct, diamondShape: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, diamondShape: e.target.value }) : setNewProduct({ ...newProduct, diamondShape: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
                             >
                               <option value="Round">Round</option>
@@ -1744,22 +1734,22 @@ export default function Admin() {
                             </select>
                           </div>
                           <div className="space-y-1.5">
-                            <label htmlFor="prod-diamondWeight-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Stones/Diamond Weight</label>
-                            <input 
+                            <label htmlFor="prod-diamondWeight-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Diamond Weight</label>
+                            <input
                               id="prod-diamondWeight-form"
-                              type="text" 
+                              type="text"
                               placeholder="e.g. 0.3380 Ct"
                               value={editingProduct ? (editingProduct.diamondWeight || '') : newProduct.diamondWeight}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, diamondWeight: e.target.value}) : setNewProduct({...newProduct, diamondWeight: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, diamondWeight: e.target.value }) : setNewProduct({ ...newProduct, diamondWeight: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
                           <div className="space-y-1.5">
                             <label htmlFor="prod-diamondColor-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Color Grade</label>
-                            <select 
+                            <select
                               id="prod-diamondColor-form"
                               value={editingProduct ? (editingProduct.diamondColor || 'GH') : (newProduct.diamondColor || 'GH')}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, diamondColor: e.target.value}) : setNewProduct({...newProduct, diamondColor: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, diamondColor: e.target.value }) : setNewProduct({ ...newProduct, diamondColor: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
                             >
                               <option value="EF">EF</option>
@@ -1775,10 +1765,10 @@ export default function Admin() {
                           </div>
                           <div className="space-y-1.5">
                             <label htmlFor="prod-diamondClarity-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Clarity Grade</label>
-                            <select 
+                            <select
                               id="prod-diamondClarity-form"
                               value={editingProduct ? (editingProduct.diamondClarity || 'VVS1') : (newProduct.diamondClarity || 'VVS1')}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, diamondClarity: e.target.value}) : setNewProduct({...newProduct, diamondClarity: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, diamondClarity: e.target.value }) : setNewProduct({ ...newProduct, diamondClarity: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
                             >
                               <option value="FL">FL</option>
@@ -1796,10 +1786,10 @@ export default function Admin() {
                           </div>
                           <div className="space-y-1.5">
                             <label htmlFor="prod-diamondCut-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Cut Grade</label>
-                            <select 
+                            <select
                               id="prod-diamondCut-form"
                               value={editingProduct ? (editingProduct.diamondCut || 'Excellent') : (newProduct.diamondCut || 'Excellent')}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, diamondCut: e.target.value}) : setNewProduct({...newProduct, diamondCut: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, diamondCut: e.target.value }) : setNewProduct({ ...newProduct, diamondCut: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
                             >
                               <option value="Excellent">Excellent</option>
@@ -1811,12 +1801,12 @@ export default function Admin() {
                           </div>
                           <div className="space-y-1.5">
                             <label htmlFor="prod-diamondQuantity-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Diamond Pcs</label>
-                            <input 
+                            <input
                               id="prod-diamondQuantity-form"
-                              type="text" 
+                              type="text"
                               placeholder="e.g. 1pcs"
                               value={editingProduct ? (editingProduct.diamondQuantity || '') : newProduct.diamondQuantity}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, diamondQuantity: e.target.value}) : setNewProduct({...newProduct, diamondQuantity: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, diamondQuantity: e.target.value }) : setNewProduct({ ...newProduct, diamondQuantity: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
@@ -1825,79 +1815,68 @@ export default function Admin() {
                         {/* Separate Carats fields */}
                         <div className="grid grid-cols-2 sm:grid-cols-6 gap-4">
                           <div className="space-y-1.5">
-                            <label htmlFor="prod-diamondCarat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Diamond Carat</label>
-                            <input 
-                              id="prod-diamondCarat-form"
-                              type="text" 
-                              placeholder="e.g. 0.339ct"
-                              value={editingProduct ? (editingProduct.diamondCarat || '') : newProduct.diamondCarat}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, diamondCarat: e.target.value}) : setNewProduct({...newProduct, diamondCarat: e.target.value})}
-                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none"
-                            />
-                          </div>
-                          <div className="space-y-1.5">
-                            <label htmlFor="prod-stoneCarat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Stone Carat</label>
-                            <input 
-                              id="prod-stoneCarat-form"
-                              type="text" 
-                              placeholder="e.g. 0.45 Ct"
-                              value={editingProduct ? (editingProduct.stoneCarat || '') : newProduct.stoneCarat}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, stoneCarat: e.target.value}) : setNewProduct({...newProduct, stoneCarat: e.target.value})}
-                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none"
-                            />
-                          </div>
-                          <div className="space-y-1.5">
-                            <label htmlFor="prod-beadsCarat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Beads Carat</label>
-                            <input 
-                              id="prod-beadsCarat-form"
-                              type="text" 
-                              placeholder="e.g. 1.20 Ct"
-                              value={editingProduct ? (editingProduct.beadsCarat || '') : newProduct.beadsCarat}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, beadsCarat: e.target.value}) : setNewProduct({...newProduct, beadsCarat: e.target.value})}
-                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none"
-                            />
-                          </div>
-                          <div className="space-y-1.5">
-                            <label htmlFor="prod-pearlsCarat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Pearls Carat</label>
-                            <input 
-                              id="prod-pearlsCarat-form"
-                              type="text" 
-                              placeholder="e.g. 0.85 Ct"
-                              value={editingProduct ? (editingProduct.pearlsCarat || '') : newProduct.pearlsCarat}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, pearlsCarat: e.target.value}) : setNewProduct({...newProduct, pearlsCarat: e.target.value})}
-                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none"
-                            />
-                          </div>
-                          <div className="space-y-1.5">
-                            <label htmlFor="prod-gemstoneCarat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Gemstone Carat</label>
-                            <input 
-                              id="prod-gemstoneCarat-form"
-                              type="text" 
-                              placeholder="e.g. 2.15 Ct"
-                              value={editingProduct ? (editingProduct.gemstoneCarat || '') : newProduct.gemstoneCarat}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, gemstoneCarat: e.target.value}) : setNewProduct({...newProduct, gemstoneCarat: e.target.value})}
-                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none"
-                            />
-                          </div>
-                          <div className="space-y-1.5">
                             <label htmlFor="prod-diamondValue-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Diamond Value (₹)</label>
-                            <input 
+                            <input
                               id="prod-diamondValue-form"
-                              type="number" 
+                              type="number"
                               placeholder="e.g. 15000"
                               value={editingProduct ? (editingProduct.diamondValue || '') : newProduct.diamondValue}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, diamondValue: +e.target.value}) : setNewProduct({...newProduct, diamondValue: +e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, diamondValue: +e.target.value }) : setNewProduct({ ...newProduct, diamondValue: +e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
                           <div className="space-y-1.5">
+                            <label htmlFor="prod-stoneCarat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Stone weight</label>
+                            <input
+                              id="prod-stoneCarat-form"
+                              type="text"
+                              placeholder="e.g. 0.45 Ct"
+                              value={editingProduct ? (editingProduct.stoneCarat || '') : newProduct.stoneCarat}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, stoneCarat: e.target.value }) : setNewProduct({ ...newProduct, stoneCarat: e.target.value })}
+                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none"
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="prod-beadsCarat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Beads weight</label>
+                            <input
+                              id="prod-beadsCarat-form"
+                              type="text"
+                              placeholder="e.g. 1.20 Ct"
+                              value={editingProduct ? (editingProduct.beadsCarat || '') : newProduct.beadsCarat}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, beadsCarat: e.target.value }) : setNewProduct({ ...newProduct, beadsCarat: e.target.value })}
+                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none"
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="prod-pearlsCarat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Pearls weight</label>
+                            <input
+                              id="prod-pearlsCarat-form"
+                              type="text"
+                              placeholder="e.g. 0.85 Ct"
+                              value={editingProduct ? (editingProduct.pearlsCarat || '') : newProduct.pearlsCarat}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, pearlsCarat: e.target.value }) : setNewProduct({ ...newProduct, pearlsCarat: e.target.value })}
+                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none"
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="prod-gemstoneCarat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Gemstone weight</label>
+                            <input
+                              id="prod-gemstoneCarat-form"
+                              type="text"
+                              placeholder="e.g. 2.15 Ct"
+                              value={editingProduct ? (editingProduct.gemstoneCarat || '') : newProduct.gemstoneCarat}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, gemstoneCarat: e.target.value }) : setNewProduct({ ...newProduct, gemstoneCarat: e.target.value })}
+                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none"
+                            />
+                          </div>
+                          <div className="space-y-1.5">
                             <label htmlFor="prod-pearlsValue-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Pearls Value (₹)</label>
-                            <input 
+                            <input
                               id="prod-pearlsValue-form"
-                              type="number" 
+                              type="number"
                               placeholder="e.g. 8000"
                               value={editingProduct ? (editingProduct.pearlsValue || '') : newProduct.pearlsValue}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, pearlsValue: +e.target.value}) : setNewProduct({...newProduct, pearlsValue: +e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, pearlsValue: +e.target.value }) : setNewProduct({ ...newProduct, pearlsValue: +e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
@@ -1913,36 +1892,36 @@ export default function Admin() {
                         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                           <div className="space-y-1.5">
                             <label htmlFor="prod-price-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Estimated Cost (INR)</label>
-                            <input 
+                            <input
                               id="prod-price-form"
-                              type="number" 
+                              type="number"
                               required
                               placeholder="e.g. 42000"
                               value={editingProduct ? editingProduct.price : newProduct.price}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, price: +e.target.value}) : setNewProduct({...newProduct, price: +e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, price: +e.target.value }) : setNewProduct({ ...newProduct, price: +e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
                           <div className="space-y-1.5">
                             <label htmlFor="prod-hallmark-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Hallmark Stamp</label>
-                            <input 
+                            <input
                               id="prod-hallmark-form"
-                              type="text" 
+                              type="text"
                               placeholder="e.g. BIS 916 Government Certified"
                               value={editingProduct ? editingProduct.hallmark : newProduct.hallmark}
-                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, hallmark: e.target.value}) : setNewProduct({...newProduct, hallmark: e.target.value})}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, hallmark: e.target.value }) : setNewProduct({ ...newProduct, hallmark: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
                           <div className="space-y-1.5">
                             <label htmlFor="prod-charges-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Making Percentage Charge</label>
                             <div className="relative">
-                              <input 
+                              <input
                                 id="prod-charges-form"
-                                type="text" 
+                                type="text"
                                 placeholder="e.g. 12"
                                 value={editingProduct ? editingProduct.makingCharges : newProduct.makingCharges}
-                                onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, makingCharges: e.target.value}) : setNewProduct({...newProduct, makingCharges: e.target.value})}
+                                onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, makingCharges: e.target.value }) : setNewProduct({ ...newProduct, makingCharges: e.target.value })}
                                 className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl pl-4 pr-10 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                               />
                               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">%</span>
@@ -1951,14 +1930,14 @@ export default function Admin() {
                           <div className="space-y-1.5">
                             <label htmlFor="prod-discount-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Discount Off Item (%)</label>
                             <div className="relative">
-                              <input 
+                              <input
                                 id="prod-discount-form"
-                                type="number" 
+                                type="number"
                                 min="0"
                                 max="100"
                                 placeholder="e.g. 20"
                                 value={editingProduct ? (editingProduct.discountPercent !== undefined ? editingProduct.discountPercent : 20) : (newProduct.discountPercent !== undefined ? newProduct.discountPercent : 20)}
-                                onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, discountPercent: e.target.value === '' ? '' : +e.target.value}) : setNewProduct({...newProduct, discountPercent: e.target.value === '' ? '' : +e.target.value})}
+                                onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, discountPercent: e.target.value === '' ? '' : +e.target.value }) : setNewProduct({ ...newProduct, discountPercent: e.target.value === '' ? '' : +e.target.value })}
                                 className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl pl-4 pr-16 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                               />
                               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">% OFF</span>
@@ -1974,15 +1953,15 @@ export default function Admin() {
                           <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Jewellery Assets / Gallery</h4>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          
+
                           {/* Main Cover Image Uploader Card */}
                           <div className="bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 p-5 rounded-xl space-y-4">
                             <div>
                               <span className="text-[10px] font-extrabold text-zinc-800 dark:text-zinc-300 block mb-1">Primary Cover Image</span>
                               <p className="text-[9px] text-zinc-400 dark:text-zinc-500 font-medium mb-3">Upload a clean webp/png catalog cover image.</p>
-                              <input 
+                              <input
                                 id="prod-image-picker"
-                                type="file" 
+                                type="file"
                                 accept="image/*"
                                 onChange={(e) => handleImageUpload(e, editingProduct ? 'edit' : 'new')}
                                 className="text-xs text-zinc-500 font-semibold"
@@ -1991,10 +1970,10 @@ export default function Admin() {
                             </div>
                             {(editingProduct ? editingProduct.img : newProduct.img) && (
                               <div className="relative w-20 h-24 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800">
-                                <img 
-                                  src={editingProduct ? editingProduct.img : newProduct.img} 
-                                  alt="Cover preview" 
-                                  className="w-full h-full object-cover" 
+                                <img
+                                  src={editingProduct ? editingProduct.img : newProduct.img}
+                                  alt="Cover preview"
+                                  className="w-full h-full object-cover"
                                 />
                               </div>
                             )}
@@ -2005,8 +1984,8 @@ export default function Admin() {
                             <div>
                               <span className="text-[10px] font-extrabold text-zinc-800 dark:text-zinc-300 block mb-1">Sub Gallery Media</span>
                               <p className="text-[9px] text-zinc-400 dark:text-zinc-500 font-medium mb-3">Upload secondary angles images or showcasing videos.</p>
-                              <input 
-                                type="file" 
+                              <input
+                                type="file"
                                 accept="image/*,video/*"
                                 multiple
                                 disabled={!(editingProduct ? editingProduct.img : newProduct.img)}
@@ -2015,7 +1994,7 @@ export default function Admin() {
                               />
                               {subImagesUploadProgress && <p className="text-[9px] text-[#BCA057] mt-1.5 font-bold">{subImagesUploadProgress}</p>}
                             </div>
-                            
+
                             {/* List of sub-images */}
                             {((editingProduct ? editingProduct.subImages : newProduct.subImages) || []).length > 0 && (
                               <div className="flex flex-wrap gap-2.5">
@@ -2075,7 +2054,7 @@ export default function Admin() {
                         <h3 className="text-base font-black tracking-wider text-zinc-900 dark:text-[#E6C687] uppercase">Catalog inventory</h3>
                         <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">Filter, search, edit, or remove published items from the global vault catalog.</p>
                       </div>
-                      
+
                       <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto items-center">
                         <select
                           value={productCategoryFilter}
@@ -2087,8 +2066,8 @@ export default function Admin() {
                             <option key={cat.id} value={cat.id}>{cat.name}</option>
                           ))}
                         </select>
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           placeholder="Search SKU or name..."
                           value={productSearch}
                           onChange={(e) => setProductSearch(e.target.value)}
@@ -2106,8 +2085,8 @@ export default function Admin() {
                           {/* Select All and Delete Selected row */}
                           <div className="flex flex-wrap items-center justify-between gap-4 pt-1 pb-3 border-b border-zinc-100 dark:border-zinc-850">
                             <div className="flex items-center space-x-2">
-                              <input 
-                                type="checkbox" 
+                              <input
+                                type="checkbox"
                                 id="select-all-catalog"
                                 checked={filtered.length > 0 && selectedCatalogIds.length === filtered.length}
                                 onChange={(e) => {
@@ -2124,7 +2103,7 @@ export default function Admin() {
                               </label>
                             </div>
                             {selectedCatalogIds.length > 0 && (
-                              <button 
+                              <button
                                 type="button"
                                 onClick={handleDeleteSelectedCatalog}
                                 className="bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer"
@@ -2145,7 +2124,7 @@ export default function Admin() {
                                   <div className="relative aspect-[4/5] w-full overflow-hidden bg-zinc-50 dark:bg-zinc-900/20 border-b border-zinc-100 dark:border-zinc-850">
                                     {/* Selection checkbox */}
                                     <div className="absolute top-2 left-2 z-10">
-                                      <input 
+                                      <input
                                         type="checkbox"
                                         checked={selectedCatalogIds.includes(prod.id)}
                                         onChange={(e) => {
@@ -2158,10 +2137,10 @@ export default function Admin() {
                                         className="rounded border-zinc-300 dark:border-zinc-750 text-zinc-950 focus:ring-0 focus:ring-offset-0 bg-white dark:bg-zinc-900 cursor-pointer w-4.5 h-4.5 shadow-sm"
                                       />
                                     </div>
-                                    <img 
-                                      src={prod.img} 
-                                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" 
-                                      alt="" 
+                                    <img
+                                      src={prod.img}
+                                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                                      alt=""
                                     />
                                     {/* Carat/Purity badge */}
                                     <div className="absolute bottom-2 left-2">
@@ -2170,7 +2149,7 @@ export default function Admin() {
                                       </span>
                                     </div>
                                   </div>
-                                  
+
                                   <div className="p-4 space-y-2 text-xs flex-1 flex flex-col justify-between">
                                     <div className="space-y-1">
                                       <div className="flex items-start justify-between gap-1">
@@ -2178,7 +2157,7 @@ export default function Admin() {
                                           {prod.name}
                                         </h4>
                                       </div>
-                                      
+
                                       <div className="flex items-center gap-1.5 flex-wrap">
                                         {(() => {
                                           const catObj = categories.find(c => c.id === prod.category);
@@ -2200,15 +2179,15 @@ export default function Admin() {
                                         </span>
                                         <span className="text-[9px] text-zinc-400 font-semibold">{prod.weight || '0g'}</span>
                                       </div>
-                                      
+
                                       <div className="flex justify-between items-center gap-2">
-                                        <button 
+                                        <button
                                           onClick={() => { setEditingProduct(prod); window.scrollTo({ top: 120, behavior: 'smooth' }); }}
                                           className="flex-1 h-7 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold rounded-lg text-[10px] uppercase tracking-wider transition-colors cursor-pointer"
                                         >
                                           Edit
                                         </button>
-                                        <button 
+                                        <button
                                           onClick={() => handleDeleteProduct(prod.id)}
                                           className="px-2.5 h-7 border border-red-200/50 hover:bg-red-500/10 text-red-500 font-bold rounded-lg text-[10px] uppercase transition-colors cursor-pointer"
                                         >
@@ -2232,7 +2211,7 @@ export default function Admin() {
               {/* Tab: Categories Portfolio Management */}
               {activeTab === 'inventory' && (
                 <div className="space-y-10">
-                  
+
                   {/* Categories setup */}
                   <div className="bg-white dark:bg-[#15151A] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
                     <div>
@@ -2246,8 +2225,8 @@ export default function Admin() {
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                         <div className="space-y-1.5">
                           <label className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Category Title</label>
-                          <input 
-                            type="text" 
+                          <input
+                            type="text"
                             required
                             placeholder="Category Name (e.g. Solitaire Bands)"
                             value={newCategoryName}
@@ -2255,11 +2234,11 @@ export default function Admin() {
                             className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                           />
                         </div>
-                        
+
                         <div className="space-y-1.5">
                           <label className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Image URL (Optional)</label>
-                          <input 
-                            type="text" 
+                          <input
+                            type="text"
                             placeholder="Category Image URL (Paste URL here)"
                             value={newCategoryImage}
                             onChange={(e) => setNewCategoryImage(e.target.value)}
@@ -2270,8 +2249,8 @@ export default function Admin() {
                         <div className="space-y-1.5">
                           <label className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Or Upload Asset File</label>
                           <div className="flex items-center gap-3">
-                            <input 
-                              type="file" 
+                            <input
+                              type="file"
                               accept="image/*"
                               onChange={handleCategoryImageUpload}
                               className="text-xs text-zinc-550 cursor-pointer w-full file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[10px] file:font-extrabold file:uppercase file:bg-zinc-100 dark:file:bg-zinc-800 file:text-zinc-800 dark:file:text-zinc-200 hover:file:bg-zinc-200 transition-colors"
@@ -2279,16 +2258,16 @@ export default function Admin() {
                           </div>
                         </div>
                       </div>
-                      
+
                       {categoryUploadProgress && (
                         <p className="text-[9px] text-[#BCA057] font-bold">{categoryUploadProgress}</p>
                       )}
-                      
+
                       {newCategoryImage && (
                         <div className="relative w-16 h-16 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center shadow-sm">
                           <img src={newCategoryImage} alt="Category preview" className="w-full h-full object-cover" />
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             onClick={() => setNewCategoryImage('')}
                             className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-bold cursor-pointer"
                           >
@@ -2298,15 +2277,15 @@ export default function Admin() {
                       )}
 
                       <div className="flex gap-3 pt-2">
-                        <button 
-                          type="submit" 
+                        <button
+                          type="submit"
                           className="h-10 px-8 bg-zinc-950 hover:bg-zinc-850 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-950 font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-xs cursor-pointer"
                         >
                           {editingCategory ? 'Save Category Changes' : 'Register Category'}
                         </button>
                         {editingCategory && (
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             onClick={() => {
                               setEditingCategory(null);
                               setNewCategoryName('');
@@ -2320,7 +2299,7 @@ export default function Admin() {
                         )}
                       </div>
                     </form>
-                    
+
                     <div className="border-t border-zinc-100 dark:border-zinc-850 pt-6">
                       <h4 className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 mb-4 uppercase tracking-widest">Active collections ({categories.length})</h4>
                       {categories.length === 0 ? (
@@ -2340,19 +2319,19 @@ export default function Admin() {
                                 <span className="text-xs text-zinc-800 dark:text-zinc-200 font-bold truncate leading-tight">{cat.name}</span>
                               </div>
                               <div className="flex items-center gap-3 shrink-0">
-                                <button 
+                                <button
                                   onClick={() => {
                                     setEditingCategory(cat);
                                     setNewCategoryName(cat.name);
                                     setNewCategoryImage(cat.img || '');
                                     window.scrollTo({ top: 120, behavior: 'smooth' });
-                                  }} 
+                                  }}
                                   className="text-[10px] text-zinc-950 dark:text-zinc-100 font-extrabold uppercase hover:underline cursor-pointer"
                                 >
                                   Edit
                                 </button>
-                                <button 
-                                  onClick={() => handleDeleteCategory(cat.id)} 
+                                <button
+                                  onClick={() => handleDeleteCategory(cat.id)}
                                   className="text-red-500 hover:text-red-750 font-bold text-xs cursor-pointer p-1 rounded-md hover:bg-red-500/10 transition-colors"
                                   title="Delete"
                                 >
@@ -2414,7 +2393,7 @@ export default function Admin() {
                           {adminOrders.length} Orders
                         </span>
                       </div>
-                      <div className="space-y-3 max-h-[72vh] overflow-y-auto pr-1 pb-2" style={{scrollbarWidth:'thin'}}>
+                      <div className="space-y-3 max-h-[72vh] overflow-y-auto pr-1 pb-2" style={{ scrollbarWidth: 'thin' }}>
                         {(() => {
                           const filteredOrders = adminOrders
                             .filter(o => orderStatusFilter === 'all' || o.orderStatus === orderStatusFilter)
@@ -2432,11 +2411,11 @@ export default function Admin() {
 
                           return filteredOrders.map(order => {
                             const statusConfig = {
-                              Pending:    { bg: 'bg-amber-500/10',   text: 'text-amber-700 dark:text-amber-400',   border: 'border-amber-500/20',   dot: 'bg-amber-500' },
-                              Confirmed:  { bg: 'bg-blue-500/10',    text: 'text-blue-700 dark:text-blue-400',     border: 'border-blue-500/20',     dot: 'bg-blue-500' },
-                              Processing: { bg: 'bg-violet-500/10',  text: 'text-violet-700 dark:text-violet-400', border: 'border-violet-500/20',   dot: 'bg-violet-500' },
-                              Dispatched: { bg: 'bg-cyan-500/10',    text: 'text-cyan-700 dark:text-cyan-400',     border: 'border-cyan-500/20',     dot: 'bg-cyan-500' },
-                              Completed:  { bg: 'bg-emerald-500/10', text: 'text-emerald-700 dark:text-emerald-400', border: 'border-emerald-500/20', dot: 'bg-emerald-500' },
+                              Pending: { bg: 'bg-amber-500/10', text: 'text-amber-700 dark:text-amber-400', border: 'border-amber-500/20', dot: 'bg-amber-500' },
+                              Confirmed: { bg: 'bg-blue-500/10', text: 'text-blue-700 dark:text-blue-400', border: 'border-blue-500/20', dot: 'bg-blue-500' },
+                              Processing: { bg: 'bg-violet-500/10', text: 'text-violet-700 dark:text-violet-400', border: 'border-violet-500/20', dot: 'bg-violet-500' },
+                              Dispatched: { bg: 'bg-cyan-500/10', text: 'text-cyan-700 dark:text-cyan-400', border: 'border-cyan-500/20', dot: 'bg-cyan-500' },
+                              Completed: { bg: 'bg-emerald-500/10', text: 'text-emerald-700 dark:text-emerald-400', border: 'border-emerald-500/20', dot: 'bg-emerald-500' },
                             };
                             const sc = statusConfig[order.orderStatus] || statusConfig.Pending;
 
@@ -2446,7 +2425,7 @@ export default function Admin() {
                                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800/80 bg-gray-50/60 dark:bg-gray-900/30">
                                   <div>
                                     <span className="text-[11px] font-mono font-bold text-[#3F1F54] dark:text-purple-300 tracking-wider">{order.orderId}</span>
-                                    <span className="text-[9px] text-gray-400 dark:text-gray-500 block mt-0.5">{order.createdDate?.toDate().toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'})}</span>
+                                    <span className="text-[9px] text-gray-400 dark:text-gray-500 block mt-0.5">{order.createdDate?.toDate().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     <span className={`inline-flex items-center gap-1.5 text-[9px] font-bold px-2 py-1 rounded-full border ${sc.bg} ${sc.text} ${sc.border}`}>
@@ -2530,7 +2509,7 @@ export default function Admin() {
                           {adminConsults.length} Requests
                         </span>
                       </div>
-                      <div className="space-y-3 max-h-[72vh] overflow-y-auto pr-1 pb-2" style={{scrollbarWidth:'thin'}}>
+                      <div className="space-y-3 max-h-[72vh] overflow-y-auto pr-1 pb-2" style={{ scrollbarWidth: 'thin' }}>
                         {adminConsults.length === 0 ? (
                           <div className="bg-white dark:bg-[#1E1F29] border border-dashed border-gray-200 dark:border-gray-800 p-10 rounded-2xl text-center">
                             <div className="text-3xl mb-3">🛋️</div>
@@ -2541,10 +2520,10 @@ export default function Admin() {
                           adminConsults.map(con => {
                             const isCustom = !!con.jewelryType;
                             const cStatusConfig = {
-                              Pending:    { bg: 'bg-amber-500/10',    text: 'text-amber-700 dark:text-amber-400',     border: 'border-amber-500/20',    dot: 'bg-amber-500' },
-                              Confirmed:  { bg: 'bg-blue-500/10',     text: 'text-blue-700 dark:text-blue-400',       border: 'border-blue-500/20',     dot: 'bg-blue-500' },
-                              Processing: { bg: 'bg-violet-500/10',   text: 'text-violet-700 dark:text-violet-400',   border: 'border-violet-500/20',   dot: 'bg-violet-500' },
-                              Completed:  { bg: 'bg-emerald-500/10',  text: 'text-emerald-700 dark:text-emerald-400', border: 'border-emerald-500/20',  dot: 'bg-emerald-500' },
+                              Pending: { bg: 'bg-amber-500/10', text: 'text-amber-700 dark:text-amber-400', border: 'border-amber-500/20', dot: 'bg-amber-500' },
+                              Confirmed: { bg: 'bg-blue-500/10', text: 'text-blue-700 dark:text-blue-400', border: 'border-blue-500/20', dot: 'bg-blue-500' },
+                              Processing: { bg: 'bg-violet-500/10', text: 'text-violet-700 dark:text-violet-400', border: 'border-violet-500/20', dot: 'bg-violet-500' },
+                              Completed: { bg: 'bg-emerald-500/10', text: 'text-emerald-700 dark:text-emerald-400', border: 'border-emerald-500/20', dot: 'bg-emerald-500' },
                             };
                             const cs = cStatusConfig[con.status] || cStatusConfig.Pending;
 
@@ -2556,7 +2535,7 @@ export default function Admin() {
                                     <span className="text-[10px] font-bold text-gray-900 dark:text-gray-100">
                                       {isCustom ? '✏️' : '🛋️'} {con.requestType || (isCustom ? 'Custom Design Request' : 'Lounge Booking')}
                                     </span>
-                                    <span className="text-[9px] text-gray-400 block mt-0.5">{con.createdDate?.toDate().toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'})}</span>
+                                    <span className="text-[9px] text-gray-400 block mt-0.5">{con.createdDate?.toDate().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     <span className={`inline-flex items-center gap-1.5 text-[9px] font-bold px-2 py-1 rounded-full border ${cs.bg} ${cs.text} ${cs.border}`}>
@@ -2722,7 +2701,7 @@ export default function Admin() {
                           { label: 'Total Clients', value: allClients.length, icon: '👥', color: 'border-[#3F1F54]/20 dark:border-purple-400/20', accent: 'text-[#3F1F54] dark:text-purple-300' },
                           { label: 'VIP Patrons', value: vipCount, icon: '⭐', color: 'border-amber-500/20', accent: 'text-amber-700 dark:text-amber-400' },
                           { label: 'Standard', value: allClients.length - vipCount, icon: '🛋️', color: 'border-blue-500/20', accent: 'text-blue-700 dark:text-blue-400' },
-                          { label: 'Est. Total Spend', value: `₹${(totalSpend/1000).toFixed(0)}K`, icon: '💰', color: 'border-emerald-500/20', accent: 'text-emerald-700 dark:text-emerald-400' },
+                          { label: 'Est. Total Spend', value: `₹${(totalSpend / 1000).toFixed(0)}K`, icon: '💰', color: 'border-emerald-500/20', accent: 'text-emerald-700 dark:text-emerald-400' },
                         ].map((stat, i) => (
                           <div key={i} className={`bg-white dark:bg-[#1E1F29] border ${stat.color} rounded-2xl px-4 py-3 flex items-center gap-3 shadow-sm`}>
                             <span className="text-xl">{stat.icon}</span>
@@ -2775,10 +2754,10 @@ export default function Admin() {
                           const initials = client.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?';
                           const avatarColors = [
                             ['bg-violet-100 dark:bg-violet-900/30', 'text-violet-700 dark:text-violet-300'],
-                            ['bg-blue-100 dark:bg-blue-900/30',   'text-blue-700 dark:text-blue-300'],
+                            ['bg-blue-100 dark:bg-blue-900/30', 'text-blue-700 dark:text-blue-300'],
                             ['bg-emerald-100 dark:bg-emerald-900/30', 'text-emerald-700 dark:text-emerald-300'],
                             ['bg-amber-100 dark:bg-amber-900/30', 'text-amber-700 dark:text-amber-300'],
-                            ['bg-rose-100 dark:bg-rose-900/30',   'text-rose-700 dark:text-rose-300'],
+                            ['bg-rose-100 dark:bg-rose-900/30', 'text-rose-700 dark:text-rose-300'],
                           ];
                           const [avatarBg, avatarText] = avatarColors[idx % avatarColors.length];
 
