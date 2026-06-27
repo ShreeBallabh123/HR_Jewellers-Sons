@@ -680,7 +680,9 @@ export default function Admin() {
     stoneCarat: '',
     beadsCarat: '',
     pearlsCarat: '',
-    gemstoneCarat: ''
+    gemstoneCarat: '',
+    diamondValue: '',
+    pearlsValue: ''
   });
   const [editingProduct, setEditingProduct] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
@@ -1875,6 +1877,28 @@ export default function Admin() {
                               value={editingProduct ? (editingProduct.gemstoneCarat || '') : newProduct.gemstoneCarat}
                               onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, gemstoneCarat: e.target.value}) : setNewProduct({...newProduct, gemstoneCarat: e.target.value})}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none"
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="prod-diamondValue-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Diamond Value (₹)</label>
+                            <input 
+                              id="prod-diamondValue-form"
+                              type="number" 
+                              placeholder="e.g. 15000"
+                              value={editingProduct ? (editingProduct.diamondValue || '') : newProduct.diamondValue}
+                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, diamondValue: +e.target.value}) : setNewProduct({...newProduct, diamondValue: +e.target.value})}
+                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="prod-pearlsValue-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Pearls Value (₹)</label>
+                            <input 
+                              id="prod-pearlsValue-form"
+                              type="number" 
+                              placeholder="e.g. 8000"
+                              value={editingProduct ? (editingProduct.pearlsValue || '') : newProduct.pearlsValue}
+                              onChange={(e) => editingProduct ? setEditingProduct({...editingProduct, pearlsValue: +e.target.value}) : setNewProduct({...newProduct, pearlsValue: +e.target.value})}
+                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
                         </div>
