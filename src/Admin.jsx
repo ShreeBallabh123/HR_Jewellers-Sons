@@ -16,6 +16,7 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword
 } from 'firebase/auth';
+import hrLogo from './assets/logo.png';
 
 
 
@@ -106,10 +107,8 @@ function AdminLoginPortal({
 
         {/* Top brand logo */}
         <div className="flex items-center gap-3 z-10">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#3F1F54] to-[#603080] dark:from-[#BCA057] dark:to-[#E6C687] p-[1px] flex items-center justify-center shrink-0 shadow-sm">
-            <div className="w-full h-full bg-zinc-950 rounded-xl flex items-center justify-center text-sm font-bold text-[#E6C687]">
-              👑
-            </div>
+          <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-700/60 flex items-center justify-center shrink-0 shadow-md overflow-hidden">
+            <img src={hrLogo} alt="HR Jewellers Logo" className="w-8 h-8 object-contain" />
           </div>
           <span className="text-xs uppercase tracking-[0.25em] text-zinc-400 font-extrabold">HR JEWELLERS</span>
         </div>
@@ -332,10 +331,8 @@ function Sidebar({
         
         {/* Logo Branding */}
         <div className={`flex items-center gap-3 ${isSidebarCollapsed ? 'justify-center pb-4 border-b border-zinc-100 dark:border-zinc-850' : 'pb-4 border-b border-zinc-100 dark:border-zinc-850'}`}>
-          <div className="w-8 h-8 rounded-xl bg-zinc-900 dark:bg-zinc-800 p-[1px] flex items-center justify-center shrink-0 shadow-sm border border-zinc-200 dark:border-zinc-700">
-            <div className="w-full h-full bg-zinc-100 dark:bg-zinc-900 rounded-xl flex items-center justify-center text-sm font-bold text-[#E6C687]">
-              👑
-            </div>
+          <div className="w-9 h-9 rounded-full bg-zinc-950 dark:bg-zinc-800 flex items-center justify-center shrink-0 shadow-sm border border-zinc-700/50 overflow-hidden">
+            <img src={hrLogo} alt="HR Jewellers" className="w-7 h-7 object-contain" />
           </div>
           {!isSidebarCollapsed && (
             <div className="min-w-0">
