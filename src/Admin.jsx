@@ -646,7 +646,7 @@ export default function Admin() {
   const [categoryUploadProgress, setCategoryUploadProgress] = useState(null);
   const [editingCategory, setEditingCategory] = useState(null);
   const [newProduct, setNewProduct] = useState({
-    name: '', category: 'gold', subCategory: '', desc: '', price: 0,
+    name: '', category: 'gold', subCategory: '', desc: '', price: '',
     carat: '22K', weight: '', img: '', badge: '', purityInfo: '',
     makingCharges: '', sku: '', stoneInfo: '', hallmark: 'BIS 916 Government Certified',
     tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
@@ -887,7 +887,7 @@ export default function Admin() {
         createdDate: new Date()
       });
       setNewProduct({
-        name: '', category: 'gold', subCategory: '', desc: '', price: 0,
+        name: '', category: 'gold', subCategory: '', desc: '', price: '',
         carat: '22K', weight: '', img: '', badge: '', purityInfo: '',
         makingCharges: '', sku: '', stoneInfo: '', hallmark: 'BIS 916 Government Certified',
         tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
@@ -1926,8 +1926,15 @@ export default function Admin() {
                               type="number"
                               required
                               placeholder="e.g. 42000"
-                              value={editingProduct ? editingProduct.price : newProduct.price}
-                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, price: +e.target.value }) : setNewProduct({ ...newProduct, price: +e.target.value })}
+                              value={editingProduct ? (editingProduct.price ?? '') : (newProduct.price ?? '')}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                if (editingProduct) {
+                                  setEditingProduct({ ...editingProduct, price: val === '' ? '' : +val });
+                                } else {
+                                  setNewProduct({ ...newProduct, price: val === '' ? '' : +val });
+                                }
+                              }}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
