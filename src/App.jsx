@@ -8278,7 +8278,7 @@ export default function App() {
                               <div className="space-y-3 text-xs text-gray-600 font-light">
                                 <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
                                   <span className="text-gray-400">Purity</span>
-                                  <span className="font-semibold text-gray-900">{detailProduct.metalPurity || pdpSelectedMetal || detailProduct.carat || '22KT'}</span>
+                                  <span className="font-semibold text-gray-900">{pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : (detailProduct.metalPurity || detailProduct.carat || '22KT')}</span>
                                 </div>
                                 <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
                                   <span className="text-gray-400">Color</span>

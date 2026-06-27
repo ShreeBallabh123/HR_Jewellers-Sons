@@ -1673,7 +1673,14 @@ export default function Admin() {
                             <select
                               id="prod-carat-form"
                               value={editingProduct ? editingProduct.carat : newProduct.carat}
-                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, carat: e.target.value }) : setNewProduct({ ...newProduct, carat: e.target.value })}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                if (editingProduct) {
+                                  setEditingProduct({ ...editingProduct, carat: val, metalPurity: val });
+                                } else {
+                                  setNewProduct({ ...newProduct, carat: val, metalPurity: val });
+                                }
+                              }}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
                             >
                               <option value="9K">9K</option>
