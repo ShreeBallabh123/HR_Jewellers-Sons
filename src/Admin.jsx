@@ -842,7 +842,33 @@ export default function Admin() {
     setAdminPassword("admin123");
   };
 
-
+  const handleFormKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      const tagName = e.target.tagName;
+      if (tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA') {
+        if (tagName === 'TEXTAREA') return;
+        e.preventDefault();
+        const form = e.currentTarget;
+        const index = Array.prototype.indexOf.call(form.elements, e.target);
+        
+        let nextIndex = index + 1;
+        while (nextIndex < form.elements.length) {
+          const nextElement = form.elements[nextIndex];
+          if (
+            (nextElement.tagName === 'INPUT' || nextElement.tagName === 'SELECT' || nextElement.tagName === 'TEXTAREA') &&
+            nextElement.type !== 'hidden' &&
+            nextElement.type !== 'submit' &&
+            !nextElement.disabled &&
+            !nextElement.readOnly
+          ) {
+            nextElement.focus();
+            break;
+          }
+          nextIndex++;
+        }
+      }
+    }
+  };
 
   // Product CRUD Operations
   const handleAddProduct = async (e) => {
@@ -1574,7 +1600,7 @@ export default function Admin() {
                       </div>
                     )}
 
-                    <form onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct} className="space-y-8">
+                    <form onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct} className="space-y-8" onKeyDown={handleFormKeyDown}>
 
                       {/* Section: General Details */}
                       <div className="space-y-4">
@@ -1641,7 +1667,7 @@ export default function Admin() {
                           <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-[#E6C687]"></span>
                           <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Metal Specifications</h4>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                           <div className="space-y-1.5">
                             <label htmlFor="prod-carat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Carat & Purity</label>
                             <select
@@ -1659,29 +1685,6 @@ export default function Admin() {
                             </select>
                           </div>
                           <div className="space-y-1.5">
-                            <label htmlFor="prod-weight-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Est. Weight (Grams)</label>
-                            <input
-                              id="prod-weight-form"
-                              type="text"
-                              required
-                              placeholder="e.g. 12.4g"
-                              value={editingProduct ? editingProduct.weight : newProduct.weight}
-                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, weight: e.target.value }) : setNewProduct({ ...newProduct, weight: e.target.value })}
-                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
-                            />
-                          </div>
-                          <div className="space-y-1.5">
-                            <label htmlFor="prod-metalColor-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Metal Color</label>
-                            <input
-                              id="prod-metalColor-form"
-                              type="text"
-                              placeholder="e.g. Yellow Gold"
-                              value={editingProduct ? (editingProduct.metalColor || '') : newProduct.metalColor}
-                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, metalColor: e.target.value }) : setNewProduct({ ...newProduct, metalColor: e.target.value })}
-                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
-                            />
-                          </div>
-                          <div className="space-y-1.5">
                             <label htmlFor="prod-netWeight-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Net Weight</label>
                             <input
                               id="prod-netWeight-form"
@@ -1697,9 +1700,28 @@ export default function Admin() {
                             <input
                               id="prod-grossWeight-form"
                               type="text"
+                              required
                               placeholder="e.g. 1.75 g"
                               value={editingProduct ? (editingProduct.grossWeight || '') : newProduct.grossWeight}
-                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, grossWeight: e.target.value }) : setNewProduct({ ...newProduct, grossWeight: e.target.value })}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                if (editingProduct) {
+                                  setEditingProduct({ ...editingProduct, grossWeight: val, weight: val });
+                                } else {
+                                  setNewProduct({ ...newProduct, grossWeight: val, weight: val });
+                                }
+                              }}
+                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="prod-metalColor-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Metal Color</label>
+                            <input
+                              id="prod-metalColor-form"
+                              type="text"
+                              placeholder="e.g. Yellow Gold"
+                              value={editingProduct ? (editingProduct.metalColor || '') : newProduct.metalColor}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, metalColor: e.target.value }) : setNewProduct({ ...newProduct, metalColor: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
@@ -2221,7 +2243,7 @@ export default function Admin() {
                       <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">Establish high-level collection buckets for products classification.</p>
                     </div>
 
-                    <form onSubmit={editingCategory ? handleUpdateCategory : handleAddCategory} className="space-y-5">
+                    <form onSubmit={editingCategory ? handleUpdateCategory : handleAddCategory} className="space-y-5" onKeyDown={handleFormKeyDown}>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                         <div className="space-y-1.5">
                           <label className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Category Title</label>
