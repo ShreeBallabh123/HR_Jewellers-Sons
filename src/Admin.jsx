@@ -114,11 +114,21 @@ function AdminLoginPortal({
         </div>
 
         {/* Luxury typography brand query statement */}
-        <div className="space-y-6 z-10 my-auto max-w-[500px]">
+        <div className="space-y-8 z-10 my-auto max-w-[500px]">
+          {/* Large centered logo mark */}
+          <div className="flex items-center gap-5">
+            <div className="w-20 h-20 rounded-2xl bg-zinc-900 border border-zinc-700/50 flex items-center justify-center shrink-0 shadow-xl overflow-hidden">
+              <img src={hrLogo} alt="HR Jewellers" className="w-16 h-16 object-contain" />
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-zinc-500 font-bold mb-1">Since 1987</p>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-[#E6C687]">HR Jewellers & Sons</p>
+            </div>
+          </div>
           <h1 className="text-4xl sm:text-5xl font-light text-zinc-100 font-serif leading-[1.15]">
             Heritage and Craftsmanship refined for the <span className="italic text-[#E6C687]">Modern Connoisseur</span>.
           </h1>
-          <p className="text-xs text-zinc-450 leading-relaxed font-sans max-w-[420px] font-medium">
+          <p className="text-sm text-zinc-400 leading-relaxed font-sans max-w-[420px] font-medium">
             Access the high-secure executive dashboard to manage catalog inventories, monitor consult orders, and coordinate client experiences.
           </p>
         </div>
