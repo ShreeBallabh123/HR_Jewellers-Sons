@@ -506,11 +506,18 @@ function Sidebar({
 
 function Header({
   activeTab,
+  setActiveTab,
   darkMode,
   setDarkMode,
   adminUser,
   handleAdminLogout,
-  adminRole
+  adminRole,
+  notifications = [],
+  showNotifications,
+  setShowNotifications,
+  setOrderSearch,
+  setOrderStatusFilter,
+  setCrmSearch
 }) {
   const getBreadcrumbs = () => {
     switch (activeTab) {
@@ -1640,11 +1647,18 @@ export default function Admin() {
             {/* UPPER CONSOLE HEADER */}
             <Header
               activeTab={activeTab}
+              setActiveTab={setActiveTab}
               darkMode={darkMode}
               setDarkMode={setDarkMode}
               adminUser={adminUser}
               handleAdminLogout={handleAdminLogout}
               adminRole={adminRole}
+              notifications={notifications}
+              showNotifications={showNotifications}
+              setShowNotifications={setShowNotifications}
+              setOrderSearch={setOrderSearch}
+              setOrderStatusFilter={setOrderStatusFilter}
+              setCrmSearch={setCrmSearch}
             />
 
             {/* ERP DASHBOARD VIEWPORT PANELS */}
