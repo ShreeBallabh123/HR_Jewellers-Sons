@@ -2637,33 +2637,33 @@ export default function App() {
         const pCarat = String(p.carat || '').toLowerCase();
 
         if (tab === 'Rings') {
-          matchesTab = pSub.includes('ring') || pCat === 'rings' || pName.includes('ring');
+          matchesTab = pCat === 'rings' || /\bring(s)?\b/i.test(pSub) || /\bring(s)?\b/i.test(pName);
         } else if (tab === 'Earrings') {
-          matchesTab = pSub.includes('earring') || pSub.includes('jhumka') || pName.includes('earring') || pName.includes('jhumka') || pName.includes('drop') || pCat === 'earrings';
+          matchesTab = pCat === 'earrings' || /\bearring(s)?\b/i.test(pSub) || /\bearring(s)?\b/i.test(pName) || /\bjhumka(s)?\b/i.test(pSub) || /\bjhumka(s)?\b/i.test(pName) || /\bdrop(s)?\b/i.test(pName) || /\bdrop(s)?\b/i.test(pSub);
         } else if (tab === 'Necklace') {
-          matchesTab = pSub.includes('necklace') || pSub.includes('haar') || pSub.includes('choker') || pName.includes('necklace') || pName.includes('haar') || pName.includes('choker') || pName.includes('set') || pCat === 'necklace';
+          matchesTab = pCat === 'necklace' || pCat === 'necklaces' || /\bnecklace(s)?\b/i.test(pSub) || /\bnecklace(s)?\b/i.test(pName) || /\bhaar(s)?\b/i.test(pSub) || /\bhaar(s)?\b/i.test(pName) || /\bchoker(s)?\b/i.test(pSub) || /\bchoker(s)?\b/i.test(pName) || /\bset(s)?\b/i.test(pName) || /\bset(s)?\b/i.test(pSub);
         } else if (tab === 'Mangalsutra') {
-          matchesTab = pSub.includes('mangalsutra') || pName.includes('mangalsutra') || pDesc.includes('mangalsutra') || pCat === 'mangalsutra';
+          matchesTab = pCat === 'mangalsutra' || pCat === 'mangalsutras' || /\bmangalsutra(s)?\b/i.test(pSub) || /\bmangalsutra(s)?\b/i.test(pName) || /\bmangalsutra(s)?\b/i.test(pDesc);
         } else if (tab === 'Bracelets') {
-          matchesTab = pSub.includes('bracelet') || pName.includes('bracelet') || pCat === 'bracelets';
+          matchesTab = pCat === 'bracelets' || pCat === 'bracelet' || /\bbracelet(s)?\b/i.test(pSub) || /\bbracelet(s)?\b/i.test(pName) || /\bbraslate(s)?\b/i.test(pName);
         } else if (tab === 'Bangles') {
-          matchesTab = pSub.includes('bangle') || pSub.includes('kada') || pName.includes('bangle') || pName.includes('kada') || pCat === 'bangles';
+          matchesTab = pCat === 'bangles' || pCat === 'bangle' || /\bbangle(s)?\b/i.test(pSub) || /\bbangle(s)?\b/i.test(pName) || /\bkada(s)?\b/i.test(pSub) || /\bkada(s)?\b/i.test(pName);
         } else if (tab === 'Gold Coins') {
-          matchesTab = pCat === 'gold coins' || pSub.includes('coin') || pName.includes('coin') || pDesc.includes('coin');
+          matchesTab = pCat === 'gold coins' || pCat === 'coins' || /\bcoin(s)?\b/i.test(pSub) || /\bcoin(s)?\b/i.test(pName) || /\bcoin(s)?\b/i.test(pDesc);
         } else if (tab === 'Anklets') {
-          matchesTab = pSub.includes('anklet') || pSub.includes('payal') || pName.includes('anklet') || pName.includes('payal') || pCat === 'anklets';
+          matchesTab = pCat === 'anklets' || pCat === 'anklet' || /\banklet(s)?\b/i.test(pSub) || /\banklet(s)?\b/i.test(pName) || /\bpayal(s)?\b/i.test(pSub) || /\bpayal(s)?\b/i.test(pName);
         } else if (tab === 'Men Jewellery') {
-          matchesTab = pCat === 'men' || pSub.includes('men') || pName.includes('men') || pName.includes('kada') || pName.includes('signet') || pDesc.includes('men');
+          matchesTab = pCat === 'men' || pCat === 'mens-jewellery' || /\bmen(s)?\b/i.test(pSub) || /\bmen(s)?\b/i.test(pName) || /\bkada(s)?\b/i.test(pName) || /\bsignet\b/i.test(pName) || /\bmen(s)?\b/i.test(pDesc);
         } else if (tab === 'Kids Jewellery') {
-          matchesTab = pCat === 'kids' || pSub.includes('kids') || pName.includes('kids') || pName.includes('baby') || pName.includes('child') || pDesc.includes('kids');
+          matchesTab = pCat === 'kids' || pCat === 'm-kids' || /\bkid(s)?\b/i.test(pSub) || /\bkid(s)?\b/i.test(pName) || /\bbaby\b/i.test(pName) || /\bchild(ren)?\b/i.test(pName) || /\bkid(s)?\b/i.test(pDesc);
         } else if (tab === 'Gifts & Pooja') {
-          matchesTab = pCat === 'pooja' || pSub.includes('pooja') || pSub.includes('gift') || pSub.includes('thali') || pSub.includes('diya') || pSub.includes('idol') || pName.includes('pooja') || pName.includes('diya') || pName.includes('thali') || pName.includes('coin');
+          matchesTab = pCat === 'pooja' || /\bpooja\b/i.test(pSub) || /\bgift(s)?\b/i.test(pSub) || /\bthali\b/i.test(pSub) || /\bdiya(s)?\b/i.test(pSub) || /\bidol(s)?\b/i.test(pSub) || /\bpooja\b/i.test(pName) || /\bdiya(s)?\b/i.test(pName) || /\bthali\b/i.test(pName) || /\bcoin(s)?\b/i.test(pName);
         } else if (tab === 'Bridal Jewellery') {
-          matchesTab = pCat === 'bridal' || pSub.includes('bridal') || pName.includes('bridal') || pDesc.includes('bridal');
+          matchesTab = pCat === 'bridal' || /\bbridal\b/i.test(pSub) || /\bbridal\b/i.test(pName) || /\bbridal\b/i.test(pDesc);
         } else if (tab === 'Diamond Jewellery') {
-          matchesTab = pCat === 'diamond' || pSub.includes('diamond') || pName.includes('diamond') || pDesc.includes('diamond') || pCarat.includes('diamond') || pCarat.includes('vvs');
+          matchesTab = pCat === 'diamond' || /\bdiamond(s)?\b/i.test(pSub) || /\bdiamond(s)?\b/i.test(pName) || /\bdiamond(s)?\b/i.test(pDesc) || /\bdiamond(s)?\b/i.test(pCarat) || /\bvvs\b/i.test(pCarat);
         } else if (tab === 'Silver Jewellery') {
-          matchesTab = pCat === 'silver' || pSub.includes('silver') || pName.includes('silver') || pDesc.includes('silver') || pCarat.includes('sterling') || pCarat.includes('silver');
+          matchesTab = pCat === 'silver' || /\bsilver\b/i.test(pSub) || /\bsilver\b/i.test(pName) || /\bsilver\b/i.test(pDesc) || /\bsterling\b/i.test(pCarat) || /\bsilver\b/i.test(pCarat);
         } else {
           // Dynamic category check
           const dbCat = categories.find(c => 
@@ -2673,13 +2673,18 @@ export default function App() {
           if (dbCat) {
             const catIdLower = String(dbCat.id || '').toLowerCase();
             const catNameLower = String(dbCat.name || '').toLowerCase();
+            const catRegex = new RegExp(`\\b${catNameLower}\\b`, 'i');
+            const catIdRegex = new RegExp(`\\b${catIdLower}\\b`, 'i');
             matchesTab = 
               pCat === catIdLower || 
               pCat === catNameLower || 
               pSub === catNameLower || 
-              pSub.includes(catNameLower) || 
-              pName.includes(catNameLower) || 
-              pDesc.includes(catNameLower);
+              catRegex.test(pSub) || 
+              catIdRegex.test(pSub) ||
+              catRegex.test(pName) || 
+              catIdRegex.test(pName) ||
+              catRegex.test(pDesc) ||
+              catIdRegex.test(pDesc);
           } else {
             matchesTab = false;
           }
