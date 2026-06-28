@@ -707,6 +707,12 @@ export default function Admin() {
     }, 4000);
   };
 
+  // Loaded database elements
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [adminOrders, setAdminOrders] = useState([]);
+  const [adminConsults, setAdminConsults] = useState([]);
+
   const [showNotifications, setShowNotifications] = useState(false);
   const notifications = useMemo(() => {
     const list = [];
@@ -719,7 +725,7 @@ export default function Admin() {
           type: 'order',
           title: 'New Order Placed',
           desc: `Order ${order.orderId || ''} from ${order.customerDetails?.name || 'Customer'} - ₹${Number(order.amount || 0).toLocaleString('en-IN')}`,
-          time: order.createdDate ? order.createdDate.toDate() : new Date(),
+          time: order.createdDate ? (typeof order.createdDate.toDate === 'function' ? order.createdDate.toDate() : new Date(order.createdDate)) : new Date(),
           raw: order,
           targetTab: 'orders'
         });
@@ -735,7 +741,7 @@ export default function Admin() {
           type: 'consultation',
           title: isCustom ? 'Custom Design Request' : 'Lounge Booking Request',
           desc: `From ${consult.name || 'Customer'} - ${consult.phone}`,
-          time: consult.createdDate ? consult.createdDate.toDate() : new Date(),
+          time: consult.createdDate ? (typeof consult.createdDate.toDate === 'function' ? consult.createdDate.toDate() : new Date(consult.createdDate)) : new Date(),
           raw: consult,
           targetTab: 'customers'
         });
@@ -745,12 +751,6 @@ export default function Admin() {
     // Sort by time descending
     return list.sort((a, b) => b.time - a.time);
   }, [adminOrders, adminConsults]);
-
-  // Loaded database elements
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [adminOrders, setAdminOrders] = useState([]);
-  const [adminConsults, setAdminConsults] = useState([]);
 
   // Form parameters
   const [newCategoryName, setNewCategoryName] = useState('');
