@@ -1235,7 +1235,7 @@ export default function App() {
   // Catalog Premium Filters & Sorting States
   const [metalFilter, setMetalFilter] = useState('all');
   const [purityFilter, setPurityFilter] = useState('all');
-  const [maxPriceFilter, setMaxPriceFilter] = useState(1000000);
+  const [maxPriceFilter, setMaxPriceFilter] = useState(100000000);
   const [sortFilter, setSortFilter] = useState('popularity');
   const [collectionsPage, setCollectionsPage] = useState(1);
   const [priceFilter, setPriceFilter] = useState('all');
@@ -3255,7 +3255,7 @@ export default function App() {
                     {/* Dropdown */}
                     <div className="absolute top-full right-0 mt-0 bg-white text-gray-800 shadow-2xl border border-gray-200/60 rounded-b-2xl py-3 px-1 min-w-[340px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-xs normal-case font-sans select-none">
                       <button
-                        onClick={() => { triggerAudio('click'); setMaxPriceFilter(1000000); changeCategoryTab('Collections'); navigateTo('collections'); }}
+                        onClick={() => { triggerAudio('click'); setMaxPriceFilter(100000000); changeCategoryTab('Collections'); navigateTo('collections'); }}
                         className="w-full text-left px-5 py-3 text-[12px] font-semibold text-gray-800 hover:bg-[#DDA0DD]/10 hover:text-[#4A126D] transition-colors rounded-xl cursor-pointer leading-snug"
                       >
                         💎 Up To 50% Off On Making Charges On Diamond Jewellery
@@ -3494,7 +3494,7 @@ export default function App() {
                   </h3>
                   <div className="flex items-center gap-3">
                     <button
-                      onClick={() => { setMetalFilter('all'); setPurityFilter('all'); setMaxPriceFilter(1000000); setPriceFilter('all'); setTypeFilter('all'); setGenderFilter('all'); setStoneFilter('all'); setOccasionFilter('all'); }}
+                      onClick={() => { setMetalFilter('all'); setPurityFilter('all'); setMaxPriceFilter(100000000); setPriceFilter('all'); setTypeFilter('all'); setGenderFilter('all'); setStoneFilter('all'); setOccasionFilter('all'); }}
                       className="text-[8px] uppercase tracking-widest font-black text-[#DDA0DD] hover:text-[#4A126D] transition-colors cursor-pointer"
                     >
                       Clear All
@@ -3543,7 +3543,7 @@ export default function App() {
                         { label: 'Rs. 20,000 – Rs. 30,000', val: 30000 },
                         { label: 'Rs. 30,000 – Rs. 40,000', val: 40000 },
                         { label: 'Rs. 40,000 – Rs. 50,000', val: 50000 },
-                        { label: 'Rs. 50,000 and Above', val: 1000000 },
+                        { label: 'Rs. 50,000 and Above', val: 100000000 },
                       ].map(({ label, val }) => (
                         <label key={val} className="flex items-center gap-2 cursor-pointer group">
                           <input type="radio" name="mob-price" checked={maxPriceFilter === val} onChange={() => setMaxPriceFilter(val)} className="accent-[#4A126D] w-3 h-3 cursor-pointer" />
@@ -7574,7 +7574,7 @@ export default function App() {
                         <span className="text-[10px] sm:text-sm">✨</span> Filters
                       </h3>
                       <button
-                        onClick={() => { setMetalFilter('all'); setPurityFilter('all'); setMaxPriceFilter(1000000); setPriceFilter('all'); setTypeFilter('all'); setGenderFilter('all'); setStoneFilter('all'); setOccasionFilter('all'); }}
+                        onClick={() => { setMetalFilter('all'); setPurityFilter('all'); setMaxPriceFilter(100000000); setPriceFilter('all'); setTypeFilter('all'); setGenderFilter('all'); setStoneFilter('all'); setOccasionFilter('all'); }}
                         className="text-[7px] sm:text-[9px] uppercase tracking-widest font-black text-[#DDA0DD] hover:text-[#4A126D] transition-colors cursor-pointer border border-[#DDA0DD]/30 rounded-md sm:rounded-lg px-1.5 sm:px-2 py-0.5 sm:py-1"
                       >
                         Clear All
@@ -7629,7 +7629,7 @@ export default function App() {
                             { label: 'Rs. 20,000 – Rs. 30,000', val: 30000 },
                             { label: 'Rs. 30,000 – Rs. 40,000', val: 40000 },
                             { label: 'Rs. 40,000 – Rs. 50,000', val: 50000 },
-                            { label: 'Rs. 50,000 and Above', val: 1000000 },
+                            { label: 'Rs. 50,000 and Above', val: 100000000 },
                           ].map(({ label, val }) => (
                             <label key={val} className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group">
                               <input type="radio" name="price" checked={maxPriceFilter === val} onChange={() => setMaxPriceFilter(val)} className="accent-[#4A126D] w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 cursor-pointer" />
@@ -7817,7 +7817,7 @@ export default function App() {
                             changeCategoryTab('Collections');
                             setMetalFilter('all');
                             setPurityFilter('all');
-                            setMaxPriceFilter(1000000);
+                            setMaxPriceFilter(100000000);
                           }}
                           className="px-6 py-2.5 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 shadow-md cursor-pointer border bg-[#4A126D] text-white hover:bg-[#DDA0DD] border-transparent"
                         >
