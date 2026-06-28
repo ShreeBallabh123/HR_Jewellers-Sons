@@ -646,7 +646,7 @@ export default function Admin() {
   const [categoryUploadProgress, setCategoryUploadProgress] = useState(null);
   const [editingCategory, setEditingCategory] = useState(null);
   const [newProduct, setNewProduct] = useState({
-    name: '', category: 'gold', subCategory: '', desc: '', price: '',
+    name: '', category: 'gold', categoryType: 'Gold', subCategory: '', desc: '', price: '',
     carat: '22K', weight: '', img: '', badge: '', purityInfo: '',
     makingCharges: '', sku: '', stoneInfo: '', hallmark: 'BIS 916 Government Certified',
     tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
@@ -889,7 +889,7 @@ export default function Admin() {
         createdDate: new Date()
       });
       setNewProduct({
-        name: '', category: 'gold', subCategory: '', desc: '', price: '',
+        name: '', category: 'gold', categoryType: 'Gold', subCategory: '', desc: '', price: '',
         carat: '22K', weight: '', img: '', badge: '', purityInfo: '',
         makingCharges: '', sku: '', stoneInfo: '', hallmark: 'BIS 916 Government Certified',
         tags: '', seoTitle: '', seoDesc: '', featured: false, stockQty: 10,
@@ -1612,7 +1612,7 @@ export default function Admin() {
                           <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-[#E6C687]"></span>
                           <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">General Information</h4>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                           <div className="space-y-1.5">
                             <label htmlFor="prod-name-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Jewellery Name</label>
                             <input
@@ -1643,11 +1643,23 @@ export default function Admin() {
                               id="prod-category-form"
                               value={editingProduct ? editingProduct.category : newProduct.category}
                               onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, category: e.target.value }) : setNewProduct({ ...newProduct, category: e.target.value })}
-                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
+                              className="w-full h-10 bg-white dark:bg-[#09090B] border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
                             >
                               {categories.map(cat => (
                                 <option key={cat.id} value={cat.id}>{cat.name}</option>
                               ))}
+                            </select>
+                          </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="prod-categoryType-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Category Type</label>
+                            <select
+                              id="prod-categoryType-form"
+                              value={editingProduct ? (editingProduct.categoryType || 'Gold') : (newProduct.categoryType || 'Gold')}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, categoryType: e.target.value }) : setNewProduct({ ...newProduct, categoryType: e.target.value })}
+                              className="w-full h-10 bg-white dark:bg-[#09090B] border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
+                            >
+                              <option value="Gold">Gold</option>
+                              <option value="Silver">Silver</option>
                             </select>
                           </div>
                         </div>
@@ -1692,7 +1704,8 @@ export default function Admin() {
                               <option value="18K">18K</option>
                               <option value="20K">20K</option>
                               <option value="22K">22K</option>
-                              <option value="92.5">92.5</option>
+                              <option value="24K">24K (Pure Gold)</option>
+                              <option value="92.5">92.5 (Silver)</option>
                             </select>
                           </div>
                           <div className="space-y-1.5">
@@ -1724,6 +1737,43 @@ export default function Admin() {
                               }}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
+                            {/* Standard Coin Weights Quick Select Selector Option */}
+                            {(() => {
+                              const cat = editingProduct ? editingProduct.category : newProduct.category;
+                              const isCoin = cat === 'gold-coins' || cat?.toLowerCase().includes('coin');
+                              if (!isCoin) return null;
+                              return (
+                                <div className="space-y-1 mt-2 select-none">
+                                  <span className="text-[8px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Quick Select Coin Weight:</span>
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {['0.5', '1', '2', '5', '8', '10', '20', '50'].map((w) => {
+                                      const activeWeight = editingProduct ? editingProduct.grossWeight : newProduct.grossWeight;
+                                      const isActive = activeWeight === w;
+                                      return (
+                                        <button
+                                          key={w}
+                                          type="button"
+                                          onClick={() => {
+                                            if (editingProduct) {
+                                              setEditingProduct({ ...editingProduct, grossWeight: w, netWeight: w, weight: w });
+                                            } else {
+                                              setNewProduct({ ...newProduct, grossWeight: w, netWeight: w, weight: w });
+                                            }
+                                          }}
+                                          className={`px-2.5 py-1 text-[10px] font-bold rounded-lg border transition-all cursor-pointer ${
+                                            isActive
+                                              ? 'bg-[#BCA057] border-[#BCA057] text-white font-extrabold shadow-sm'
+                                              : 'border-zinc-200 dark:border-zinc-800 text-zinc-650 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-850 bg-white dark:bg-zinc-900'
+                                          }`}
+                                        >
+                                          {w}g
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              );
+                            })()}
                           </div>
                           <div className="space-y-1.5">
                             <label htmlFor="prod-metalColor-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Metal Color</label>
@@ -2240,6 +2290,11 @@ export default function Admin() {
                                             </span>
                                           );
                                         })()}
+                                        {prod.categoryType && (
+                                          <span className="inline-block px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-[#BCA057] dark:text-[#E6C687] text-[8px] font-bold uppercase tracking-wider leading-none">
+                                            {prod.categoryType}
+                                          </span>
+                                        )}
                                         <span className="text-[9px] font-mono text-zinc-400">{prod.sku}</span>
                                       </div>
                                     </div>
@@ -2247,7 +2302,7 @@ export default function Admin() {
                                     <div className="space-y-2.5 pt-2 border-t border-zinc-100 dark:border-zinc-850">
                                       <div className="flex items-baseline justify-between">
                                         <span className="font-mono text-zinc-900 dark:text-[#E6C687] font-black text-sm">
-                                          ₹{prod.price.toLocaleString('en-IN')}
+                                          ₹{Number(prod.price || 0).toLocaleString('en-IN')}
                                         </span>
                                         <span className="text-[9px] text-zinc-400 font-semibold">{prod.weight || '0g'}</span>
                                       </div>

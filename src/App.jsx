@@ -389,153 +389,7 @@ const shopTheLookItems = [
 
 // ==========================================================
 // GOLD COINS COLLECTION DATA
-// ==========================================================
-const GOLD_COINS_DATA = [
-  {
-    id: 'coin-1',
-    name: '24K Temple Heritage Gold Coin',
-    purity: '24K',
-    weightGm: 10,
-    img: laxmiGoldCoin,
-    makingChargePercent: 3.5,
-    description: 'Bespoke 24K solid gold coin embossed with fine royal temple engraving of Laxmi-Ganesha. Crafted for pure prosperity, daily puja, and heritage family holdings.',
-    certification: 'BIS Hallmarked & NABL Accredited Refinery Cert',
-    available: true,
-    category: 'Temple Coin'
-  },
-  {
-    id: 'coin-2',
-    name: '24K Royal Laxmi Emblem Gold Coin',
-    purity: '24K',
-    weightGm: 5,
-    img: laxmiGoldCoin,
-    makingChargePercent: 3.8,
-    description: 'Exquisite 5g gold coin featuring a detailed bas-relief of Goddess Laxmi, the embodiment of wealth and fortune. Sealed in tamper-proof premium assay card certification.',
-    certification: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
-    available: true,
-    category: 'Lakshmi Coin'
-  },
-  {
-    id: 'coin-3',
-    name: '24K Imperial Bikaneri Mint Coin',
-    purity: '24K',
-    weightGm: 20,
-    img: goldBullionCoin,
-    makingChargePercent: 3.0,
-    description: 'Heavyweight investment-grade 20g minted coin showcasing custom geometric royal floral grids representing standard Rajasthani artistry.',
-    certification: 'BIS Hallmarked & NABL Accredited Refinery Cert',
-    available: true,
-    category: '24K Coin'
-  },
-  {
-    id: 'coin-4',
-    name: '24K Sovereign Bullion Mint Coin',
-    purity: '24K',
-    weightGm: 50,
-    img: goldBullionCoin,
-    makingChargePercent: 2.5,
-    description: 'Premium institutional 50g solid gold bullion coin with serialized laser-etched registry code. High purity asset for absolute portfolio hedging.',
-    certification: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
-    available: true,
-    category: '24K Coin'
-  },
-  {
-    id: 'coin-5',
-    name: '24K Devotion Ganesha Mint Coin',
-    purity: '24K',
-    weightGm: 2,
-    img: laxmiGoldCoin,
-    makingChargePercent: 4.5,
-    description: 'Intricately pressed 2g gold coin featuring Lord Ganesha. Perfect for Diwali celebrations, Akshaya Tritiya, wedding gifting, or personal altars.',
-    certification: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
-    available: true,
-    category: 'Temple Coin'
-  },
-  {
-    id: 'coin-6',
-    name: '24K Shubh Labh Auspicious Gift Coin',
-    purity: '24K',
-    weightGm: 1,
-    img: laxmiGoldCoin,
-    makingChargePercent: 5.0,
-    description: 'Elegant 1g gold coin carrying the holy "Shubh Labh" scripts. Designed as an auspicious premium token to celebrate milestones and corporate blessings.',
-    certification: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
-    available: true,
-    category: 'Gift Coin'
-  },
-  {
-    id: 'coin-7',
-    name: '22K Bikaneri Royal Heritage Coin',
-    purity: '22K',
-    weightGm: 10,
-    img: laxmiGoldCoin,
-    makingChargePercent: 4.0,
-    description: 'Generational 22K (916) pure gold medallion carrying the official showroom emblem of HR Jewellers & Sons. Extremely durable alloy structure made for custom jewellery settings.',
-    certification: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
-    available: true,
-    category: '22K Coin'
-  },
-  {
-    id: 'coin-8',
-    name: '22K Rajputana Crest Gold Coin',
-    purity: '22K',
-    weightGm: 8,
-    img: goldBullionCoin,
-    makingChargePercent: 4.2,
-    description: 'Stately 8g sovereign weight gold medallion embossed with the ancient shield crest of Rajputana warriors. A spectacular symbol of lineage, heritage, and pride.',
-    certification: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
-    available: true,
-    category: '22K Coin'
-  },
-  {
-    id: 'coin-9',
-    name: '22K Golden Kalash Puja Token',
-    purity: '22K',
-    weightGm: 5,
-    img: laxmiGoldCoin,
-    makingChargePercent: 4.5,
-    description: 'Beautiful 5g gold coin featuring the sacred Kalash, mango leaves, and coconut, symbolizing life, health, and spiritual abundance.',
-    certification: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
-    available: true,
-    category: 'Gift Coin'
-  },
-  {
-    id: 'coin-10',
-    name: '24K Imperial Lakshmi Coin',
-    purity: '24K',
-    weightGm: 8,
-    img: laxmiGoldCoin,
-    makingChargePercent: 3.6,
-    description: 'A sovereign weight 8g pure gold coin, struck with an exquisite motif of Goddess Lakshmi sitting gracefully on a lotus, bordered with elegant traditional arches.',
-    certification: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
-    available: true,
-    category: 'Lakshmi Coin'
-  },
-  {
-    id: 'coin-11',
-    name: '24K Micro-Bullion Savings Coin',
-    purity: '24K',
-    weightGm: 0.5,
-    img: goldBullionCoin,
-    makingChargePercent: 6.0,
-    description: 'An affordable entry-point 0.5g gold coin for regular savings accumulation. Encased in a beautiful gift-ready card with tamper-evident seal.',
-    certification: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
-    available: true,
-    category: 'Gift Coin'
-  },
-  {
-    id: 'coin-12',
-    name: '22K Classic Sovereign Coin',
-    purity: '22K',
-    weightGm: 20,
-    img: goldBullionCoin,
-    makingChargePercent: 3.2,
-    description: 'Premium 20g 22K durable gold coin designed for investors looking for heavier weight with royal finish, perfect for melting or passing down as an heirloom.',
-    certification: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
-    available: true,
-    category: '22K Coin'
-  }
-];
+// (Loaded dynamically from Firestore collection 'products')
 
 const calculateCoinPrice = (coin, rate24k) => {
   const baseRatePerGm = rate24k / 10;
@@ -1149,6 +1003,40 @@ export default function App() {
     console.log(categories);
   }
 
+  const GOLD_COINS_DATA = useMemo(() => {
+    return products
+      .filter(p => {
+        const catLower = (p.category || '').toLowerCase();
+        const nameLower = (p.name || '').toLowerCase();
+        return catLower === 'gold-coins' || catLower.includes('coin') || nameLower.includes('gold coin');
+      })
+      .map(p => {
+        const weightGm = parseFloat(p.weight) || parseFloat(p.weightGm) || 0;
+        const purity = (p.carat || p.metalPurity || '24K').toUpperCase().includes('22') ? '22K' : '24K';
+        const makingChargePercent = parseFloat(p.makingCharges) || parseFloat(p.makingChargePercent) || 3.5;
+        
+        let displayImg = p.img;
+        if (!displayImg || displayImg.includes('laxmi_gold_coin') || p.name.toLowerCase().includes('laxmi') || p.name.toLowerCase().includes('temple') || p.name.toLowerCase().includes('ganesha')) {
+          displayImg = laxmiGoldCoin;
+        } else if (displayImg.includes('gold_bullion_coin') || p.name.toLowerCase().includes('bullion') || p.name.toLowerCase().includes('sovereign') || p.name.toLowerCase().includes('mint')) {
+          displayImg = goldBullionCoin;
+        }
+        
+        return {
+          id: p.id,
+          name: p.name,
+          purity,
+          weightGm,
+          img: displayImg,
+          makingChargePercent,
+          description: p.desc || p.description || '',
+          certification: p.certification || p.hallmark || p.certificate || 'BIS Hallmarked & NABL Accredited',
+          available: p.available !== false,
+          category: p.subCategory || p.category || 'Gold Coin'
+        };
+      });
+  }, [products]);
+
   const categoryFilters = useMemo(() => {
     const dbCats = categories.map(cat => cat.name);
     
@@ -1288,6 +1176,7 @@ export default function App() {
   const [customDesignSuccess, setCustomDesignSuccess] = useState(false);
   const [customDesignUploadProgress, setCustomDesignUploadProgress] = useState('');
   const [customDesignUploading, setCustomDesignUploading] = useState(false);
+  const [pdpPriceTab, setPdpPriceTab] = useState('breakup');
 
   const [firebaseDiagnostics, setFirebaseDiagnostics] = useState({
     checked: false,
@@ -1407,6 +1296,8 @@ export default function App() {
   // App Utilities
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null); // For Quick View Modal
+  const [planModalOpen, setPlanModalOpen] = useState(false);
+  const [planModalProduct, setPlanModalProduct] = useState(null);
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [isCatalogDark, setIsCatalogDark] = useState(true);
 
@@ -1838,6 +1729,211 @@ export default function App() {
     };
   }, [currentPage]);
 
+  const seedCoinsToFirestore = async () => {
+    const coinsToSeed = [
+      {
+        id: 'coin-1',
+        name: '24K Temple Heritage Gold Coin',
+        purity: '24K',
+        carat: '24K',
+        weight: '10',
+        img: 'laxmi_gold_coin',
+        makingCharges: '3.5',
+        desc: 'Bespoke 24K solid gold coin embossed with fine royal temple engraving of Laxmi-Ganesha. Crafted for pure prosperity, daily puja, and heritage family holdings.',
+        hallmark: 'BIS Hallmarked & NABL Accredited Refinery Cert',
+        available: true,
+        category: 'gold-coins',
+        categoryType: 'Gold',
+        stockQty: 100
+      },
+      {
+        id: 'coin-2',
+        name: '24K Royal Laxmi Emblem Gold Coin',
+        purity: '24K',
+        carat: '24K',
+        weight: '5',
+        img: 'laxmi_gold_coin',
+        makingCharges: '3.8',
+        desc: 'Exquisite 5g gold coin featuring a detailed bas-relief of Goddess Laxmi, the embodiment of wealth and fortune. Sealed in tamper-proof premium assay card certification.',
+        hallmark: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
+        available: true,
+        category: 'gold-coins',
+        categoryType: 'Gold',
+        stockQty: 100
+      },
+      {
+        id: 'coin-3',
+        name: '24K Imperial Bikaneri Mint Coin',
+        purity: '24K',
+        carat: '24K',
+        weight: '20',
+        img: 'gold_bullion_coin',
+        makingCharges: '3.0',
+        desc: 'Heavyweight investment-grade 20g minted coin showcasing custom geometric royal floral grids representing standard Rajasthani artistry.',
+        hallmark: 'BIS Hallmarked & NABL Accredited Refinery Cert',
+        available: true,
+        category: 'gold-coins',
+        categoryType: 'Gold',
+        stockQty: 100
+      },
+      {
+        id: 'coin-4',
+        name: '24K Sovereign Bullion Mint Coin',
+        purity: '24K',
+        carat: '24K',
+        weight: '50',
+        img: 'gold_bullion_coin',
+        makingCharges: '2.5',
+        desc: 'Premium institutional 50g solid gold bullion coin with serialized laser-etched registry code. High purity asset for absolute portfolio hedging.',
+        hallmark: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
+        available: true,
+        category: 'gold-coins',
+        categoryType: 'Gold',
+        stockQty: 100
+      },
+      {
+        id: 'coin-5',
+        name: '24K Devotion Ganesha Mint Coin',
+        purity: '24K',
+        carat: '24K',
+        weight: '2',
+        img: 'laxmi_gold_coin',
+        makingCharges: '4.5',
+        desc: 'Intricately pressed 2g gold coin featuring Lord Ganesha. Perfect for Diwali celebrations, Akshaya Tritiya, wedding gifting, or personal altars.',
+        hallmark: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
+        available: true,
+        category: 'gold-coins',
+        categoryType: 'Gold',
+        stockQty: 100
+      },
+      {
+        id: 'coin-6',
+        name: '24K Shubh Labh Auspicious Gift Coin',
+        purity: '24K',
+        carat: '24K',
+        weight: '1',
+        img: 'laxmi_gold_coin',
+        makingCharges: '5.0',
+        desc: 'Elegant 1g gold coin carrying the holy "Shubh Labh" scripts. Designed as an auspicious premium token to celebrate milestones and corporate blessings.',
+        hallmark: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
+        available: true,
+        category: 'gold-coins',
+        categoryType: 'Gold',
+        stockQty: 100
+      },
+      {
+        id: 'coin-7',
+        name: '22K Bikaneri Royal Heritage Coin',
+        purity: '22K',
+        carat: '22K',
+        weight: '10',
+        img: 'laxmi_gold_coin',
+        makingCharges: '4.0',
+        desc: 'Generational 22K (916) pure gold medallion carrying the official showroom emblem of HR Jewellers & Sons. Extremely durable alloy structure made for custom jewellery settings.',
+        hallmark: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
+        available: true,
+        category: 'gold-coins',
+        categoryType: 'Gold',
+        stockQty: 100
+      },
+      {
+        id: 'coin-8',
+        name: '22K Rajputana Crest Gold Coin',
+        purity: '22K',
+        carat: '22K',
+        weight: '8',
+        img: 'gold_bullion_coin',
+        makingCharges: '4.2',
+        desc: 'Stately 8g sovereign weight gold medallion embossed with the ancient shield crest of Rajputana warriors. A spectacular symbol of lineage, heritage, and pride.',
+        hallmark: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
+        available: true,
+        category: 'gold-coins',
+        categoryType: 'Gold',
+        stockQty: 100
+      },
+      {
+        id: 'coin-9',
+        name: '22K Golden Kalash Puja Token',
+        purity: '22K',
+        carat: '22K',
+        weight: '5',
+        img: 'laxmi_gold_coin',
+        makingCharges: '4.5',
+        desc: 'Beautiful 5g gold coin featuring the sacred Kalash, mango leaves, and coconut, symbolizing life, health, and spiritual abundance.',
+        hallmark: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
+        available: true,
+        category: 'gold-coins',
+        categoryType: 'Gold',
+        stockQty: 100
+      },
+      {
+        id: 'coin-10',
+        name: '24K Imperial Lakshmi Coin',
+        purity: '24K',
+        carat: '24K',
+        weight: '8',
+        img: 'laxmi_gold_coin',
+        makingCharges: '3.6',
+        desc: 'A sovereign weight 8g pure gold coin, struck with an exquisite motif of Goddess Lakshmi sitting gracefully on a lotus, bordered with elegant traditional arches.',
+        hallmark: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
+        available: true,
+        category: 'gold-coins',
+        categoryType: 'Gold',
+        stockQty: 100
+      },
+      {
+        id: 'coin-11',
+        name: '24K Micro-Bullion Savings Coin',
+        purity: '24K',
+        carat: '24K',
+        weight: '0.5',
+        img: 'gold_bullion_coin',
+        makingCharges: '6.0',
+        desc: 'An affordable entry-point 0.5g gold coin for regular savings accumulation. Encased in a beautiful gift-ready card with tamper-evident seal.',
+        hallmark: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
+        available: true,
+        category: 'gold-coins',
+        categoryType: 'Gold',
+        stockQty: 100
+      },
+      {
+        id: 'coin-12',
+        name: '22K Classic Sovereign Coin',
+        purity: '22K',
+        carat: '22K',
+        weight: '20',
+        img: 'gold_bullion_coin',
+        makingCharges: '3.2',
+        desc: 'Premium 20g 22K durable gold coin designed for investors looking for heavier weight with royal finish, perfect for melting or passing down as an heirloom.',
+        hallmark: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
+        available: true,
+        category: 'gold-coins',
+        categoryType: 'Gold',
+        stockQty: 100
+      }
+    ];
+
+    for (const coin of coinsToSeed) {
+      try {
+        await setDoc(doc(db, 'products', coin.id), coin);
+        console.log("Seeded coin:", coin.id);
+      } catch (e) {
+        console.error("Error seeding coin:", coin.id, e);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const hasSeeded = localStorage.getItem('hrj_coins_seeded');
+    if (!hasSeeded && products.length > 0) {
+      const hasCoins = products.some(p => (p.category || '').toLowerCase() === 'gold-coins');
+      if (!hasCoins) {
+        seedCoinsToFirestore();
+      }
+      localStorage.setItem('hrj_coins_seeded', 'true');
+    }
+  }, [products]);
+
   // ==========================================
   // DB SEEDING AND SYNCING
   // ==========================================
@@ -2007,9 +2103,9 @@ export default function App() {
       console.warn("History pushState blocked by browser sandbox/policy:", e);
     }
     try {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch {
       window.scrollTo(0, 0);
+    } catch (e) {
+      console.warn("scrollTo failed:", e);
     }
   };
 
@@ -8078,7 +8174,7 @@ export default function App() {
 
                       {/* EMI Information */}
                       <p className="text-xs text-[#5E5E5E] font-light leading-relaxed">
-                        No Cost EMI starts at <span className="font-semibold text-[#181818]">₹{formatPrice(Math.round(detailProduct.price / 6))}/month</span> for 6 months · <button onClick={() => { triggerAudio('click'); navigateTo('savings'); }} className="text-[#B8893C] hover:text-[#A8772D] font-medium transition-colors duration-300 hover:underline cursor-pointer">View Plans</button>
+                        No Cost EMI starts at <span className="font-semibold text-[#181818]">₹{formatPrice(Math.round(detailProduct.price / 6))}/month</span> for 6 months · <button onClick={() => { triggerAudio('click'); navigateTo('terms-and-conditions'); }} className="text-[#B8893C] hover:text-[#A8772D] font-medium transition-colors duration-300 hover:underline cursor-pointer">T&C</button>
                       </p>
                     </div>
 
@@ -8182,22 +8278,22 @@ export default function App() {
                         <button
                           onClick={() => {
                             handleAddToCart({ ...detailProduct, carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedRingSize}`, desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc });
-                            navigateTo('cart');
                           }}
-                          className="flex-1 h-[60px] bg-[#181818] hover:bg-[#181818]/90 text-white font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 rounded-none flex items-center justify-center hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                          className="flex-1 h-[60px] bg-gradient-to-r from-[#B8893C] via-[#D5A75C] to-[#B8893C] hover:brightness-110 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all duration-300 rounded-lg flex items-center justify-center hover:scale-[1.01] active:scale-[0.99] cursor-pointer shadow-md"
                         >
                           BUY NOW
                         </button>
 
-                        {/* Secondary: ADD TO BAG */}
+                        {/* Secondary: 11+1 PLAN */}
                         <button
                           onClick={() => {
                             triggerAudio('click');
-                            handleAddToCart({ ...detailProduct, carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedRingSize}`, desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc });
+                            setPlanModalProduct(detailProduct);
+                            setPlanModalOpen(true);
                           }}
-                          className="flex-1 h-[60px] border border-[#181818] text-[#181818] bg-white hover:bg-[#F7F3EE] font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 rounded-none flex items-center justify-center hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                          className="flex-1 h-[60px] bg-gradient-to-r from-[#4A126D] via-[#7B2CBF] to-[#4A126D] hover:brightness-110 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all duration-300 rounded-lg flex items-center justify-center hover:scale-[1.01] active:scale-[0.99] cursor-pointer shadow-md"
                         >
-                          ADD TO BAG
+                          11+1 PLAN
                         </button>
                       </div>
 
@@ -8410,6 +8506,256 @@ export default function App() {
                       </details>
                     </div>
 
+                    {/* Price & Savings Details Section */}
+                    {(() => {
+                      const finalPrice = Number(detailProduct.price || 0);
+                      if (!finalPrice) return null;
+
+                      const carat = pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : (detailProduct.metalPurity || detailProduct.carat || '22K');
+                      const netWeight = parseFloat(detailProduct.netWeight || detailProduct.weight) || 1.687;
+                      
+                      const isSilver = (detailProduct.categoryType || '').toLowerCase() === 'silver' || (detailProduct.category || '').toLowerCase().includes('silver') || carat.toLowerCase().includes('92.5') || carat.toLowerCase().includes('925');
+                      const rate24kPerGram = (isSilver ? (silverRate || 92.10) : (goldRate24k || 72000)) / 10;
+                      
+                      let purityMultiplier = 0.9167; // 22K default
+                      if (isSilver) {
+                        purityMultiplier = 0.925; // 92.5 default
+                        if (carat.includes('999')) purityMultiplier = 1.0;
+                      } else {
+                        if (carat.toUpperCase().includes('24') || carat.includes('999')) purityMultiplier = 1.0;
+                        else if (carat.toUpperCase().includes('22')) purityMultiplier = 0.9167;
+                        else if (carat.toUpperCase().includes('20')) purityMultiplier = 0.8333;
+                        else if (carat.toUpperCase().includes('18')) purityMultiplier = 0.75;
+                        else if (carat.toUpperCase().includes('14')) purityMultiplier = 0.5833;
+                        else if (carat.toUpperCase().includes('9K')) purityMultiplier = 0.375;
+                      }
+                      
+                      const goldRatePerGram = Math.round(rate24kPerGram * purityMultiplier);
+                      const goldMetalValue = Math.round(goldRatePerGram * netWeight);
+
+                      const hasDiamond = detailProduct.category === 'diamond' || !!detailProduct.diamondCarat || !!detailProduct.diamondWeight || !!detailProduct.diamondValue;
+                      
+                      const diamondDiscountPercent = parseFloat(detailProduct.discountOffDiamond) !== undefined && detailProduct.discountOffDiamond !== '' ? parseFloat(detailProduct.discountOffDiamond) : 25;
+                      const makingChargeDiscountPercent = parseFloat(detailProduct.discountOffMaking) !== undefined && detailProduct.discountOffMaking !== '' ? parseFloat(detailProduct.discountOffMaking) : 30;
+                      const makingChargePercent = parseFloat(detailProduct.makingCharges) !== undefined && detailProduct.makingCharges !== '' ? parseFloat(detailProduct.makingCharges) : 12;
+
+                      // Estimates
+                      const baseMakingChargesEstimate = Math.round(goldMetalValue * (makingChargePercent / 100));
+                      const discountedMakingChargesEstimate = Math.round(baseMakingChargesEstimate * (1 - makingChargeDiscountPercent / 100));
+                      
+                      const baseDiamondValueEstimate = Number(detailProduct.diamondValue) || (parseFloat(detailProduct.diamondCarat || detailProduct.diamondWeight || 0) * 80000) || 0;
+                      const discountedDiamondValueEstimate = Math.round(baseDiamondValueEstimate * (1 - diamondDiscountPercent / 100));
+
+                      const totalEstimateExtra = discountedDiamondValueEstimate + discountedMakingChargesEstimate;
+
+                      // Reverse engineer the exact values to sum to finalPrice
+                      const discountedGst = Math.round(finalPrice * 3 / 103);
+                      const discountedSubtotal = finalPrice - discountedGst;
+                      const remainingDiscounted = discountedSubtotal - goldMetalValue;
+
+                      let discountedDiamondValue = 0;
+                      let discountedMakingCharges = 0;
+
+                      if (totalEstimateExtra > 0) {
+                        const diamondRatio = discountedDiamondValueEstimate / totalEstimateExtra;
+                        discountedDiamondValue = Math.max(0, Math.round(remainingDiscounted * diamondRatio));
+                        discountedMakingCharges = Math.max(0, remainingDiscounted - discountedDiamondValue);
+                      } else {
+                        discountedMakingCharges = Math.max(0, remainingDiscounted);
+                      }
+
+                      const baseDiamondValue = Math.round(discountedDiamondValue / (1 - diamondDiscountPercent / 100));
+                      const baseMakingCharges = Math.round(discountedMakingCharges / (1 - makingChargeDiscountPercent / 100));
+
+                      const originalSubtotal = goldMetalValue + baseMakingCharges + baseDiamondValue;
+                      const originalGst = Math.round(originalSubtotal * 0.03);
+                      const originalTotal = originalSubtotal + originalGst;
+                      const saveAmount = Math.max(0, originalTotal - finalPrice);
+
+                      // Price comparison details
+                      const minedDiamondPrice = Math.round(discountedDiamondValue * 3.5627);
+                      const diamondSaving = Math.max(0, minedDiamondPrice - discountedDiamondValue);
+
+                      return (
+                        <div className="pt-6 space-y-4 select-none">
+                          <h4 className="text-[10px] font-semibold text-[#181818] uppercase tracking-[0.2em]">
+                            Price &amp; Savings Details:
+                          </h4>
+
+                          <div className="bg-[#FAF9F6] border border-[#E7DED2]/60 rounded-3xl p-6 space-y-6 shadow-xs">
+                            {/* Tab Switcher */}
+                            <div className="flex bg-[#F5F2EB]/60 rounded-full border border-[#E7DED2]/40 p-1">
+                              <button
+                                onClick={() => { triggerAudio('click'); setPdpPriceTab('breakup'); }}
+                                className={`flex-1 py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-full transition-all cursor-pointer ${
+                                  pdpPriceTab === 'breakup'
+                                    ? 'bg-[#8A5A44] text-white shadow-md'
+                                    : 'text-gray-500 hover:text-gray-800'
+                                }`}
+                              >
+                                Price Breakup
+                              </button>
+                              <button
+                                onClick={() => { triggerAudio('click'); setPdpPriceTab('comparison'); }}
+                                className={`flex-1 py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-full transition-all cursor-pointer ${
+                                  pdpPriceTab === 'comparison'
+                                    ? 'bg-[#8A5A44] text-white shadow-md'
+                                    : 'text-gray-500 hover:text-gray-800'
+                                }`}
+                              >
+                                Price Comparison
+                              </button>
+                            </div>
+
+                            {/* Content Tabs */}
+                            {pdpPriceTab === 'breakup' ? (
+                              <div className="space-y-4 text-xs font-light text-gray-700">
+                                {/* Gold Row */}
+                                <div className="flex justify-between items-center py-1">
+                                  <span>
+                                    {carat} {isSilver ? 'silver' : 'gold'} ({netWeight}g @ ₹{goldRatePerGram.toLocaleString('en-IN')}/g)
+                                  </span>
+                                  <span className="font-semibold font-mono text-gray-900">
+                                    ₹{goldMetalValue.toLocaleString('en-IN')}
+                                  </span>
+                                </div>
+
+                                {/* Diamond Row */}
+                                {hasDiamond && (
+                                  <div className="flex justify-between items-center py-1">
+                                    <div className="flex items-center gap-2">
+                                      <span>
+                                        Diamond ({detailProduct.diamondQuantity || '1 pcs'}, {detailProduct.diamondCarat || detailProduct.diamondWeight || '0.339ct'})
+                                      </span>
+                                      <span className="bg-[#E8F5E9] text-[#006361] text-[9px] font-bold px-1.5 py-0.5 rounded">
+                                        {diamondDiscountPercent}% OFF
+                                      </span>
+                                    </div>
+                                    <div className="space-x-2 font-mono">
+                                      <span className="text-gray-400 line-through">
+                                        ₹{baseDiamondValue.toLocaleString('en-IN')}
+                                      </span>
+                                      <span className="font-semibold text-gray-900">
+                                        ₹{discountedDiamondValue.toLocaleString('en-IN')}
+                                      </span>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Making Charges Row */}
+                                <div className="flex justify-between items-center py-1">
+                                  <div className="flex items-center gap-2">
+                                    <span>Making Charges</span>
+                                    <span className="bg-[#E8F5E9] text-[#006361] text-[9px] font-bold px-1.5 py-0.5 rounded">
+                                      {makingChargeDiscountPercent}% OFF
+                                    </span>
+                                  </div>
+                                  <div className="space-x-2 font-mono">
+                                    <span className="text-gray-400 line-through">
+                                      ₹{baseMakingCharges.toLocaleString('en-IN')}
+                                    </span>
+                                    <span className="font-semibold text-gray-900">
+                                      ₹{discountedMakingCharges.toLocaleString('en-IN')}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* GST Row */}
+                                <div className="flex justify-between items-center py-1">
+                                  <span>GST (3%)</span>
+                                  <div className="space-x-2 font-mono">
+                                    <span className="text-gray-400 line-through">
+                                      ₹{originalGst.toLocaleString('en-IN')}
+                                    </span>
+                                    <span className="font-semibold text-gray-900">
+                                      ₹{discountedGst.toLocaleString('en-IN')}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <hr className="border-gray-200/60 my-2" />
+
+                                {/* Total Row */}
+                                <div className="flex justify-between items-center text-sm font-bold text-gray-900">
+                                  <span>Total</span>
+                                  <span className="font-mono text-base">
+                                    ₹{finalPrice.toLocaleString('en-IN')}
+                                  </span>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="space-y-4 text-xs font-light text-gray-700">
+                                {/* Price Comparison Table */}
+                                <div className="overflow-x-auto">
+                                  <table className="w-full text-left border-collapse">
+                                    <thead>
+                                      <tr className="border-b border-gray-200/60 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                                        <th className="py-2.5">Diamond Comparison</th>
+                                        <th className="py-2.5">Lucira Grown Diamond</th>
+                                        <th className="py-2.5">Mined Diamond</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-200/40 text-[11px]">
+                                      <tr>
+                                        <td className="py-3 font-medium text-gray-500">₹ Price</td>
+                                        <td className="py-3 font-mono font-bold text-gray-900">
+                                          ₹{discountedDiamondValue.toLocaleString('en-IN')}
+                                        </td>
+                                        <td className="py-3 font-mono text-gray-500">
+                                          ₹{minedDiamondPrice.toLocaleString('en-IN')}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td className="py-3 font-medium text-gray-500">💎 Carat</td>
+                                        <td className="py-3 text-gray-900 font-semibold">
+                                          {detailProduct.diamondCarat || detailProduct.diamondWeight || '0.339ct'}
+                                        </td>
+                                        <td className="py-3 text-gray-500">
+                                          {detailProduct.diamondCarat || detailProduct.diamondWeight || '0.339ct'}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td className="py-3 font-medium text-gray-500">🔍 Clarity</td>
+                                        <td className="py-3 text-gray-900 font-semibold">
+                                          {detailProduct.diamondClarity || 'E-F'}
+                                        </td>
+                                        <td className="py-3 text-gray-500">SI</td>
+                                      </tr>
+                                      <tr>
+                                        <td className="py-3 font-medium text-gray-500">🎨 Color</td>
+                                        <td className="py-3 text-gray-900 font-semibold">
+                                          {detailProduct.diamondColor || 'VVS/VS'}
+                                        </td>
+                                        <td className="py-3 text-gray-500">IJ</td>
+                                      </tr>
+                                      <tr className="font-bold">
+                                        <td className="py-3 text-gray-900">Total Saving</td>
+                                        <td className="py-3 text-[#006361] font-mono">
+                                          ₹{diamondSaving.toLocaleString('en-IN')}
+                                        </td>
+                                        <td className="py-3 text-[#EF5A3F] font-mono">₹0</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Save Green Banner */}
+                          {saveAmount > 0 && (
+                            <div className="bg-[#EEF7F2] border border-[#A3D9C9] rounded-xl px-5 py-4 flex items-center justify-between text-xs">
+                              <span className="font-bold text-[#006361] uppercase tracking-wider">
+                                Save on this jewelry
+                              </span>
+                              <span className="font-mono font-black text-sm text-[#006361]">
+                                ₹{saveAmount.toLocaleString('en-IN')}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
 
                 </div>
@@ -8813,14 +9159,14 @@ export default function App() {
                 </div>
                 <div className="flex gap-2 flex-1 justify-end ml-4">
                   <button
-                    onClick={() => handleAddToCart({
-                      ...detailProduct,
-                      carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedRingSize}`,
-                      desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc
-                    })}
-                    className="flex-1 max-w-[100px] py-2.5 bg-white border border-[#181818] text-[#181818] font-medium text-[9px] uppercase tracking-widest rounded-none transition-all duration-250 text-center font-sans active:scale-95 cursor-pointer"
+                    onClick={() => {
+                      triggerAudio('click');
+                      setPlanModalProduct(detailProduct);
+                      setPlanModalOpen(true);
+                    }}
+                    className="flex-1 max-w-[100px] py-2.5 bg-gradient-to-r from-[#4A126D] to-[#7B2CBF] text-white font-bold text-[9px] uppercase tracking-widest rounded-md transition-all duration-250 text-center font-sans active:scale-95 cursor-pointer shadow-sm hover:brightness-110"
                   >
-                    Add
+                    11+1 Plan
                   </button>
                   <button
                     onClick={() => {
@@ -8829,9 +9175,8 @@ export default function App() {
                         carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedRingSize}`,
                         desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc
                       });
-                      navigateTo('cart');
                     }}
-                    className="flex-1 max-w-[120px] py-2.5 bg-[#181818] hover:bg-[#181818]/90 text-white font-medium text-[9px] uppercase tracking-widest rounded-none transition-all duration-250 text-center font-sans active:scale-95 cursor-pointer"
+                    className="flex-1 max-w-[120px] py-2.5 bg-gradient-to-r from-[#B8893C] to-[#D5A75C] text-white font-bold text-[9px] uppercase tracking-widest rounded-md transition-all duration-250 text-center font-sans active:scale-95 cursor-pointer shadow-sm hover:brightness-110"
                   >
                     Buy Now
                   </button>
@@ -8873,15 +9218,12 @@ export default function App() {
                       <button
                         onClick={() => {
                           triggerAudio('click');
-                          handleAddToCart({
-                            ...detailProduct,
-                            carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedRingSize}`,
-                            desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc
-                          });
+                          setPlanModalProduct(detailProduct);
+                          setPlanModalOpen(true);
                         }}
-                        className="h-10 px-6 bg-[#181818] hover:bg-[#181818]/90 text-white font-semibold text-[10px] uppercase tracking-[0.2em] transition-all duration-300 rounded-none flex items-center justify-center cursor-pointer"
+                        className="h-10 px-6 bg-gradient-to-r from-[#4A126D] to-[#7B2CBF] text-white font-bold text-[10px] uppercase tracking-[0.2em] transition-all duration-300 rounded-md flex items-center justify-center cursor-pointer shadow-sm hover:brightness-110"
                       >
-                        ADD TO CART
+                        11+1 PLAN
                       </button>
 
                       {/* Home icon button */}
@@ -10636,8 +10978,10 @@ export default function App() {
           {/* ==========================================================
             E.2 GOLD COINS PAGE BLOCK
             ========================================== */}
-          {currentPage === 'gold-coins' && (
-            <div className={`transition-colors duration-500 min-h-screen pb-20 ${isCatalogDark ? 'bg-[#4A126D] text-[#FBF9FF]' : 'bg-[#FBF9FF] text-[#4A126D]'}`}>
+          {currentPage === 'gold-coins' && (() => {
+            const isCatalogDark = false;
+            return (
+              <div className={`transition-colors duration-500 min-h-screen pb-20 ${isCatalogDark ? 'bg-[#4A126D] text-[#FBF9FF]' : 'bg-[#FBF9FF] text-[#4A126D]'}`}>
               {/* 1. HERO BANNER */}
               <div className="relative overflow-hidden py-24 sm:py-32 select-none border-b border-gold/25" style={{ background: isCatalogDark ? 'radial-gradient(circle at 70% 30%, #161F38 0%, #0B0E17 100%)' : 'radial-gradient(circle at 70% 30%, #F4F0EB 0%, #FBF9FF 100%)' }}>
                 {/* Background gold particles & spotlights */}
@@ -10698,7 +11042,7 @@ export default function App() {
                     <div className="absolute w-[320px] h-[320px] rounded-full bg-gold/10 blur-3xl pointer-events-none" />
 
                     {/* Coin 1: Temple Coin (Center Main) */}
-                    <div className="relative z-30 transform hover:scale-105 transition-transform duration-500 animate-float-gentle group cursor-pointer select-none" onClick={() => { triggerAudio('shimmer'); setCoinDetailOpen(GOLD_COINS_DATA[0]); setCoinDetailImg(0); }}>
+                    <div className="relative z-30 transform hover:scale-105 transition-transform duration-500 animate-float-gentle group cursor-pointer select-none" onClick={() => { if (GOLD_COINS_DATA && GOLD_COINS_DATA[0]) { triggerAudio('shimmer'); setCoinDetailOpen(GOLD_COINS_DATA[0]); setCoinDetailImg(0); } }}>
                       <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full border-[6px] border-gold/45 bg-gradient-to-br from-gold via-[#F2D8FF] to-[#DDA0DD] shadow-2xl relative overflow-hidden flex items-center justify-center p-2">
                         <div className="absolute inset-0 bg-cover bg-center opacity-30 select-none pointer-events-none" style={{ backgroundImage: `url(${laxmiGoldCoin})` }} />
                         <div className="absolute inset-3 border-2 border-gold/30 rounded-full flex flex-col items-center justify-center text-center p-4 bg-gold/10 backdrop-blur-[1px] select-none">
@@ -10713,7 +11057,7 @@ export default function App() {
                     </div>
 
                     {/* Coin 2: 22K Coin (Floating Right-Top) */}
-                    <div className="absolute right-[-15px] top-[5%] z-20 transform scale-[0.7] hover:scale-[0.75] transition-all duration-500 animate-float-gentle cursor-pointer select-none" style={{ animationDelay: '1.2s' }} onClick={() => { triggerAudio('shimmer'); setCoinDetailOpen(GOLD_COINS_DATA[6]); setCoinDetailImg(0); }}>
+                    <div className="absolute right-[-15px] top-[5%] z-20 transform scale-[0.7] hover:scale-[0.75] transition-all duration-500 animate-float-gentle cursor-pointer select-none" style={{ animationDelay: '1.2s' }} onClick={() => { if (GOLD_COINS_DATA && GOLD_COINS_DATA[6]) { triggerAudio('shimmer'); setCoinDetailOpen(GOLD_COINS_DATA[6]); setCoinDetailImg(0); } }}>
                       <div className="w-36 h-36 rounded-full border-[4px] border-gold/40 bg-gradient-to-br from-gold via-[#F2D8FF] to-[#DDA0DD] shadow-xl flex items-center justify-center p-2 relative overflow-hidden group">
                         <div className="absolute inset-1.5 border border-gold/30 rounded-full flex flex-col items-center justify-center text-center p-2">
                           <span className="text-xl">👑</span>
@@ -10727,7 +11071,7 @@ export default function App() {
                     </div>
 
                     {/* Coin 3: 24K Coin (Floating Left-Top) */}
-                    <div className="absolute left-[-20px] top-[10%] z-15 transform scale-[0.75] hover:scale-[0.8] transition-all duration-500 animate-float-gentle cursor-pointer select-none" style={{ animationDelay: '2.4s' }} onClick={() => { triggerAudio('shimmer'); setCoinDetailOpen(GOLD_COINS_DATA[2]); setCoinDetailImg(0); }}>
+                    <div className="absolute left-[-20px] top-[10%] z-15 transform scale-[0.75] hover:scale-[0.8] transition-all duration-500 animate-float-gentle cursor-pointer select-none" style={{ animationDelay: '2.4s' }} onClick={() => { if (GOLD_COINS_DATA && GOLD_COINS_DATA[2]) { triggerAudio('shimmer'); setCoinDetailOpen(GOLD_COINS_DATA[2]); setCoinDetailImg(0); } }}>
                       <div className="w-40 h-40 rounded-full border-[4px] border-gold/40 bg-gradient-to-br from-gold via-[#F2D8FF] to-[#DDA0DD] shadow-xl flex items-center justify-center p-2 relative overflow-hidden group">
                         <div className="absolute inset-1.5 border border-gold/30 rounded-full flex flex-col items-center justify-center text-center p-2">
                           <span className="text-xl">🪙</span>
@@ -10741,7 +11085,7 @@ export default function App() {
                     </div>
 
                     {/* Coin 4: Lakshmi Coin (Floating Right-Bottom) */}
-                    <div className="absolute right-[5%] bottom-[-5%] z-25 transform scale-[0.8] hover:scale-[0.85] transition-all duration-500 animate-float-gentle cursor-pointer select-none" style={{ animationDelay: '1.8s' }} onClick={() => { triggerAudio('shimmer'); setCoinDetailOpen(GOLD_COINS_DATA[1]); setCoinDetailImg(0); }}>
+                    <div className="absolute right-[5%] bottom-[-5%] z-25 transform scale-[0.8] hover:scale-[0.85] transition-all duration-500 animate-float-gentle cursor-pointer select-none" style={{ animationDelay: '1.8s' }} onClick={() => { if (GOLD_COINS_DATA && GOLD_COINS_DATA[1]) { triggerAudio('shimmer'); setCoinDetailOpen(GOLD_COINS_DATA[1]); setCoinDetailImg(0); } }}>
                       <div className="w-38 h-38 rounded-full border-[4.5px] border-gold/45 bg-gradient-to-br from-gold via-[#F2D8FF] to-[#DDA0DD] shadow-2xl flex items-center justify-center p-2 relative overflow-hidden group">
                         <div className="absolute inset-1.5 border border-gold/35 rounded-full flex flex-col items-center justify-center text-center p-2">
                           <span className="text-2xl filter drop-shadow-md">🪷</span>
@@ -10754,7 +11098,7 @@ export default function App() {
                     </div>
 
                     {/* Coin 5: Gift Coin (Floating Left-Bottom) */}
-                    <div className="absolute left-[8%] bottom-[-8%] z-10 transform scale-[0.6] hover:scale-[0.65] transition-all duration-500 animate-float-gentle cursor-pointer select-none" style={{ animationDelay: '3.0s' }} onClick={() => { triggerAudio('shimmer'); setCoinDetailOpen(GOLD_COINS_DATA[5]); setCoinDetailImg(0); }}>
+                    <div className="absolute left-[8%] bottom-[-8%] z-10 transform scale-[0.6] hover:scale-[0.65] transition-all duration-500 animate-float-gentle cursor-pointer select-none" style={{ animationDelay: '3.0s' }} onClick={() => { if (GOLD_COINS_DATA && GOLD_COINS_DATA[5]) { triggerAudio('shimmer'); setCoinDetailOpen(GOLD_COINS_DATA[5]); setCoinDetailImg(0); } }}>
                       <div className="w-32 h-32 rounded-full border-[3px] border-gold/35 bg-gradient-to-br from-gold via-[#F2D8FF] to-[#DDA0DD] shadow-lg flex items-center justify-center p-1.5 relative overflow-hidden group">
                         <div className="absolute inset-1 border border-gold/20 rounded-full flex flex-col items-center justify-center text-center p-2">
                           <span className="text-lg">✨</span>
@@ -11279,8 +11623,9 @@ export default function App() {
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+              </div>
+            );
+          })()}
 
           {/* ==========================================
             F. CONTACT / Lounge Suites PAGE VIEW
@@ -12537,7 +12882,7 @@ export default function App() {
                 {/* Back CTA Button */}
                 <div className="text-center pt-8 pb-4">
                   <button
-                    onClick={() => { triggerAudio('click'); navigateTo('savings'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                    onClick={() => { triggerAudio('click'); navigateTo('savings'); }}
                     className="inline-flex items-center space-x-2 bg-[#4A126D] hover:bg-[#2C133C] text-white font-bold text-xs uppercase tracking-widest px-8 py-4 rounded-xl transition-all shadow-md transform hover:-translate-y-0.5 hover:shadow-lg duration-300"
                   >
                     <span>←</span> <span>Back to GRP Savings Scheme</span>
@@ -13727,10 +14072,14 @@ export default function App() {
 
               <div className="flex gap-2">
                 <button
-                  onClick={() => { handleAddToCart(selectedProduct); setSelectedProduct(null); }}
-                  className="flex-1 bg-[#4A126D] hover:bg-[#2C133C] text-white font-bold text-xs uppercase py-3.5 rounded-xl transition-all shadow-md text-center"
+                  onClick={() => {
+                    setPlanModalProduct(selectedProduct);
+                    setPlanModalOpen(true);
+                    setSelectedProduct(null);
+                  }}
+                  className="flex-1 bg-gradient-to-r from-[#4A126D] to-[#7B2CBF] text-white font-bold text-xs uppercase py-3.5 rounded-xl transition-all shadow-md text-center hover:brightness-110"
                 >
-                  Add To Bag
+                  11+1 Plan
                 </button>
                 <button
                   onClick={() => { navigateToPDP(selectedProduct); setSelectedProduct(null); }}
@@ -13742,6 +14091,189 @@ export default function App() {
             </div>
           </div>
         )}
+
+        {/* H. GOLD MINE 11+1 PLAN MODAL */}
+        {planModalOpen && planModalProduct && (() => {
+          const prod = planModalProduct;
+          const monthlyAmount = Math.round(prod.price / 12 / 100) * 100;
+          const totalPayment = monthlyAmount * 11;
+          const discount = monthlyAmount;
+          const jewelleryWorth = monthlyAmount * 12;
+          const effectivePayment = totalPayment;
+          
+          return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <div className="absolute inset-0 bg-[#4A126D]/60 backdrop-blur-sm transition-opacity" onClick={() => setPlanModalOpen(false)} />
+              <div className="bg-white border border-gray-150 rounded-[2rem] p-8 max-w-4xl w-full relative z-10 shadow-2xl space-y-6 animate-fade-in text-xs text-gray-700">
+                
+                {/* Header */}
+                <div className="flex justify-between items-center pb-2">
+                  <h3 className="serif-luxury text-3xl font-bold text-[#0B2341] text-center w-full relative left-3">
+                    Gold Mine 11+1 Plan
+                  </h3>
+                  <button 
+                    onClick={() => setPlanModalOpen(false)} 
+                    className="text-gray-400 hover:text-gray-650 text-2xl font-bold p-1 focus:outline-none transition-colors"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Sub-header Bar */}
+                <div className="bg-gray-50 border border-gray-100 rounded-xl py-3.5 px-6 flex flex-col md:flex-row md:items-center justify-between text-[11px] font-semibold text-gray-600 gap-2.5">
+                  <div className="flex items-center gap-1">
+                    <span className="text-gray-400">Selected Product:</span>
+                    <span className="text-[#0B2341] font-bold">{prod.name}</span>
+                  </div>
+                  <div className="hidden md:block w-px h-4 bg-gray-200" />
+                  <div className="flex items-center gap-1">
+                    <span className="text-gray-400">Product Value:</span>
+                    <span className="text-[#0B2341] font-bold">₹{Number(prod.price).toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="hidden md:block w-px h-4 bg-gray-200" />
+                  <div className="flex items-center gap-1">
+                    <span className="text-gray-400">Recommended Monthly Amount:</span>
+                    <span className="text-[#0B2341] font-bold">₹{monthlyAmount.toLocaleString('en-IN')}</span>
+                  </div>
+                </div>
+
+                {/* Two-Column Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch pt-2">
+                  
+                  {/* Left Column: 3 Steps */}
+                  <div className="space-y-6 relative flex flex-col justify-between py-2">
+                    {/* Vertical Connecting Line */}
+                    <div className="absolute left-[36px] top-6 bottom-6 w-0.5 border-l border-dashed border-blue-200 -z-10" />
+
+                    {/* Step 1 */}
+                    <div className="flex items-start space-x-4">
+                      {/* Step Indicator */}
+                      <div className="w-5 h-5 rounded-full bg-blue-50 border border-blue-200 text-blue-600 font-bold flex items-center justify-center text-[10px] shrink-0 mt-2">
+                        1
+                      </div>
+                      {/* Blue Circle Icon */}
+                      <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                      </div>
+                      <div className="text-left space-y-0.5">
+                        <h4 className="font-bold text-[#0B2341] text-sm">Pay Monthly</h4>
+                        <p className="text-gray-500 text-[11px] leading-relaxed">11 month installments with easy payment options</p>
+                      </div>
+                    </div>
+
+                    {/* Step 2 */}
+                    <div className="flex items-start space-x-4">
+                      <div className="w-5 h-5 rounded-full bg-blue-50 border border-blue-200 text-blue-600 font-bold flex items-center justify-center text-[10px] shrink-0 mt-2">
+                        2
+                      </div>
+                      <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2zM9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h4M9 16v-4.586a1 1 0 01.293-.707l3-3a1 1 0 011.414 0l3 3a1 1 0 01.293.707V16" />
+                        </svg>
+                      </div>
+                      <div className="text-left space-y-0.5">
+                        <h4 className="font-bold text-[#0B2341] text-sm">Get Special Discount</h4>
+                        <p className="text-gray-500 text-[11px] leading-relaxed">Get 1 monthly installment for FREE in the 12th month</p>
+                      </div>
+                    </div>
+
+                    {/* Step 3 */}
+                    <div className="flex items-start space-x-4">
+                      <div className="w-5 h-5 rounded-full bg-blue-50 border border-blue-200 text-blue-600 font-bold flex items-center justify-center text-[10px] shrink-0 mt-2">
+                        3
+                      </div>
+                      <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                      </div>
+                      <div className="text-left space-y-0.5">
+                        <h4 className="font-bold text-[#0B2341] text-sm">Redeem & Purchase</h4>
+                        <p className="text-gray-500 text-[11px] leading-relaxed">Redeem final amount after 12 months to purchase the jewellery of your choice</p>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* Right Column: Calculator Summary */}
+                  <div className="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-xs flex flex-col justify-between space-y-4">
+                    <div className="space-y-3.5 text-left">
+                      
+                      {/* Row 1 */}
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-gray-500 font-medium">Recommended Monthly Amount</span>
+                        <span className="text-gray-900 font-bold text-sm">₹{monthlyAmount.toLocaleString('en-IN')}</span>
+                      </div>
+
+                      {/* Row 2 */}
+                      <div className="flex justify-between items-center text-xs">
+                        <div className="text-left">
+                          <span className="text-gray-500 font-medium block">Your total payment</span>
+                          <span className="text-[10px] text-gray-400 block font-light">Period of 11 months</span>
+                        </div>
+                        <span className="text-gray-900 font-bold text-sm">₹{totalPayment.toLocaleString('en-IN')}</span>
+                      </div>
+
+                      {/* Row 3 */}
+                      <div className="flex justify-between items-center text-xs text-[#EF5A3F]">
+                        <div className="text-left">
+                          <span className="font-bold block">100% Discount on 12th installment</span>
+                          <span className="text-[10px] opacity-80 block font-light">100% of 1 month installment value</span>
+                        </div>
+                        <span className="font-extrabold text-sm">₹{discount.toLocaleString('en-IN')}</span>
+                      </div>
+
+                      <hr className="border-gray-100 my-2" />
+
+                      {/* Row 4 */}
+                      <div className="flex justify-between items-center text-xs">
+                        <div className="text-left">
+                          <span className="text-gray-900 font-semibold block">Buy any jewellery worth</span>
+                          <span className="text-[10px] text-gray-400 block font-light">After 12th month</span>
+                        </div>
+                        <span className="text-gray-900 font-bold text-sm">₹{jewelleryWorth.toLocaleString('en-IN')}</span>
+                      </div>
+
+                      {/* Row 5 */}
+                      <div className="flex justify-between items-center text-xs pt-1">
+                        <span className="text-gray-900 font-bold">You effectively pay</span>
+                        <div className="flex items-center gap-2">
+                          <span className="bg-[#006361] text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                            8.33% discount!
+                          </span>
+                          <span className="text-gray-900 font-bold text-sm">₹{effectivePayment.toLocaleString('en-IN')}</span>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Footer bar */}
+                <div className="flex flex-col sm:flex-row items-center justify-between border-t border-gray-150 pt-5 mt-4 gap-4">
+                  <div className="text-left text-gray-400 text-[10px] leading-relaxed max-w-lg">
+                    <span className="text-red-500 font-bold">Please Note:</span> You can purchase any jewellery using the accumulated amount after 12 months* <span onClick={() => { setPlanModalOpen(false); navigateTo('terms-and-conditions'); }} className="text-blue-500 underline cursor-pointer hover:text-blue-700">T&C</span>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      setPlanModalOpen(false);
+                      setMonthlySavingsInput(monthlyAmount);
+                      setSavingsSchemeType('Gold Mine');
+                      navigateTo('savings-enroll');
+                    }}
+                    className="w-full sm:w-auto px-8 py-3.5 bg-[#EF5A3F] hover:bg-[#D8452D] text-white font-bold text-xs uppercase tracking-widest rounded-lg shadow-md transition-all active:scale-[0.98] cursor-pointer"
+                  >
+                    SUBSCRIBE NOW
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          );
+        })()}
 
         {/* G. BESPOKE CUSTOM DESIGN MULTI-STEP MODAL */}
         {customDesignOpen && (
