@@ -7844,7 +7844,7 @@ export default function App() {
                                     <img
                                       src={prod.img}
                                       alt={prod.name}
-                                      className="w-full h-full object-cover scale-100 group-hover:scale-108 transition-transform duration-[1200ms] ease-out"
+                                      className="w-full h-full object-contain p-2 scale-100 group-hover:scale-105 transition-transform duration-[1200ms] ease-out"
                                     />
                                   ) : (
                                     <div className="w-full h-full bg-gradient-to-tr from-[#FAF8F5] to-[#F3EEE7] flex flex-col items-center justify-center space-y-2 border border-dashed border-[#DDA0DD]/20 rounded-xl">
