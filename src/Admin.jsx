@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { db, auth } from './firebase';
 import {
   collection,
@@ -561,9 +561,82 @@ function Header({
         {adminUser && (
           <div className="flex gap-2 w-full sm:w-auto items-center">
             {/* Notifications icon */}
-            <div className="relative p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 cursor-pointer transition-all">
-              <Bell className="w-4.5 h-4.5" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#BCA057] rounded-full"></span>
+            <div className="relative">
+              <button 
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 cursor-pointer transition-all focus:outline-none flex items-center justify-center"
+              >
+                <Bell className="w-4.5 h-4.5" />
+                {notifications.length > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-4 h-4 bg-amber-500 text-white text-[8px] font-black rounded-full flex items-center justify-center px-1 border border-white dark:border-zinc-900 shadow-sm animate-pulse">
+                    {notifications.length}
+                  </span>
+                )}
+              </button>
+
+              {/* Notification Dropdown Panel */}
+              {showNotifications && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)}></div>
+                  <div className="absolute right-0 mt-2.5 w-80 sm:w-96 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_15px_40px_rgba(0,0,0,0.3)] z-50 overflow-hidden animate-slide-up text-zinc-800 dark:text-zinc-200">
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-4 py-3 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
+                      <span className="text-[10px] font-mono font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
+                        Action Centre ({notifications.length})
+                      </span>
+                      {notifications.length > 0 && (
+                        <span className="text-[8px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest animate-pulse">
+                          ● Pending Attention
+                        </span>
+                      )}
+                    </div>
+
+                    {/* List Body */}
+                    <div className="max-h-[320px] overflow-y-auto divide-y divide-zinc-150 dark:divide-zinc-850">
+                      {notifications.length === 0 ? (
+                        <div className="py-8 px-4 text-center">
+                          <span className="text-2xl mb-1.5 block">✨</span>
+                          <p className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">All caught up!</p>
+                          <p className="text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5 font-medium">No pending orders or lounge bookings.</p>
+                        </div>
+                      ) : (
+                        notifications.map(notif => {
+                          const dateStr = notif.time.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) + ', ' + notif.time.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                          return (
+                            <div 
+                              key={notif.id}
+                              onClick={() => {
+                                setActiveTab(notif.targetTab);
+                                if (notif.type === 'order') {
+                                  setOrderSearch(notif.raw.orderId || '');
+                                  setOrderStatusFilter('all');
+                                } else {
+                                  setCrmSearch(notif.raw.phone || notif.raw.name || '');
+                                }
+                                setShowNotifications(false);
+                              }}
+                              className="p-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-900 cursor-pointer text-left transition-colors duration-200"
+                            >
+                              <div className="flex justify-between items-start gap-2">
+                                <span className="text-[11px] font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5 leading-none">
+                                  {notif.type === 'order' ? '🛒' : notif.title.includes('Lounge') ? '🛋️' : '✏️'}
+                                  {notif.title}
+                                </span>
+                                <span className="text-[8px] font-bold text-zinc-400 dark:text-zinc-500 shrink-0 whitespace-nowrap">
+                                  {dateStr}
+                                </span>
+                              </div>
+                              <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1.5 font-medium leading-relaxed">
+                                {notif.desc}
+                              </p>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Dark Mode toggle */}
@@ -633,6 +706,45 @@ export default function Admin() {
       setAdminNotification({ message: '', type: 'success' });
     }, 4000);
   };
+
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notifications = useMemo(() => {
+    const list = [];
+    
+    // Add pending orders
+    (adminOrders || []).forEach(order => {
+      if (String(order.orderStatus || '').toLowerCase() === 'pending') {
+        list.push({
+          id: `order-${order.id}`,
+          type: 'order',
+          title: 'New Order Placed',
+          desc: `Order ${order.orderId || ''} from ${order.customerDetails?.name || 'Customer'} - ₹${Number(order.amount || 0).toLocaleString('en-IN')}`,
+          time: order.createdDate ? order.createdDate.toDate() : new Date(),
+          raw: order,
+          targetTab: 'orders'
+        });
+      }
+    });
+
+    // Add pending consultations/bookings
+    (adminConsults || []).forEach(consult => {
+      if (String(consult.status || '').toLowerCase() === 'pending') {
+        const isCustom = !!consult.jewelryType;
+        list.push({
+          id: `consult-${consult.id}`,
+          type: 'consultation',
+          title: isCustom ? 'Custom Design Request' : 'Lounge Booking Request',
+          desc: `From ${consult.name || 'Customer'} - ${consult.phone}`,
+          time: consult.createdDate ? consult.createdDate.toDate() : new Date(),
+          raw: consult,
+          targetTab: 'customers'
+        });
+      }
+    });
+
+    // Sort by time descending
+    return list.sort((a, b) => b.time - a.time);
+  }, [adminOrders, adminConsults]);
 
   // Loaded database elements
   const [products, setProducts] = useState([]);
