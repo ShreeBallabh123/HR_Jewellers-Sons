@@ -2775,10 +2775,23 @@ export default function App() {
         const pDesc = String(p.desc || '').toLowerCase();
         const pCarat = String(p.carat || '').toLowerCase();
         const pName = String(p.name || '').toLowerCase();
+        const pCatType = String(p.categoryType || '').toLowerCase();
         if (metalFilter === 'gold') {
-          if (pCat === 'silver' || pName.includes('silver') || pDesc.includes('sterling silver') || pCarat.includes('sterling')) return false;
+          if (pCatType === 'silver') return false;
+          if (pCat === 'silver' || pName.includes('silver') || pDesc.includes('sterling') || pDesc.includes('92.5') || pDesc.includes('925') || pCarat.includes('sterling') || pCarat.includes('92.5') || pCarat.includes('925')) return false;
         } else if (metalFilter === 'silver') {
-          if (pCat !== 'silver' && !pName.includes('silver') && !pDesc.includes('sterling') && !pCarat.includes('sterling')) return false;
+          if (pCatType === 'gold' || pCatType === 'platinum') return false;
+          if (pCarat.includes('14k') || pCarat.includes('18k') || pCarat.includes('22k') || pCarat.includes('24k') || pCarat.includes('916') || pCarat.includes('999')) return false;
+          const isSilver = pCatType === 'silver' || 
+                           pCat === 'silver' || 
+                           pName.includes('silver') || 
+                           pDesc.includes('sterling') || 
+                           pDesc.includes('92.5') || 
+                           pDesc.includes('925') || 
+                           pCarat.includes('sterling') || 
+                           pCarat.includes('92.5') || 
+                           pCarat.includes('925');
+          if (!isSilver) return false;
         }
       }
 
