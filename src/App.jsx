@@ -3544,12 +3544,29 @@ export default function App() {
                         { label: 'Rs. 30,000 – Rs. 40,000', val: 40000 },
                         { label: 'Rs. 40,000 – Rs. 50,000', val: 50000 },
                         { label: 'Rs. 50,000 and Above', val: 100000000 },
-                      ].map(({ label, val }) => (
-                        <label key={val} className="flex items-center gap-2 cursor-pointer group">
-                          <input type="radio" name="mob-price" checked={maxPriceFilter === val} onChange={() => setMaxPriceFilter(val)} className="accent-[#4A126D] w-3 h-3 cursor-pointer" />
-                          <span className={`text-[10px] font-sans leading-none ${maxPriceFilter === val ? 'text-[#4A126D] font-bold' : 'text-gray-600'}`}>{label}</span>
-                        </label>
-                      ))}
+                      ].map(({ label, val }) => {
+                        const isChecked = priceFilter === label;
+                        return (
+                          <label key={val} className="flex items-center gap-2 cursor-pointer group">
+                            <input 
+                              type="radio" 
+                              name="mob-price" 
+                              checked={isChecked} 
+                              onChange={() => {
+                                if (isChecked) {
+                                  setPriceFilter('all');
+                                  setMaxPriceFilter(100000000);
+                                } else {
+                                  setPriceFilter(label);
+                                  setMaxPriceFilter(val);
+                                }
+                              }} 
+                              className="accent-[#4A126D] w-3 h-3 cursor-pointer" 
+                            />
+                            <span className={`text-[10px] font-sans leading-none ${isChecked ? 'text-[#4A126D] font-bold' : 'text-gray-600'}`}>{label}</span>
+                          </label>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -7630,12 +7647,29 @@ export default function App() {
                             { label: 'Rs. 30,000 – Rs. 40,000', val: 40000 },
                             { label: 'Rs. 40,000 – Rs. 50,000', val: 50000 },
                             { label: 'Rs. 50,000 and Above', val: 100000000 },
-                          ].map(({ label, val }) => (
-                            <label key={val} className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group">
-                              <input type="radio" name="price" checked={maxPriceFilter === val} onChange={() => setMaxPriceFilter(val)} className="accent-[#4A126D] w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 cursor-pointer" />
-                              <span className={`text-[9px] sm:text-[11px] font-sans leading-none ${maxPriceFilter === val ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{label}</span>
-                            </label>
-                          ))}
+                          ].map(({ label, val }) => {
+                            const isChecked = priceFilter === label;
+                            return (
+                              <label key={val} className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group">
+                                <input 
+                                  type="radio" 
+                                  name="price" 
+                                  checked={isChecked} 
+                                  onChange={() => {
+                                    if (isChecked) {
+                                      setPriceFilter('all');
+                                      setMaxPriceFilter(100000000);
+                                    } else {
+                                      setPriceFilter(label);
+                                      setMaxPriceFilter(val);
+                                    }
+                                  }} 
+                                  className="accent-[#4A126D] w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 cursor-pointer" 
+                                />
+                                <span className={`text-[9px] sm:text-[11px] font-sans leading-none ${isChecked ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{label}</span>
+                              </label>
+                            );
+                          })}
                         </div>
                       </div>
 
