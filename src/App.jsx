@@ -862,6 +862,7 @@ export default function App() {
   };
 
   const categoriesScrollRef = useRef(null);
+  const shopCategoriesScrollRef = useRef(null);
   const categoriesAutoplayRef = useRef(null);
 
   const startCategoriesAutoplay = () => {
@@ -869,7 +870,7 @@ export default function App() {
     categoriesAutoplayRef.current = setInterval(() => {
       if (categoriesScrollRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = categoriesScrollRef.current;
-        if (scrollLeft + clientWidth >= scrollWidth - 20) {
+        if (scrollLeft + clientWidth >= scrollWidth - 5) {
           categoriesScrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
         } else {
           const scrollStep = clientWidth > 768 ? 240 : 160;
@@ -886,6 +887,15 @@ export default function App() {
       const scrollTo = direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount;
       categoriesScrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
       startCategoriesAutoplay();
+    }
+  };
+
+  const scrollShopCategories = (direction) => {
+    if (shopCategoriesScrollRef.current) {
+      const { scrollLeft, clientWidth } = shopCategoriesScrollRef.current;
+      const scrollAmount = clientWidth * 0.7;
+      const scrollTo = direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount;
+      shopCategoriesScrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
     }
   };
 
@@ -4054,17 +4064,9 @@ export default function App() {
                       <div id="shop-by-category" className="w-full pt-0 pb-16 lg:pb-20 px-6 sm:px-12 select-none" style={{ background: '#fdfaf8' }}>
                         <section className="max-w-[1836px] mx-auto">
 
-                          {/* ── MOBILE: 2-row horizontal scroll grid ── */}
+                          {/* ── MOBILE: 1-row horizontal scroll ── */}
                           <div className="lg:hidden overflow-x-auto no-scrollbar pt-6 pb-4 -mx-2 px-2">
-                            <div
-                              style={{
-                                display: 'grid',
-                                gridTemplateRows: 'repeat(2, auto)',
-                                gridAutoFlow: 'column',
-                                gridAutoColumns: '118px',
-                                gap: '12px',
-                              }}
-                            >
+                            <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-2 select-none w-full flex-nowrap justify-start">
                               {activeCategories.map((cat, idx) => {
                                 const handleClick = () => {
                                   triggerAudio('click');
@@ -4081,7 +4083,7 @@ export default function App() {
                                   <div
                                     key={idx}
                                     onClick={handleClick}
-                                    className="bg-white border border-[rgba(0,0,0,0.05)] rounded-[20px] shadow-[0_4px_14px_rgba(0,0,0,0.06)] flex flex-col items-center justify-between cursor-pointer active:scale-95 transition-transform duration-150"
+                                    className="bg-white border border-[rgba(0,0,0,0.05)] rounded-[20px] shadow-[0_4px_14px_rgba(0,0,0,0.06)] flex flex-col items-center justify-between cursor-pointer active:scale-95 transition-transform duration-150 shrink-0 w-[118px]"
                                     style={{ padding: '14px 10px 12px', height: '148px' }}
                                   >
                                     <div className="w-full flex-1 flex items-center justify-center">
@@ -4092,7 +4094,7 @@ export default function App() {
                                       />
                                     </div>
                                     <span
-                                      className="text-center text-[10.5px] font-semibold leading-tight mt-2 w-full"
+                                      className="text-center text-[10.5px] font-semibold leading-tight mt-2 w-full line-clamp-2"
                                       style={{ color: '#3d2619', fontFamily: 'inherit', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
                                     >
                                       {cat.name}
@@ -4103,84 +4105,88 @@ export default function App() {
                             </div>
                           </div>
 
-                          {/* ── DESKTOP: Original staggered grid ── */}
-                          <motion.div
-                            variants={{
-                              hidden: {},
-                              show: {
-                                transition: {
-                                  staggerChildren: 0.05
-                                }
-                              }
-                            }}
-                            initial="hidden"
-                            whileInView="show"
-                            viewport={{ once: true, margin: "-100px" }}
-                            className="hidden lg:grid grid-cols-8 gap-x-[28px] gap-y-[34px] justify-center mx-auto pt-6"
-                          >
-                            {activeCategories.map((cat, idx) => {
-                              const handleClick = () => {
-                                triggerAudio('click');
-                                const normName = String(cat.name || '').toLowerCase();
-                                if (cat.id === 'gold-coins' || normName.includes('coin')) {
-                                  navigateTo('gold-coins');
-                                } else {
-                                  changeCategoryTab(cat.name);
-                                  navigateTo('collections');
-                                }
-                              };
-                              const catImg = cat.img || getCategoryFallbackImage(cat.name || cat.id);
+                          {/* ── DESKTOP: Horizontal scrollable row ── */}
+                          <div className="hidden lg:block relative group/shopcat px-12 pt-6">
+                            {/* Left Scroll Button */}
+                            <button
+                              onClick={() => scrollShopCategories('left')}
+                              className="absolute left-2 top-[50%] -translate-y-[50%] z-10 p-2.5 rounded-full border shadow-lg transition-all duration-300 -translate-x-4 opacity-0 group-hover/shopcat:opacity-100 group-hover/shopcat:translate-x-0 cursor-pointer flex items-center justify-center bg-white/95 border-gray-200 text-amber-800 hover:bg-gray-50 focus:outline-none"
+                              aria-label="Scroll left"
+                            >
+                              <svg className="w-5 h-5 stroke-current fill-none stroke-2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                              </svg>
+                            </button>
 
-                              return (
-                                <motion.div
-                                  key={idx}
-                                  variants={{
-                                    hidden: { opacity: 0, y: 30 },
-                                    show: {
-                                      opacity: 1,
-                                      y: 0,
-                                      transition: {
-                                        duration: 0.6,
-                                        ease: [0.215, 0.61, 0.355, 1]
-                                      }
-                                    }
-                                  }}
-                                  onClick={handleClick}
-                                  className="w-full max-w-[205px] h-[285px] bg-white border border-[rgba(0,0,0,0.04)] rounded-[28px] shadow-[0_8px_24px_rgba(0,0,0,0.04)] flex flex-col items-center justify-between relative overflow-hidden hover:-translate-y-[3px] transition-all duration-[250ms] ease group cursor-pointer"
-                                  style={{
-                                    paddingTop: '30px',
-                                    paddingLeft: '20px',
-                                    paddingRight: '20px',
-                                    paddingBottom: '25px',
-                                    boxSizing: 'border-box'
-                                  }}
-                                >
-                                  <div className="w-full h-[145px] flex items-center justify-center relative bg-transparent">
-                                    <img
-                                      src={catImg}
-                                      alt={cat.name}
-                                      className="w-[72%] h-[72%] object-contain object-center transition-transform duration-[250ms] ease-out group-hover:scale-[1.03] filter drop-shadow-[0_8px_12px_rgba(90,74,74,0.12)]"
-                                    />
-                                  </div>
-                                  <span
-                                    className="text-center font-sans tracking-tight line-clamp-2 mt-auto text-[13px]"
+                            {/* Scroll Container */}
+                            <div
+                              ref={shopCategoriesScrollRef}
+                              className="flex items-center gap-[28px] overflow-x-auto no-scrollbar scroll-smooth pb-6 select-none w-full flex-nowrap justify-start"
+                            >
+                              {activeCategories.map((cat, idx) => {
+                                const handleClick = () => {
+                                  triggerAudio('click');
+                                  const normName = String(cat.name || '').toLowerCase();
+                                  if (cat.id === 'gold-coins' || normName.includes('coin')) {
+                                    navigateTo('gold-coins');
+                                  } else {
+                                    changeCategoryTab(cat.name);
+                                    navigateTo('collections');
+                                  }
+                                };
+                                const catImg = cat.img || getCategoryFallbackImage(cat.name || cat.id);
+
+                                return (
+                                  <div
+                                    key={idx}
+                                    onClick={handleClick}
+                                    className="w-[205px] h-[285px] bg-white border border-[rgba(0,0,0,0.04)] rounded-[28px] shadow-[0_8px_24px_rgba(0,0,0,0.04)] flex flex-col items-center justify-between relative overflow-hidden hover:-translate-y-[3px] transition-all duration-[250ms] ease group cursor-pointer shrink-0"
                                     style={{
-                                      fontFamily: 'inherit',
-                                      fontWeight: '600',
-                                      lineHeight: '1.35',
-                                      color: '#3d2619',
-                                      display: '-webkit-box',
-                                      WebkitLineClamp: 2,
-                                      WebkitBoxOrient: 'vertical',
-                                      overflow: 'hidden'
+                                      paddingTop: '30px',
+                                      paddingLeft: '20px',
+                                      paddingRight: '20px',
+                                      paddingBottom: '25px',
+                                      boxSizing: 'border-box'
                                     }}
                                   >
-                                    {cat.name}
-                                  </span>
-                                </motion.div>
-                              );
-                            })}
-                          </motion.div>
+                                    <div className="w-full h-[145px] flex items-center justify-center relative bg-transparent">
+                                      <img
+                                        src={catImg}
+                                        alt={cat.name}
+                                        className="w-[72%] h-[72%] object-contain object-center transition-transform duration-[250ms] ease-out group-hover:scale-[1.03] filter drop-shadow-[0_8px_12px_rgba(90,74,74,0.12)]"
+                                      />
+                                    </div>
+                                    <span
+                                      className="text-center font-sans tracking-tight line-clamp-2 mt-auto text-[13px]"
+                                      style={{
+                                        fontFamily: 'inherit',
+                                        fontWeight: '600',
+                                        lineHeight: '1.35',
+                                        color: '#3d2619',
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden'
+                                      }}
+                                    >
+                                      {cat.name}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+
+                            {/* Right Scroll Button */}
+                            <button
+                              onClick={() => scrollShopCategories('right')}
+                              className="absolute right-2 top-[50%] -translate-y-[50%] z-10 p-2.5 rounded-full border shadow-lg transition-all duration-300 translate-x-4 opacity-0 group-hover/shopcat:opacity-100 group-hover/shopcat:translate-x-0 cursor-pointer flex items-center justify-center bg-white/95 border-gray-200 text-amber-800 hover:bg-gray-50 focus:outline-none"
+                              aria-label="Scroll right"
+                            >
+                              <svg className="w-5 h-5 stroke-current fill-none stroke-2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                              </svg>
+                            </button>
+                          </div>
                         </section>
 
                         {/* ── CUSTOM DESIGN BUTTON ── */}
@@ -7936,7 +7942,7 @@ export default function App() {
                               <div
                                 key={prod.id}
                                 onClick={() => navigateToPDP(prod)}
-                                className="group rounded-xl sm:rounded-3xl p-2 sm:p-5 flex flex-col justify-between border border-[#EAEAEA] transition-all duration-300 relative cursor-pointer overflow-hidden bg-white text-[#1B1B1B] shadow-sm hover:shadow-[0_15px_30px_rgba(0,0,0,0.06)] hover:border-[#DDA0DD]/45 hover:-translate-y-1.5 h-[300px] sm:h-[530px]"
+                                className="group rounded-xl sm:rounded-3xl p-2 sm:p-5 flex flex-col justify-between border border-[#EAEAEA] transition-all duration-300 relative cursor-pointer overflow-hidden bg-white text-[#1B1B1B] shadow-sm hover:shadow-[0_15px_30px_rgba(0,0,0,0.06)] hover:border-[#DDA0DD]/45 hover:-translate-y-1.5 h-auto"
                               >
                                 {/* Image, Overlays & Spotlight */}
                                 <div className="aspect-square rounded-xl sm:rounded-[1.5rem] overflow-hidden relative image-zoom-container bg-white border border-[#DDA0DD]/5 shrink-0">
@@ -7989,7 +7995,7 @@ export default function App() {
                                     <span className="text-[7px] sm:text-[9px] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[#DDA0DD] font-bold block">
                                       {prod.subCategory || prod.category}
                                     </span>
-                                    <h3 className="serif-luxury font-bold text-[10px] sm:text-base leading-tight sm:leading-snug group-hover:text-[#DDA0DD] transition-colors duration-300 line-clamp-1 text-[#1B1B1B]">
+                                    <h3 className="serif-luxury font-bold text-[10px] sm:text-base leading-tight sm:leading-snug group-hover:text-[#DDA0DD] transition-colors duration-300 line-clamp-2 text-[#1B1B1B]">
                                       {prod.name}
                                     </h3>
                                     <p className="text-[8px] sm:text-[10px] font-sans font-light leading-relaxed normal-case text-[#666666]/90 hidden sm:line-clamp-2">
