@@ -1078,16 +1078,6 @@ export default function App() {
     }
   }, [products, detailProduct]);
 
-  // Ensure selectedRingSize matches one of the product's available sizes
-  useEffect(() => {
-    if (detailProduct) {
-      const availSizes = detailProduct.ringSizes || [];
-      if (availSizes.length > 0 && !availSizes.includes(selectedRingSize)) {
-        setSelectedRingSize(availSizes[0]);
-      }
-    }
-  }, [detailProduct, selectedRingSize]);
-
   // Auto-slide PDP images/videos every 5 seconds
   useEffect(() => {
     if (currentPage !== 'product-detail' || !detailProduct || pdpHovered) return;
@@ -1130,6 +1120,16 @@ export default function App() {
   const [customEngraving, setCustomEngraving] = useState('');
   const [selectedRingSize, setSelectedRingSize] = useState('12');
   const [selectedCaratPurity, setSelectedCaratPurity] = useState('22K');
+
+  // Ensure selectedRingSize matches one of the product's available sizes
+  useEffect(() => {
+    if (detailProduct) {
+      const availSizes = detailProduct.ringSizes || [];
+      if (availSizes.length > 0 && !availSizes.includes(selectedRingSize)) {
+        setSelectedRingSize(availSizes[0]);
+      }
+    }
+  }, [detailProduct, selectedRingSize]);
 
   // Zip Code checker
   const [zipCode, setZipCode] = useState('');
