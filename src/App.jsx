@@ -2812,6 +2812,19 @@ export default function App() {
       // 4. Max Price Filter
       if (p.price && Number(p.price) > maxPriceFilter) return false;
 
+      // 4.1. Gender Filter
+      if (genderFilter !== 'all') {
+        const pGender = String(p.gender || 'unisex').toLowerCase();
+        if (pGender !== genderFilter && pGender !== 'unisex') return false;
+      }
+
+      // 4.2. Occasion Filter
+      if (occasionFilter !== 'all') {
+        const pOccasion = String(p.occasion || '').toLowerCase();
+        const filterOccasionLower = occasionFilter.toLowerCase();
+        if (!pOccasion.includes(filterOccasionLower) && !filterOccasionLower.includes(pOccasion)) return false;
+      }
+
       // 4.5. Search Text Filter
       if (homeSearchVal.trim()) {
         const query = homeSearchVal.toLowerCase();
@@ -3648,18 +3661,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* TYPE */}
-                  <div className="border-b border-gray-100 py-2">
-                    <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Type</span>
-                    <div className="grid grid-cols-2 gap-1.5">
-                      {['Earrings', 'Rings', 'Pendants', 'Necklaces', 'Bangles', 'Bracelets', 'Mangalsutra', 'Chains', 'Nose Pins', 'Anklets', 'Kids Bangles', 'Kids Rings', 'Cufflinks', 'Brooch'].map(t => (
-                        <label key={t} className="flex items-center gap-2 cursor-pointer group">
-                          <input type="radio" name="mob-type" checked={typeFilter === t} onChange={() => setTypeFilter(prev => prev === t ? 'all' : t)} className="accent-[#4A126D] w-3 h-3 cursor-pointer" />
-                          <span className={`text-[10px] font-sans leading-none ${typeFilter === t ? 'text-[#4A126D] font-bold' : 'text-gray-600'}`}>{t}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
+
 
                   {/* METAL */}
                   <div className="border-b border-gray-100 py-2">
@@ -7747,18 +7749,7 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* TYPE */}
-                      <div className="border-b border-gray-100 py-1.5 sm:py-3">
-                        <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-1.5 sm:mb-2.5">Type</span>
-                        <div className="space-y-1 sm:space-y-2">
-                          {['Earrings', 'Rings', 'Pendants', 'Necklaces', 'Bangles', 'Bracelets', 'Mangalsutra', 'Chains', 'Nose Pins', 'Anklets', 'Kids Bangles', 'Kids Rings', 'Cufflinks', 'Brooch'].map(t => (
-                            <label key={t} className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group">
-                              <input type="radio" name="type" checked={typeFilter === t} onChange={() => setTypeFilter(prev => prev === t ? 'all' : t)} className="accent-[#4A126D] w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 cursor-pointer" />
-                              <span className={`text-[9px] sm:text-[11px] font-sans leading-none ${typeFilter === t ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{t}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
+
 
                       {/* METAL */}
                       <div className="border-b border-gray-100 py-1.5 sm:py-3">

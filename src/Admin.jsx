@@ -792,7 +792,9 @@ export default function Admin() {
     pearlsCarat: '',
     gemstoneCarat: '',
     diamondValue: '',
-    pearlsValue: ''
+    pearlsValue: '',
+    gender: 'Unisex',
+    occasion: 'Everyday Wear'
   });
   const [editingProduct, setEditingProduct] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
@@ -1035,7 +1037,9 @@ export default function Admin() {
         pearlsCarat: '',
         gemstoneCarat: '',
         diamondValue: '',
-        pearlsValue: ''
+        pearlsValue: '',
+        gender: 'Unisex',
+        occasion: 'Everyday Wear'
       });
       showAdminNotification("New jewellery item added successfully!", "success");
     } catch (err) {
@@ -1738,7 +1742,7 @@ export default function Admin() {
                           <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-[#E6C687]"></span>
                           <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">General Information</h4>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
                           <div className="space-y-1.5">
                             <label htmlFor="prod-name-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Jewellery Name</label>
                             <input
@@ -1786,6 +1790,41 @@ export default function Admin() {
                             >
                               <option value="Gold">Gold</option>
                               <option value="Silver">Silver</option>
+                            </select>
+                          </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="prod-gender-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Gender</label>
+                            <select
+                              id="prod-gender-form"
+                              value={editingProduct ? (editingProduct.gender || 'Unisex') : (newProduct.gender || 'Unisex')}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, gender: e.target.value }) : setNewProduct({ ...newProduct, gender: e.target.value })}
+                              className="w-full h-10 bg-white dark:bg-[#09090B] border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
+                            >
+                              <option value="Unisex">Unisex</option>
+                              <option value="Women">Women</option>
+                              <option value="Men">Men</option>
+                              <option value="Kids">Kids</option>
+                            </select>
+                          </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="prod-occasion-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Occasion</label>
+                            <select
+                              id="prod-occasion-form"
+                              value={editingProduct ? (editingProduct.occasion || 'Everyday Wear') : (newProduct.occasion || 'Everyday Wear')}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, occasion: e.target.value }) : setNewProduct({ ...newProduct, occasion: e.target.value })}
+                              className="w-full h-10 bg-white dark:bg-[#09090B] border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
+                            >
+                              <option value="Everyday Wear">Everyday Wear</option>
+                              <option value="Festive">Festive</option>
+                              <option value="Wedding">Wedding</option>
+                              <option value="Engagement">Engagement</option>
+                              <option value="Anniversary">Anniversary</option>
+                              <option value="Gifting">Gifting</option>
+                              <option value="Workwear">Workwear</option>
+                              <option value="Romantic">Romantic</option>
+                              <option value="Vacation">Vacation</option>
+                              <option value="Special Occasion">Special Occasion</option>
+                              <option value="Valentine">Valentine</option>
                             </select>
                           </div>
                         </div>
@@ -2419,6 +2458,16 @@ export default function Admin() {
                                         {prod.categoryType && (
                                           <span className="inline-block px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-[#BCA057] dark:text-[#E6C687] text-[8px] font-bold uppercase tracking-wider leading-none">
                                             {prod.categoryType}
+                                          </span>
+                                        )}
+                                        {prod.gender && (
+                                          <span className="inline-block px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/30 text-blue-500 dark:text-blue-400 text-[8px] font-bold uppercase tracking-wider leading-none">
+                                            {prod.gender}
+                                          </span>
+                                        )}
+                                        {prod.occasion && (
+                                          <span className="inline-block px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-950/30 text-purple-500 dark:text-purple-400 text-[8px] font-bold uppercase tracking-wider leading-none">
+                                            {prod.occasion}
                                           </span>
                                         )}
                                         <span className="text-[9px] font-mono text-zinc-400">{prod.sku}</span>
