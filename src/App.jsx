@@ -57,7 +57,7 @@ import ringsImg from './assets/rings.png';
 import necklacesImg from './assets/necklaces.png';
 import goldChainsImg from './assets/gold_chains.png';
 import kadaImg from './assets/kada.png';
-import heroBgVideo from './assets/vl_video_1.mp4';
+import heroBgVideo from './assets/hero_video.mp4';
 import strokesOfGeniusVideo from './assets/strokes_of_genius.mp4';
 import giftingLayeredNecklaces from './assets/gifting_layered_necklaces.png';
 import giftingCovetedStyles from './assets/gifting_coveted_styles.png';
