@@ -3893,9 +3893,9 @@ export default function App() {
                       <div id="shop-by-category" className="w-full pt-0 pb-16 lg:pb-20 px-6 sm:px-12 select-none" style={{ background: '#fdfaf8' }}>
                         <section className="max-w-[1836px] mx-auto">
 
-                          {/* ── MOBILE: 1-row horizontal scroll ── */}
-                          <div className="lg:hidden overflow-x-auto no-scrollbar pt-6 pb-4 -mx-2 px-2">
-                            <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-2 select-none w-full flex-nowrap justify-start">
+                          {/* ── MOBILE: 2-row wrap grid ── */}
+                          <div className="lg:hidden pt-6 pb-4">
+                            <div className="flex flex-wrap gap-3 select-none w-full justify-center">
                               {activeCategories.map((cat, idx) => {
                                 const handleClick = () => {
                                   triggerAudio('click');
@@ -3912,8 +3912,8 @@ export default function App() {
                                   <div
                                     key={idx}
                                     onClick={handleClick}
-                                    className="bg-white border border-[rgba(0,0,0,0.05)] rounded-[20px] shadow-[0_4px_14px_rgba(0,0,0,0.06)] flex flex-col items-center justify-between cursor-pointer active:scale-95 transition-transform duration-150 shrink-0 w-[118px]"
-                                    style={{ padding: '14px 10px 12px', height: '148px' }}
+                                    className="bg-white border border-[rgba(0,0,0,0.05)] rounded-[20px] shadow-[0_4px_14px_rgba(0,0,0,0.06)] flex flex-col items-center justify-between cursor-pointer active:scale-95 transition-transform duration-150 shrink-0 w-[100px]"
+                                    style={{ padding: '14px 10px 12px', height: '140px' }}
                                   >
                                     <div className="w-full flex-1 flex items-center justify-center">
                                       <img
@@ -3923,7 +3923,7 @@ export default function App() {
                                       />
                                     </div>
                                     <span
-                                      className="text-center text-[10.5px] font-semibold leading-tight mt-2 w-full line-clamp-2"
+                                      className="text-center text-[10px] font-semibold leading-tight mt-2 w-full line-clamp-2"
                                       style={{ color: '#3d2619', fontFamily: 'inherit', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
                                     >
                                       {cat.name}
@@ -3934,24 +3934,9 @@ export default function App() {
                             </div>
                           </div>
 
-                          {/* ── DESKTOP: Horizontal scrollable row ── */}
-                          <div className="hidden lg:block relative group/shopcat px-12 pt-6">
-                            {/* Left Scroll Button */}
-                            <button
-                              onClick={() => scrollShopCategories('left')}
-                              className="absolute left-2 top-[50%] -translate-y-[50%] z-10 p-2.5 rounded-full border shadow-lg transition-all duration-300 -translate-x-4 opacity-0 group-hover/shopcat:opacity-100 group-hover/shopcat:translate-x-0 cursor-pointer flex items-center justify-center bg-white/95 border-gray-200 text-amber-800 hover:bg-gray-50 focus:outline-none"
-                              aria-label="Scroll left"
-                            >
-                              <svg className="w-5 h-5 stroke-current fill-none stroke-2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                              </svg>
-                            </button>
-
-                            {/* Scroll Container */}
-                            <div
-                              ref={shopCategoriesScrollRef}
-                              className="flex items-center gap-[28px] overflow-x-auto no-scrollbar scroll-smooth pb-6 select-none w-full flex-nowrap justify-start"
-                            >
+                          {/* ── DESKTOP: 2-row wrap grid ── */}
+                          <div className="hidden lg:block pt-6 pb-6">
+                            <div className="flex flex-wrap gap-[20px] select-none w-full justify-center">
                               {activeCategories.map((cat, idx) => {
                                 const handleClick = () => {
                                   triggerAudio('click');
@@ -3969,16 +3954,16 @@ export default function App() {
                                   <div
                                     key={idx}
                                     onClick={handleClick}
-                                    className="w-[205px] h-[285px] bg-white border border-[rgba(0,0,0,0.04)] rounded-[28px] shadow-[0_8px_24px_rgba(0,0,0,0.04)] flex flex-col items-center justify-between relative overflow-hidden hover:-translate-y-[3px] transition-all duration-[250ms] ease group cursor-pointer shrink-0"
+                                    className="w-[170px] h-[240px] bg-white border border-[rgba(0,0,0,0.04)] rounded-[24px] shadow-[0_8px_24px_rgba(0,0,0,0.04)] flex flex-col items-center justify-between relative overflow-hidden hover:-translate-y-[3px] transition-all duration-[250ms] ease group cursor-pointer"
                                     style={{
-                                      paddingTop: '30px',
-                                      paddingLeft: '20px',
-                                      paddingRight: '20px',
-                                      paddingBottom: '25px',
+                                      paddingTop: '24px',
+                                      paddingLeft: '16px',
+                                      paddingRight: '16px',
+                                      paddingBottom: '20px',
                                       boxSizing: 'border-box'
                                     }}
                                   >
-                                    <div className="w-full h-[145px] flex items-center justify-center relative bg-transparent">
+                                    <div className="w-full h-[120px] flex items-center justify-center relative bg-transparent">
                                       <img
                                         src={catImg}
                                         alt={cat.name}
@@ -4004,17 +3989,6 @@ export default function App() {
                                 );
                               })}
                             </div>
-
-                            {/* Right Scroll Button */}
-                            <button
-                              onClick={() => scrollShopCategories('right')}
-                              className="absolute right-2 top-[50%] -translate-y-[50%] z-10 p-2.5 rounded-full border shadow-lg transition-all duration-300 translate-x-4 opacity-0 group-hover/shopcat:opacity-100 group-hover/shopcat:translate-x-0 cursor-pointer flex items-center justify-center bg-white/95 border-gray-200 text-amber-800 hover:bg-gray-50 focus:outline-none"
-                              aria-label="Scroll right"
-                            >
-                              <svg className="w-5 h-5 stroke-current fill-none stroke-2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                              </svg>
-                            </button>
                           </div>
                         </section>
 
