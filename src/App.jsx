@@ -2806,299 +2806,315 @@ export default function App() {
         )}
 
 
-        <nav className="sticky top-0 w-full z-50 select-none shadow-md transition-all duration-300">
-          {/* DESKTOP HEADER (Two-Row Grid) */}
-          <div className="hidden lg:flex flex-col w-full">
-            {/* Top Row: Dark Purple Background */}
-            <div className="w-full bg-[#13071C] border-b border-white/5 h-20 flex items-center">
-              <div className="max-w-7xl mx-auto px-6 w-full flex justify-between items-center gap-6 h-full">
+        <nav className={`fixed top-0 left-0 right-0 w-full z-50 select-none transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md py-1.5' : 'bg-white shadow-sm py-3'}`}>
+          {/* DESKTOP HEADER (Two-Row Layout) */}
+          <div className="hidden lg:flex flex-col w-full max-w-[1400px] mx-auto px-6">
+            
+            {/* Top Row: Logo, Search Bar, Redesigned Utility Buttons */}
+            <div className="flex justify-between items-center gap-8 h-20 transition-all duration-300">
+              
+              {/* Logo / Brand Name */}
+              <button
+                id="logo-branding-btn"
+                onClick={() => navigateTo('home')}
+                className="flex items-center space-x-3 shrink-0 focus:outline-none transition-all duration-300 hover:scale-[1.02] text-left cursor-pointer"
+              >
+                <img
+                  src={hrLogo}
+                  alt="HR Jewellers &amp; Sons Logo"
+                  className="w-[70px] h-[55px] lg:w-[85px] lg:h-[65px] object-contain select-none filter drop-shadow-[0_2px_8px_rgba(200,166,70,0.1)]"
+                />
+                <div className="flex flex-col justify-center">
+                  <span className="serif-luxury text-[15px] lg:text-[18px] font-bold leading-tight tracking-[2.5px] text-[#1A1A1A]">
+                    HR JEWELLERS
+                  </span>
+                  <span className="serif-luxury text-[11px] lg:text-[13px] font-semibold leading-none tracking-[3.5px] text-[#C8A646] mt-0.5">
+                    &amp; SONS
+                  </span>
+                  <span className="text-[7px] tracking-[0.25em] uppercase font-sans font-light text-gray-400 mt-1">
+                    Timeless Elegance
+                  </span>
+                </div>
+              </button>
 
-                {/* Brand Logo & Typography */}
-                <button
-                  id="logo-branding-btn"
-                  onClick={() => navigateTo('home')}
-                  className="flex items-center space-x-3 shrink-0 focus:outline-none transition-all duration-300 hover:scale-[1.02] text-left cursor-pointer"
-                >
-                  <img
-                    src={hrLogo}
-                    alt="HR Jewellers &amp; Sons Logo"
-                    className="w-[80px] h-[60px] lg:w-[100px] lg:h-[75px] object-contain select-none filter drop-shadow-[0_2px_8px_rgba(212,175,55,0.15)] mix-blend-screen"
+              {/* Redesigned Search Bar */}
+              <div className="relative flex-1 max-w-[550px] mx-4">
+                <form onSubmit={handleSearchSubmit} className="relative">
+                  <input
+                    type="text"
+                    value={homeSearchVal}
+                    onChange={handleSearchChange}
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+                    placeholder="Search Jewellery, Gold Coins, Diamonds..."
+                    className="w-full h-12 pl-12 pr-4 bg-[#FAF9F7] border border-[#ECECEC] focus:border-[#C8A646] focus:outline-none focus:ring-1 focus:ring-[#C8A646]/20 rounded-full text-[#1A1A1A] placeholder-gray-400 text-[13px] font-medium transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] hover:shadow-[0_0_12px_rgba(200,166,70,0.1)] focus:shadow-[0_0_15px_rgba(200,166,70,0.15)] focus:bg-white"
                   />
-                  <div className="flex flex-col justify-center">
-                    <span className="serif-luxury text-sm lg:text-base font-semibold leading-tight tracking-[2px] text-[#DDA0DD]">
-                      HR JEWELLERS
-                    </span>
-                    <span className="serif-luxury text-[10px] lg:text-xs font-semibold leading-none tracking-[3px] text-[#DDA0DD]/90 -mt-0.5">
-                      &amp; SONS
-                    </span>
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-450 pointer-events-none">
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
                   </div>
+                </form>
+
+                {/* Suggestions Dropdown (Luxury White Theme) */}
+                {searchFocused && homeSearchSuggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-3 bg-white text-gray-800 shadow-[0_12px_40px_rgba(0,0,0,0.08)] border border-[#ECECEC] rounded-2xl py-3 px-4 z-50 max-h-[300px] overflow-y-auto animate-fade-in scrollbar-thin">
+                    {homeSearchSuggestions.map((prod) => (
+                      <button
+                        key={prod.id}
+                        onClick={() => {
+                          triggerAudio('click');
+                          navigateToPDP(prod);
+                        }}
+                        className="w-full flex items-center gap-3 p-2 hover:bg-[#FAF9F7] rounded-xl transition-colors text-left cursor-pointer focus:outline-none"
+                      >
+                        <img src={prod.img} alt={prod.name} className="w-10 h-10 object-contain rounded-lg border border-[#ECECEC] bg-[#FAF9F7]" />
+                        <div>
+                          <div className="text-[12px] font-bold text-[#1A1A1A] line-clamp-1">{prod.name}</div>
+                          <div className="text-[10px] text-[#C8A646] font-bold font-sans">₹{formatPrice(prod.price)}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Utility Buttons */}
+              <div className="flex items-center space-x-2 xl:space-x-3 h-full">
+                
+                {/* 1. Sound Button */}
+                <button
+                  onClick={toggleSound}
+                  className="group relative flex flex-col items-center justify-center w-12 h-12 rounded-full hover:bg-[#FAF9F7] transition-all duration-300 cursor-pointer focus:outline-none"
+                  title={soundEnabled ? "Mute chimes" : "Unmute chimes"}
+                >
+                  <div className="text-[#C8A646] transition-transform duration-300 group-hover:scale-110 active:scale-95">
+                    {soundEnabled ? (
+                      <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5.5 h-5.5 text-gray-400" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6h4.72L12.75 5.1c.3-.3.8-.09.8.32v13.16c0 .41-.5.62-.8.32l-3.53-3.53H6.75c-.69 0-1.25-.56-1.25-1.25v-3c0-.69.56-1.25 1.25-1.25z" />
+                      </svg>
+                    )}
+                  </div>
+                  {/* Tooltip */}
+                  <span className="absolute bottom-[-24px] scale-0 transition-all rounded bg-gray-900 px-2 py-0.5 text-[9px] text-white group-hover:scale-100 z-50 whitespace-nowrap shadow-md">
+                    {soundEnabled ? "Mute" : "Unmute"}
+                  </span>
                 </button>
 
-                {/* Search Bar with live suggestions */}
-                <div className="relative flex-1 max-w-[550px] mx-4">
-                  <form onSubmit={handleSearchSubmit} className="relative">
-                    <input
-                      type="text"
-                      value={homeSearchVal}
-                      onChange={handleSearchChange}
-                      onFocus={() => setSearchFocused(true)}
-                      onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
-                      placeholder="Search for jewellery, gold coins..."
-                      className="w-full h-11 pl-11 pr-4 bg-[#1a0c24] border border-[#DDA0DD]/20 focus:border-[#DDA0DD]/45 focus:outline-none focus:ring-1 focus:ring-[#DDA0DD]/20 rounded-full text-[#FCFAFF] placeholder-slate-400 text-sm font-medium transition-all shadow-inner"
-                    />
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                      <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </div>
-                  </form>
+                {/* 2. Inquire (WhatsApp) */}
+                <a
+                  href="https://wa.me/919414088000?text=Hello%20HR%20Jewellers,%20I%20am%20interested%20in%20your%20jewellery%20designs."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative flex flex-col items-center justify-center w-12 h-12 rounded-full hover:bg-[#FAF9F7] transition-all duration-300 cursor-pointer"
+                >
+                  <div className="text-[#C8A646] transition-transform duration-300 group-hover:scale-110 active:scale-95">
+                    <svg className="w-5.5 h-5.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.705 1.456h.008c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                    </svg>
+                  </div>
+                  {/* Tooltip */}
+                  <span className="absolute bottom-[-24px] scale-0 transition-all rounded bg-gray-900 px-2 py-0.5 text-[9px] text-white group-hover:scale-100 z-50 whitespace-nowrap shadow-md">
+                    Inquire
+                  </span>
+                </a>
 
-                  {/* Suggestions Dropdown (Dark Theme) */}
-                  {searchFocused && homeSearchSuggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#1c0d2c] text-[#FCFAFF] shadow-2xl border border-[#DDA0DD]/20 rounded-2xl py-3 px-4 z-50 max-h-[300px] overflow-y-auto animate-fade-in">
-                      {homeSearchSuggestions.map((prod) => (
-                        <button
-                          key={prod.id}
-                          onClick={() => {
-                            triggerAudio('click');
-                            navigateToPDP(prod);
-                          }}
-                          className="w-full flex items-center gap-3 p-2 hover:bg-[#DDA0DD]/10 rounded-xl transition-colors text-left"
-                        >
-                          <img src={prod.img} alt={prod.name} className="w-10 h-10 object-contain rounded-lg border border-[#DDA0DD]/10 bg-white" />
-                          <div>
-                            <div className="text-xs font-bold text-[#FCFAFF] line-clamp-1">{prod.name}</div>
-                            <div className="text-[10px] text-[#DDA0DD] font-bold font-sans">₹{formatPrice(prod.price)}</div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                {/* 3. Stores Locator */}
+                <button
+                  onClick={() => { triggerAudio('click'); navigateTo('offers'); }}
+                  className="group relative flex flex-col items-center justify-center w-12 h-12 rounded-full hover:bg-[#FAF9F7] transition-all duration-300 cursor-pointer focus:outline-none"
+                >
+                  <div className="text-[#C8A646] transition-transform duration-300 group-hover:scale-110 active:scale-95">
+                    <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  {/* Tooltip */}
+                  <span className="absolute bottom-[-24px] scale-0 transition-all rounded bg-gray-900 px-2 py-0.5 text-[9px] text-white group-hover:scale-100 z-50 whitespace-nowrap shadow-md">
+                    Stores
+                  </span>
+                </button>
 
-                {/* Utilities Icons Row */}
-                <div className="flex items-center space-x-5 xl:space-x-6 h-full">
+                {/* 4. Wishlist */}
+                <button
+                  id="header-wishlist-btn"
+                  onClick={() => { triggerAudio('click'); setWishlistOpen(true); }}
+                  className="group relative flex flex-col items-center justify-center w-12 h-12 rounded-full hover:bg-[#FAF9F7] transition-all duration-300 cursor-pointer focus:outline-none"
+                >
+                  <div className="text-[#C8A646] relative transition-transform duration-300 group-hover:scale-110 active:scale-95">
+                    <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    {wishlistItems.length > 0 && (
+                      <span className="absolute top-[-4px] right-[-4px] bg-[#D58B8B] text-white text-[8px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm animate-pulse">
+                        {wishlistItems.length}
+                      </span>
+                    )}
+                  </div>
+                  {/* Tooltip */}
+                  <span className="absolute bottom-[-24px] scale-0 transition-all rounded bg-gray-900 px-2 py-0.5 text-[9px] text-white group-hover:scale-100 z-50 whitespace-nowrap shadow-md">
+                    Wishlist
+                  </span>
+                </button>
 
-                  {/* 1. Sound */}
-                  <button
-                    onClick={toggleSound}
-                    className="flex flex-col items-center justify-center text-center cursor-pointer text-[#DDA0DD] hover:scale-105 transition-transform"
-                    title={soundEnabled ? "Mute chimes" : "Unmute chimes"}
-                  >
-                    <div className="p-1 hover:bg-white/5 rounded-full transition-colors">
-                      {soundEnabled ? (
-                        <svg className="w-5.5 h-5.5 text-[#D4AF37]" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
-                        </svg>
-                      ) : (
-                        <svg className="w-5.5 h-5.5 text-[#D4AF37]/50" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6h4.72L12.75 5.1c.3-.3.8-.09.8.32v13.16c0 .41-.5.62-.8.32l-3.53-3.53H6.75c-.69 0-1.25-.56-1.25-1.25v-3c0-.69.56-1.25 1.25-1.25z" />
-                        </svg>
-                      )}
-                    </div>
-                    <span className="text-[9px] tracking-wide mt-0.5 whitespace-nowrap font-bold text-slate-300 uppercase">Sound</span>
-                  </button>
-
-                  {/* 2. Inquire (WhatsApp) */}
-                  <a
-                    href="https://wa.me/919414088000?text=Hello%20HR%20Jewellers,%20I%20am%20interested%20in%20your%20jewellery%20designs."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex flex-col items-center justify-center text-center cursor-pointer text-[#DDA0DD] hover:scale-105 transition-transform"
-                  >
-                    <div className="p-1 hover:bg-white/5 rounded-full transition-colors">
-                      <svg className="w-5.5 h-5.5 text-[#D4AF37]" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.705 1.456h.008c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                      </svg>
-                    </div>
-                    <span className="text-[9px] tracking-wide mt-0.5 whitespace-nowrap font-bold text-slate-300 uppercase">Inquire</span>
-                  </a>
-
-                  {/* 3. Stores */}
-                  <button
-                    onClick={() => { triggerAudio('click'); navigateTo('offers'); }}
-                    className="flex flex-col items-center justify-center text-center cursor-pointer text-[#DDA0DD] hover:scale-105 transition-transform"
-                  >
-                    <div className="p-1 hover:bg-white/5 rounded-full transition-colors">
-                      <svg className="w-5.5 h-5.5 text-[#D4AF37]" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                    </div>
-                    <span className="text-[9px] tracking-wide mt-0.5 whitespace-nowrap font-bold text-slate-300 uppercase">Stores</span>
-                  </button>
-
-                  {/* 4. Wishlist */}
-                  <button
-                    id="header-wishlist-btn"
-                    onClick={() => { triggerAudio('click'); setWishlistOpen(true); }}
-                    className="flex flex-col items-center justify-center text-center relative cursor-pointer text-[#DDA0DD] hover:scale-105 transition-transform"
-                  >
-                    <div className="p-1 hover:bg-white/5 rounded-full transition-colors relative">
-                      <svg className="w-5.5 h-5.5 text-[#D4AF37]" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                      </svg>
-                      {wishlistItems.length > 0 && (
-                        <span className="absolute top-0.5 right-0.5 bg-amber-500 text-white text-[8px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center animate-pulse">
-                          {wishlistItems.length}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[9px] tracking-wide mt-0.5 whitespace-nowrap font-bold text-slate-300 uppercase">Wishlist</span>
-                  </button>
-
-                  {/* 5. Cart */}
-                  <button
-                    id="header-cart-btn"
-                    onClick={() => { triggerAudio('click'); setCartOpen(true); }}
-                    className="flex flex-col items-center justify-center text-center relative cursor-pointer text-[#DDA0DD] hover:scale-105 transition-transform"
-                  >
-                    <div className="p-1 hover:bg-white/5 rounded-full transition-colors relative">
-                      <svg className="w-5.5 h-5.5 text-[#D4AF37]" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                      </svg>
-                      {cartItems.length > 0 && (
-                        <span className="absolute top-0.5 right-0.5 bg-amber-500 text-white text-[8px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center">
-                          {cartItems.reduce((acc, curr) => acc + curr.quantity, 0)}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[9px] tracking-wide mt-0.5 whitespace-nowrap font-bold text-slate-300 uppercase">Cart</span>
-                  </button>
-
-                  {/* Profile and More options removed as requested */}
-                </div>
+                {/* 5. Cart */}
+                <button
+                  id="header-cart-btn"
+                  onClick={() => { triggerAudio('click'); setCartOpen(true); }}
+                  className="group relative flex flex-col items-center justify-center w-12 h-12 rounded-full hover:bg-[#FAF9F7] transition-all duration-300 cursor-pointer focus:outline-none"
+                >
+                  <div className="text-[#C8A646] relative transition-transform duration-300 group-hover:scale-110 active:scale-95">
+                    <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    {cartItems.length > 0 && (
+                      <span className="absolute top-[-4px] right-[-4px] bg-[#C8A646] text-white text-[8px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
+                        {cartItems.reduce((acc, curr) => acc + curr.quantity, 0)}
+                      </span>
+                    )}
+                  </div>
+                  {/* Tooltip */}
+                  <span className="absolute bottom-[-24px] scale-0 transition-all rounded bg-gray-900 px-2 py-0.5 text-[9px] text-white group-hover:scale-100 z-50 whitespace-nowrap shadow-md">
+                    Cart
+                  </span>
+                </button>
 
               </div>
             </div>
 
-            {/* Bottom Row: Dark Purple/Black Background */}
-            <div className="w-full bg-[#0d0418] h-12 flex items-center">
-              <div className="max-w-7xl mx-auto px-6 w-full flex justify-center items-center h-full">
-
-                {/* Centered Navigation Links */}
-                <div className="flex items-center justify-center space-x-5 lg:space-x-6 h-full text-[11px] font-sans tracking-widest uppercase font-bold text-slate-200">
-                  {/* 11+1 Scheme Dropdown */}
+            {/* Bottom Row: FLOATING NAVIGATION CARD */}
+            <div className="w-full flex justify-center mt-3 mb-1">
+              <div className="w-full max-w-[1240px] bg-white border border-[#ECECEC] rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] px-8 py-3.5 flex justify-center items-center">
+                <div className="flex items-center justify-center space-x-6 xl:space-x-8 text-[11px] font-sans tracking-[0.12em] uppercase font-bold text-[#1A1A1A] w-full font-semibold">
+                  
+                  {/* 1. 11+1 Scheme Dropdown */}
                   <div className="relative group h-full flex items-center">
                     <button
                       onClick={() => { triggerAudio('click'); navigateTo('savings'); }}
-                      className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
+                      className="relative hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1.5 focus:outline-none"
                     >
                       <span>11+1 Scheme</span>
-                      <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <span className="px-1.5 py-0.5 text-[8px] tracking-normal font-sans font-extrabold text-white bg-gradient-to-r from-[#D58B8B] to-[#C8A646] rounded-full uppercase scale-95 shadow-sm font-semibold">
+                        NEW
+                      </span>
+                      <svg className="w-3 h-3 text-gray-400 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                       </svg>
                     </button>
                     {/* Dropdown */}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-0 bg-white text-gray-800 shadow-2xl border border-gray-200/60 rounded-b-2xl py-3 px-1 min-w-[200px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-xs normal-case font-sans select-none">
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.08)] border border-[#ECECEC] rounded-2xl py-2 px-1 min-w-[200px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-[12px] normal-case font-sans select-none font-semibold">
                       <button
                         onClick={() => { triggerAudio('click'); navigateTo('savings'); }}
-                        className="w-full text-left px-5 py-3 text-[13px] font-semibold text-gray-800 hover:bg-[#4A126D]/8 hover:text-[#4A126D] transition-colors rounded-xl cursor-pointer"
+                        className="w-full text-left px-5 py-2.5 font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer"
                       >
                         Gold Mine
                       </button>
                       <button
                         onClick={() => { triggerAudio('click'); navigateTo('gold-reserve'); }}
-                        className="w-full text-left px-5 py-3 text-[13px] font-semibold text-gray-800 hover:bg-[#4A126D]/8 hover:text-[#4A126D] transition-colors rounded-xl cursor-pointer"
+                        className="w-full text-left px-5 py-2.5 font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer"
                       >
                         Gold Reserve
                       </button>
                     </div>
                   </div>
 
-                  {/* Watch Jewellery */}
+                  {/* 2. Watch Jewellery */}
                   <button
                     onClick={() => { triggerAudio('click'); changeCategoryTab('Bracelets'); navigateTo('collections'); }}
-                    className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
+                    className="relative hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none group"
                   >
                     <span>Watch Jewellery</span>
-                    <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 text-gray-400 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                   </button>
 
-                  {/* Rings */}
+                  {/* 3. Rings */}
                   <button
                     onClick={() => { triggerAudio('click'); changeCategoryTab('Rings'); navigateTo('collections'); }}
-                    className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
+                    className="relative hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none group"
                   >
                     <span>Rings</span>
-                    <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 text-gray-400 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                   </button>
 
-                  {/* Earrings */}
+                  {/* 4. Earrings */}
                   <button
                     onClick={() => { triggerAudio('click'); changeCategoryTab('Earrings'); navigateTo('collections'); }}
-                    className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
+                    className="relative hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none group"
                   >
                     <span>Earrings</span>
-                    <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 text-gray-400 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                   </button>
 
-                  {/* Necklaces */}
+                  {/* 5. Necklaces */}
                   <button
                     onClick={() => { triggerAudio('click'); changeCategoryTab('Necklace'); navigateTo('collections'); }}
-                    className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
+                    className="relative hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none group"
                   >
                     <span>Necklaces</span>
-                    <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 text-gray-400 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                   </button>
 
-                  {/* Pendants */}
+                  {/* 6. Pendants */}
                   <button
                     onClick={() => { triggerAudio('click'); changeCategoryTab('Necklace'); navigateTo('collections'); }}
-                    className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
+                    className="relative hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none group"
                   >
                     <span>Pendants</span>
-                    <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 text-gray-400 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                   </button>
 
-                  {/* Solitaires */}
+                  {/* 7. Solitaires */}
                   <button
                     onClick={() => { triggerAudio('click'); changeCategoryTab('Rings'); navigateTo('collections'); }}
-                    className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
+                    className="relative hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none group"
                   >
                     <span>Solitaires</span>
-                    <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 text-gray-400 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                   </button>
 
-                  {/* All Jewellery */}
+                  {/* 8. All Jewellery */}
                   <button
                     onClick={() => { triggerAudio('click'); changeCategoryTab('Collections'); navigateTo('collections'); }}
-                    className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
+                    className="relative hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none group"
                   >
                     <span>All Jewellery</span>
-                    <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 text-gray-400 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                   </button>
 
-                  {/* Gifts Dropdown */}
+                  {/* 9. Gifts Dropdown */}
                   <div className="relative group h-full flex items-center">
                     <button
                       onClick={() => { triggerAudio('click'); changeCategoryTab('Gifts & Pooja'); navigateTo('collections'); }}
-                      className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
+                      className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none"
                     >
                       <span>Gifts</span>
-                      <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3 text-gray-400 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                       </svg>
                     </button>
-
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-0 bg-white text-gray-800 shadow-2xl border border-gray-200/60 rounded-b-2xl py-6 px-7 min-w-[420px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex gap-8 text-xs normal-case font-sans select-none text-left">
-                      {/* Left: Gift Categories */}
+                    {/* Gifts Mega Dropdown */}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white text-gray-800 shadow-[0_12px_40px_rgba(0,0,0,0.08)] border border-[#ECECEC] rounded-2xl py-6 px-7 min-w-[420px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex gap-8 text-[12px] normal-case font-sans select-none text-left font-semibold">
                       <div className="flex flex-col space-y-1 flex-1">
-                        <h4 className="font-bold text-[13px] text-[#031838] border-b border-gray-100 pb-2 mb-1">Gifts For Special Someone</h4>
+                        <h4 className="font-bold text-[13px] text-[#1A1A1A] border-b border-gray-100 pb-2 mb-1">Gifts For Special Someone</h4>
                         {[
                           { label: 'For HER', price: '2,861' },
                           { label: 'For HIM', price: '5,820' },
@@ -3111,7 +3127,7 @@ export default function App() {
                           <button
                             key={g.label}
                             onClick={() => { triggerAudio('click'); changeCategoryTab('Gifts & Pooja'); navigateTo('collections'); }}
-                            className="text-left hover:text-[#D4AF37] hover:translate-x-1 transition-all py-1 cursor-pointer"
+                            className="text-left hover:text-[#C8A646] hover:translate-x-1 transition-all py-1 cursor-pointer focus:outline-none"
                           >
                             <span className="font-bold text-[12px] text-gray-800 block">{g.label}</span>
                             <span className="text-[10px] text-gray-400">Starting at Rs. {g.price}/-</span>
@@ -3119,19 +3135,18 @@ export default function App() {
                         ))}
                       </div>
 
-                      {/* Right: Gift Card Banner */}
-                      <div className="flex flex-col items-center justify-center bg-[#FAF8F6] rounded-2xl p-4 min-w-[160px]">
-                        <div className="bg-gradient-to-br from-[#8B7BA5] to-[#6B5B8A] rounded-xl p-4 text-center text-white w-full">
-                          <p className="text-[9px] uppercase tracking-wider font-semibold opacity-80">HR Jeweller & Sons</p>
+                      <div className="flex flex-col items-center justify-center bg-[#FAF9F7] rounded-2xl p-4 min-w-[160px]">
+                        <div className="bg-gradient-to-br from-[#D58B8B] to-[#C8A646] rounded-xl p-4 text-center text-white w-full shadow-sm">
+                          <p className="text-[9px] uppercase tracking-wider font-semibold opacity-90">HR Jewellers & Sons</p>
                           <p className="text-[10px] font-bold mt-0.5">Gift Cards</p>
                           <div className="text-2xl mt-1">💍</div>
                         </div>
-                        <p className="text-[10px] text-gray-500 text-center mt-2 leading-snug font-medium">Available in denominations<br />starting from <strong className="text-[#031838]">₹500</strong> to <strong className="text-[#031838]">₹50,000</strong></p>
+                        <p className="text-[10px] text-gray-500 text-center mt-2 leading-snug font-medium">Available in denominations<br />starting from <strong className="text-[#1A1A1A]">₹500</strong> to <strong className="text-[#1A1A1A]">₹50,000</strong></p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Gold Coins Dropdown */}
+                  {/* 10. Gold Coins Dropdown */}
                   <div className="relative group h-full flex items-center">
                     <button
                       onClick={() => {
@@ -3140,15 +3155,15 @@ export default function App() {
                         setCoinPurityTab('24K');
                         setCoinWeightFilter('all');
                       }}
-                      className="hover:text-white transition-colors duration-300 cursor-pointer h-full flex items-center"
+                      className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none"
                     >
                       <span>Gold Coins</span>
-                      <svg className="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3 text-gray-400 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                       </svg>
                     </button>
-
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-0 bg-white text-gray-800 shadow-2xl border border-gray-200/60 rounded-b-2xl py-6 px-7 min-w-[320px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 grid grid-cols-2 gap-x-8 gap-y-4 text-xs normal-case font-sans select-none text-left">
+                    {/* Gold Coins Dropdown Content */}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white text-gray-800 shadow-[0_12px_40px_rgba(0,0,0,0.08)] border border-[#ECECEC] rounded-2xl py-6 px-7 min-w-[320px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 grid grid-cols-2 gap-x-8 gap-y-4 text-[12px] normal-case font-sans select-none text-left font-semibold">
                       <div className="flex flex-col space-y-2.5">
                         <button
                           onClick={() => {
@@ -3157,7 +3172,7 @@ export default function App() {
                             setCoinPurityTab('24K');
                             setCoinWeightFilter('all');
                           }}
-                          className="font-bold text-[13px] text-gray-900 border-b border-gray-100 pb-1.5 text-left hover:text-[#D4AF37] transition-colors"
+                          className="font-bold text-[13px] text-gray-900 border-b border-gray-100 pb-1.5 text-left hover:text-[#C8A646] focus:outline-none"
                         >
                           24 Kt (995)
                         </button>
@@ -3171,7 +3186,7 @@ export default function App() {
                                 setCoinPurityTab('24K');
                                 setCoinWeightFilter(w);
                               }}
-                              className="text-left hover:text-[#D4AF37] hover:translate-x-1 transition-all py-0.5 cursor-pointer"
+                              className="text-left hover:text-[#C8A646] hover:translate-x-1 transition-all py-0.5 cursor-pointer focus:outline-none"
                             >
                               {w} gram
                             </button>
@@ -3187,7 +3202,7 @@ export default function App() {
                             setCoinPurityTab('22K');
                             setCoinWeightFilter('all');
                           }}
-                          className="font-bold text-[13px] text-gray-900 border-b border-gray-100 pb-1.5 text-left hover:text-[#D4AF37] transition-colors"
+                          className="font-bold text-[13px] text-gray-900 border-b border-gray-100 pb-1.5 text-left hover:text-[#C8A646] focus:outline-none"
                         >
                           22 Kt (916)
                         </button>
@@ -3201,7 +3216,7 @@ export default function App() {
                                 setCoinPurityTab('22K');
                                 setCoinWeightFilter(w);
                               }}
-                              className="text-left hover:text-[#D4AF37] hover:translate-x-1 transition-all py-0.5 cursor-pointer"
+                              className="text-left hover:text-[#C8A646] hover:translate-x-1 transition-all py-0.5 cursor-pointer focus:outline-none"
                             >
                               {w} gram
                             </button>
@@ -3211,114 +3226,154 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Offers Dropdown */}
+                  {/* 11. Offers Dropdown */}
                   <div className="relative group h-full flex items-center">
                     <button
                       onClick={() => { triggerAudio('click'); navigateTo('offers'); }}
-                      className="hover:text-[#DDA0DD] transition-colors duration-300 cursor-pointer h-full flex items-center text-[#DDA0DD]"
+                      className="hover:text-[#D58B8B] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none text-[#D58B8B]"
                     >
                       <span>Offers</span>
-                      <svg className="w-3 h-3 ml-1 text-[#DDA0DD]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3 text-[#D58B8B]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                       </svg>
                     </button>
                     {/* Dropdown */}
-                    <div className="absolute top-full right-0 mt-0 bg-white text-gray-800 shadow-2xl border border-gray-200/60 rounded-b-2xl py-3 px-1 min-w-[340px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-xs normal-case font-sans select-none">
+                    <div className="absolute top-full right-0 mt-3 bg-white text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.08)] border border-[#ECECEC] rounded-2xl py-2.5 px-1 min-w-[340px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-[12px] normal-case font-sans select-none font-semibold">
                       <button
                         onClick={() => { triggerAudio('click'); setMaxPriceFilter(100000000); changeCategoryTab('Collections'); navigateTo('collections'); }}
-                        className="w-full text-left px-5 py-3 text-[12px] font-semibold text-gray-800 hover:bg-[#DDA0DD]/10 hover:text-[#4A126D] transition-colors rounded-xl cursor-pointer leading-snug"
+                        className="w-full text-left px-5 py-3 text-[12px] font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer leading-snug focus:outline-none"
                       >
                         💎 Up To 50% Off On Making Charges On Diamond Jewellery
                       </button>
                       <button
                         onClick={() => { triggerAudio('click'); setMetalFilter('gold'); changeCategoryTab('Collections'); navigateTo('collections'); }}
-                        className="w-full text-left px-5 py-3 text-[12px] font-semibold text-gray-800 hover:bg-[#DDA0DD]/10 hover:text-[#4A126D] transition-colors rounded-xl cursor-pointer leading-snug"
+                        className="w-full text-left px-5 py-3 text-[12px] font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer leading-snug focus:outline-none"
                       >
                         🥇 Up To 20% Off On Making Charges On Plain Gold Jewellery
                       </button>
                     </div>
                   </div>
-                </div>
 
+                </div>
               </div>
             </div>
 
           </div>
 
           {/* MOBILE HEADER (Single-Row with dropdown drawer) */}
-          <div className="lg:hidden flex items-center justify-between w-full h-16 px-4 bg-white border-b border-slate-100">
-            {/* Mobile Logo */}
-            <button
-              onClick={() => navigateTo('home')}
-              className="flex items-center space-x-1 focus:outline-none cursor-pointer"
-            >
-              <div className="flex flex-col justify-center">
-                <span className="font-sans text-[15px] font-black tracking-[0.15em] text-[#0b2240] uppercase leading-none">
-                  HR JEWELLERS
-                </span>
-                <span className="font-sans text-[7px] font-bold tracking-[0.3em] text-[#0b2240]/80 uppercase mt-0.5 pl-0.5 leading-none">
-                  &amp; SONS
-                </span>
-              </div>
-            </button>
-
-            {/* Mobile Action Controls */}
-            <div className="flex items-center space-x-3 text-[#0b2240]">
-              {/* Search Input toggle */}
+          <div className="lg:hidden flex flex-col w-full bg-white border-b border-slate-100 px-4 py-3 select-none gap-3">
+            <div className="flex items-center justify-between w-full">
+              {/* Logo / Brand Name */}
               <button
-                onClick={() => { triggerAudio('click'); navigateTo('collections'); }}
-                className="p-1.5 hover:bg-slate-50 rounded-full"
-                title="Search"
+                onClick={() => navigateTo('home')}
+                className="flex items-center space-x-2 focus:outline-none cursor-pointer text-left"
               >
-                <svg className="w-5 h-5 text-[#0b2240]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
-
-              {/* Wishlist Mobile */}
-              <button
-                onClick={() => { triggerAudio('click'); setWishlistOpen(true); }}
-                className="p-1.5 hover:bg-slate-50 rounded-full relative"
-              >
-                <svg className="w-5 h-5 text-[#0b2240]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-                {wishlistItems.length > 0 && (
-                  <span className="absolute top-0 right-0 bg-[#4A126D] text-white text-[8px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center animate-pulse">
-                    {wishlistItems.length}
+                <img
+                  src={hrLogo}
+                  alt="HR Logo"
+                  className="w-10 h-8 object-contain filter drop-shadow-sm"
+                />
+                <div className="flex flex-col justify-center">
+                  <span className="serif-luxury text-[13px] font-bold tracking-[1.5px] text-[#1A1A1A]">
+                    HR JEWELLERS
                   </span>
-                )}
-              </button>
-
-              {/* Cart Mobile */}
-              <button
-                onClick={() => { triggerAudio('click'); setCartOpen(true); }}
-                className="p-1.5 hover:bg-slate-50 rounded-full relative"
-              >
-                <svg className="w-5 h-5 text-[#0b2240]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                {cartItems.length > 0 && (
-                  <span className="absolute top-0 right-0 bg-amber-500 text-white text-[8px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center">
-                    {cartItems.reduce((acc, curr) => acc + curr.quantity, 0)}
+                  <span className="serif-luxury text-[9px] font-bold tracking-[2.5px] text-[#C8A646] -mt-0.5">
+                    &amp; SONS
                   </span>
-                )}
+                </div>
               </button>
 
-              {/* Hamburger Button */}
-              <button
-                onClick={() => { triggerAudio('click'); setMobileMenuOpen(!mobileMenuOpen); }}
-                className="p-1.5 hover:bg-slate-50 rounded-full ml-1 cursor-pointer"
-                aria-label="Toggle Mobile Menu"
-              >
-                <svg className="w-6 h-6 text-[#0b2240]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  {mobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              {/* Mobile Action Controls */}
+              <div className="flex items-center space-x-2.5 text-[#1A1A1A]">
+                
+                {/* Wishlist Mobile */}
+                <button
+                  onClick={() => { triggerAudio('click'); setWishlistOpen(true); }}
+                  className="p-1.5 hover:bg-slate-50 rounded-full relative focus:outline-none"
+                >
+                  <svg className="w-5 h-5 text-[#C8A646]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  {wishlistItems.length > 0 && (
+                    <span className="absolute top-0 right-0 bg-[#D58B8B] text-white text-[8px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center animate-pulse">
+                      {wishlistItems.length}
+                    </span>
                   )}
-                </svg>
-              </button>
+                </button>
+
+                {/* Cart Mobile */}
+                <button
+                  onClick={() => { triggerAudio('click'); setCartOpen(true); }}
+                  className="p-1.5 hover:bg-slate-50 rounded-full relative focus:outline-none"
+                >
+                  <svg className="w-5 h-5 text-[#C8A646]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                  {cartItems.length > 0 && (
+                    <span className="absolute top-0 right-0 bg-[#C8A646] text-white text-[8px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
+                      {cartItems.reduce((acc, curr) => acc + curr.quantity, 0)}
+                    </span>
+                  )}
+                </button>
+
+                {/* Hamburger Button */}
+                <button
+                  onClick={() => { triggerAudio('click'); setMobileMenuOpen(!mobileMenuOpen); }}
+                  className="p-1.5 hover:bg-slate-50 rounded-full cursor-pointer focus:outline-none"
+                  aria-label="Toggle Mobile Menu"
+                >
+                  <svg className="w-5.5 h-5.5 text-[#1A1A1A]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    {mobileMenuOpen ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    )}
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Mobile Search Bar - Remains visible below logo row */}
+            <div className="relative w-full">
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <input
+                  type="text"
+                  value={homeSearchVal}
+                  onChange={handleSearchChange}
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+                  placeholder="Search Jewellery, Gold Coins..."
+                  className="w-full h-10 pl-10 pr-4 bg-[#FAF9F7] border border-[#ECECEC] focus:border-[#C8A646] focus:outline-none rounded-full text-[#1A1A1A] placeholder-gray-400 text-[12px] font-medium transition-all"
+                />
+                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-450 pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-450" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+              </form>
+              
+              {/* Mobile Suggestions Dropdown */}
+              {searchFocused && homeSearchSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white text-gray-800 shadow-[0_8px_30px_rgba(0,0,0,0.08)] border border-[#ECECEC] rounded-xl py-2 px-3 z-50 max-h-[220px] overflow-y-auto">
+                  {homeSearchSuggestions.map((prod) => (
+                    <button
+                      key={prod.id}
+                      onClick={() => {
+                        triggerAudio('click');
+                        setSearchFocused(false);
+                        navigateToPDP(prod);
+                      }}
+                      className="w-full flex items-center gap-3 p-1.5 hover:bg-[#FAF9F7] rounded-lg transition-colors text-left"
+                    >
+                      <img src={prod.img} alt={prod.name} className="w-8 h-8 object-contain rounded-md border border-[#ECECEC] bg-[#FAF9F7]" />
+                      <div>
+                        <div className="text-[11px] font-bold text-[#1A1A1A] line-clamp-1">{prod.name}</div>
+                        <div className="text-[9px] text-[#C8A646] font-bold font-sans">₹{formatPrice(prod.price)}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </nav>
@@ -3642,7 +3697,7 @@ export default function App() {
 
 
         {/* ═══════════════════════════════════════════════════════════
-           MOBILE MENU DRAWER - HR Jewellers & Sons Exact Style
+           MOBILE MENU DRAWER - Redesigned Premium 2026 Luxury Style
            ═══════════════════════════════════════════════════════════ */}
         <AnimatePresence>
           {mobileMenuOpen && (
@@ -3651,42 +3706,46 @@ export default function App() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: '100%' }}
               transition={{ type: 'tween', duration: 0.3, ease: 'easeOut' }}
-              className="fixed inset-0 z-50 bg-white overflow-hidden select-none flex flex-col h-full"
+              className="fixed inset-0 z-50 bg-white overflow-hidden select-none flex flex-col h-full shadow-[0_0_30px_rgba(0,0,0,0.15)]"
             >
 
-              {/* ── Dark Header Bar (HR Jewellers & Sons style) ── */}
-              <div className="bg-[#1B3152] px-4 py-4 flex items-center justify-between shrink-0">
+              {/* ── Premium Light Header Bar ── */}
+              <div className="bg-white border-b border-[#ECECEC] px-5 py-4 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full border-2 border-white/20 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                    </svg>
-                  </div>
+                  <img
+                    src={hrLogo}
+                    alt="HR Logo"
+                    className="w-8 h-8 object-contain filter drop-shadow-sm"
+                  />
                   <div className="flex flex-col">
-                    <span className="text-white/60 text-[10px] font-sans font-medium">Welcome to</span>
-                    <span className="text-white text-[13px] font-sans font-bold tracking-wide">HR Jewellers & Sons</span>
+                    <span className="serif-luxury text-[13px] font-bold tracking-[1.5px] text-[#1A1A1A]">
+                      HR JEWELLERS
+                    </span>
+                    <span className="serif-luxury text-[9px] font-bold tracking-[2.5px] text-[#C8A646] -mt-0.5">
+                      &amp; SONS
+                    </span>
                   </div>
                 </div>
                 <button
                   onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); }}
-                  className="w-8 h-8 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                  className="w-9 h-9 rounded-full bg-[#FAF9F7] flex items-center justify-center text-[#C8A646] hover:bg-[#C8A646]/10 active:scale-95 transition-all focus:outline-none cursor-pointer"
                 >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
 
               {/* ── Scrollable Content ── */}
-              <div className="flex-1 overflow-y-auto pb-20 scrollbar-hide overscroll-contain" style={{ WebkitOverflowScrolling: 'touch', minHeight: 0 }}>
+              <div className="flex-1 overflow-y-auto pb-20 scrollbar-hide overscroll-contain bg-[#FCFCFB]" style={{ WebkitOverflowScrolling: 'touch', minHeight: 0 }}>
 
                 {/* ── "Shop For" Section ── */}
-                <div className="px-4 pt-4 pb-1">
-                  <span className="text-[11px] text-gray-400 font-sans font-medium">Shop For</span>
+                <div className="px-5 pt-5 pb-1">
+                  <span className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-gray-400">Shop For</span>
                 </div>
 
                 {/* Category List Items */}
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-gray-100 bg-white border-y border-gray-100/60 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
                   {[
                     { label: 'Watch Jewellery', tab: 'Bracelets' },
                     { label: 'Women', nav: 'all' },
@@ -3704,12 +3763,12 @@ export default function App() {
                         else if (item.nav) handleCategoryNav(item.nav);
                         else if (item.tab) { changeCategoryTab(item.tab); navigateTo('collections'); }
                       }}
-                      className="w-full flex items-center justify-between px-4 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer focus:outline-none"
+                      className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#FAF9F7] active:bg-[#FAF9F7] transition-colors cursor-pointer focus:outline-none text-left"
                     >
-                      <span className={`text-[14px] font-sans font-medium ${item.highlight ? 'text-[#E07C6A]' : 'text-gray-800'}`}>
+                      <span className={`text-[13px] font-sans font-bold uppercase tracking-[0.05em] ${item.highlight ? 'text-[#D58B8B]' : 'text-[#1A1A1A]'}`}>
                         {item.label}
                       </span>
-                      <svg className="w-4 h-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <svg className="w-4 h-4 text-[#C8A646]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                       </svg>
                     </button>
@@ -3718,29 +3777,29 @@ export default function App() {
 
                 {/* ── Gold Mine 11+1 Monthly Plan Banner ── */}
                 <button
-                  onClick={() => { triggerAudio('shimmer'); setMobileMenuOpen(false); navigateTo('offers'); }}
-                  className="w-full flex items-center justify-between px-4 py-4 bg-[#FDF8F0] border-y border-[#E6C687]/20 cursor-pointer hover:bg-[#FBF3E5] transition-colors focus:outline-none"
+                  onClick={() => { triggerAudio('shimmer'); setMobileMenuOpen(false); navigateTo('savings'); }}
+                  className="w-full flex items-center justify-between px-5 py-4 bg-gradient-to-r from-[#FAF9F7] to-white border-y border-[#ECECEC] cursor-pointer hover:bg-[#FAF9F7] transition-colors focus:outline-none mt-4 text-left"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-10 rounded-md border border-[#E6C687]/40 bg-white flex items-center justify-center overflow-hidden">
-                      <span className="text-[10px] font-serif font-bold text-[#8B6914] leading-tight text-center px-1">Gold<br />Mine</span>
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#D58B8B] to-[#C8A646] flex flex-col items-center justify-center shadow-sm">
+                      <span className="text-[14px]">💎</span>
                     </div>
                     <div className="flex flex-col text-left">
-                      <span className="text-[14px] font-sans font-bold text-gray-900 tracking-tight">11 + 1 Monthly Plan</span>
-                      <span className="text-[10px] font-sans text-gray-500">(Save & get the last month FREE!)</span>
+                      <span className="text-[13px] font-sans font-bold text-[#1A1A1A] uppercase tracking-[0.05em]">11 + 1 Monthly Plan</span>
+                      <span className="text-[10px] font-sans text-gray-500 font-medium">Save &amp; get the last month FREE!</span>
                     </div>
                   </div>
-                  <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                  </svg>
+                  <span className="px-2 py-0.5 text-[8px] font-sans font-extrabold text-white bg-[#C8A646] rounded-full uppercase shadow-sm">
+                    NEW
+                  </span>
                 </button>
 
                 {/* ── "Jewellery" Section ── */}
-                <div className="px-4 pt-5 pb-1">
-                  <span className="text-[11px] text-gray-400 font-sans font-medium">Jewellery</span>
+                <div className="px-5 pt-6 pb-1">
+                  <span className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-gray-400">Jewellery</span>
                 </div>
 
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-gray-100 bg-white border-y border-gray-100/60 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
                   {[
                     { label: 'Diamond', nav: 'diamond' },
                     { label: 'Plain Gold', nav: 'gold' },
@@ -3758,9 +3817,9 @@ export default function App() {
                         else if (item.nav) handleCategoryNav(item.nav);
                         else if (item.tab) { changeCategoryTab(item.tab); navigateTo('collections'); }
                       }}
-                      className="w-full flex items-center justify-between px-4 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer focus:outline-none"
+                      className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#FAF9F7] active:bg-[#FAF9F7] transition-colors cursor-pointer focus:outline-none text-left"
                     >
-                      <span className="text-[14px] font-sans font-medium text-gray-800">{item.label}</span>
+                      <span className="text-[13px] font-sans font-bold uppercase tracking-[0.05em] text-gray-750">{item.label}</span>
                       <svg className="w-4 h-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                       </svg>
@@ -3771,73 +3830,67 @@ export default function App() {
                 {/* ── Locate Our Store Banner ── */}
                 <button
                   onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); window.open('https://maps.google.com/?q=4-D-37,+Near+Murti+Circle,+J.N.V.+Colony,+Bikaner,+Rajasthan+334003', '_blank'); }}
-                  className="w-full flex items-center gap-3 px-4 py-4 bg-[#E8DCC8] cursor-pointer hover:bg-[#DDD0B8] transition-colors focus:outline-none mt-2"
+                  className="w-full flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-[#FAF9F7] to-[#FAF8F5] cursor-pointer hover:from-[#FAF8F5] hover:to-[#FAF9F7] transition-colors border-y border-gray-150 focus:outline-none mt-4 text-left"
                 >
-                  <svg className="w-8 h-8 text-[#5C4A2A] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                  </svg>
-                  <span className="text-[14px] font-sans font-bold text-[#3D3122] tracking-wide uppercase">Locate Our Store</span>
+                  <div className="w-10 h-10 rounded-full bg-[#C8A646]/10 flex items-center justify-center text-[#C8A646] shrink-0">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                    </svg>
+                  </div>
+                  <span className="text-[13px] font-sans font-bold text-[#1A1A1A] tracking-wider uppercase">Locate Our Store</span>
                 </button>
 
                 {/* ── Bottom Links ── */}
-                <div className="divide-y divide-gray-100 mt-2">
-                  <button
-                    onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('home'); }}
-                    className="w-full text-left px-4 py-4 text-[14px] font-sans font-medium text-[#E07C6A] hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none"
-                  >
-                    Recently Viewed
-                  </button>
-
-                  <a
-                    href="https://wa.me/917610843978?text=Hello%20HR%20Jewellers,%20I%20would%20like%20a%20video%20consultation."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full text-left px-4 py-4 text-[14px] font-sans font-medium text-gray-800 hover:bg-gray-50 transition-colors"
-                  >
-                    Video Call Cart
-                  </a>
-
-                  <button
-                    onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('heritage'); }}
-                    className="w-full text-left px-4 py-4 text-[14px] font-sans font-medium text-gray-800 hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none"
-                  >
-                    Jewellery Guide
-                  </button>
-
-                  <button
-                    onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('valuation'); }}
-                    className="w-full text-left px-4 py-4 text-[14px] font-sans font-medium text-gray-800 hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none"
-                  >
-                    Live Gold Rates
-                  </button>
-
-                  <button
-                    onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('privacy-policy'); }}
-                    className="w-full text-left px-4 py-4 text-[14px] font-sans font-medium text-gray-800 hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none"
-                  >
-                    Privacy Policy
-                  </button>
-
-                  <button
-                    onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('terms-and-conditions'); }}
-                    className="w-full text-left px-4 py-4 text-[14px] font-sans font-medium text-gray-800 hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none"
-                  >
-                    Terms & Conditions
-                  </button>
+                <div className="divide-y divide-gray-100 bg-white border-y border-gray-100/60 shadow-[0_2px_12px_rgba(0,0,0,0.01)] mt-4">
+                  {[
+                    { label: 'Recently Viewed', page: 'home', highlight: true },
+                    { label: 'Video Call Consultation', href: 'https://wa.me/917610843978?text=Hello%20HR%20Jewellers,%20I%20would%20like%20a%20video%20consultation.' },
+                    { label: 'Jewellery Guide', page: 'heritage' },
+                    { label: 'Live Gold Rates', page: 'valuation' },
+                    { label: 'Privacy Policy', page: 'privacy-policy' },
+                    { label: 'Terms & Conditions', page: 'terms-and-conditions' }
+                  ].map((item, idx) => {
+                    if (item.href) {
+                      return (
+                        <a
+                          key={idx}
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block w-full px-5 py-4 text-[13px] font-sans font-bold uppercase tracking-[0.05em] text-[#1A1A1A] hover:bg-[#FAF9F7] transition-colors"
+                        >
+                          {item.label}
+                        </a>
+                      );
+                    }
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          triggerAudio('click');
+                          setMobileMenuOpen(false);
+                          navigateTo(item.page);
+                        }}
+                        className={`w-full text-left px-5 py-4 text-[13px] font-sans font-bold uppercase tracking-[0.05em] hover:bg-[#FAF9F7] transition-colors cursor-pointer focus:outline-none ${item.highlight ? 'text-[#D58B8B]' : 'text-[#1A1A1A]'}`}
+                      >
+                        {item.label}
+                      </button>
+                    );
+                  })}
                 </div>
 
                 {/* ── Live Gold Rate Mini Widget ── */}
-                <div className="px-4 py-4 mt-2">
-                  <div className="bg-gray-50 rounded-xl p-3 flex items-center justify-between border border-gray-100">
+                <div className="px-5 py-5 mt-4">
+                  <div className="bg-white rounded-2xl p-4 flex items-center justify-between border border-[#ECECEC] shadow-sm">
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                      <span className="text-[11px] font-sans text-gray-500">Gold 22K</span>
-                      <span className="text-[12px] font-sans font-bold text-gray-800">₹{(goldRate24k * 0.9167).toFixed(0)}/g</span>
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="text-[11px] font-sans text-gray-500 uppercase tracking-wider font-bold">Gold 22K</span>
+                      <span className="text-[12px] font-sans font-bold text-[#1A1A1A]">₹{(goldRate24k * 0.9167).toFixed(0)}/g</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-sans text-gray-500">Silver</span>
-                      <span className="text-[12px] font-sans font-bold text-gray-800">₹{silverRate.toFixed(1)}/g</span>
+                      <span className="text-[11px] font-sans text-gray-500 uppercase tracking-wider font-bold">Silver</span>
+                      <span className="text-[12px] font-sans font-bold text-[#1A1A1A]">₹{silverRate.toFixed(1)}/g</span>
                     </div>
                   </div>
                 </div>
@@ -3846,11 +3899,10 @@ export default function App() {
             </motion.div>
           )}
         </AnimatePresence>
-
         {/* ==========================================================
           MAIN AREA PAGES
           ========================================================== */}
-        <main className="animate-fade-in">
+        <main className="animate-fade-in pt-[116px] lg:pt-[150px]">
 
           {/* ==========================================
             A. HOME PAGE STOREFRONT VIEW
