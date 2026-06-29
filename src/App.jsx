@@ -3920,7 +3920,7 @@ export default function App() {
                   SECTION 01: CINEMATIC HERO SECTION
                   ========================================================== */}
                 <section
-                  className="relative w-full h-[80vh] sm:h-[85vh] lg:h-[calc(100vh-5rem)] sm:min-h-[500px] lg:min-h-[600px] overflow-hidden flex items-end pb-6 sm:pb-16 lg:pb-20 select-none bg-black"
+                  className="relative w-full h-[55vh] sm:h-[65vh] overflow-hidden flex items-end pb-4 sm:pb-10 select-none bg-black"
                 >
                   {/* Full Screen Cinematic Video Background */}
                   <video
@@ -3934,6 +3934,17 @@ export default function App() {
                     <source src={heroBgVideo} type="video/mp4" />
                     <source src="https://videos.pexels.com/video-files/3209211/3209211-hd_1920_1080_25fps.mp4" type="video/mp4" />
                   </video>
+
+                  {/* Mobile-only bottom fog effect */}
+                  <div className="sm:hidden absolute bottom-0 left-0 w-full h-28 pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(to top, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.45) 40%, transparent 100%)',
+                      backdropFilter: 'blur(4px)',
+                      WebkitBackdropFilter: 'blur(4px)',
+                      maskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
+                      WebkitMaskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
+                    }}
+                  />
 
                 </section>
 

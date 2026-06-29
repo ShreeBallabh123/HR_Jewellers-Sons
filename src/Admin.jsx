@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+﻿import { useState, useEffect, useMemo, useRef } from 'react';
 import { db, auth } from './firebase';
 import {
   collection,
@@ -56,7 +56,9 @@ import {
   Wallet,
   Sun,
   Moon,
-  Bell
+  Bell,
+  Search,
+  X
 } from 'lucide-react';
 
 const isVideoUrl = (url) => {
@@ -152,11 +154,11 @@ function AdminLoginPortal({
                 className="absolute top-4 right-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 p-2 rounded-full text-xs focus:outline-none cursor-pointer"
                 aria-label="Close modal"
               >
-                ✕
+                âœ•
               </button>
               <div className="text-center space-y-2">
                 <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xl text-zinc-800 dark:text-[#E6C687] mx-auto border border-zinc-200/60 dark:border-zinc-700/60">
-                  🔑
+                  ðŸ”‘
                 </div>
                 <h3 className="text-base font-black text-zinc-900 dark:text-[#E6C687] uppercase tracking-wider">Reset Password</h3>
                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed px-2">Enter your verified administrator email below. A password reset link will be sent instantly.</p>
@@ -170,7 +172,7 @@ function AdminLoginPortal({
               >
                 {forgotStatus === 'dispatched' ? (
                   <div className="bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-400 p-4 rounded-xl text-center space-y-1">
-                    <p className="font-bold text-[10px] uppercase tracking-wider">✓ Reset Link Sent!</p>
+                    <p className="font-bold text-[10px] uppercase tracking-wider">âœ“ Reset Link Sent!</p>
                     <p className="text-[9px] text-zinc-500 dark:text-zinc-400">A password reset link was sent to {forgotEmail}. Please review your mailbox.</p>
                   </div>
                 ) : (
@@ -210,7 +212,7 @@ function AdminLoginPortal({
           <form onSubmit={handleAdminLogin} className="space-y-4 text-left text-xs">
             {adminError && (
               <div className="bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-400 px-4 py-2.5 rounded-xl text-center font-bold text-[9px] uppercase tracking-widest flex items-center justify-center gap-1.5">
-                <span>⚠️</span>
+                <span>âš ï¸</span>
                 <span>{adminError}</span>
               </div>
             )}
@@ -251,7 +253,7 @@ function AdminLoginPortal({
                   id="admin-vault-pass"
                   type={showPassword ? "text" : "password"}
                   required
-                  placeholder="••••••••"
+                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
                   className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-850 rounded-xl pl-10 pr-10 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 focus:ring-1 focus:ring-zinc-900/5 transition-all"
@@ -317,7 +319,7 @@ function AdminLoginPortal({
               onClick={handleAutofillDemo}
               className="w-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-850 dark:text-zinc-100 hover:bg-zinc-55 dark:hover:bg-zinc-800 py-2.5 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
             >
-              <span>✨</span> One-Click Autofill Credentials
+              <span>âœ¨</span> One-Click Autofill Credentials
             </button>
           </div>
         </div>
@@ -469,8 +471,8 @@ function Sidebar({
           className={`w-full hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 py-1.5 px-3 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-all flex items-center justify-between text-[10px] uppercase font-bold tracking-wider cursor-pointer`}
           aria-label={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {!isSidebarCollapsed && <span className="text-[9px] lowercase tracking-widest font-mono">⌘\ Collapse</span>}
-          <span>{isSidebarCollapsed ? '→' : '←'}</span>
+          {!isSidebarCollapsed && <span className="text-[9px] lowercase tracking-widest font-mono">âŒ˜\ Collapse</span>}
+          <span>{isSidebarCollapsed ? 'â†’' : 'â†'}</span>
         </button>
 
         {adminUser && (
@@ -593,7 +595,7 @@ function Header({
                       </span>
                       {notifications.length > 0 && (
                         <span className="text-[8px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest animate-pulse">
-                          ● Pending Attention
+                          â— Pending Attention
                         </span>
                       )}
                     </div>
@@ -602,7 +604,7 @@ function Header({
                     <div className="max-h-[320px] overflow-y-auto divide-y divide-zinc-150 dark:divide-zinc-850">
                       {notifications.length === 0 ? (
                         <div className="py-8 px-4 text-center">
-                          <span className="text-2xl mb-1.5 block">✨</span>
+                          <span className="text-2xl mb-1.5 block">âœ¨</span>
                           <p className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">All caught up!</p>
                           <p className="text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5 font-medium">No pending orders or lounge bookings.</p>
                         </div>
@@ -626,7 +628,7 @@ function Header({
                             >
                               <div className="flex justify-between items-start gap-2">
                                 <span className="text-[11px] font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5 leading-none">
-                                  {notif.type === 'order' ? '🛒' : notif.title.includes('Lounge') ? '🛋️' : '✏️'}
+                                  {notif.type === 'order' ? 'ðŸ›’' : notif.title.includes('Lounge') ? 'ðŸ›‹ï¸' : 'âœï¸'}
                                   {notif.title}
                                 </span>
                                 <span className="text-[8px] font-bold text-zinc-400 dark:text-zinc-500 shrink-0 whitespace-nowrap">
@@ -681,6 +683,7 @@ function Header({
 }
 
 export default function Admin() {
+  const lastEnterTimeRef = useRef(0);
   const [adminUser, setAdminUser] = useState(() => {
     try {
       const saved = localStorage.getItem('hrj_admin_user');
@@ -731,7 +734,7 @@ export default function Admin() {
           id: `order-${order.id}`,
           type: 'order',
           title: 'New Order Placed',
-          desc: `Order ${order.orderId || ''} from ${order.customerDetails?.name || 'Customer'} - ₹${Number(order.amount || 0).toLocaleString('en-IN')}`,
+          desc: `Order ${order.orderId || ''} from ${order.customerDetails?.name || 'Customer'} - â‚¹${Number(order.amount || 0).toLocaleString('en-IN')}`,
           time: order.createdDate ? (typeof order.createdDate.toDate === 'function' ? order.createdDate.toDate() : new Date(order.createdDate)) : new Date(),
           raw: order,
           targetTab: 'orders'
@@ -812,6 +815,8 @@ export default function Admin() {
   const [productSearch, setProductSearch] = useState('');
   const [productCategoryFilter, setProductCategoryFilter] = useState('all');
   const [selectedCatalogIds, setSelectedCatalogIds] = useState([]); // For Active Catalog Selection!
+  const [skuSearch, setSkuSearch] = useState('');
+  const [skuSearchResult, setSkuSearchResult] = useState(null); // null | 'found' | 'notfound'
 
   // CRM & Client details
   const [selectedClient, setSelectedClient] = useState(null);
@@ -982,7 +987,13 @@ export default function Admin() {
         const form = e.currentTarget;
         const index = Array.prototype.indexOf.call(form.elements, e.target);
 
+        const now = Date.now();
+        const isDoubleEnter = now - lastEnterTimeRef.current < 300;
+        lastEnterTimeRef.current = isDoubleEnter ? 0 : now;
+
+        const skipCount = isDoubleEnter ? 2 : 1;
         let nextIndex = index + 1;
+        let foundCount = 0;
         while (nextIndex < form.elements.length) {
           const nextElement = form.elements[nextIndex];
           if (
@@ -992,8 +1003,11 @@ export default function Admin() {
             !nextElement.disabled &&
             !nextElement.readOnly
           ) {
-            nextElement.focus();
-            break;
+            foundCount++;
+            if (foundCount === skipCount) {
+              nextElement.focus();
+              break;
+            }
           }
           nextIndex++;
         }
@@ -1119,7 +1133,7 @@ export default function Admin() {
     const file = e.target.files[0];
     if (!file) return;
     const isLarge = file.size > 500 * 1024;
-    setCategoryUploadProgress(isLarge ? "⚠️ Warning: Image exceeds 500KB. Uploading..." : "Uploading category image...");
+    setCategoryUploadProgress(isLarge ? "âš ï¸ Warning: Image exceeds 500KB. Uploading..." : "Uploading category image...");
     try {
       const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dcraweoxj';
       const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'hr_jewellers_unsigned';
@@ -1142,7 +1156,7 @@ export default function Admin() {
       const data = await response.json();
       const downloadURL = data.secure_url;
       setNewCategoryImage(downloadURL);
-      setCategoryUploadProgress(isLarge ? "⚠️ Upload complete (Image exceeds 500KB)!" : "Image upload complete!");
+      setCategoryUploadProgress(isLarge ? "âš ï¸ Upload complete (Image exceeds 500KB)!" : "Image upload complete!");
     } catch (err) {
       console.error("Cloudinary category upload error:", err);
       setCategoryUploadProgress(`Image upload failed: ${err.message}`);
@@ -1154,7 +1168,7 @@ export default function Admin() {
     const file = e.target.files[0];
     if (!file) return;
     const isLarge = file.size > 500 * 1024;
-    setImageUploadProgress(isLarge ? "⚠️ Warning: Image exceeds 500KB. Uploading..." : "Uploading master image...");
+    setImageUploadProgress(isLarge ? "âš ï¸ Warning: Image exceeds 500KB. Uploading..." : "Uploading master image...");
     try {
       const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dcraweoxj';
       const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'hr_jewellers_unsigned';
@@ -1182,7 +1196,7 @@ export default function Admin() {
       } else {
         setEditingProduct(prev => ({ ...prev, img: downloadURL }));
       }
-      setImageUploadProgress(isLarge ? "⚠️ Upload complete (Image exceeds 500KB)!" : "Image upload complete!");
+      setImageUploadProgress(isLarge ? "âš ï¸ Upload complete (Image exceeds 500KB)!" : "Image upload complete!");
     } catch (err) {
       console.error("Cloudinary upload error:", err);
       setImageUploadProgress(`Image upload failed: ${err.message}`);
@@ -1193,7 +1207,7 @@ export default function Admin() {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
     const largeFilesCount = files.filter(f => f.size > 500 * 1024).length;
-    setSubImagesUploadProgress(largeFilesCount > 0 ? `⚠️ Warning: ${largeFilesCount} file(s) exceed 500KB. Uploading...` : `Uploading ${files.length} files...`);
+    setSubImagesUploadProgress(largeFilesCount > 0 ? `âš ï¸ Warning: ${largeFilesCount} file(s) exceed 500KB. Uploading...` : `Uploading ${files.length} files...`);
     try {
       const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dcraweoxj';
       const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'hr_jewellers_unsigned';
@@ -1234,7 +1248,7 @@ export default function Admin() {
           subImages: [...(prev.subImages || []), ...urls]
         }));
       }
-      setSubImagesUploadProgress(largeFilesCount > 0 ? "⚠️ Upload complete (Some files exceeded 500KB)!" : "Files upload complete!");
+      setSubImagesUploadProgress(largeFilesCount > 0 ? "âš ï¸ Upload complete (Some files exceeded 500KB)!" : "Files upload complete!");
     } catch (err) {
       console.error("Cloudinary sub-images upload error:", err);
       setSubImagesUploadProgress(`Upload failed: ${err.message}`);
@@ -1453,7 +1467,7 @@ export default function Admin() {
               onClick={() => setSelectedInvoiceOrder(null)}
               className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold p-2.5 rounded-full text-xs print:hidden focus:outline-none"
             >
-              ✕
+              âœ•
             </button>
 
             {/* Print trigger button */}
@@ -1472,7 +1486,7 @@ export default function Admin() {
                 <div>
                   <h2 className="serif-luxury text-xl font-bold text-[#3F1F54]">HR JEWELLERS & SONS</h2>
                   <p className="text-[9px] text-[#BCA057] uppercase tracking-widest font-bold mt-0.5">Heritage Jewellery Craftsmanship</p>
-                  <p className="text-[9px] text-gray-500 mt-1">Bikaner, Rajasthan · +91 97838 43978</p>
+                  <p className="text-[9px] text-gray-500 mt-1">Bikaner, Rajasthan Â· +91 97838 43978</p>
                 </div>
                 <div className="text-right">
                   <h3 className="text-lg font-bold text-gray-800">INVOICE</h3>
@@ -1509,10 +1523,10 @@ export default function Admin() {
                   {selectedInvoiceOrder.productDetails?.map((item, idx) => (
                     <tr key={idx} className="border-b border-gray-100/50 text-gray-700">
                       <td className="py-3 px-3 font-semibold">{item.name}</td>
-                      <td className="py-3 px-3 text-center text-gray-500">{item.weight || 'Gold'} · {item.carat || '22K'}</td>
-                      <td className="py-3 px-3 text-right">₹{item.price?.toLocaleString('en-IN')}</td>
+                      <td className="py-3 px-3 text-center text-gray-500">{item.weight || 'Gold'} Â· {item.carat || '22K'}</td>
+                      <td className="py-3 px-3 text-right">â‚¹{item.price?.toLocaleString('en-IN')}</td>
                       <td className="py-3 px-3 text-center">{item.quantity || 1}</td>
-                      <td className="py-3 px-3 text-right font-semibold">₹{(item.price * (item.quantity || 1))?.toLocaleString('en-IN')}</td>
+                      <td className="py-3 px-3 text-right font-semibold">â‚¹{(item.price * (item.quantity || 1))?.toLocaleString('en-IN')}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1522,7 +1536,7 @@ export default function Admin() {
                 <div className="w-64 space-y-2 border-t border-gray-100 pt-3 text-xs">
                   <div className="flex justify-between text-gray-500">
                     <span>Subtotal Val:</span>
-                    <span>₹{selectedInvoiceOrder.amount?.toLocaleString('en-IN')}</span>
+                    <span>â‚¹{selectedInvoiceOrder.amount?.toLocaleString('en-IN')}</span>
                   </div>
                   <div className="flex justify-between text-gray-500">
                     <span>BIS Hallmark stamp tax (GST 3%):</span>
@@ -1534,13 +1548,13 @@ export default function Admin() {
                   </div>
                   <div className="flex justify-between font-bold text-gray-900 border-t border-dashed border-gray-200 pt-2 text-sm">
                     <span>Invoice Total:</span>
-                    <span className="text-[#3F1F54]">₹{selectedInvoiceOrder.amount?.toLocaleString('en-IN')}</span>
+                    <span className="text-[#3F1F54]">â‚¹{selectedInvoiceOrder.amount?.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
               </div>
 
               <div className="border-t border-gray-100 pt-6 text-center text-gray-400 text-[9px] uppercase tracking-wider space-y-1">
-                <p className="font-bold text-[#BCA057]">★ Certified Government BIS Hallmark Stamps Provided ★</p>
+                <p className="font-bold text-[#BCA057]">â˜… Certified Government BIS Hallmark Stamps Provided â˜…</p>
                 <p>This is a computer generated invoice. No signature required.</p>
               </div>
             </div>
@@ -1556,7 +1570,7 @@ export default function Admin() {
               onClick={() => setSelectedClient(null)}
               className="absolute top-4 left-4 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 font-bold p-2 rounded-full text-xs"
             >
-              ← Close
+              â† Close
             </button>
 
             <div className="pt-6 text-center space-y-2">
@@ -1573,7 +1587,7 @@ export default function Admin() {
               <p><strong>Mobile Contact:</strong> {selectedClient.phone}</p>
               <p><strong>Secure Mail:</strong> {selectedClient.email || 'N/A'}</p>
               <p><strong>Registered City:</strong> {selectedClient.city || 'Bikaner'}</p>
-              <p><strong>Total Purchases spend:</strong> <span className="font-bold text-green-600">₹{selectedClient.totalSpend?.toLocaleString('en-IN')}</span></p>
+              <p><strong>Total Purchases spend:</strong> <span className="font-bold text-green-600">â‚¹{selectedClient.totalSpend?.toLocaleString('en-IN')}</span></p>
               <p><strong>Active Bookings count:</strong> {selectedClient.totalOrders}</p>
             </div>
 
@@ -1660,7 +1674,7 @@ export default function Admin() {
                 : 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400'
                 }`}>
                 <span className="text-xs font-bold uppercase tracking-wider">{adminNotification.message}</span>
-                <button onClick={() => setAdminNotification({ message: '', type: 'success' })} className="font-bold text-sm">✕</button>
+                <button onClick={() => setAdminNotification({ message: '', type: 'success' })} className="font-bold text-sm">âœ•</button>
               </div>
             )}
 
@@ -1720,6 +1734,86 @@ export default function Admin() {
               {activeTab === 'products' && (
                 <div className="space-y-10">
 
+                  {/* â”€â”€ SKU Quick Search Bar â”€â”€ */}
+                  <div className="bg-white dark:bg-[#15151A] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-[#3F1F54]/10 dark:bg-[#E6C687]/10 flex items-center justify-center shrink-0">
+                        <Search className="w-4 h-4 text-[#3F1F54] dark:text-[#E6C687]" />
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-black tracking-wider text-zinc-900 dark:text-[#E6C687] uppercase">Search by SKU Code</h4>
+                        <p className="text-[9px] text-zinc-400 dark:text-zinc-500 font-medium">Enter exact SKU to instantly locate &amp; edit a registered jewellery item.</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400 pointer-events-none" />
+                        <input
+                          type="text"
+                          placeholder="e.g. HRJ-RNG-0982"
+                          value={skuSearch}
+                          onChange={(e) => {
+                            setSkuSearch(e.target.value);
+                            setSkuSearchResult(null);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              const q = skuSearch.trim().toLowerCase();
+                              if (!q) return;
+                              const found = products.find(p => p.sku?.toLowerCase() === q);
+                              if (found) {
+                                setEditingProduct(found);
+                                setSkuSearchResult('found');
+                              } else {
+                                setSkuSearchResult('notfound');
+                              }
+                            }
+                          }}
+                          className="w-full h-10 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl pl-9 pr-4 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#3F1F54] dark:focus:border-[#E6C687] focus:ring-1 focus:ring-[#3F1F54]/10 transition-all"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const q = skuSearch.trim().toLowerCase();
+                          if (!q) return;
+                          const found = products.find(p => p.sku?.toLowerCase() === q);
+                          if (found) {
+                            setEditingProduct(found);
+                            setSkuSearchResult('found');
+                          } else {
+                            setSkuSearchResult('notfound');
+                          }
+                        }}
+                        className="h-10 px-5 bg-[#3F1F54] hover:bg-[#5a2e78] dark:bg-[#E6C687] dark:hover:bg-[#d4b275] dark:text-zinc-950 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shrink-0"
+                      >
+                        Search
+                      </button>
+                      {skuSearch && (
+                        <button
+                          type="button"
+                          onClick={() => { setSkuSearch(''); setSkuSearchResult(null); setEditingProduct(null); }}
+                          className="h-10 w-10 flex items-center justify-center border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all cursor-pointer shrink-0"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                    {skuSearchResult === 'found' && (
+                      <div className="mt-3 flex items-center gap-2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-lg">
+                        <span>âœ…</span>
+                        <span>Product found! Form loaded below for editing. Scroll down to update details.</span>
+                      </div>
+                    )}
+                    {skuSearchResult === 'notfound' && (
+                      <div className="mt-3 flex items-center gap-2 text-[10px] font-bold text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-lg">
+                        <span>âŒ</span>
+                        <span>No product found with SKU &quot;{skuSearch}&quot;. Please check the code and try again.</span>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Form to add or edit signature products */}
                   <div className="bg-white dark:bg-[#15151A] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 space-y-8 shadow-xs">
                     <div className="border-b border-zinc-100 dark:border-zinc-850 pb-4 flex justify-between items-center">
@@ -1744,7 +1838,7 @@ export default function Admin() {
                       <div className="p-4 bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 rounded-xl flex items-start gap-3 text-xs leading-relaxed">
                         <AlertTriangle className="w-5 h-5 shrink-0 text-amber-500 mt-0.5" />
                         <div className="space-y-1">
-                          <p className="font-bold uppercase tracking-wider text-[10px]">⚠️ Mandatory Step Required</p>
+                          <p className="font-bold uppercase tracking-wider text-[10px]">âš ï¸ Mandatory Step Required</p>
                           <p>You must establish at least one Category catalog before creating signature items. Please head to the <button type="button" onClick={() => setActiveTab('inventory')} className="font-bold underline hover:text-amber-805 cursor-pointer">Add Categories</button> screen to create one.</p>
                         </div>
                       </div>
@@ -1810,7 +1904,7 @@ export default function Admin() {
                               <option value="999 Silver">999 Silver</option>
                             </select>
                           </div>
-                          {/* Silver Weight — show only when 999 Silver is selected */}
+                          {/* Silver Weight â€” show only when 999 Silver is selected */}
                           {(() => {
                             const catType = editingProduct ? (editingProduct.categoryType || 'Gold') : (newProduct.categoryType || 'Gold');
                             if (catType !== '999 Silver') return null;
@@ -1823,7 +1917,7 @@ export default function Admin() {
                                   onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, silverWeight: e.target.value }) : setNewProduct({ ...newProduct, silverWeight: e.target.value })}
                                   className="w-full h-10 bg-white dark:bg-[#09090B] border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
                                 >
-                                  <option value="">— Select Weight —</option>
+                                  <option value="">â€” Select Weight â€”</option>
                                   <option value="500 gm">500 gm</option>
                                   <option value="1 Kg">1 Kg</option>
                                 </select>
@@ -1984,7 +2078,7 @@ export default function Admin() {
                             <input
                               id="prod-dimensions-form"
                               type="text"
-                              placeholder="e.g. 12mm × 8mm × 4mm"
+                              placeholder="e.g. 12mm Ã— 8mm Ã— 4mm"
                               value={editingProduct ? (editingProduct.productDimensions || '') : (newProduct.productDimensions || '')}
                               onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, productDimensions: e.target.value }) : setNewProduct({ ...newProduct, productDimensions: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
@@ -2118,7 +2212,7 @@ export default function Admin() {
                         {/* Separate Carats fields */}
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                           <div className="space-y-1.5">
-                            <label htmlFor="prod-diamondValue-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Diamond Value (₹)</label>
+                            <label htmlFor="prod-diamondValue-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Diamond Value (â‚¹)</label>
                             <input
                               id="prod-diamondValue-form"
                               type="number"
@@ -2173,7 +2267,7 @@ export default function Admin() {
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <label htmlFor="prod-pearlsValue-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Other Value (₹)</label>
+                            <label htmlFor="prod-pearlsValue-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Other Value (â‚¹)</label>
                             <input
                               id="prod-pearlsValue-form"
                               type="number"
@@ -2197,55 +2291,6 @@ export default function Admin() {
                                 className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl pl-4 pr-16 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                               />
                               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">% OFF</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* IGI Diamond Certificate & Verification */}
-                        <div className="space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/40">
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 dark:bg-blue-500"></span>
-                            <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Diamond Certificate</h4>
-                          </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="space-y-1.5">
-                              <label htmlFor="prod-igiCertificate-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">IGI Diamond Certificate</label>
-                              <select
-                                id="prod-igiCertificate-form"
-                                value={editingProduct ? (editingProduct.igiCertificate || '') : (newProduct.igiCertificate || '')}
-                                onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, igiCertificate: e.target.value }) : setNewProduct({ ...newProduct, igiCertificate: e.target.value })}
-                                className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
-                              >
-                                <option value="">— Not Applicable —</option>
-                                <option value="IGI Certified">IGI Certified</option>
-                                <option value="IGI Certified (Lab Grown)">IGI Certified (Lab Grown)</option>
-                                <option value="IGI Certified (Natural)">IGI Certified (Natural)</option>
-                                <option value="SGL Certified">SGL Certified</option>
-                                <option value="GIA Certified">GIA Certified</option>
-                                <option value="GSI Certified">GSI Certified</option>
-                              </select>
-                            </div>
-                            <div className="space-y-1.5">
-                              <label htmlFor="prod-certNumber-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Certificate Number (for verification)</label>
-                              <div className="flex gap-2">
-                                <input
-                                  id="prod-certNumber-form"
-                                  type="text"
-                                  placeholder="e.g. IGI-0123456789"
-                                  value={editingProduct ? (editingProduct.certNumber || '') : (newProduct.certNumber || '')}
-                                  onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, certNumber: e.target.value }) : setNewProduct({ ...newProduct, certNumber: e.target.value })}
-                                  className="flex-1 h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
-                                />
-                                <a
-                                  href={`https://www.igi.org/report-check.php?r=${editingProduct ? (editingProduct.certNumber || '') : (newProduct.certNumber || '')}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="h-10 px-3 flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 text-blue-600 dark:text-blue-400 text-[9px] font-bold uppercase tracking-wider rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all whitespace-nowrap"
-                                >
-                                  <ExternalLink className="w-3 h-3" />
-                                  Verify
-                                </a>
-                              </div>
                             </div>
                           </div>
                         </div>
@@ -2279,16 +2324,17 @@ export default function Admin() {
                           </div>
                           <div className="space-y-1.5">
                             <label htmlFor="prod-hallmark-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Hallmark Stamp</label>
-                            <input
-                              id="prod-hallmark-form"
-                              type="text"
-                              placeholder="e.g. BIS 916 Government Certified"
-                              value={editingProduct ? editingProduct.hallmark : newProduct.hallmark}
-                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, hallmark: e.target.value }) : setNewProduct({ ...newProduct, hallmark: e.target.value })}
-                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
-                            />
+                             <select
+                               id="prod-hallmark-form"
+                               value={editingProduct ? editingProduct.hallmark : newProduct.hallmark}
+                               onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, hallmark: e.target.value }) : setNewProduct({ ...newProduct, hallmark: e.target.value })}
+                               className="w-full h-10 bg-white dark:bg-[#09090B] border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
+                             >
+                               <option value="BIS 916 Government Certified">BIS 916 Government Certified</option>
+                               <option value="IGI Diamond Certificate">IGI Diamond Certificate</option>
+                             </select>
                           </div>
-                          {/* Making Charge is shown only inside Price Breakdown — not editable here */}
+                          {/* Making Charge is shown only inside Price Breakdown â€” not editable here */}
                           <div className="space-y-1.5 col-span-1">
                             <label className="text-[9px] uppercase tracking-wider text-amber-500 dark:text-amber-400 font-bold block px-1">Making Charge</label>
                             <div className="h-10 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 rounded-xl px-4 flex items-center text-[10px] text-amber-600 dark:text-amber-400 font-semibold">
@@ -2697,7 +2743,7 @@ export default function Admin() {
                                       <div className="w-full h-full relative bg-black">
                                         <video src={subImg} className="w-full h-full object-cover" muted />
                                         <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                                          <span className="text-[9px]">🎥</span>
+                                          <span className="text-[9px]">ðŸŽ¥</span>
                                         </div>
                                       </div>
                                     ) : (
@@ -2801,7 +2847,7 @@ export default function Admin() {
                                 onClick={handleDeleteSelectedCatalog}
                                 className="bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer"
                               >
-                                🗑️ Delete Selected ({selectedCatalogIds.length})
+                                ðŸ—‘ï¸ Delete Selected ({selectedCatalogIds.length})
                               </button>
                             )}
                           </div>
@@ -2883,7 +2929,7 @@ export default function Admin() {
                                     <div className="space-y-2.5 pt-2 border-t border-zinc-100 dark:border-zinc-850">
                                       <div className="flex items-baseline justify-between">
                                         <span className="font-mono text-zinc-900 dark:text-[#E6C687] font-black text-sm">
-                                          ₹{Number(prod.price || 0).toLocaleString('en-IN')}
+                                          â‚¹{Number(prod.price || 0).toLocaleString('en-IN')}
                                         </span>
                                         <span className="text-[9px] text-zinc-400 font-semibold">{prod.weight || '0g'}</span>
                                       </div>
@@ -2979,7 +3025,7 @@ export default function Admin() {
                             onClick={() => setNewCategoryImage('')}
                             className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-bold cursor-pointer"
                           >
-                            ✕
+                            âœ•
                           </button>
                         </div>
                       )}
@@ -3022,7 +3068,7 @@ export default function Admin() {
                                 {cat.img ? (
                                   <img src={cat.img} alt={cat.name} className="w-10 h-10 rounded-lg object-cover bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-850 shrink-0" />
                                 ) : (
-                                  <div className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs shrink-0">💎</div>
+                                  <div className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs shrink-0">ðŸ’Ž</div>
                                 )}
                                 <span className="text-xs text-zinc-800 dark:text-zinc-200 font-bold truncate leading-tight">{cat.name}</span>
                               </div>
@@ -3043,7 +3089,7 @@ export default function Admin() {
                                   className="text-red-500 hover:text-red-750 font-bold text-xs cursor-pointer p-1 rounded-md hover:bg-red-500/10 transition-colors"
                                   title="Delete"
                                 >
-                                  ✕
+                                  âœ•
                                 </button>
                               </div>
                             </div>
@@ -3110,7 +3156,7 @@ export default function Admin() {
                           if (filteredOrders.length === 0) {
                             return (
                               <div className="bg-white dark:bg-[#1E1F29] border border-dashed border-gray-200 dark:border-gray-800 p-10 rounded-2xl text-center">
-                                <div className="text-3xl mb-3">📦</div>
+                                <div className="text-3xl mb-3">ðŸ“¦</div>
                                 <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">No orders match the current filter</p>
                                 <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">Try adjusting the status or search query</p>
                               </div>
@@ -3176,25 +3222,25 @@ export default function Admin() {
                                     <div className="flex flex-wrap gap-1.5">
                                       {order.productDetails?.map((p, i) => (
                                         <span key={i} className="inline-flex items-center bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-[9px] font-semibold text-gray-700 dark:text-gray-200 px-2 py-0.5 rounded-full">
-                                          {p.name}<span className="ml-1 text-gray-400">×{p.quantity}</span>
+                                          {p.name}<span className="ml-1 text-gray-400">Ã—{p.quantity}</span>
                                         </span>
                                       ))}
                                     </div>
                                   </div>
                                   <div className="flex items-center justify-between pt-1 flex-wrap gap-2">
-                                    <span className="text-sm font-bold text-[#3F1F54] dark:text-[#E6C687] font-mono">₹{order.amount?.toLocaleString('en-IN')}</span>
+                                    <span className="text-sm font-bold text-[#3F1F54] dark:text-[#E6C687] font-mono">â‚¹{order.amount?.toLocaleString('en-IN')}</span>
                                     <div className="flex items-center gap-1.5 flex-wrap">
                                       <button onClick={() => setSelectedInvoiceOrder(order)} className="inline-flex items-center gap-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-bold text-[9px] uppercase tracking-wider cursor-pointer">
-                                        📄 Invoice
+                                        ðŸ“„ Invoice
                                       </button>
                                       <button onClick={() => sendWhatsAppNotification(order, 'confirmed')} className="inline-flex items-center gap-1 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-2.5 py-1.5 rounded-lg transition-colors font-bold text-[9px] uppercase tracking-wider cursor-pointer">
-                                        💬 Accept
+                                        ðŸ’¬ Accept
                                       </button>
                                       <button onClick={() => sendWhatsAppNotification(order, 'dispatched')} className="inline-flex items-center gap-1 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-700 dark:text-blue-400 px-2.5 py-1.5 rounded-lg transition-colors font-bold text-[9px] uppercase tracking-wider cursor-pointer">
-                                        🚚 Dispatch
+                                        ðŸšš Dispatch
                                       </button>
                                       <button onClick={() => handleDeleteOrder(order.id)} className="inline-flex items-center gap-1 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-600 dark:text-red-400 px-2.5 py-1.5 rounded-lg transition-colors font-bold text-[9px] uppercase tracking-wider cursor-pointer">
-                                        ✕ Delete
+                                        âœ• Delete
                                       </button>
                                     </div>
                                   </div>
@@ -3220,7 +3266,7 @@ export default function Admin() {
                       <div className="space-y-3 max-h-[72vh] overflow-y-auto pr-1 pb-2" style={{ scrollbarWidth: 'thin' }}>
                         {adminConsults.length === 0 ? (
                           <div className="bg-white dark:bg-[#1E1F29] border border-dashed border-gray-200 dark:border-gray-800 p-10 rounded-2xl text-center">
-                            <div className="text-3xl mb-3">🛋️</div>
+                            <div className="text-3xl mb-3">ðŸ›‹ï¸</div>
                             <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">No lounge requests yet</p>
                             <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">Bookings will appear here when submitted</p>
                           </div>
@@ -3241,7 +3287,7 @@ export default function Admin() {
                                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800/80 bg-gray-50/60 dark:bg-gray-900/30">
                                   <div>
                                     <span className="text-[10px] font-bold text-gray-900 dark:text-gray-100">
-                                      {isCustom ? '✏️' : '🛋️'} {con.requestType || (isCustom ? 'Custom Design Request' : 'Lounge Booking')}
+                                      {isCustom ? 'âœï¸' : 'ðŸ›‹ï¸'} {con.requestType || (isCustom ? 'Custom Design Request' : 'Lounge Booking')}
                                     </span>
                                     <span className="text-[9px] text-gray-400 block mt-0.5">{con.createdDate?.toDate().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                                   </div>
@@ -3270,7 +3316,7 @@ export default function Admin() {
                                     <span className="text-[11px] font-semibold text-gray-800 dark:text-gray-100">{con.name}</span>
                                     <div className="flex flex-wrap gap-2 mt-0.5">
                                       {con.phone && <span className="text-[9px] text-gray-500">{con.phone}</span>}
-                                      {con.email && <span className="text-[9px] text-gray-400">· {con.email}</span>}
+                                      {con.email && <span className="text-[9px] text-gray-400">Â· {con.email}</span>}
                                     </div>
                                   </div>
 
@@ -3278,12 +3324,12 @@ export default function Admin() {
                                     <div className="flex flex-wrap gap-1.5">
                                       {con.city && (
                                         <span className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-[9px] font-semibold text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full">
-                                          📍 {con.city}
+                                          ðŸ“ {con.city}
                                         </span>
                                       )}
                                       {con.date && (
                                         <span className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-[9px] font-semibold text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full">
-                                          🗓 {con.date}{con.time ? ` at ${con.time}` : ''}
+                                          ðŸ—“ {con.date}{con.time ? ` at ${con.time}` : ''}
                                         </span>
                                       )}
                                     </div>
@@ -3298,7 +3344,7 @@ export default function Admin() {
 
                                   {isCustom && (
                                     <div className="bg-[#3F1F54]/5 dark:bg-purple-400/5 border border-[#3F1F54]/10 dark:border-purple-400/10 rounded-xl px-3 py-2.5 space-y-2">
-                                      <span className="text-[8px] uppercase tracking-widest text-[#3F1F54] dark:text-purple-400 font-bold">💎 Design Specs</span>
+                                      <span className="text-[8px] uppercase tracking-widest text-[#3F1F54] dark:text-purple-400 font-bold">ðŸ’Ž Design Specs</span>
                                       <div className="flex flex-wrap gap-1.5">
                                         {con.jewelryType && <span className="bg-white dark:bg-gray-800 border border-[#3F1F54]/20 text-[9px] font-bold text-[#3F1F54] dark:text-purple-300 px-2 py-0.5 rounded-full">{con.jewelryType}</span>}
                                         {con.material && <span className="bg-white dark:bg-gray-800 border border-[#BCA057]/30 text-[9px] font-bold text-[#BCA057] dark:text-amber-400 px-2 py-0.5 rounded-full">{con.material}</span>}
@@ -3329,7 +3375,7 @@ export default function Admin() {
                                             onClick={() => window.open(con.referenceImageUrl || con.fileData, '_blank')}
                                             className="mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center gap-1"
                                           >
-                                            👁️ View Full
+                                            ðŸ‘ï¸ View Full
                                           </button>
                                         </div>
                                       </div>
@@ -3341,7 +3387,7 @@ export default function Admin() {
                                       onClick={() => handleDeleteConsult(con.id)}
                                       className="inline-flex items-center gap-1 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-600 dark:text-red-400 px-3 py-1.5 rounded-lg transition-colors font-bold text-[9px] uppercase tracking-wider cursor-pointer"
                                     >
-                                      ✕ Delete Request
+                                      âœ• Delete Request
                                     </button>
                                   </div>
                                 </div>
@@ -3387,7 +3433,7 @@ export default function Admin() {
                         onClick={() => handleExportCSV('customers')}
                         className="inline-flex items-center gap-1.5 bg-[#E6C687]/10 hover:bg-[#E6C687]/20 border border-[#E6C687]/30 text-[#E6C687] text-[9px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
                       >
-                        ↓ Export CSV
+                        â†“ Export CSV
                       </button>
                     </div>
                   </div>
@@ -3406,10 +3452,10 @@ export default function Admin() {
                     return (
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {[
-                          { label: 'Total Clients', value: allClients.length, icon: '👥', color: 'border-[#3F1F54]/20 dark:border-purple-400/20', accent: 'text-[#3F1F54] dark:text-purple-300' },
-                          { label: 'VIP Patrons', value: vipCount, icon: '⭐', color: 'border-amber-500/20', accent: 'text-amber-700 dark:text-amber-400' },
-                          { label: 'Standard', value: allClients.length - vipCount, icon: '🛋️', color: 'border-blue-500/20', accent: 'text-blue-700 dark:text-blue-400' },
-                          { label: 'Est. Total Spend', value: `₹${(totalSpend / 1000).toFixed(0)}K`, icon: '💰', color: 'border-emerald-500/20', accent: 'text-emerald-700 dark:text-emerald-400' },
+                          { label: 'Total Clients', value: allClients.length, icon: 'ðŸ‘¥', color: 'border-[#3F1F54]/20 dark:border-purple-400/20', accent: 'text-[#3F1F54] dark:text-purple-300' },
+                          { label: 'VIP Patrons', value: vipCount, icon: 'â­', color: 'border-amber-500/20', accent: 'text-amber-700 dark:text-amber-400' },
+                          { label: 'Standard', value: allClients.length - vipCount, icon: 'ðŸ›‹ï¸', color: 'border-blue-500/20', accent: 'text-blue-700 dark:text-blue-400' },
+                          { label: 'Est. Total Spend', value: `â‚¹${(totalSpend / 1000).toFixed(0)}K`, icon: 'ðŸ’°', color: 'border-emerald-500/20', accent: 'text-emerald-700 dark:text-emerald-400' },
                         ].map((stat, i) => (
                           <div key={i} className={`bg-white dark:bg-[#1E1F29] border ${stat.color} rounded-2xl px-4 py-3 flex items-center gap-3 shadow-sm`}>
                             <span className="text-xl">{stat.icon}</span>
@@ -3448,7 +3494,7 @@ export default function Admin() {
                     if (filteredClients.length === 0) {
                       return (
                         <div className="bg-white dark:bg-[#1E1F29] border border-dashed border-gray-200 dark:border-gray-800 p-12 rounded-2xl text-center">
-                          <div className="text-4xl mb-3">🔍</div>
+                          <div className="text-4xl mb-3">ðŸ”</div>
                           <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">No clients match this filter</p>
                           <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Try adjusting the segment or search query</p>
                         </div>
@@ -3475,7 +3521,7 @@ export default function Admin() {
                               onClick={() => setSelectedClient(client)}
                               className="bg-white dark:bg-[#1E1F29] border border-gray-200/70 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-[#3F1F54]/40 dark:hover:border-purple-400/40 transition-all duration-200 cursor-pointer group"
                             >
-                              {/* Card header — coloured accent strip */}
+                              {/* Card header â€” coloured accent strip */}
                               <div className={`h-1.5 w-full ${isVip ? 'bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500' : 'bg-gradient-to-r from-[#3F1F54] to-purple-400'}`} />
 
                               <div className="px-4 pt-4 pb-3 space-y-3">
@@ -3493,7 +3539,7 @@ export default function Admin() {
                                   {/* Segment badge */}
                                   {isVip ? (
                                     <span className="inline-flex items-center gap-1 bg-amber-400/15 border border-amber-400/30 text-amber-700 dark:text-amber-400 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">
-                                      ⭐ VIP
+                                      â­ VIP
                                     </span>
                                   ) : (
                                     <span className="inline-flex items-center gap-1 bg-[#3F1F54]/8 dark:bg-purple-400/10 border border-[#3F1F54]/15 dark:border-purple-400/20 text-[#3F1F54] dark:text-purple-400 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">
@@ -3506,12 +3552,12 @@ export default function Admin() {
                                 <div className="flex flex-wrap gap-1.5">
                                   {client.email && (
                                     <span className="inline-flex items-center gap-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-[9px] text-gray-600 dark:text-gray-300 font-medium px-2 py-0.5 rounded-full truncate max-w-[160px]">
-                                      ✉️ {client.email}
+                                      âœ‰ï¸ {client.email}
                                     </span>
                                   )}
                                   {client.city && (
                                     <span className="inline-flex items-center gap-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-[9px] text-gray-600 dark:text-gray-300 font-medium px-2 py-0.5 rounded-full">
-                                      📍 {client.city}
+                                      ðŸ“ {client.city}
                                     </span>
                                   )}
                                 </div>
@@ -3524,14 +3570,14 @@ export default function Admin() {
                                   </div>
                                   <div className="bg-emerald-50 dark:bg-emerald-900/10 rounded-xl px-3 py-2">
                                     <span className="text-[8px] uppercase tracking-widest text-gray-400 font-bold block mb-0.5">Est. Spend</span>
-                                    <span className="text-sm font-black text-emerald-700 dark:text-emerald-400 font-mono">₹{(client.totalSpend / 1000).toFixed(0)}K</span>
+                                    <span className="text-sm font-black text-emerald-700 dark:text-emerald-400 font-mono">â‚¹{(client.totalSpend / 1000).toFixed(0)}K</span>
                                   </div>
                                 </div>
 
                                 {/* View profile CTA */}
                                 <div className="flex items-center justify-end">
                                   <span className="text-[9px] font-bold text-gray-400 group-hover:text-[#3F1F54] dark:group-hover:text-[#E6C687] transition-colors flex items-center gap-1">
-                                    View Profile →
+                                    View Profile â†’
                                   </span>
                                 </div>
                               </div>
@@ -3584,7 +3630,7 @@ export default function Admin() {
 
       {/* BOTTOM BRANDING FOOTER */}
       <footer className="w-full text-center space-y-1.5 text-[9px] uppercase tracking-wider text-gray-400 font-bold border-t border-gray-100 dark:border-gray-850 py-6 absolute bottom-0 left-0 right-0 hidden">
-        <p>© {new Date().getFullYear()} HR JEWELLERS & SONS. ALL RIGHTS RESERVED.</p>
+        <p>Â© {new Date().getFullYear()} HR JEWELLERS & SONS. ALL RIGHTS RESERVED.</p>
         <p className="text-[8px] text-gray-300">Powered by HR Jewellers & Sons Admin Portal</p>
       </footer>
 
