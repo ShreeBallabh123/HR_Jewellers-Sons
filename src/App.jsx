@@ -3969,9 +3969,9 @@ export default function App() {
                       <div id="shop-by-category" className="w-full pt-0 pb-16 lg:pb-20 px-6 sm:px-12 select-none" style={{ background: '#fdfaf8' }}>
                         <section className="max-w-[1836px] mx-auto">
 
-                          {/* ── UNIFIED HORIZONTAL SCROLL CATEGORIES (SINGLE ROW) ── */}
+                          {/* ── UNIFIED HORIZONTAL SCROLL CATEGORIES (TWO ROWS) ── */}
                           <div className="pt-6 pb-6 overflow-x-auto no-scrollbar scroll-smooth">
-                            <div className="flex gap-4 sm:gap-6 w-max select-none px-4">
+                            <div className="grid grid-flow-col grid-rows-2 gap-4 sm:gap-6 w-max select-none px-4">
                               {activeCategories.map((cat, idx) => {
                                 const handleClick = () => {
                                   triggerAudio('click');
