@@ -164,8 +164,9 @@ const processStepsData = [
 ];
 
 // Helper for PDP price breakup calculation
-const getPriceBreakup = (price) => {
-  const gst = Math.round(price * 0.03);
+const getPriceBreakup = (price, gstPercent = 3) => {
+  const gstRate = (gstPercent || 3) / 100;
+  const gst = Math.round(price * gstRate);
   const subtotal = price - gst;
   const making = Math.round(subtotal * 0.1);
   const diamond = Math.round(subtotal * 0.38);
@@ -1119,6 +1120,8 @@ export default function App() {
   const [emiMonths, setEmiMonths] = useState(6);
   const [customEngraving, setCustomEngraving] = useState('');
   const [selectedRingSize, setSelectedRingSize] = useState('12');
+  const [selectedBangleSize, setSelectedBangleSize] = useState('2-4');
+  const [selectedChainSize, setSelectedChainSize] = useState('18"');
   const [selectedCaratPurity, setSelectedCaratPurity] = useState('22K');
 
   // Ensure selectedRingSize matches one of the product's available sizes
@@ -1130,6 +1133,64 @@ export default function App() {
       }
     }
   }, [detailProduct, selectedRingSize]);
+
+  // Ensure selectedBangleSize matches one of the product's available bangle sizes
+  useEffect(() => {
+    if (detailProduct) {
+      const availSizes = detailProduct.bangleSizes || [];
+      if (availSizes.length > 0 && !availSizes.includes(selectedBangleSize)) {
+        setSelectedBangleSize(availSizes[0]);
+      }
+    }
+  }, [detailProduct, selectedBangleSize]);
+
+  // Ensure selectedChainSize matches one of the product's available chain sizes
+  useEffect(() => {
+    if (detailProduct) {
+      const availSizes = detailProduct.chainSizes || [];
+      if (availSizes.length > 0 && !availSizes.includes(selectedChainSize)) {
+        setSelectedChainSize(availSizes[0]);
+      }
+    }
+  }, [detailProduct, selectedChainSize]);
+
+  const isBangle = detailProduct && (
+    (detailProduct.category || '').toLowerCase().includes('bangle') || 
+    (detailProduct.subCategory || '').toLowerCase().includes('bangle') || 
+    (detailProduct.name || '').toLowerCase().includes('bangle') ||
+    (detailProduct.category || '').toLowerCase().includes('kada') ||
+    (detailProduct.subCategory || '').toLowerCase().includes('kada') ||
+    (detailProduct.name || '').toLowerCase().includes('kada') ||
+    (detailProduct.bangleSizes && detailProduct.bangleSizes.length > 0)
+  );
+
+  const isChain = detailProduct && (
+    (detailProduct.category || '').toLowerCase().includes('chain') || 
+    (detailProduct.subCategory || '').toLowerCase().includes('chain') || 
+    (detailProduct.name || '').toLowerCase().includes('chain') ||
+    (detailProduct.category || '').toLowerCase().includes('necklace') ||
+    (detailProduct.subCategory || '').toLowerCase().includes('necklace') ||
+    (detailProduct.name || '').toLowerCase().includes('necklace') ||
+    (detailProduct.category || '').toLowerCase().includes('mangalsutra') ||
+    (detailProduct.subCategory || '').toLowerCase().includes('mangalsutra') ||
+    (detailProduct.name || '').toLowerCase().includes('mangalsutra') ||
+    (detailProduct.chainSizes && detailProduct.chainSizes.length > 0)
+  );
+
+  const isRing = detailProduct && !isBangle && !isChain && (
+    ((detailProduct.category || '').toLowerCase().includes('ring') || 
+     (detailProduct.subCategory || '').toLowerCase().includes('ring') || 
+     (detailProduct.name || '').toLowerCase().includes('ring') ||
+     (detailProduct.category || '').toLowerCase().includes('solitari') ||
+     (detailProduct.category || '').toLowerCase().includes('solitaire') ||
+     (detailProduct.ringSizes && detailProduct.ringSizes.length > 0)) && 
+     !(detailProduct.category || '').toLowerCase().includes('pendant') && 
+     !(detailProduct.name || '').toLowerCase().includes('pendant')
+  );
+
+  const hasSizes = isRing || isBangle || isChain;
+
+  const selectedSize = isChain ? selectedChainSize : (isBangle ? selectedBangleSize : selectedRingSize);
 
   // Zip Code checker
   const [zipCode, setZipCode] = useState('');
@@ -3859,7 +3920,7 @@ export default function App() {
                   SECTION 01: CINEMATIC HERO SECTION
                   ========================================================== */}
                 <section
-                  className="relative w-full h-[55vh] sm:h-[65vh] lg:h-[calc(100vh-5rem)] sm:min-h-[400px] lg:min-h-[600px] overflow-hidden flex items-end pb-6 sm:pb-16 lg:pb-20 select-none bg-black"
+                  className="relative w-full h-[80vh] sm:h-[85vh] lg:h-[calc(100vh-5rem)] sm:min-h-[500px] lg:min-h-[600px] overflow-hidden flex items-end pb-6 sm:pb-16 lg:pb-20 select-none bg-black"
                 >
                   {/* Full Screen Cinematic Video Background */}
                   <video
@@ -3893,9 +3954,17 @@ export default function App() {
                       <div id="shop-by-category" className="w-full pt-0 pb-16 lg:pb-20 px-6 sm:px-12 select-none" style={{ background: '#fdfaf8' }}>
                         <section className="max-w-[1836px] mx-auto">
 
-                          {/* ── MOBILE: 2-row wrap grid ── */}
-                          <div className="lg:hidden pt-6 pb-4">
-                            <div className="flex flex-wrap gap-3 select-none w-full justify-center">
+                          {/* ── MOBILE: 2-row horizontal scroll grid ── */}
+                          <div className="lg:hidden pt-6 pb-4 overflow-x-auto no-scrollbar -mx-4 px-4">
+                            <div
+                              style={{
+                                display: 'grid',
+                                gridTemplateRows: 'repeat(2, auto)',
+                                gridAutoFlow: 'column',
+                                gap: '10px',
+                                width: 'max-content',
+                              }}
+                            >
                               {activeCategories.map((cat, idx) => {
                                 const handleClick = () => {
                                   triggerAudio('click');
@@ -3912,19 +3981,31 @@ export default function App() {
                                   <div
                                     key={idx}
                                     onClick={handleClick}
-                                    className="bg-white border border-[rgba(0,0,0,0.05)] rounded-[20px] shadow-[0_4px_14px_rgba(0,0,0,0.06)] flex flex-col items-center justify-between cursor-pointer active:scale-95 transition-transform duration-150 shrink-0 w-[100px]"
-                                    style={{ padding: '14px 10px 12px', height: '140px' }}
+                                    className="bg-white border border-[rgba(0,0,0,0.05)] rounded-[20px] shadow-[0_4px_14px_rgba(0,0,0,0.06)] flex flex-col items-center justify-between cursor-pointer active:scale-95 transition-transform duration-150"
+                                    style={{ padding: '14px 8px 14px', height: '148px', width: '100px' }}
                                   >
-                                    <div className="w-full flex-1 flex items-center justify-center">
+                                    <div className="w-full flex items-center justify-center" style={{ height: '80px' }}>
                                       <img
                                         src={catImg}
                                         alt={cat.name}
-                                        className="w-[68%] h-[68%] object-contain filter drop-shadow-[0_4px_8px_rgba(90,74,74,0.12)]"
+                                        className="object-contain filter drop-shadow-[0_4px_8px_rgba(90,74,74,0.12)]"
+                                        style={{ width: '65px', height: '65px' }}
                                       />
                                     </div>
                                     <span
-                                      className="text-center text-[10px] font-semibold leading-tight mt-2 w-full line-clamp-2"
-                                      style={{ color: '#3d2619', fontFamily: 'inherit', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                                      style={{
+                                        color: '#3d2619',
+                                        fontFamily: 'inherit',
+                                        fontSize: '10.5px',
+                                        fontWeight: '600',
+                                        lineHeight: '1.4',
+                                        textAlign: 'center',
+                                        width: '100%',
+                                        display: 'block',
+                                        wordBreak: 'break-word',
+                                        hyphens: 'auto',
+                                        marginTop: '6px',
+                                      }}
                                     >
                                       {cat.name}
                                     </span>
@@ -8130,57 +8211,70 @@ export default function App() {
                             </div>
                           </div>
 
-                          {/* Ring Size Selection */}
-                          {(((detailProduct?.category || '').toLowerCase().includes('ring') || 
-                             (detailProduct?.subCategory || '').toLowerCase().includes('ring') || 
-                             (detailProduct?.name || '').toLowerCase().includes('ring') ||
-                             (detailProduct?.category || '').toLowerCase().includes('solitari') ||
-                             (detailProduct?.category || '').toLowerCase().includes('solitaire') ||
-                             (detailProduct?.ringSizes && detailProduct.ringSizes.length > 0)) && 
-                             !(detailProduct?.category || '').toLowerCase().includes('pendant') && 
-                             !(detailProduct?.name || '').toLowerCase().includes('pendant')) && (
-                            <div className="space-y-4 animate-fade-in">
-                              <div className="flex justify-between items-center text-sm">
-                                <span className="text-gray-900 font-semibold font-sans">
-                                  Select Ring Size: <span className="font-bold">{selectedRingSize} IND</span>
-                                </span>
-                                <button 
-                                  onClick={() => { triggerAudio("click"); setSizeGuideOpen(true); }} 
-                                  className="text-gray-900 hover:text-gray-600 font-semibold transition-colors duration-300 underline cursor-pointer text-xs font-sans"
-                                >
-                                  Size Guide
-                                </button>
+                          {/* Dynamic Size Selection Dropdown */}
+                          {hasSizes && (
+                            <div className="space-y-2 text-left animate-fade-in">
+                              <div className="flex justify-between items-center text-[10px] tracking-wider uppercase font-semibold text-[#888888]">
+                                <span>Select Size:</span>
+                                {isRing && (
+                                  <button 
+                                    onClick={() => { triggerAudio("click"); setSizeGuideOpen(true); }} 
+                                    className="text-gray-900 hover:text-[#B8893C] font-semibold transition-colors duration-300 underline cursor-pointer text-[10px] uppercase font-sans"
+                                  >
+                                    Size Guide
+                                  </button>
+                                )}
                               </div>
+                              
+                              <div className="relative">
+                                <select
+                                  value={selectedSize}
+                                  onChange={(e) => {
+                                    triggerAudio("click");
+                                    const val = e.target.value;
+                                    if (isChain) {
+                                      setSelectedChainSize(val);
+                                    } else if (isBangle) {
+                                      setSelectedBangleSize(val);
+                                    } else {
+                                      setSelectedRingSize(val);
+                                    }
+                                  }}
+                                  className="w-full bg-white text-[#181818] border border-[#E7DED2] rounded-lg py-3 pl-4 pr-10 text-xs font-semibold focus:outline-none focus:border-gray-800 transition-colors duration-300 appearance-none cursor-pointer font-sans"
+                                >
+                                  {isChain && (detailProduct?.chainSizes && detailProduct.chainSizes.length > 0
+                                    ? detailProduct.chainSizes
+                                    : ['12"', '14"', '16"', '18"', '20"', '22"', '24"', '26"', '28"', '30"', '32"', '34"', '36"']
+                                  ).map((sz) => (
+                                    <option key={sz} value={sz}>{sz} Length</option>
+                                  ))}
 
-                              <div className="grid grid-cols-7 gap-2.5">
-                                {(detailProduct?.ringSizes || Array.from({ length: 34 - 6 + 1 }, (_, i) => {
-                                  const num = 6 + i;
-                                  return num < 10 ? `0${num}` : `${num}`;
-                                })).map((sz) => {
-                                  const active = selectedRingSize === sz;
-                                  return (
-                                    <button
-                                      key={sz}
-                                      onClick={() => { triggerAudio("click"); setSelectedRingSize(sz); }}
-                                      className={`relative h-10 border rounded-lg flex items-center justify-center text-xs font-bold transition-all duration-300 cursor-pointer ${
-                                        active 
-                                          ? 'bg-transparent text-gray-900 border-gray-800 border-2 font-black shadow-xs font-sans' 
-                                          : 'bg-white text-gray-705 border-gray-200 hover:border-gray-400 font-sans'
-                                      }`}
-                                    >
-                                      {active && (
-                                        <span className="absolute top-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
-                                      )}
-                                      {sz}
-                                    </button>
-                                  );
-                                })}
+                                  {isBangle && (detailProduct?.bangleSizes && detailProduct.bangleSizes.length > 0
+                                    ? detailProduct.bangleSizes
+                                    : ['1-2','1-4','1-6','1-8','2-0','2-2','2-4','2-6','2-8','3-0','3-2','3-4']
+                                  ).map((sz) => (
+                                    <option key={sz} value={sz}>{sz} Bangle Size</option>
+                                  ))}
+
+                                  {isRing && (detailProduct?.ringSizes || Array.from({ length: 34 - 6 + 1 }, (_, i) => {
+                                    const num = 6 + i;
+                                    return num < 10 ? `0${num}` : `${num}`;
+                                  })).map((sz) => (
+                                    <option key={sz} value={sz}>{sz} IND</option>
+                                  ))}
+                                </select>
+                                
+                                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#888888]">
+                                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                                  </svg>
+                                </div>
                               </div>
                             </div>
                           )}
 
                           {/* Engraving input */}
-                          <div className="space-y-2 pt-2">
+                          <div className="space-y-2 pt-2 text-left">
                             <label htmlFor="engraving-input" className="text-[#888888] font-medium uppercase tracking-[0.15em] text-[9px] block">Custom Engraving Text (Max 15 characters):</label>
                             <input
                               id="engraving-input"
@@ -8202,7 +8296,7 @@ export default function App() {
                         {/* Primary: BUY NOW */}
                         <button
                           onClick={() => {
-                            handleAddToCart({ ...detailProduct, carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedRingSize}`, desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc });
+                            handleAddToCart({ ...detailProduct, carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedSize}`, desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc });
                           }}
                           className="flex-1 h-[60px] bg-gradient-to-r from-[#B8893C] via-[#D5A75C] to-[#B8893C] hover:brightness-110 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all duration-300 rounded-lg flex items-center justify-center hover:scale-[1.01] active:scale-[0.99] cursor-pointer shadow-md"
                         >
@@ -8474,7 +8568,8 @@ export default function App() {
                       const totalEstimateExtra = discountedDiamondValueEstimate + discountedMakingChargesEstimate;
 
                       // Reverse engineer the exact values to sum to finalPrice
-                      const discountedGst = Math.round(finalPrice * 3 / 103);
+                      const productGstRate = (detailProduct.gstPercent || 3) / 100;
+                      const discountedGst = Math.round(finalPrice * productGstRate / (1 + productGstRate));
                       const discountedSubtotal = finalPrice - discountedGst;
                       const remainingDiscounted = discountedSubtotal - goldMetalValue;
 
@@ -8493,7 +8588,7 @@ export default function App() {
                       const baseMakingCharges = Math.round(discountedMakingCharges / (1 - makingChargeDiscountPercent / 100));
 
                       const originalSubtotal = goldMetalValue + baseMakingCharges + baseDiamondValue;
-                      const originalGst = Math.round(originalSubtotal * 0.03);
+                      const originalGst = Math.round(originalSubtotal * productGstRate);
                       const originalTotal = originalSubtotal + originalGst;
                       const saveAmount = Math.max(0, originalTotal - finalPrice);
 
@@ -9097,7 +9192,7 @@ export default function App() {
                     onClick={() => {
                       handleAddToCart({
                         ...detailProduct,
-                        carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedRingSize}`,
+                        carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedSize}`,
                         desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc
                       });
                     }}

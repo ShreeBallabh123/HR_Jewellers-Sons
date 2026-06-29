@@ -795,6 +795,9 @@ export default function Admin() {
     pearlsValue: '',
     gender: 'Unisex',
     occasion: 'Everyday Wear',
+    gstPercent: 3,
+    bangleSizes: [],
+    chainSizes: [],
     ringSizes: Array.from({ length: 34 - 6 + 1 }, (_, i) => { const num = 6 + i; return num < 10 ? `0${num}` : `${num}`; })
   });
   const [editingProduct, setEditingProduct] = useState(null);
@@ -1041,6 +1044,9 @@ export default function Admin() {
         pearlsValue: '',
         gender: 'Unisex',
         occasion: 'Everyday Wear',
+        gstPercent: 3,
+        bangleSizes: [],
+        chainSizes: [],
         ringSizes: Array.from({ length: 34 - 6 + 1 }, (_, i) => { const num = 6 + i; return num < 10 ? `0${num}` : `${num}`; })
       });
       showAdminNotification("New jewellery item added successfully!", "success");
@@ -2232,96 +2238,317 @@ export default function Admin() {
                               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">% OFF</span>
                             </div>
                           </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="prod-gst-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">GST Rate (%)</label>
+                            <div className="relative">
+                              <input
+                                id="prod-gst-form"
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.5"
+                                placeholder="e.g. 3"
+                                value={editingProduct ? (editingProduct.gstPercent !== undefined ? editingProduct.gstPercent : 3) : (newProduct.gstPercent !== undefined ? newProduct.gstPercent : 3)}
+                                onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, gstPercent: e.target.value === '' ? 3 : +e.target.value }) : setNewProduct({ ...newProduct, gstPercent: e.target.value === '' ? 3 : +e.target.value })}
+                                className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-amber-200 dark:border-amber-800/40 rounded-xl pl-4 pr-10 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-amber-400 dark:focus:border-amber-500 focus:ring-1 focus:ring-amber-400/20"
+                              />
+                              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-amber-500 dark:text-amber-400 font-extrabold select-none pointer-events-none">%</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Section: Ring Sizes Option */}
-                      <div className="space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-850">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-[#E6C687]"></span>
-                            <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Available Ring Sizes (IND)</h4>
-                          </div>
-                          <div className="flex gap-2">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const allSizes = Array.from({ length: 34 - 6 + 1 }, (_, i) => {
-                                  const num = 6 + i;
-                                  return num < 10 ? `0${num}` : `${num}`;
-                                });
-                                if (editingProduct) {
-                                  setEditingProduct({ ...editingProduct, ringSizes: allSizes });
-                                } else {
-                                  setNewProduct({ ...newProduct, ringSizes: allSizes });
-                                }
-                              }}
-                              className="px-2 py-1 text-[9px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 border border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer"
-                            >
-                              Select All
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (editingProduct) {
-                                  setEditingProduct({ ...editingProduct, ringSizes: [] });
-                                } else {
-                                  setNewProduct({ ...newProduct, ringSizes: [] });
-                                }
-                              }}
-                              className="px-2 py-1 text-[9px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 border border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer"
-                            >
-                              Clear All
-                            </button>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-7 sm:grid-cols-10 md:grid-cols-15 gap-2">
-                          {Array.from({ length: 34 - 6 + 1 }, (_, i) => {
-                            const num = 6 + i;
-                            const szStr = num < 10 ? `0${num}` : `${num}`;
-                            const currentSizes = editingProduct ? (editingProduct.ringSizes || []) : (newProduct.ringSizes || []);
-                            const isSelected = editingProduct 
-                              ? (editingProduct.ringSizes === undefined ? true : currentSizes.includes(szStr))
-                              : (newProduct.ringSizes === undefined ? true : currentSizes.includes(szStr));
+                      {/* Section: Size Customization Selector */}
+                      {(() => {
+                        const currentRingSizes = editingProduct ? (editingProduct.ringSizes || []) : (newProduct.ringSizes || []);
+                        const currentBangleSizes = editingProduct ? (editingProduct.bangleSizes || []) : (newProduct.bangleSizes || []);
+                        const currentChainSizes = editingProduct ? (editingProduct.chainSizes || []) : (newProduct.chainSizes || []);
 
-                            return (
-                              <button
-                                key={szStr}
-                                type="button"
-                                onClick={() => {
-                                  let updatedSizes = [];
-                                  const defaultSizes = Array.from({ length: 34 - 6 + 1 }, (_, i) => {
-                                    const num = 6 + i;
-                                    return num < 10 ? `0${num}` : `${num}`;
-                                  });
-                                  const baseSizes = editingProduct 
-                                    ? (editingProduct.ringSizes === undefined ? defaultSizes : currentSizes)
-                                    : (newProduct.ringSizes === undefined ? defaultSizes : currentSizes);
+                        const selectedType = currentRingSizes.length > 0 
+                          ? 'rings' 
+                          : (currentBangleSizes.length > 0 ? 'bangles' : (currentChainSizes.length > 0 ? 'chains' : 'none'));
 
-                                  if (baseSizes.includes(szStr)) {
-                                    updatedSizes = baseSizes.filter(s => s !== szStr);
+                        return (
+                          <div className="space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-850">
+                            <div className="flex items-center gap-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                              <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Size Selection Type</h4>
+                            </div>
+                            <div className="max-w-xs">
+                              <select
+                                id="admin-size-type"
+                                value={selectedType}
+                                onChange={(e) => {
+                                  const type = e.target.value;
+                                  if (type === 'rings') {
+                                    const defaultRings = Array.from({ length: 34 - 6 + 1 }, (_, i) => { const num = 6 + i; return num < 10 ? `0${num}` : `${num}`; });
+                                    if (editingProduct) {
+                                      setEditingProduct({ ...editingProduct, ringSizes: defaultRings, bangleSizes: [], chainSizes: [] });
+                                    } else {
+                                      setNewProduct({ ...newProduct, ringSizes: defaultRings, bangleSizes: [], chainSizes: [] });
+                                    }
+                                  } else if (type === 'bangles') {
+                                    const defaultBangles = ['2-4', '2-6'];
+                                    if (editingProduct) {
+                                      setEditingProduct({ ...editingProduct, ringSizes: [], bangleSizes: defaultBangles, chainSizes: [] });
+                                    } else {
+                                      setNewProduct({ ...newProduct, ringSizes: [], bangleSizes: defaultBangles, chainSizes: [] });
+                                    }
+                                  } else if (type === 'chains') {
+                                    const defaultChains = ['16"', '18"', '20"'];
+                                    if (editingProduct) {
+                                      setEditingProduct({ ...editingProduct, ringSizes: [], bangleSizes: [], chainSizes: defaultChains });
+                                    } else {
+                                      setNewProduct({ ...newProduct, ringSizes: [], bangleSizes: [], chainSizes: defaultChains });
+                                    }
                                   } else {
-                                    updatedSizes = [...baseSizes, szStr].sort();
-                                  }
-
-                                  if (editingProduct) {
-                                    setEditingProduct({ ...editingProduct, ringSizes: updatedSizes });
-                                  } else {
-                                    setNewProduct({ ...newProduct, ringSizes: updatedSizes });
+                                    if (editingProduct) {
+                                      setEditingProduct({ ...editingProduct, ringSizes: [], bangleSizes: [], chainSizes: [] });
+                                    } else {
+                                      setNewProduct({ ...newProduct, ringSizes: [], bangleSizes: [], chainSizes: [] });
+                                    }
                                   }
                                 }}
-                                className={`h-8 border flex items-center justify-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                                  isSelected
-                                    ? 'bg-zinc-950 text-white border-zinc-950 dark:bg-zinc-100 dark:text-zinc-950 dark:border-zinc-100'
-                                    : 'bg-transparent text-zinc-400 border-zinc-200 dark:border-zinc-800 dark:text-zinc-600 hover:border-zinc-400'
-                                }`}
+                                className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-amber-400 dark:focus:border-amber-500 focus:ring-1 focus:ring-amber-400/20"
                               >
-                                {szStr}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
+                                <option value="none">No Size Selection (Coins/Earrings/Pendant)</option>
+                                <option value="rings">Ring Size List</option>
+                                <option value="bangles">Bangle Size List</option>
+                                <option value="chains">Chain/Necklace Size List</option>
+                              </select>
+                            </div>
+
+                            {/* Section: Ring Sizes Option */}
+                            {selectedType === 'rings' && (
+                              <div className="space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/40">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-[#E6C687]"></span>
+                                    <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Available Ring Sizes (IND)</h4>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const allSizes = Array.from({ length: 34 - 6 + 1 }, (_, i) => {
+                                          const num = 6 + i;
+                                          return num < 10 ? `0${num}` : `${num}`;
+                                        });
+                                        if (editingProduct) {
+                                          setEditingProduct({ ...editingProduct, ringSizes: allSizes });
+                                        } else {
+                                          setNewProduct({ ...newProduct, ringSizes: allSizes });
+                                        }
+                                      }}
+                                      className="px-2 py-1 text-[9px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 border border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer"
+                                    >
+                                      Select All
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (editingProduct) {
+                                          setEditingProduct({ ...editingProduct, ringSizes: [] });
+                                        } else {
+                                          setNewProduct({ ...newProduct, ringSizes: [] });
+                                        }
+                                      }}
+                                      className="px-2 py-1 text-[9px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 border border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer"
+                                    >
+                                      Clear All
+                                    </button>
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-7 sm:grid-cols-10 md:grid-cols-15 gap-2">
+                                  {Array.from({ length: 34 - 6 + 1 }, (_, i) => {
+                                    const num = 6 + i;
+                                    const szStr = num < 10 ? `0${num}` : `${num}`;
+                                    const isSelected = currentRingSizes.includes(szStr);
+
+                                    return (
+                                      <button
+                                        key={szStr}
+                                        type="button"
+                                        onClick={() => {
+                                          let updatedSizes = [];
+                                          const defaultSizes = Array.from({ length: 34 - 6 + 1 }, (_, i) => {
+                                            const num = 6 + i;
+                                            return num < 10 ? `0${num}` : `${num}`;
+                                          });
+                                          const baseSizes = currentRingSizes.length > 0 ? currentRingSizes : defaultSizes;
+
+                                          if (baseSizes.includes(szStr)) {
+                                            updatedSizes = baseSizes.filter(s => s !== szStr);
+                                          } else {
+                                            updatedSizes = [...baseSizes, szStr].sort();
+                                          }
+
+                                          if (editingProduct) {
+                                            setEditingProduct({ ...editingProduct, ringSizes: updatedSizes });
+                                          } else {
+                                            setNewProduct({ ...newProduct, ringSizes: updatedSizes });
+                                          }
+                                        }}
+                                        className={`h-8 border flex items-center justify-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                                          isSelected
+                                            ? 'bg-zinc-950 text-white border-zinc-950 dark:bg-zinc-100 dark:text-zinc-950 dark:border-zinc-100'
+                                            : 'bg-transparent text-zinc-400 border-zinc-200 dark:border-zinc-800 dark:text-zinc-600 hover:border-zinc-400'
+                                        }`}
+                                      >
+                                        {szStr}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Section: Bangle Sizes Option */}
+                            {selectedType === 'bangles' && (
+                              <div className="space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/40">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-[#E6C687]"></span>
+                                    <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Available Bangle Sizes</h4>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const BANGLE_SIZES = ['1-2','1-4','1-6','1-8','2-0','2-2','2-4','2-6','2-8','3-0','3-2','3-4'];
+                                        if (editingProduct) {
+                                          setEditingProduct({ ...editingProduct, bangleSizes: [...BANGLE_SIZES] });
+                                        } else {
+                                          setNewProduct({ ...newProduct, bangleSizes: [...BANGLE_SIZES] });
+                                        }
+                                      }}
+                                      className="px-2 py-1 text-[9px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 border border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer"
+                                    >
+                                      Select All
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (editingProduct) {
+                                          setEditingProduct({ ...editingProduct, bangleSizes: [] });
+                                        } else {
+                                          setNewProduct({ ...newProduct, bangleSizes: [] });
+                                        }
+                                      }}
+                                      className="px-2 py-1 text-[9px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 border border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer"
+                                    >
+                                      Clear All
+                                    </button>
+                                  </div>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                  {['1-2','1-4','1-6','1-8','2-0','2-2','2-4','2-6','2-8','3-0','3-2','3-4'].map((sz) => {
+                                    const isSelected = currentBangleSizes.includes(sz);
+                                    return (
+                                      <button
+                                        key={sz}
+                                        type="button"
+                                        onClick={() => {
+                                          let updated = [];
+                                          if (currentBangleSizes.includes(sz)) {
+                                            updated = currentBangleSizes.filter(s => s !== sz);
+                                          } else {
+                                            updated = [...currentBangleSizes, sz];
+                                          }
+                                          if (editingProduct) {
+                                            setEditingProduct({ ...editingProduct, bangleSizes: updated });
+                                          } else {
+                                            setNewProduct({ ...newProduct, bangleSizes: updated });
+                                          }
+                                        }}
+                                        className={`h-8 px-3 border flex items-center justify-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                                          isSelected
+                                            ? 'bg-zinc-950 text-white border-zinc-950 dark:bg-zinc-100 dark:text-zinc-950 dark:border-zinc-100'
+                                            : 'bg-transparent text-zinc-400 border-zinc-200 dark:border-zinc-800 dark:text-zinc-600 hover:border-zinc-400'
+                                        }`}
+                                      >
+                                        {sz}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Section: Chain Sizes Option */}
+                            {selectedType === 'chains' && (
+                              <div className="space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/40">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-[#E6C687]"></span>
+                                    <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Available Chain Sizes</h4>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const CHAIN_SIZES = ['12"', '14"', '16"', '18"', '20"', '22"', '24"', '26"', '28"', '30"', '32"', '34"', '36"'];
+                                        if (editingProduct) {
+                                          setEditingProduct({ ...editingProduct, chainSizes: [...CHAIN_SIZES] });
+                                        } else {
+                                          setNewProduct({ ...newProduct, chainSizes: [...CHAIN_SIZES] });
+                                        }
+                                      }}
+                                      className="px-2 py-1 text-[9px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 border border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer"
+                                    >
+                                      Select All
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (editingProduct) {
+                                          setEditingProduct({ ...editingProduct, chainSizes: [] });
+                                        } else {
+                                          setNewProduct({ ...newProduct, chainSizes: [] });
+                                        }
+                                      }}
+                                      className="px-2 py-1 text-[9px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 border border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer"
+                                    >
+                                      Clear All
+                                    </button>
+                                  </div>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                  {['12"', '14"', '16"', '18"', '20"', '22"', '24"', '26"', '28"', '30"', '32"', '34"', '36"'].map((sz) => {
+                                    const isSelected = currentChainSizes.includes(sz);
+                                    return (
+                                      <button
+                                        key={sz}
+                                        type="button"
+                                        onClick={() => {
+                                          let updated = [];
+                                          if (currentChainSizes.includes(sz)) {
+                                            updated = currentChainSizes.filter(s => s !== sz);
+                                          } else {
+                                            updated = [...currentChainSizes, sz];
+                                          }
+                                          if (editingProduct) {
+                                            setEditingProduct({ ...editingProduct, chainSizes: updated });
+                                          } else {
+                                            setNewProduct({ ...newProduct, chainSizes: updated });
+                                          }
+                                        }}
+                                        className={`h-8 px-3 border flex items-center justify-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                                          isSelected
+                                            ? 'bg-zinc-950 text-white border-zinc-950 dark:bg-zinc-100 dark:text-zinc-950 dark:border-zinc-100'
+                                            : 'bg-transparent text-zinc-400 border-zinc-200 dark:border-zinc-800 dark:text-zinc-600 hover:border-zinc-400'
+                                        }`}
+                                      >
+                                        {sz}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
 
                       {/* Section: Media Uploader Dropzone */}
                       <div className="space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-850">
