@@ -336,7 +336,7 @@ function Sidebar({
   setIsSidebarCollapsed
 }) {
   return (
-    <aside className={`bg-white dark:bg-[#09090B] border-r border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-400 flex flex-col justify-between shrink-0 hidden md:flex transition-all duration-200 select-none ${isSidebarCollapsed ? 'w-[72px] p-4' : 'w-[240px] p-6'}`}>
+    <aside className={`bg-white dark:bg-[#09090B] border-r border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-400 flex flex-col justify-between shrink-0 hidden md:flex transition-all duration-200 select-none sticky top-0 h-screen overflow-y-auto scrollbar-none ${isSidebarCollapsed ? 'w-[72px] p-4' : 'w-[240px] p-6'}`}>
       <div className="space-y-6">
 
         {/* Logo Branding */}
@@ -776,10 +776,14 @@ export default function Admin() {
     diamondWeight: '',
     settingStyle: 'Prong Setting',
     certificate: 'SGL / GSI Certified',
+    igiCertificate: '',
+    certNumber: '',
     metalPurity: '22KT',
     metalColor: 'Yellow Gold',
     netWeight: '',
     grossWeight: '',
+    silverWeight: '',
+    productDimensions: '',
     diamondQuality: '',
     diamondShape: 'Round',
     diamondQuantity: '',
@@ -1025,10 +1029,14 @@ export default function Admin() {
         diamondWeight: '',
         settingStyle: 'Prong Setting',
         certificate: 'SGL / GSI Certified',
+        igiCertificate: '',
+        certNumber: '',
         metalPurity: '22KT',
         metalColor: 'Yellow Gold',
         netWeight: '',
         grossWeight: '',
+        silverWeight: '',
+        productDimensions: '',
         diamondQuality: '',
         diamondShape: 'Round',
         diamondQuantity: '',
@@ -1789,7 +1797,7 @@ export default function Admin() {
                             </select>
                           </div>
                           <div className="space-y-1.5">
-                            <label htmlFor="prod-categoryType-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Category Type</label>
+                            <label htmlFor="prod-categoryType-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Metal Type</label>
                             <select
                               id="prod-categoryType-form"
                               value={editingProduct ? (editingProduct.categoryType || 'Gold') : (newProduct.categoryType || 'Gold')}
@@ -1797,9 +1805,31 @@ export default function Admin() {
                               className="w-full h-10 bg-white dark:bg-[#09090B] border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
                             >
                               <option value="Gold">Gold</option>
-                              <option value="Silver">Silver</option>
+                              <option value="925 Sterling Silver">925 Sterling Silver</option>
+                              <option value="Normal Silver">Normal Silver</option>
+                              <option value="999 Silver">999 Silver</option>
                             </select>
                           </div>
+                          {/* Silver Weight — show only when 999 Silver is selected */}
+                          {(() => {
+                            const catType = editingProduct ? (editingProduct.categoryType || 'Gold') : (newProduct.categoryType || 'Gold');
+                            if (catType !== '999 Silver') return null;
+                            return (
+                              <div className="space-y-1.5">
+                                <label htmlFor="prod-silverWeight-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Silver Weight</label>
+                                <select
+                                  id="prod-silverWeight-form"
+                                  value={editingProduct ? (editingProduct.silverWeight || '') : (newProduct.silverWeight || '')}
+                                  onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, silverWeight: e.target.value }) : setNewProduct({ ...newProduct, silverWeight: e.target.value })}
+                                  className="w-full h-10 bg-white dark:bg-[#09090B] border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
+                                >
+                                  <option value="">— Select Weight —</option>
+                                  <option value="500 gm">500 gm</option>
+                                  <option value="1 Kg">1 Kg</option>
+                                </select>
+                              </div>
+                            );
+                          })()}
                           <div className="space-y-1.5">
                             <label htmlFor="prod-gender-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Gender</label>
                             <select
@@ -1948,16 +1978,33 @@ export default function Admin() {
                               );
                             })()}
                           </div>
+                          {/* Product Dimensions */}
                           <div className="space-y-1.5">
-                            <label htmlFor="prod-metalColor-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Metal Color</label>
+                            <label htmlFor="prod-dimensions-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Product Dimensions</label>
                             <input
-                              id="prod-metalColor-form"
+                              id="prod-dimensions-form"
                               type="text"
-                              placeholder="e.g. Yellow Gold"
-                              value={editingProduct ? (editingProduct.metalColor || '') : newProduct.metalColor}
-                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, metalColor: e.target.value }) : setNewProduct({ ...newProduct, metalColor: e.target.value })}
+                              placeholder="e.g. 12mm × 8mm × 4mm"
+                              value={editingProduct ? (editingProduct.productDimensions || '') : (newProduct.productDimensions || '')}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, productDimensions: e.target.value }) : setNewProduct({ ...newProduct, productDimensions: e.target.value })}
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="prod-metalColor-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Metal Type</label>
+                            <select
+                              id="prod-metalColor-form"
+                              value={editingProduct ? (editingProduct.metalColor || 'Yellow Gold') : (newProduct.metalColor || 'Yellow Gold')}
+                              onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, metalColor: e.target.value }) : setNewProduct({ ...newProduct, metalColor: e.target.value })}
+                              className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
+                            >
+                              <option value="Yellow Gold">Yellow Gold</option>
+                              <option value="Rose Gold">Rose Gold</option>
+                              <option value="White Gold">White Gold</option>
+                              <option value="Platinum Plated Silver">Platinum Plated Silver</option>
+                              <option value="Rose Gold Plated Silver">Rose Gold Plated Silver</option>
+                              <option value="Gold Plated Silver">Gold Plated Silver</option>
+                            </select>
                           </div>
                         </div>
                       </div>
@@ -2153,6 +2200,55 @@ export default function Admin() {
                             </div>
                           </div>
                         </div>
+
+                        {/* IGI Diamond Certificate & Verification */}
+                        <div className="space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/40">
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 dark:bg-blue-500"></span>
+                            <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Diamond Certificate</h4>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                              <label htmlFor="prod-igiCertificate-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">IGI Diamond Certificate</label>
+                              <select
+                                id="prod-igiCertificate-form"
+                                value={editingProduct ? (editingProduct.igiCertificate || '') : (newProduct.igiCertificate || '')}
+                                onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, igiCertificate: e.target.value }) : setNewProduct({ ...newProduct, igiCertificate: e.target.value })}
+                                className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 text-xs text-zinc-905 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer"
+                              >
+                                <option value="">— Not Applicable —</option>
+                                <option value="IGI Certified">IGI Certified</option>
+                                <option value="IGI Certified (Lab Grown)">IGI Certified (Lab Grown)</option>
+                                <option value="IGI Certified (Natural)">IGI Certified (Natural)</option>
+                                <option value="SGL Certified">SGL Certified</option>
+                                <option value="GIA Certified">GIA Certified</option>
+                                <option value="GSI Certified">GSI Certified</option>
+                              </select>
+                            </div>
+                            <div className="space-y-1.5">
+                              <label htmlFor="prod-certNumber-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Certificate Number (for verification)</label>
+                              <div className="flex gap-2">
+                                <input
+                                  id="prod-certNumber-form"
+                                  type="text"
+                                  placeholder="e.g. IGI-0123456789"
+                                  value={editingProduct ? (editingProduct.certNumber || '') : (newProduct.certNumber || '')}
+                                  onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, certNumber: e.target.value }) : setNewProduct({ ...newProduct, certNumber: e.target.value })}
+                                  className="flex-1 h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
+                                />
+                                <a
+                                  href={`https://www.igi.org/report-check.php?r=${editingProduct ? (editingProduct.certNumber || '') : (newProduct.certNumber || '')}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="h-10 px-3 flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 text-blue-600 dark:text-blue-400 text-[9px] font-bold uppercase tracking-wider rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all whitespace-nowrap"
+                                >
+                                  <ExternalLink className="w-3 h-3" />
+                                  Verify
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Section: Pricing & Commercial details */}
@@ -2192,18 +2288,11 @@ export default function Admin() {
                               className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
                             />
                           </div>
-                          <div className="space-y-1.5">
-                            <label htmlFor="prod-charges-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Making Percentage Charge</label>
-                            <div className="relative">
-                              <input
-                                id="prod-charges-form"
-                                type="text"
-                                placeholder="e.g. 12"
-                                value={editingProduct ? editingProduct.makingCharges : newProduct.makingCharges}
-                                onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, makingCharges: e.target.value }) : setNewProduct({ ...newProduct, makingCharges: e.target.value })}
-                                className="w-full h-10 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl pl-4 pr-10 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200"
-                              />
-                              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">%</span>
+                          {/* Making Charge is shown only inside Price Breakdown — not editable here */}
+                          <div className="space-y-1.5 col-span-1">
+                            <label className="text-[9px] uppercase tracking-wider text-amber-500 dark:text-amber-400 font-bold block px-1">Making Charge</label>
+                            <div className="h-10 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 rounded-xl px-4 flex items-center text-[10px] text-amber-600 dark:text-amber-400 font-semibold">
+                              Shown in Price Breakdown only
                             </div>
                           </div>
                           <div className="space-y-1.5">
