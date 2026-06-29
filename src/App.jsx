@@ -1434,7 +1434,7 @@ export default function App() {
   const [pdpPincode, setPdpPincode] = useState('');
   const [pdpPincodeChecked, setPdpPincodeChecked] = useState(null);
   const [customerSpeakIdx, setCustomerSpeakIdx] = useState(0);
-  const [pdpCustomizeOpen, setPdpCustomizeOpen] = useState(false);
+  const [pdpCustomizeOpen, setPdpCustomizeOpen] = useState(true);
   // Auto-redirect to collections page after checkout success
   useEffect(() => {
     if (checkoutSuccess) {
@@ -8157,55 +8157,60 @@ export default function App() {
                           </div>
 
                           {/* Ring Size Selection */}
-                          <div className="space-y-4">
-                            <div className="flex justify-between items-center text-sm">
-                              <span className="text-gray-900 font-semibold font-sans">
-                                Select Ring Size: <span className="font-bold">{selectedRingSize} IND</span>
-                              </span>
-                              <button 
-                                onClick={() => { triggerAudio("click"); setSizeGuideOpen(true); }} 
-                                className="text-gray-900 hover:text-gray-600 font-semibold transition-colors duration-300 underline cursor-pointer text-xs font-sans"
-                              >
-                                Size Guide
-                              </button>
-                            </div>
-
-                            {/* Video Banner */}
-                            <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl p-3">
-                              <div className="w-12 h-8 rounded bg-gray-200 flex items-center justify-center shrink-0 overflow-hidden relative border border-gray-300/40">
-                                <div className="absolute inset-0 bg-gradient-to-tr from-gray-900 to-gray-700 opacity-35"></div>
-                                <span className="text-[10px] text-white z-10">▶</span>
+                          {((detailProduct?.category || '').toLowerCase().includes('ring') || 
+                            (detailProduct?.subCategory || '').toLowerCase().includes('ring') || 
+                            (detailProduct?.name || '').toLowerCase().includes('ring') ||
+                            (detailProduct?.ringSizes && detailProduct.ringSizes.length > 0)) && (
+                            <div className="space-y-4 animate-fade-in">
+                              <div className="flex justify-between items-center text-sm">
+                                <span className="text-gray-900 font-semibold font-sans">
+                                  Select Ring Size: <span className="font-bold">{selectedRingSize} IND</span>
+                                </span>
+                                <button 
+                                  onClick={() => { triggerAudio("click"); setSizeGuideOpen(true); }} 
+                                  className="text-gray-900 hover:text-gray-600 font-semibold transition-colors duration-300 underline cursor-pointer text-xs font-sans"
+                                >
+                                  Size Guide
+                                </button>
                               </div>
-                              <p className="text-xs text-gray-750 font-sans font-medium">
-                                Watch this quick video to measure your ring right.
-                              </p>
-                            </div>
 
-                            <div className="grid grid-cols-7 gap-2.5 max-h-48 overflow-y-auto pr-1">
-                              {(detailProduct?.ringSizes || Array.from({ length: 34 - 6 + 1 }, (_, i) => {
-                                const num = 6 + i;
-                                return num < 10 ? `0${num}` : `${num}`;
-                              })).map((sz) => {
-                                const active = selectedRingSize === sz;
-                                return (
-                                  <button
-                                    key={sz}
-                                    onClick={() => { triggerAudio("click"); setSelectedRingSize(sz); }}
-                                    className={`relative h-10 border rounded-lg flex items-center justify-center text-xs font-bold transition-all duration-300 cursor-pointer ${
-                                      active 
-                                        ? 'bg-transparent text-gray-900 border-gray-800 border-2 font-black shadow-xs font-sans' 
-                                        : 'bg-white text-gray-705 border-gray-200 hover:border-gray-400 font-sans'
-                                    }`}
-                                  >
-                                    {active && (
-                                      <span className="absolute top-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
-                                    )}
-                                    {sz}
-                                  </button>
-                                );
-                              })}
+                              {/* Video Banner */}
+                              <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl p-3">
+                                <div className="w-12 h-8 rounded bg-gray-200 flex items-center justify-center shrink-0 overflow-hidden relative border border-gray-300/40">
+                                  <div className="absolute inset-0 bg-gradient-to-tr from-gray-900 to-gray-700 opacity-35"></div>
+                                  <span className="text-[10px] text-white z-10">▶</span>
+                                </div>
+                                <p className="text-xs text-gray-750 font-sans font-medium">
+                                  Watch this quick video to measure your ring right.
+                                </p>
+                              </div>
+
+                              <div className="grid grid-cols-7 gap-2.5 max-h-48 overflow-y-auto pr-1">
+                                {(detailProduct?.ringSizes || Array.from({ length: 34 - 6 + 1 }, (_, i) => {
+                                  const num = 6 + i;
+                                  return num < 10 ? `0${num}` : `${num}`;
+                                })).map((sz) => {
+                                  const active = selectedRingSize === sz;
+                                  return (
+                                    <button
+                                      key={sz}
+                                      onClick={() => { triggerAudio("click"); setSelectedRingSize(sz); }}
+                                      className={`relative h-10 border rounded-lg flex items-center justify-center text-xs font-bold transition-all duration-300 cursor-pointer ${
+                                        active 
+                                          ? 'bg-transparent text-gray-900 border-gray-800 border-2 font-black shadow-xs font-sans' 
+                                          : 'bg-white text-gray-705 border-gray-200 hover:border-gray-400 font-sans'
+                                      }`}
+                                    >
+                                      {active && (
+                                        <span className="absolute top-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+                                      )}
+                                      {sz}
+                                    </button>
+                                  );
+                                })}
+                              </div>
                             </div>
-                          </div>
+                          )}
 
                           {/* Engraving input */}
                           <div className="space-y-2 pt-2">
