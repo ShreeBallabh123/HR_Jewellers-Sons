@@ -8182,7 +8182,7 @@ export default function App() {
                             </div>
 
                             <div className="grid grid-cols-7 gap-2.5 max-h-48 overflow-y-auto pr-1">
-                              {(detailProduct.ringSizes || Array.from({ length: 34 - 6 + 1 }, (_, i) => {
+                              {(detailProduct?.ringSizes || Array.from({ length: 34 - 6 + 1 }, (_, i) => {
                                 const num = 6 + i;
                                 return num < 10 ? `0${num}` : `${num}`;
                               })).map((sz) => {
