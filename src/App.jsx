@@ -8174,18 +8174,7 @@ export default function App() {
                                 </button>
                               </div>
 
-                              {/* Video Banner */}
-                              <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl p-3">
-                                <div className="w-12 h-8 rounded bg-gray-200 flex items-center justify-center shrink-0 overflow-hidden relative border border-gray-300/40">
-                                  <div className="absolute inset-0 bg-gradient-to-tr from-gray-900 to-gray-700 opacity-35"></div>
-                                  <span className="text-[10px] text-white z-10">▶</span>
-                                </div>
-                                <p className="text-xs text-gray-750 font-sans font-medium">
-                                  Watch this quick video to measure your ring right.
-                                </p>
-                              </div>
-
-                              <div className="grid grid-cols-7 gap-2.5 max-h-48 overflow-y-auto pr-1">
+                              <div className="grid grid-cols-7 gap-2.5">
                                 {(detailProduct?.ringSizes || Array.from({ length: 34 - 6 + 1 }, (_, i) => {
                                   const num = 6 + i;
                                   return num < 10 ? `0${num}` : `${num}`;
