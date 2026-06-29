@@ -1071,6 +1071,10 @@ export default function App() {
   const [detailActiveImg, setDetailActiveImg] = useState(null);
   const [pdpHovered, setPdpHovered] = useState(false);
 
+  // Compute media list and current active index for PDP
+  const pdpMediaList = detailProduct ? [detailProduct.img, ...(detailProduct.subImages || [])].filter(Boolean) : [];
+  const currentIdx = detailProduct ? pdpMediaList.indexOf(detailActiveImg || detailProduct.img) : -1;
+
   // Sync first product to detail views once loaded from db
   useEffect(() => {
     if (products.length > 0 && !detailProduct) {
@@ -3965,70 +3969,9 @@ export default function App() {
                       <div id="shop-by-category" className="w-full pt-0 pb-16 lg:pb-20 px-6 sm:px-12 select-none" style={{ background: '#fdfaf8' }}>
                         <section className="max-w-[1836px] mx-auto">
 
-                          {/* ── MOBILE: 2-row horizontal scroll grid ── */}
-                          <div className="lg:hidden pt-6 pb-4 overflow-x-auto no-scrollbar -mx-4 px-4">
-                            <div
-                              style={{
-                                display: 'grid',
-                                gridTemplateRows: 'repeat(2, auto)',
-                                gridAutoFlow: 'column',
-                                gap: '10px',
-                                width: 'max-content',
-                              }}
-                            >
-                              {activeCategories.map((cat, idx) => {
-                                const handleClick = () => {
-                                  triggerAudio('click');
-                                  const normName = String(cat.name || '').toLowerCase();
-                                  if (cat.id === 'gold-coins' || normName.includes('coin')) {
-                                    navigateTo('gold-coins');
-                                  } else {
-                                    changeCategoryTab(cat.name);
-                                    navigateTo('collections');
-                                  }
-                                };
-                                const catImg = cat.img || getCategoryFallbackImage(cat.name || cat.id);
-                                return (
-                                  <div
-                                    key={idx}
-                                    onClick={handleClick}
-                                    className="bg-white border border-[rgba(0,0,0,0.05)] rounded-[20px] shadow-[0_4px_14px_rgba(0,0,0,0.06)] flex flex-col items-center justify-between cursor-pointer active:scale-95 transition-transform duration-150"
-                                    style={{ padding: '14px 8px 14px', height: '148px', width: '100px' }}
-                                  >
-                                    <div className="w-full flex items-center justify-center" style={{ height: '80px' }}>
-                                      <img
-                                        src={catImg}
-                                        alt={cat.name}
-                                        className="object-contain filter drop-shadow-[0_4px_8px_rgba(90,74,74,0.12)]"
-                                        style={{ width: '65px', height: '65px' }}
-                                      />
-                                    </div>
-                                    <span
-                                      style={{
-                                        color: '#3d2619',
-                                        fontFamily: 'inherit',
-                                        fontSize: '10.5px',
-                                        fontWeight: '600',
-                                        lineHeight: '1.4',
-                                        textAlign: 'center',
-                                        width: '100%',
-                                        display: 'block',
-                                        wordBreak: 'break-word',
-                                        hyphens: 'auto',
-                                        marginTop: '6px',
-                                      }}
-                                    >
-                                      {cat.name}
-                                    </span>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-
-                          {/* ── DESKTOP: 2-row wrap grid ── */}
-                          <div className="hidden lg:block pt-6 pb-6">
-                            <div className="flex flex-wrap gap-[20px] select-none w-full justify-center">
+                          {/* ── UNIFIED HORIZONTAL SCROLL CATEGORIES (SINGLE ROW) ── */}
+                          <div className="pt-6 pb-6 overflow-x-auto no-scrollbar scroll-smooth">
+                            <div className="flex gap-4 sm:gap-6 w-max select-none px-4">
                               {activeCategories.map((cat, idx) => {
                                 const handleClick = () => {
                                   triggerAudio('click');
@@ -4046,16 +3989,16 @@ export default function App() {
                                   <div
                                     key={idx}
                                     onClick={handleClick}
-                                    className="w-[170px] h-[240px] bg-white border border-[rgba(0,0,0,0.04)] rounded-[24px] shadow-[0_8px_24px_rgba(0,0,0,0.04)] flex flex-col items-center justify-between relative overflow-hidden hover:-translate-y-[3px] transition-all duration-[250ms] ease group cursor-pointer"
+                                    className="w-[120px] sm:w-[170px] h-[160px] sm:h-[240px] bg-white border border-[rgba(0,0,0,0.04)] rounded-[20px] sm:rounded-[24px] shadow-[0_6px_18px_rgba(0,0,0,0.04)] flex flex-col items-center justify-between relative overflow-hidden hover:-translate-y-[3px] transition-all duration-[250ms] ease group cursor-pointer"
                                     style={{
-                                      paddingTop: '24px',
-                                      paddingLeft: '16px',
-                                      paddingRight: '16px',
-                                      paddingBottom: '20px',
+                                      paddingTop: '16px',
+                                      paddingLeft: '12px',
+                                      paddingRight: '12px',
+                                      paddingBottom: '16px',
                                       boxSizing: 'border-box'
                                     }}
                                   >
-                                    <div className="w-full h-[120px] flex items-center justify-center relative bg-transparent">
+                                    <div className="w-full h-[85px] sm:h-[120px] flex items-center justify-center relative bg-transparent">
                                       <img
                                         src={catImg}
                                         alt={cat.name}
@@ -4063,7 +4006,7 @@ export default function App() {
                                       />
                                     </div>
                                     <span
-                                      className="text-center font-sans tracking-tight line-clamp-2 mt-auto text-[13px]"
+                                      className="text-center font-sans tracking-tight line-clamp-2 mt-auto text-[11px] sm:text-[13px]"
                                       style={{
                                         fontFamily: 'inherit',
                                         fontWeight: '600',
@@ -8005,29 +7948,66 @@ export default function App() {
 
           {currentPage === 'product-detail' && detailProduct && (
             <div className="bg-white text-[#181818] min-h-screen pb-24 relative select-none font-sans">
-              <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 py-8 space-y-16 animate-fade-in">
+                <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 py-8 space-y-16 animate-fade-in">
 
-                {/* Breadcrumbs */}
-                <nav className="flex flex-wrap items-center gap-2 text-[10px] tracking-[0.2em] text-[#888888] uppercase font-sans text-left pb-4 select-none font-medium">
-                  <button onClick={() => navigateTo('home')} className="hover:text-[#B8893C] transition-colors duration-300">HOME</button>
-                  <span className="text-[#E7DED2]">·</span>
-                  <button onClick={() => handleCategoryNav(detailProduct.category)} className="hover:text-[#B8893C] transition-colors duration-300">{(detailProduct.category || 'JEWELLERY').toUpperCase()}</button>
-                  <span className="text-[#E7DED2]">·</span>
-                  <span className="text-[#181818] font-semibold">{detailProduct.name.toUpperCase()}</span>
-                </nav>
+                  {/* Breadcrumbs */}
+                  <nav className="flex flex-wrap items-center gap-2 text-[10px] tracking-[0.2em] text-[#888888] uppercase font-sans text-left pb-4 select-none font-medium">
+                    <button onClick={() => navigateTo('home')} className="hover:text-[#B8893C] transition-colors duration-300">HOME</button>
+                    <span className="text-[#E7DED2]">·</span>
+                    <button onClick={() => handleCategoryNav(detailProduct.category)} className="hover:text-[#B8893C] transition-colors duration-300">{(detailProduct.category || 'JEWELLERY').toUpperCase()}</button>
+                    <span className="text-[#E7DED2]">·</span>
+                    <span className="text-[#181818] font-semibold">{detailProduct.name.toUpperCase()}</span>
+                  </nav>
 
-                {/* Main Two-Column Split Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-12 lg:gap-20 items-start">
-                  
-                  {/* LEFT COLUMN: Sticky Gallery View */}
-                  <div className="space-y-8 lg:sticky lg:top-[120px] self-start">
+                  {/* Main Two-Column Split Grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-12 lg:gap-20 items-start">
                     
-                    {/* Hero Display Card */}
-                    <div
-                      className="relative bg-white flex items-start justify-center p-0 w-full aspect-square lg:aspect-auto lg:h-[550px] overflow-hidden group cursor-zoom-in transition-all duration-500"
-                      onMouseMove={handleZoomMouseMove}
-                      onMouseLeave={handleZoomMouseLeave}
-                    >
+                    {/* LEFT COLUMN: Gallery View (Non-sticky/No-holder) */}
+                    <div className="space-y-8 self-start w-full">
+                      
+                      {/* Hero Display Card */}
+                      <div
+                        className="relative bg-white flex items-start justify-center p-0 w-full aspect-square lg:aspect-auto lg:h-[550px] overflow-hidden group cursor-zoom-in transition-all duration-500"
+                        onMouseMove={handleZoomMouseMove}
+                        onMouseLeave={handleZoomMouseLeave}
+                      >
+                        {/* Left manual swipe arrow */}
+                        {pdpMediaList.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              triggerAudio('click');
+                              const prevIdx = (currentIdx - 1 + pdpMediaList.length) % pdpMediaList.length;
+                              setDetailActiveImg(pdpMediaList[prevIdx]);
+                            }}
+                            className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/75 backdrop-blur-md border border-gray-200/50 flex items-center justify-center text-gray-850 hover:bg-white hover:text-[#B8893C] transition-all duration-300 z-30 shadow-md cursor-pointer select-none active:scale-95"
+                            title="Previous Image"
+                          >
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                          </button>
+                        )}
+
+                        {/* Right manual swipe arrow */}
+                        {pdpMediaList.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              triggerAudio('click');
+                              const nextIdx = (currentIdx + 1) % pdpMediaList.length;
+                              setDetailActiveImg(pdpMediaList[nextIdx]);
+                            }}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/75 backdrop-blur-md border border-gray-200/50 flex items-center justify-center text-gray-855 hover:bg-white hover:text-[#B8893C] transition-all duration-300 z-30 shadow-md cursor-pointer select-none active:scale-95"
+                            title="Next Image"
+                          >
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                          </button>
+                        )}
                       {/* Floating Wishlist Button */}
                       <button
                         onClick={(e) => { e.stopPropagation(); triggerAudio('click'); toggleWishlist(detailProduct); }}
@@ -8336,10 +8316,7 @@ export default function App() {
                       </button>
                     </div>
 
-                    {/* Assistance advisor */}
-                    <p className="text-center text-[10px] text-[#888888] tracking-[0.15em] mt-4 uppercase font-sans font-light">
-                      Need assistance? Call boutique advisor: <a href="tel:18004190066" className="font-semibold text-[#B8893C] hover:underline hover:text-[#A8772D] transition-colors">1800-419-0066</a> (Toll-Free)
-                    </p>
+
 
                     {/* Premium Product Details & Specifications Accordion Section */}
                     <div className="border-t border-[#E7DED2] pt-8 space-y-4">
@@ -8503,17 +8480,10 @@ export default function App() {
                             )}
                           </div>
 
-                          <div className="mt-4 pt-4 border-t border-[#E7DED2]/50 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-gray-600 font-light">
+                          <div className="mt-4 pt-4 border-t border-[#E7DED2]/50 flex flex-col gap-4 text-xs text-gray-600 font-light">
                             <div>
                               <span className="text-gray-400 block mb-0.5">Hallmark Stamp</span>
                               <span className="font-semibold text-gray-900">{detailProduct.hallmark || 'BIS 916 Government Certified'}</span>
-                            </div>
-                            <div>
-                              <span className="text-gray-400 block mb-0.5">Making Charges / Discount</span>
-                              <span className="font-semibold text-gray-900">
-                                {detailProduct.makingCharges ? `${detailProduct.makingCharges}%` : '12%'} making charge
-                                {detailProduct.discountPercent !== undefined && detailProduct.discountPercent !== '' ? ` · ${detailProduct.discountPercent}% OFF` : ' · 20% OFF'}
-                              </span>
                             </div>
                           </div>
                         </div>
