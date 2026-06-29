@@ -1739,211 +1739,6 @@ export default function App() {
     };
   }, [currentPage]);
 
-  const seedCoinsToFirestore = async () => {
-    const coinsToSeed = [
-      {
-        id: 'coin-1',
-        name: '24K Temple Heritage Gold Coin',
-        purity: '24K',
-        carat: '24K',
-        weight: '10',
-        img: 'laxmi_gold_coin',
-        makingCharges: '3.5',
-        desc: 'Bespoke 24K solid gold coin embossed with fine royal temple engraving of Laxmi-Ganesha. Crafted for pure prosperity, daily puja, and heritage family holdings.',
-        hallmark: 'BIS Hallmarked & NABL Accredited Refinery Cert',
-        available: true,
-        category: 'gold-coins',
-        categoryType: 'Gold',
-        stockQty: 100
-      },
-      {
-        id: 'coin-2',
-        name: '24K Royal Laxmi Emblem Gold Coin',
-        purity: '24K',
-        carat: '24K',
-        weight: '5',
-        img: 'laxmi_gold_coin',
-        makingCharges: '3.8',
-        desc: 'Exquisite 5g gold coin featuring a detailed bas-relief of Goddess Laxmi, the embodiment of wealth and fortune. Sealed in tamper-proof premium assay card certification.',
-        hallmark: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
-        available: true,
-        category: 'gold-coins',
-        categoryType: 'Gold',
-        stockQty: 100
-      },
-      {
-        id: 'coin-3',
-        name: '24K Imperial Bikaneri Mint Coin',
-        purity: '24K',
-        carat: '24K',
-        weight: '20',
-        img: 'gold_bullion_coin',
-        makingCharges: '3.0',
-        desc: 'Heavyweight investment-grade 20g minted coin showcasing custom geometric royal floral grids representing standard Rajasthani artistry.',
-        hallmark: 'BIS Hallmarked & NABL Accredited Refinery Cert',
-        available: true,
-        category: 'gold-coins',
-        categoryType: 'Gold',
-        stockQty: 100
-      },
-      {
-        id: 'coin-4',
-        name: '24K Sovereign Bullion Mint Coin',
-        purity: '24K',
-        carat: '24K',
-        weight: '50',
-        img: 'gold_bullion_coin',
-        makingCharges: '2.5',
-        desc: 'Premium institutional 50g solid gold bullion coin with serialized laser-etched registry code. High purity asset for absolute portfolio hedging.',
-        hallmark: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
-        available: true,
-        category: 'gold-coins',
-        categoryType: 'Gold',
-        stockQty: 100
-      },
-      {
-        id: 'coin-5',
-        name: '24K Devotion Ganesha Mint Coin',
-        purity: '24K',
-        carat: '24K',
-        weight: '2',
-        img: 'laxmi_gold_coin',
-        makingCharges: '4.5',
-        desc: 'Intricately pressed 2g gold coin featuring Lord Ganesha. Perfect for Diwali celebrations, Akshaya Tritiya, wedding gifting, or personal altars.',
-        hallmark: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
-        available: true,
-        category: 'gold-coins',
-        categoryType: 'Gold',
-        stockQty: 100
-      },
-      {
-        id: 'coin-6',
-        name: '24K Shubh Labh Auspicious Gift Coin',
-        purity: '24K',
-        carat: '24K',
-        weight: '1',
-        img: 'laxmi_gold_coin',
-        makingCharges: '5.0',
-        desc: 'Elegant 1g gold coin carrying the holy "Shubh Labh" scripts. Designed as an auspicious premium token to celebrate milestones and corporate blessings.',
-        hallmark: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
-        available: true,
-        category: 'gold-coins',
-        categoryType: 'Gold',
-        stockQty: 100
-      },
-      {
-        id: 'coin-7',
-        name: '22K Bikaneri Royal Heritage Coin',
-        purity: '22K',
-        carat: '22K',
-        weight: '10',
-        img: 'laxmi_gold_coin',
-        makingCharges: '4.0',
-        desc: 'Generational 22K (916) pure gold medallion carrying the official showroom emblem of HR Jewellers & Sons. Extremely durable alloy structure made for custom jewellery settings.',
-        hallmark: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
-        available: true,
-        category: 'gold-coins',
-        categoryType: 'Gold',
-        stockQty: 100
-      },
-      {
-        id: 'coin-8',
-        name: '22K Rajputana Crest Gold Coin',
-        purity: '22K',
-        carat: '22K',
-        weight: '8',
-        img: 'gold_bullion_coin',
-        makingCharges: '4.2',
-        desc: 'Stately 8g sovereign weight gold medallion embossed with the ancient shield crest of Rajputana warriors. A spectacular symbol of lineage, heritage, and pride.',
-        hallmark: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
-        available: true,
-        category: 'gold-coins',
-        categoryType: 'Gold',
-        stockQty: 100
-      },
-      {
-        id: 'coin-9',
-        name: '22K Golden Kalash Puja Token',
-        purity: '22K',
-        carat: '22K',
-        weight: '5',
-        img: 'laxmi_gold_coin',
-        makingCharges: '4.5',
-        desc: 'Beautiful 5g gold coin featuring the sacred Kalash, mango leaves, and coconut, symbolizing life, health, and spiritual abundance.',
-        hallmark: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
-        available: true,
-        category: 'gold-coins',
-        categoryType: 'Gold',
-        stockQty: 100
-      },
-      {
-        id: 'coin-10',
-        name: '24K Imperial Lakshmi Coin',
-        purity: '24K',
-        carat: '24K',
-        weight: '8',
-        img: 'laxmi_gold_coin',
-        makingCharges: '3.6',
-        desc: 'A sovereign weight 8g pure gold coin, struck with an exquisite motif of Goddess Lakshmi sitting gracefully on a lotus, bordered with elegant traditional arches.',
-        hallmark: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
-        available: true,
-        category: 'gold-coins',
-        categoryType: 'Gold',
-        stockQty: 100
-      },
-      {
-        id: 'coin-11',
-        name: '24K Micro-Bullion Savings Coin',
-        purity: '24K',
-        carat: '24K',
-        weight: '0.5',
-        img: 'gold_bullion_coin',
-        makingCharges: '6.0',
-        desc: 'An affordable entry-point 0.5g gold coin for regular savings accumulation. Encased in a beautiful gift-ready card with tamper-evident seal.',
-        hallmark: 'BIS Hallmarked & 999.9 Fine Purity Assay Certified',
-        available: true,
-        category: 'gold-coins',
-        categoryType: 'Gold',
-        stockQty: 100
-      },
-      {
-        id: 'coin-12',
-        name: '22K Classic Sovereign Coin',
-        purity: '22K',
-        carat: '22K',
-        weight: '20',
-        img: 'gold_bullion_coin',
-        makingCharges: '3.2',
-        desc: 'Premium 20g 22K durable gold coin designed for investors looking for heavier weight with royal finish, perfect for melting or passing down as an heirloom.',
-        hallmark: 'BIS 916 Hallmarked & Lifetime Showroom Buyback Guarantee',
-        available: true,
-        category: 'gold-coins',
-        categoryType: 'Gold',
-        stockQty: 100
-      }
-    ];
-
-    for (const coin of coinsToSeed) {
-      try {
-        await setDoc(doc(db, 'products', coin.id), coin);
-        console.log("Seeded coin:", coin.id);
-      } catch (e) {
-        console.error("Error seeding coin:", coin.id, e);
-      }
-    }
-  };
-
-  useEffect(() => {
-    const hasSeeded = localStorage.getItem('hrj_coins_seeded');
-    if (!hasSeeded && products.length > 0) {
-      const hasCoins = products.some(p => (p.category || '').toLowerCase() === 'gold-coins');
-      if (!hasCoins) {
-        seedCoinsToFirestore();
-      }
-      localStorage.setItem('hrj_coins_seeded', 'true');
-    }
-  }, [products]);
-
   // ==========================================
   // DB SEEDING AND SYNCING
   // ==========================================
@@ -1962,8 +1757,8 @@ export default function App() {
       setCategoriesLoaded(true);
     });
 
-    // One-time cleanup of old seeded categories
-    const cleanupOldCats = async () => {
+    // One-time cleanup of old seeded categories and hardcoded coins
+    const cleanupOldCatsAndCoins = async () => {
       const oldCatIds = ['gold', 'silver', 'diamond', 'platinum', 'bridal', 'custom'];
       for (const id of oldCatIds) {
         try {
@@ -1972,8 +1767,17 @@ export default function App() {
           console.error("Cleanup error for category:", id, e);
         }
       }
+
+      // Delete hardcoded coins from Firestore
+      for (let i = 1; i <= 12; i++) {
+        try {
+          await deleteDoc(doc(db, 'products', `coin-${i}`));
+        } catch (e) {
+          console.error(`Cleanup error for coin-${i}:`, e);
+        }
+      }
     };
-    cleanupOldCats();
+    cleanupOldCatsAndCoins();
 
     return () => {
       unsubscribeProducts();
