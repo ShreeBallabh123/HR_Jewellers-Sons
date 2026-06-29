@@ -794,7 +794,8 @@ export default function Admin() {
     diamondValue: '',
     pearlsValue: '',
     gender: 'Unisex',
-    occasion: 'Everyday Wear'
+    occasion: 'Everyday Wear',
+    ringSizes: Array.from({ length: 34 - 6 + 1 }, (_, i) => { const num = 6 + i; return num < 10 ? `0${num}` : `${num}`; })
   });
   const [editingProduct, setEditingProduct] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
@@ -1039,7 +1040,8 @@ export default function Admin() {
         diamondValue: '',
         pearlsValue: '',
         gender: 'Unisex',
-        occasion: 'Everyday Wear'
+        occasion: 'Everyday Wear',
+        ringSizes: Array.from({ length: 34 - 6 + 1 }, (_, i) => { const num = 6 + i; return num < 10 ? `0${num}` : `${num}`; })
       });
       showAdminNotification("New jewellery item added successfully!", "success");
     } catch (err) {
@@ -2230,6 +2232,94 @@ export default function Admin() {
                               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">% OFF</span>
                             </div>
                           </div>
+                        </div>
+                      </div>
+
+                      {/* Section: Ring Sizes Option */}
+                      <div className="space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-850">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-[#E6C687]"></span>
+                            <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Available Ring Sizes (IND)</h4>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const allSizes = Array.from({ length: 34 - 6 + 1 }, (_, i) => {
+                                  const num = 6 + i;
+                                  return num < 10 ? `0${num}` : `${num}`;
+                                });
+                                if (editingProduct) {
+                                  setEditingProduct({ ...editingProduct, ringSizes: allSizes });
+                                } else {
+                                  setNewProduct({ ...newProduct, ringSizes: allSizes });
+                                }
+                              }}
+                              className="px-2 py-1 text-[9px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 border border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer"
+                            >
+                              Select All
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (editingProduct) {
+                                  setEditingProduct({ ...editingProduct, ringSizes: [] });
+                                } else {
+                                  setNewProduct({ ...newProduct, ringSizes: [] });
+                                }
+                              }}
+                              className="px-2 py-1 text-[9px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 border border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer"
+                            >
+                              Clear All
+                            </button>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-7 sm:grid-cols-10 md:grid-cols-15 gap-2">
+                          {Array.from({ length: 34 - 6 + 1 }, (_, i) => {
+                            const num = 6 + i;
+                            const szStr = num < 10 ? `0${num}` : `${num}`;
+                            const currentSizes = editingProduct ? (editingProduct.ringSizes || []) : (newProduct.ringSizes || []);
+                            const isSelected = editingProduct 
+                              ? (editingProduct.ringSizes === undefined ? true : currentSizes.includes(szStr))
+                              : (newProduct.ringSizes === undefined ? true : currentSizes.includes(szStr));
+
+                            return (
+                              <button
+                                key={szStr}
+                                type="button"
+                                onClick={() => {
+                                  let updatedSizes = [];
+                                  const defaultSizes = Array.from({ length: 34 - 6 + 1 }, (_, i) => {
+                                    const num = 6 + i;
+                                    return num < 10 ? `0${num}` : `${num}`;
+                                  });
+                                  const baseSizes = editingProduct 
+                                    ? (editingProduct.ringSizes === undefined ? defaultSizes : currentSizes)
+                                    : (newProduct.ringSizes === undefined ? defaultSizes : currentSizes);
+
+                                  if (baseSizes.includes(szStr)) {
+                                    updatedSizes = baseSizes.filter(s => s !== szStr);
+                                  } else {
+                                    updatedSizes = [...baseSizes, szStr].sort();
+                                  }
+
+                                  if (editingProduct) {
+                                    setEditingProduct({ ...editingProduct, ringSizes: updatedSizes });
+                                  } else {
+                                    setNewProduct({ ...newProduct, ringSizes: updatedSizes });
+                                  }
+                                }}
+                                className={`h-8 border flex items-center justify-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                                  isSelected
+                                    ? 'bg-zinc-950 text-white border-zinc-950 dark:bg-zinc-100 dark:text-zinc-950 dark:border-zinc-100'
+                                    : 'bg-transparent text-zinc-400 border-zinc-200 dark:border-zinc-800 dark:text-zinc-600 hover:border-zinc-400'
+                                }`}
+                              >
+                                {szStr}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
 

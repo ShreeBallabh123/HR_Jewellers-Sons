@@ -1078,6 +1078,16 @@ export default function App() {
     }
   }, [products, detailProduct]);
 
+  // Ensure selectedRingSize matches one of the product's available sizes
+  useEffect(() => {
+    if (detailProduct) {
+      const availSizes = detailProduct.ringSizes || [];
+      if (availSizes.length > 0 && !availSizes.includes(selectedRingSize)) {
+        setSelectedRingSize(availSizes[0]);
+      }
+    }
+  }, [detailProduct, selectedRingSize]);
+
   // Auto-slide PDP images/videos every 5 seconds
   useEffect(() => {
     if (currentPage !== 'product-detail' || !detailProduct || pdpHovered) return;
@@ -8147,22 +8157,49 @@ export default function App() {
                           </div>
 
                           {/* Ring Size Selection */}
-                          <div className="space-y-3">
-                            <div className="flex justify-between items-center">
-                              <span className="text-[#888888] font-medium uppercase tracking-[0.15em] text-[9px]">Select Size (IND):</span>
-                              <button onClick={() => { triggerAudio("click"); setSizeGuideOpen(true); }} className="text-[#B8893C] hover:text-[#A8772D] font-medium transition-colors duration-300 hover:underline cursor-pointer text-[10px] tracking-[0.15em] uppercase">
+                          <div className="space-y-4">
+                            <div className="flex justify-between items-center text-sm">
+                              <span className="text-gray-900 font-semibold font-sans">
+                                Select Ring Size: <span className="font-bold">{selectedRingSize} IND</span>
+                              </span>
+                              <button 
+                                onClick={() => { triggerAudio("click"); setSizeGuideOpen(true); }} 
+                                className="text-gray-900 hover:text-gray-600 font-semibold transition-colors duration-300 underline cursor-pointer text-xs font-sans"
+                              >
                                 Size Guide
                               </button>
                             </div>
-                            <div className="flex gap-2.5 flex-wrap max-h-28 overflow-y-auto pr-1">
-                              {["05","06","07","08","09","10","11","12","13","14","15","16","17","18"].map((sz) => {
+
+                            {/* Video Banner */}
+                            <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl p-3">
+                              <div className="w-12 h-8 rounded bg-gray-200 flex items-center justify-center shrink-0 overflow-hidden relative border border-gray-300/40">
+                                <div className="absolute inset-0 bg-gradient-to-tr from-gray-900 to-gray-700 opacity-35"></div>
+                                <span className="text-[10px] text-white z-10">▶</span>
+                              </div>
+                              <p className="text-xs text-gray-750 font-sans font-medium">
+                                Watch this quick video to measure your ring right.
+                              </p>
+                            </div>
+
+                            <div className="grid grid-cols-7 gap-2.5 max-h-48 overflow-y-auto pr-1">
+                              {(detailProduct.ringSizes || Array.from({ length: 34 - 6 + 1 }, (_, i) => {
+                                const num = 6 + i;
+                                return num < 10 ? `0${num}` : `${num}`;
+                              })).map((sz) => {
                                 const active = selectedRingSize === sz;
                                 return (
                                   <button
                                     key={sz}
                                     onClick={() => { triggerAudio("click"); setSelectedRingSize(sz); }}
-                                    className={`w-10 h-10 border flex items-center justify-center text-xs font-light transition-all duration-300 cursor-pointer ${active ? 'bg-[#181818] text-white border-[#181818]' : 'bg-transparent text-[#5E5E5E] border-[#E7DED2] hover:border-[#888888]'}`}
+                                    className={`relative h-10 border rounded-lg flex items-center justify-center text-xs font-bold transition-all duration-300 cursor-pointer ${
+                                      active 
+                                        ? 'bg-transparent text-gray-900 border-gray-800 border-2 font-black shadow-xs font-sans' 
+                                        : 'bg-white text-gray-705 border-gray-200 hover:border-gray-400 font-sans'
+                                    }`}
                                   >
+                                    {active && (
+                                      <span className="absolute top-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+                                    )}
                                     {sz}
                                   </button>
                                 );
@@ -13566,6 +13603,14 @@ export default function App() {
                         { dIn: '0.81', cIn: '2.56', dMm: '20.6', cMm: '65.0', ind: '24', us: '12.5' },
                         { dIn: '0.83', cIn: '2.61', dMm: '21.1', cMm: '66.3', ind: '25', us: '13'   },
                         { dIn: '0.84', cIn: '2.63', dMm: '21.3', cMm: '66.8', ind: '26', us: '13.5' },
+                        { dIn: '0.85', cIn: '2.67', dMm: '21.6', cMm: '67.8', ind: '27', us: '14'   },
+                        { dIn: '0.87', cIn: '2.73', dMm: '22.1', cMm: '69.4', ind: '28', us: '14.5' },
+                        { dIn: '0.88', cIn: '2.77', dMm: '22.4', cMm: '70.3', ind: '29', us: '15'   },
+                        { dIn: '0.90', cIn: '2.83', dMm: '22.9', cMm: '71.9', ind: '30', us: '15.5' },
+                        { dIn: '0.92', cIn: '2.88', dMm: '23.3', cMm: '73.1', ind: '31', us: '16'   },
+                        { dIn: '0.93', cIn: '2.92', dMm: '23.6', cMm: '74.1', ind: '32', us: '16.5' },
+                        { dIn: '0.95', cIn: '2.98', dMm: '24.1', cMm: '75.7', ind: '33', us: '17'   },
+                        { dIn: '0.96', cIn: '3.00', dMm: '24.3', cMm: '76.3', ind: '34', us: '17.5' }
                       ].map((row, i) => {
                         const isSelected = selectedRingSize === row.ind;
                         return (
