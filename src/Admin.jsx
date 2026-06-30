@@ -1918,7 +1918,6 @@ export default function Admin() {
                             <input
                               id="prod-name-form"
                               type="text"
-                              required
                               placeholder="e.g. Royal Mayur Solitaire Ring"
                               value={editingProduct ? editingProduct.name : newProduct.name}
                               onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, name: e.target.value }) : setNewProduct({ ...newProduct, name: e.target.value })}
@@ -1930,7 +1929,6 @@ export default function Admin() {
                             <input
                               id="prod-sku-form"
                               type="text"
-                              required
                               placeholder="e.g. HRJ-RNG-0982"
                               value={editingProduct ? editingProduct.sku : newProduct.sku}
                               onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, sku: e.target.value }) : setNewProduct({ ...newProduct, sku: e.target.value })}
@@ -2025,7 +2023,6 @@ export default function Admin() {
                           <textarea
                             id="prod-desc-form"
                             rows="2"
-                            required
                             placeholder="Complete dimensions details, custom diamond metrics, hallmark stamps details..."
                             value={editingProduct ? editingProduct.desc : newProduct.desc}
                             onChange={(e) => editingProduct ? setEditingProduct({ ...editingProduct, desc: e.target.value }) : setNewProduct({ ...newProduct, desc: e.target.value })}
@@ -2081,7 +2078,6 @@ export default function Admin() {
                             <input
                               id="prod-grossWeight-form"
                               type="text"
-                              required
                               placeholder="e.g. 1.75 g"
                               value={editingProduct ? (editingProduct.grossWeight || '') : newProduct.grossWeight}
                               onChange={(e) => {
@@ -2390,7 +2386,6 @@ export default function Admin() {
                             <input
                               id="prod-price-form"
                               type="number"
-                              required
                               placeholder="e.g. 42000"
                               value={editingProduct ? (editingProduct.price ?? '') : (newProduct.price ?? '')}
                               onChange={(e) => {
