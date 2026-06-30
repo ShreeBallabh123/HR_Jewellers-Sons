@@ -42,6 +42,7 @@ import royalIndianBride from './assets/royal_indian_bride.png';
 import luxuryShowroom from './assets/luxury_showroom.png';
 import anilSoni from './assets/anil_soni.png';
 import hrLogo from './assets/logo.png';
+import hrLogoMark from './assets/logo-mark.png';
 import banner1 from './assets/banner_1.png';
 import banner2 from './assets/banner_2.webp';
 import solitariesImg from './assets/solitaries.png';
@@ -340,6 +341,7 @@ const PREMIUM_CATEGORIES = [
   { name: 'Bracelets', icon: '💫', img: diamondBracelet },
   { name: 'Bangles', icon: '💫', img: royalChitaiKadas },
   { name: 'Gold Coins', icon: '🪙', img: laxmiGoldCoin },
+  { name: '999.9 Pure Silver Coin', icon: '🪙', img: laxmiGoldCoin },
   { name: 'Anklets', icon: '👣', img: silverPayals },
   { name: 'Men Jewellery', icon: '👑', img: familySignet },
   { name: 'Kids Jewellery', icon: '👶', img: silverPayals },
@@ -706,7 +708,7 @@ const TERMS_DATA = [
       address: "4-D-37, Near Murti Circle, J.N.V. Colony, Bikaner, Rajasthan (334001)",
       email: "support@hrjewellerandsons.com",
       backupEmail: "notifications@hrjewellers.com",
-      phone: "+91 97838 43978 / +91 76108 43978",
+      phone: "+91 97838 43978",
       hours: "Monday to Saturday, 10:00 AM – 7:00 PM"
     },
     extraParagraphs: [
@@ -2022,6 +2024,8 @@ export default function App() {
       changeCategoryTab('Diamond Jewellery');
     } else if (catId === 'silver') {
       changeCategoryTab('Silver Jewellery');
+    } else if (catId === 'silver-earrings') {
+      changeCategoryTab('Silver Earrings');
     } else if (catId === 'bridal') {
       changeCategoryTab('Bridal Jewellery');
     } else if (catId === 'platinum') {
@@ -2190,7 +2194,7 @@ export default function App() {
           city: 'Bikaner',
           name: 'HR Jewellers & Sons Bikaner JNV Flagship',
           address: '4-D-37, Near Murti Circle, J.N.V. Colony, Bikaner, Rajasthan (334001)',
-          phone: '+91 97838 43978 / +91 76108 43978',
+          phone: '+91 97838 43978',
           hours: '11:00 AM - 08:30 PM (Mon - Sun)',
           directions: 'https://maps.google.com/?q=4-D-37,+Near+Murti+Circle,+J.N.V.+Colony,+Bikaner'
         });
@@ -2528,7 +2532,8 @@ export default function App() {
         const standardCategories = [
           'rings', 'earrings', 'necklace', 'necklaces', 'bracelets', 'bangles', 
           'anklets', 'mangalsutras', 'watch-jewellery', 'coins', 'gold coins',
-          'chains', 'nose-pins', 'pendants', 'kada', 'm-kids', 'mens-jewellery'
+          'chains', 'nose-pins', 'pendants', 'kada', 'm-kids', 'mens-jewellery',
+          '999.9-pure-silver-coin', '999.9 pure silver coin', 'silver coins', 'silver coin'
         ];
 
         if (tab === 'Rings') {
@@ -2599,6 +2604,15 @@ export default function App() {
           matchesTab = pCat === 'diamond' || /\bdiamond(s)?\b/i.test(pSub) || /\bdiamond(s)?\b/i.test(pName) || /\bdiamond(s)?\b/i.test(pDesc) || /\bdiamond(s)?\b/i.test(pCarat) || /\bvvs\b/i.test(pCarat);
         } else if (tab === 'Silver Jewellery') {
           matchesTab = pCat === 'silver' || /\bsilver\b/i.test(pSub) || /\bsilver\b/i.test(pName) || /\bsilver\b/i.test(pDesc) || /\bsterling\b/i.test(pCarat) || /\bsilver\b/i.test(pCarat);
+        } else if (tab === '999.9 Pure Silver Coin') {
+          if (standardCategories.includes(pCat) && pCat !== '999.9-pure-silver-coin' && pCat !== '999.9 pure silver coin') {
+            matchesTab = false;
+          } else {
+            matchesTab = pCat === '999.9-pure-silver-coin' || pCat === '999.9 pure silver coin' || (pCat === 'silver' && /\bcoin(s)?\b/i.test(pName)) || /\bsilver coin(s)?\b/i.test(pName) || /\bsilver coin(s)?\b/i.test(pDesc);
+          }
+        } else if (tab === 'Silver Earrings') {
+          matchesTab = (pCat === 'silver' || /\bsilver\b/i.test(pSub) || /\bsilver\b/i.test(pName)) &&
+                       (pCat === 'earrings' || /\bearring(s)?\b/i.test(pSub) || /\bearring(s)?\b/i.test(pName) || /\bjhumka(s)?\b/i.test(pSub) || /\bjhumka(s)?\b/i.test(pName));
         } else {
           // Dynamic category check
           const dbCat = categories.find(c => 
@@ -2749,17 +2763,17 @@ export default function App() {
 
   if (siteLoading) {
     return (
-      <div className="fixed inset-0 z-[9999] bg-[#050008] bg-gradient-to-br from-[#050008] via-[#120020] to-[#1B0033] flex flex-col items-center justify-center select-none overflow-hidden">
+      <div className="fixed inset-0 z-[9999] bg-[#FCFBF9] bg-gradient-to-br from-[#FFFFFF] via-[#FAF9F5] to-[#F3EFE9] flex flex-col items-center justify-center select-none overflow-hidden">
         {/* Soft Ambient Spotlight Glow */}
-        <div className="absolute w-[450px] h-[450px] rounded-full bg-[#DDA0DD]/8 blur-[130px] pointer-events-none animate-pulse-slow top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute w-[450px] h-[450px] rounded-full bg-[#C8A646]/5 blur-[120px] pointer-events-none animate-pulse-slow top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
 
         {/* Subtle Gold Particles */}
-        <div className="absolute inset-0 pointer-events-none opacity-40">
-          <div className="absolute w-1 h-1 bg-[#DDA0DD] rounded-full top-[20%] left-[30%] animate-particle-1" />
-          <div className="absolute w-1.5 h-1.5 bg-[#DDA0DD] rounded-full top-[60%] left-[15%] animate-particle-2" />
-          <div className="absolute w-1 h-1 bg-[#DDA0DD] rounded-full top-[80%] left-[75%] animate-particle-3" />
-          <div className="absolute w-2 h-2 bg-[#DDA0DD] rounded-full top-[40%] left-[85%] animate-particle-1" />
-          <div className="absolute w-1 h-1 bg-[#DDA0DD] rounded-full top-[15%] left-[65%] animate-particle-2" />
+        <div className="absolute inset-0 pointer-events-none opacity-60">
+          <div className="absolute w-1 h-1 bg-[#C8A646] rounded-full top-[20%] left-[30%] animate-particle-1" />
+          <div className="absolute w-1.5 h-1.5 bg-[#C8A646] rounded-full top-[60%] left-[15%] animate-particle-2" />
+          <div className="absolute w-1 h-1 bg-[#C8A646] rounded-full top-[80%] left-[75%] animate-particle-3" />
+          <div className="absolute w-2 h-2 bg-[#C8A646] rounded-full top-[40%] left-[85%] animate-particle-1" />
+          <div className="absolute w-1 h-1 bg-[#C8A646] rounded-full top-[15%] left-[65%] animate-particle-2" />
         </div>
 
         {/* Main Brand Seal & Typography */}
@@ -2767,27 +2781,17 @@ export default function App() {
           {/* Logo container with size variations */}
           <div className="relative">
             {/* Subtle glow circle behind logo */}
-            <div className="absolute inset-0 rounded-full bg-[#DDA0DD]/15 filter blur-2xl scale-75 animate-pulse" />
+            <div className="absolute inset-0 rounded-full bg-[#C8A646]/10 filter blur-2xl scale-75 animate-pulse" />
             <img
               src={hrLogo}
               alt="HR Jewellers & Sons Logo"
-              className="w-[200px] h-[151px] md:w-[260px] md:h-[196px] lg:w-[320px] lg:h-[241px] object-contain select-none relative z-10"
+              className="w-[280px] h-[280px] md:w-[360px] md:h-[360px] lg:w-[440px] lg:h-[440px] object-contain select-none relative z-10 filter drop-shadow-[0_4px_20px_rgba(200,166,70,0.15)]"
             />
           </div>
 
-          {/* Brand Name */}
-          <h1 className="serif-luxury text-xl sm:text-2xl lg:text-3xl font-semibold tracking-[4px] text-[#DDA0DD] mt-6 mb-2">
-            HR JEWELLERS &amp; SONS
-          </h1>
-
-          {/* Luxury Tagline */}
-          <p className="text-xs sm:text-[14px] font-sans tracking-[3px] text-white/75 font-light">
-            Timeless Elegance &bull; Trusted Heritage
-          </p>
-
           {/* Luxury Loading Indicator */}
-          <div className="w-[120px] h-[2px] bg-[#DDA0DD]/20 rounded-full mt-6 overflow-hidden relative">
-            <div className="h-full bg-gradient-to-r from-[#DDA0DD] via-white to-[#DDA0DD] rounded-full absolute top-0 left-0 animate-luxury-loader" />
+          <div className="w-[140px] h-[2px] bg-[#C8A646]/15 rounded-full mt-10 overflow-hidden relative">
+            <div className="h-full bg-gradient-to-r from-[#8A6623] via-[#C8A646] to-[#8A6623] rounded-full absolute top-0 left-0 animate-luxury-loader" />
           </div>
         </div>
       </div>
@@ -2820,9 +2824,9 @@ export default function App() {
                 className="flex items-center space-x-3 shrink-0 focus:outline-none transition-all duration-300 hover:scale-[1.02] text-left cursor-pointer"
               >
                 <img
-                  src={hrLogo}
+                  src={hrLogoMark}
                   alt="HR Jewellers &amp; Sons Logo"
-                  className="w-[70px] h-[55px] lg:w-[85px] lg:h-[65px] object-contain select-none filter drop-shadow-[0_2px_8px_rgba(200,166,70,0.1)]"
+                  className="w-[58px] h-[58px] lg:w-[68px] lg:h-[68px] object-contain select-none filter drop-shadow-[0_2px_8px_rgba(200,166,70,0.15)]"
                 />
                 <div className="flex flex-col justify-center">
                   <span className="serif-luxury text-[15px] lg:text-[18px] font-bold leading-tight tracking-[2.5px] text-[#1A1A1A]">
@@ -3266,12 +3270,12 @@ export default function App() {
               {/* Logo / Brand Name */}
               <button
                 onClick={() => navigateTo('home')}
-                className="flex items-center space-x-2 focus:outline-none cursor-pointer text-left"
+                className="flex items-center space-x-2.5 focus:outline-none cursor-pointer text-left"
               >
                 <img
-                  src={hrLogo}
+                  src={hrLogoMark}
                   alt="HR Logo"
-                  className="w-10 h-8 object-contain filter drop-shadow-sm"
+                  className="w-11 h-11 object-contain filter drop-shadow-sm select-none"
                 />
                 <div className="flex flex-col justify-center">
                   <span className="serif-luxury text-[13px] font-bold tracking-[1.5px] text-[#1A1A1A]">
@@ -3713,9 +3717,9 @@ export default function App() {
               <div className="bg-white border-b border-[#ECECEC] px-5 py-4 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
                   <img
-                    src={hrLogo}
+                    src={hrLogoMark}
                     alt="HR Logo"
-                    className="w-8 h-8 object-contain filter drop-shadow-sm"
+                    className="w-10 h-10 object-contain filter drop-shadow-sm select-none"
                   />
                   <div className="flex flex-col">
                     <span className="serif-luxury text-[13px] font-bold tracking-[1.5px] text-[#1A1A1A]">
@@ -3845,7 +3849,7 @@ export default function App() {
                 <div className="divide-y divide-gray-100 bg-white border-y border-gray-100/60 shadow-[0_2px_12px_rgba(0,0,0,0.01)] mt-4">
                   {[
                     { label: 'Recently Viewed', page: 'home', highlight: true },
-                    { label: 'Video Call Consultation', href: 'https://wa.me/917610843978?text=Hello%20HR%20Jewellers,%20I%20would%20like%20a%20video%20consultation.' },
+                    { label: 'Video Call Consultation', href: 'https://wa.me/919783843978?text=Hello%20HR%20Jewellers,%20I%20would%20like%20a%20video%20consultation.' },
                     { label: 'Jewellery Guide', page: 'heritage' },
                     { label: 'Live Gold Rates', page: 'valuation' },
                     { label: 'Privacy Policy', page: 'privacy-policy' },
@@ -5397,7 +5401,7 @@ export default function App() {
                         <span className="text-[#E54E38] font-bold hover:underline">Click to Pay</span>
                       </button>
                       <p className="text-[10px] text-gray-400 font-medium">
-                        For any queries, call/WhatsApp us at <a href="tel:+917610843978" className="text-[#E54E38] font-bold">+91 76108 43978</a>
+                        For any queries, call/WhatsApp us at <a href="tel:+919783843978" className="text-[#E54E38] font-bold">+91 97838 43978</a>
                       </p>
                     </div>
                   </div>
@@ -5707,7 +5711,7 @@ export default function App() {
                 {/* STICKY BOTTOM ACTION BAR */}
                 <div className="flex fixed bottom-0 left-0 w-full z-45 bg-white border-t border-gray-200 px-4 py-3 items-center justify-between shadow-[0_-4px_25px_rgba(0,0,0,0.06)]">
                   <a
-                    href="https://wa.me/917610843978"
+                    href="https://wa.me/919783843978"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 mr-2 text-center py-2.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 bg-white active:bg-gray-50 transition-colors cursor-pointer"
@@ -6265,7 +6269,7 @@ export default function App() {
                         <span className="text-[#c0392b] font-bold hover:underline">Click to Pay</span>
                       </button>
                       <p className="text-[10px] text-gray-400 font-medium">
-                        For any queries, call/WhatsApp us at <a href="tel:+917610843978" className="text-[#c0392b] font-bold">+91 76108 43978</a>
+                        For any queries, call/WhatsApp us at <a href="tel:+919783843978" className="text-[#c0392b] font-bold">+91 97838 43978</a>
                       </p>
                     </div>
                   </div>
@@ -6552,7 +6556,7 @@ export default function App() {
                 {/* STICKY BOTTOM ACTION BAR */}
                 <div className="flex fixed bottom-0 left-0 w-full z-45 bg-white border-t border-gray-200 px-4 py-3 items-center justify-between shadow-[0_-4px_25px_rgba(0,0,0,0.06)]">
                   <a
-                    href="https://wa.me/917610843978"
+                    href="https://wa.me/919783843978"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 mr-2 text-center py-2.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 bg-white active:bg-gray-50 transition-colors cursor-pointer"
@@ -8460,7 +8464,7 @@ export default function App() {
                             </div>
 
                             {/* Card 3: DIAMOND & GEMS */}
-                            {(detailProduct.category === 'diamond' || detailProduct.diamondCarat || detailProduct.diamondValue || detailProduct.diamondColor || detailProduct.diamondClarity || detailProduct.diamondShape || detailProduct.diamondQuantity || detailProduct.stoneCarat || detailProduct.beadsCarat || detailProduct.pearlsCarat || detailProduct.gemstoneCarat) && (
+                            {(detailProduct.category === 'diamond' || detailProduct.diamondCarat || detailProduct.diamondValue || detailProduct.diamondColor || detailProduct.diamondClarity || detailProduct.diamondShape || detailProduct.diamondQuantity || detailProduct.stoneCarat || detailProduct.beadsCarat || detailProduct.pearlsCarat || detailProduct.gemstoneCarat || detailProduct.polki || detailProduct.polkiValue) && (
                               <div className="bg-[#FAF9F6] border border-[#E7DED2]/60 p-5 rounded-2xl space-y-4 shadow-xs relative">
                                 <div className="flex items-center justify-between text-xs font-bold text-[#3F1F54] uppercase tracking-wider border-b border-gray-200/50 pb-2.5">
                                   <span className="flex items-center gap-2">💎 Diamond & Gems</span>
@@ -8522,9 +8526,21 @@ export default function App() {
                                     </div>
                                   )}
                                   {detailProduct.gemstoneCarat && (
-                                    <div className="flex justify-between items-center py-0.5 last:border-0">
+                                    <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50 last:border-0">
                                       <span className="text-gray-400">Gemstone weight</span>
                                       <span className="font-semibold text-gray-900">{detailProduct.gemstoneCarat}</span>
+                                    </div>
+                                  )}
+                                  {detailProduct.polki && (
+                                    <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50 last:border-0">
+                                      <span className="text-gray-400">Polki weight</span>
+                                      <span className="font-semibold text-gray-900">{detailProduct.polki}</span>
+                                    </div>
+                                  )}
+                                  {detailProduct.polkiValue && (
+                                    <div className="flex justify-between items-center py-0.5 last:border-0">
+                                      <span className="text-gray-400">Polki Value</span>
+                                      <span className="font-semibold text-gray-900">₹{formatPrice(detailProduct.polkiValue)}</span>
                                     </div>
                                   )}
                                 </div>
@@ -8595,7 +8611,7 @@ export default function App() {
                       const baseMakingChargesEstimate = Math.round(goldMetalValue * (makingChargePercent / 100));
                       const discountedMakingChargesEstimate = Math.round(baseMakingChargesEstimate * (1 - makingChargeDiscountPercent / 100));
                       
-                      const baseDiamondValueEstimate = Number(detailProduct.diamondValue) || (parseFloat(detailProduct.diamondCarat || detailProduct.diamondWeight || 0) * 80000) || 0;
+                      const baseDiamondValueEstimate = (Number(detailProduct.diamondValue) || 0) + (Number(detailProduct.polkiValue) || 0) + (parseFloat(detailProduct.diamondCarat || detailProduct.diamondWeight || 0) * 80000) || 0;
                       const discountedDiamondValueEstimate = Math.round(baseDiamondValueEstimate * (1 - diamondDiscountPercent / 100));
 
                       const totalEstimateExtra = discountedDiamondValueEstimate + discountedMakingChargesEstimate;
@@ -8696,6 +8712,7 @@ export default function App() {
                                 )}
 
                                 {/* Making Charges Row */}
+                                {false && (
                                 <div className="flex justify-between items-center py-1">
                                   <div className="flex items-center gap-2">
                                     <span>Making Charges</span>
@@ -8712,6 +8729,7 @@ export default function App() {
                                     </span>
                                   </div>
                                 </div>
+                                )}
 
                                 {/* GST Row */}
                                 <div className="flex justify-between items-center py-1">
@@ -11710,7 +11728,7 @@ export default function App() {
                       <h3 className="serif-luxury text-xl text-[#4A126D] font-bold mb-4">Flagship Bikaner Showroom</h3>
                       <div className="space-y-4 text-xs font-light text-gray-600 leading-relaxed">
                         <p>📍 <strong>Showroom Address:</strong> 4-D-37, Near Murti Circle, J.N.V. Colony, Bikaner, Rajasthan (334001)</p>
-                        <p>📞 <strong>Direct Showroom Phone:</strong> +91 97838 43978 / +91 76108 43978</p>
+                        <p>📞 <strong>Direct Showroom Phone:</strong> +91 97838 43978</p>
                         <p>✉️ <strong>Electronic Support:</strong> notifications@hrjewellers.com</p>
                         <p>⏰ <strong>Visiting Hours:</strong> Monday - Sunday (11:00 AM - 08:30 PM)</p>
                       </div>
@@ -12995,7 +13013,7 @@ export default function App() {
                     },
                     {
                       num: '06', title: 'Your Rights',
-                      content: 'You have the right to access, update, or delete your personal information held by us. To exercise these rights, contact us at hrjewellersbkn@gmail.com or call +91 76108 43978. We will respond to all requests within 7 business days.',
+                      content: 'You have the right to access, update, or delete your personal information held by us. To exercise these rights, contact us at hrjewellersbkn@gmail.com or call +91 97838 43978. We will respond to all requests within 7 business days.',
                     },
                     {
                       num: '07', title: 'Third-Party Links',
@@ -13007,7 +13025,7 @@ export default function App() {
                     },
                     {
                       num: '09', title: 'Contact Us',
-                      content: 'For any privacy-related questions or concerns, please contact us at: HR Jewellers & Sons, 4-D-37, Near Murti Circle, J.N.V. Colony, Bikaner, Rajasthan 334003. Email: hrjewellersbkn@gmail.com | Phone: +91 76108 43978 (Anil Soni) / +91 98281 31027 (Bhanwar Lal Soni).',
+                      content: 'For any privacy-related questions or concerns, please contact us at: HR Jewellers & Sons, 4-D-37, Near Murti Circle, J.N.V. Colony, Bikaner, Rajasthan 334003. Email: hrjewellersbkn@gmail.com | Phone: +91 97838 43978 (Anil Soni) / +91 98281 31027 (Bhanwar Lal Soni).',
                     },
                   ].map((sec) => (
                     <section
@@ -13199,6 +13217,7 @@ export default function App() {
                   { label: "Polki Collection", action: () => handleCategoryNav('bridal') },
                   { label: "Platinum Collection", action: () => handleCategoryNav('platinum') },
                   { label: "Silver Collection", action: () => handleCategoryNav('silver') },
+                  { label: "Silver Earrings", action: () => handleCategoryNav('silver-earrings') },
                 ].map((item, idx) => (
                   <li key={idx}>
                     <button
@@ -13249,14 +13268,14 @@ export default function App() {
               </div>
 
               <div className="space-y-5 text-xs text-white/75 font-sans font-light flex flex-col items-center md:items-start w-full">
-                <a href="tel:+917610843978" className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-2.5 md:gap-3.5 group hover:text-white transition-colors">
+                <a href="tel:+919783843978" className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-2.5 md:gap-3.5 group hover:text-white transition-colors">
                   <div className="w-9 h-9 rounded-full border border-[#E6C687]/30 group-hover:border-[#E6C687]/60 flex items-center justify-center text-[#E6C687] bg-white/5 transition-all">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                   </div>
                   <div className="flex flex-col items-center md:items-start">
-                    <span className="font-semibold tracking-wide font-sans">+91 7610843978</span>
+                    <span className="font-semibold tracking-wide font-sans">+91 9783843978</span>
                     <span className="text-[10px] text-white/50">(Anil Soni)</span>
                   </div>
                 </a>
@@ -13324,7 +13343,7 @@ export default function App() {
 
               <div className="space-y-3.5">
                 <a
-                  href="https://wa.me/917610843978?text=Hello%20HR%20Jewellers,%20I%20am%20interested%20in%20your%20luxury%20collections."
+                  href="https://wa.me/919783843978?text=Hello%20HR%20Jewellers,%20I%20am%20interested%20in%20your%20luxury%20collections."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-between p-3.5 rounded-2xl border border-[#E6C687]/15 hover:border-[#E6C687]/40 bg-white/5 hover:bg-white/10 transition-all duration-300 group cursor-pointer"
@@ -13343,7 +13362,7 @@ export default function App() {
                 </a>
 
                 <a
-                  href="tel:+917610843978"
+                  href="tel:+919783843978"
                   className="flex items-center justify-between p-3.5 rounded-2xl border border-[#E6C687]/15 hover:border-[#E6C687]/40 bg-white/5 hover:bg-white/10 transition-all duration-300 group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
@@ -13360,7 +13379,7 @@ export default function App() {
                 </a>
 
                 <a
-                  href="https://maps.google.com/?q=4-D-37,+Near+Murti+Circle,+J.N.V.+Colony,+Bikaner,+Rajasthan+334003"
+                  href="https://maps.app.goo.gl/ioex13s3JFuerox28?g_st=ac"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-between p-3.5 rounded-2xl border border-[#E6C687]/15 hover:border-[#E6C687]/40 bg-white/5 hover:bg-white/10 transition-all duration-300 group cursor-pointer"
@@ -13425,7 +13444,7 @@ export default function App() {
                       <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 001.37 5.037L2 22l5.135-1.348a9.954 9.954 0 004.878 1.28c5.505 0 9.988-4.478 9.989-9.984 0-2.67-1.037-5.18-2.925-7.07C17.186 3.037 14.678 2 12.012 2zm5.727 14.153c-.313.882-1.554 1.61-2.148 1.666-.59.055-1.18.326-3.766-.694-2.585-1.02-4.237-3.663-4.364-3.834-.127-.171-1.03-1.374-1.03-2.623 0-1.25.654-1.862.887-2.102.233-.24.509-.3.678-.3.17 0 .34 0 .487.007.155.007.363-.058.567.442.204.5.7 1.713.76 1.838.06.126.1.272.017.438-.083.166-.124.272-.25.418-.125.146-.263.327-.375.44-.124.125-.253.26-.11.507.144.247.64 1.056 1.373 1.71.942.843 1.737 1.103 1.983 1.226.246.123.39.103.535-.062.145-.165.62-.72.787-.966.166-.247.33-.206.555-.124.225.083 1.427.674 1.674.8.247.124.412.185.472.289.06.103.06.6-.253 1.482z" />
                     </svg>
                   ),
-                  link: "https://wa.me/917610843978"
+                  link: "https://wa.me/919783843978"
                 }
               ].map((social, idx) => (
                 <a
@@ -14128,7 +14147,6 @@ export default function App() {
                 <p><strong>Carat Quality:</strong> {selectedProduct.carat}</p>
                 <p><strong>Est. Weight:</strong> {selectedProduct.weight}</p>
                 <p><strong>Authenticity badge:</strong> {selectedProduct.purityInfo || 'BIS Hallmark Bureau Stamps'}</p>
-                <p><strong>Showroom handcrafting:</strong> {selectedProduct.makingCharges ? (String(selectedProduct.makingCharges).includes('%') ? selectedProduct.makingCharges : `${selectedProduct.makingCharges}%`) : '₹380/gram setting charges included'}</p>
               </div>
 
               <div className="flex gap-2">
