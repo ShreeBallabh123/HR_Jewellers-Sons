@@ -743,14 +743,13 @@ export default function Collections({
                           className="group rounded-xl sm:rounded-3xl p-2 sm:p-5 flex flex-col justify-between border border-solid border-[#EAEAEA] transition-all duration-300 relative cursor-pointer overflow-hidden bg-white text-[#1B1B1B] shadow-sm hover:shadow-[0_15px_30px_rgba(0,0,0,0.06)] hover:border-[#DDA0DD]/45 hover:-translate-y-1.5 h-auto text-left"
                         >
                           {/* Image & Overlays */}
-                          <div className="aspect-square rounded-xl sm:rounded-[1.5rem] overflow-hidden relative bg-white border border-solid border-[#DDA0DD]/5 shrink-0 text-center">
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.08)_100%)] mix-blend-multiply pointer-events-none z-10"></div>
+                          <div className="aspect-square rounded-xl sm:rounded-[1.5rem] overflow-hidden relative bg-[#F8F9FA] border border-solid border-[#DDA0DD]/5 shrink-0 text-center">
 
                             {prod.img ? (
                               <img
                                 src={prod.img}
                                 alt={prod.name}
-                                className="w-full h-full object-contain p-4 scale-100 group-hover:scale-108 transition-transform duration-[1200ms] ease-out mix-blend-multiply"
+                                className="w-full h-full object-contain p-4 scale-100 group-hover:scale-110 transition-transform duration-[1200ms] ease-out mix-blend-multiply"
                               />
                             ) : (
                               <div className="w-full h-full bg-gradient-to-tr from-[#FAF8F5] to-[#F3EEE7] flex flex-col items-center justify-center space-y-2 border border-dashed border-[#DDA0DD]/20 rounded-xl">
