@@ -9,8 +9,7 @@ export default function ProductCard({
   onAddToCart,
   onClick
 }) {
-  const { calculatePrice, formatPrice } = useRates();
-
+  const { calculatePrice, formatPrice, goldRate22k, lastUpdated, publishedAt } = useRates();
   const prices = calculatePrice(product);
   const displayPrice = prices.total;
 
@@ -89,6 +88,20 @@ export default function ProductCard({
                 {product.weight}
               </span>
             )}
+          </div>
+
+          {/* Today's Gold Rate & Last Updated */}
+          <div className="mt-2.5 bg-[#FAF8F6] border border-solid border-[#E7DED2]/40 rounded-xl p-2.5 space-y-1 text-[8.5px] text-zinc-500 font-medium select-none text-left">
+            <div className="flex justify-between items-center font-bold text-[#8A6623]">
+              <span>Gold Rate (22K)</span>
+              <span>₹{Math.round(goldRate22k / 10).toLocaleString('en-IN')}/g</span>
+            </div>
+            <div className="flex justify-between items-center text-[7.5px] text-zinc-400 font-bold uppercase tracking-wider">
+              <span>Updated</span>
+              <span>{new Date(publishedAt || lastUpdated || new Date()).toLocaleString('en-IN', {
+                day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+              })}</span>
+            </div>
           </div>
 
           {/* Quick Bag action */}

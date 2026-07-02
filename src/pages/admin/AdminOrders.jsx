@@ -95,7 +95,7 @@ export default function AdminOrders({
 
   // Filters for checkout orders
   const filteredOrders = orders
-    .filter(o => orderStatusFilter === 'all' || o.status === orderStatusFilter)
+    .filter(o => orderStatusFilter === 'all' || o.orderStatus === orderStatusFilter)
     .filter(o => 
       o.recipientName?.toLowerCase().includes(orderSearch.toLowerCase()) || 
       o.mobile?.includes(orderSearch) ||
@@ -202,19 +202,19 @@ export default function AdminOrders({
                         {order.items?.map(i => `${i.name} x${i.quantity}`).join(', ')}
                       </td>
                       <td className="py-3.5 font-bold font-sans text-zinc-850 dark:text-zinc-200">
-                        ₹{(order.totalAmount || 0).toLocaleString('en-IN')}
+                        ₹{(order.total || order.totalAmount || 0).toLocaleString('en-IN')}
                       </td>
                       <td className="py-3.5 capitalize font-semibold">
                         {order.deliveryType || 'home'}
                       </td>
                       <td className="py-3.5 text-center">
                         <select
-                          value={order.status || 'pending'}
+                          value={order.orderStatus || 'pending'}
                           onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
                           className={`bg-white dark:bg-zinc-900 border border-solid border-zinc-200 dark:border-zinc-800 rounded px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-wider cursor-pointer focus:outline-none ${
-                            order.status === 'delivered'
+                            order.orderStatus === 'delivered'
                               ? 'text-emerald-600'
-                              : order.status === 'pending'
+                              : order.orderStatus === 'pending'
                               ? 'text-amber-500'
                               : 'text-zinc-500'
                           }`}

@@ -8,7 +8,8 @@ import {
   Gem, 
   Boxes, 
   ShoppingBag, 
-  Users 
+  Users,
+  TrendingUp 
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
@@ -77,9 +78,10 @@ export default function AdminLayout({
           {[
             { id: 'dashboard', name: 'Overview', icon: LayoutDashboard },
             { id: 'products', name: 'Add Jewellery', icon: Gem },
-            { id: 'inventory', name: 'Add Categories', icon: Boxes },
+            { id: 'inventory', name: 'Categories', icon: Boxes },
             { id: 'orders', name: 'Orders', icon: ShoppingBag },
-            { id: 'customers', name: 'Customers CRM', icon: Users }
+            { id: 'customers', name: 'Customers', icon: Users },
+            { id: 'pricing', name: 'Gold Rate', icon: TrendingUp }
           ].map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;

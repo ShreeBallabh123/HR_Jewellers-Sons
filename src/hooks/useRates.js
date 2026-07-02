@@ -8,14 +8,27 @@ export function useRates() {
     throw new Error('useRates must be used within a RatesProvider');
   }
 
-  const { goldRate24k = 78500, silverRate1kg = 92000 } = context.rates || {};
+  const {
+    goldRate24k  = 78500,
+    goldRate22k  = 71958,
+    goldRate18k  = 58875,
+    silverRate   = 92000,
+    silverRate1kg = 92000,
+    platinumRate = 3500,
+    lastUpdated  = null,
+    publishedAt  = null,
+    updatedBy    = null,
+    isPublished  = false,
+  } = context.rates || {};
 
-  const goldRate22k = RateService.convert24kTo22k(goldRate24k);
-  const silverRate1g = RateService.convertKgToGramSilver(silverRate1kg);
+  // Derived helpers (1g rates)
+  const goldRate22kPerGram = goldRate22k / 10;
+  const goldRate24kPerGram = goldRate24k / 10;
+  const silverRate1g       = RateService.convertKgToGramSilver(silverRate1kg || silverRate);
 
-  // Return helper methods for calculations
+  // Helper: calculate full price for a product using live rates
   const calculatePrice = (product) => {
-    return RateService.calculateProductPrice(product, goldRate24k, silverRate1kg);
+    return RateService.calculateProductPrice(product, goldRate24k, silverRate1kg || silverRate);
   };
 
   const formatPrice = (amount) => {
@@ -24,12 +37,26 @@ export function useRates() {
 
   return {
     ...context,
+    // Raw rates
     goldRate24k,
     goldRate22k,
+    goldRate18k,
+    silverRate,
     silverRate1kg,
+    platinumRate,
+    // Metadata
+    lastUpdated,
+    publishedAt,
+    updatedBy,
+    isPublished,
+    // Derived
+    goldRate22kPerGram,
+    goldRate24kPerGram,
     silverRate1g,
+    // Helpers
     calculatePrice,
-    formatPrice
+    formatPrice,
   };
 }
+
 export default useRates;

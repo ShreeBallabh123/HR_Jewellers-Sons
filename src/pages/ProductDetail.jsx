@@ -73,7 +73,14 @@ export default function ProductDetail({
   // Self-contained data — pulled from context, no prop drilling
   const { wishlistItems = [], toggleWishlist } = useWishlist();
   const { handleAddToCart, setCartOpen } = useCart();
-  const { goldRate24k = 78500, silverRate1kg: silverRate = 92000, calculatePrice } = useRates();
+  const { 
+    goldRate24k = 78500, 
+    goldRate22k = 71958, 
+    silverRate1kg: silverRate = 92000, 
+    lastUpdated, 
+    publishedAt, 
+    calculatePrice 
+  } = useRates();
   const { products = [], loading: productsLoading } = useProducts();
 
   // Safe audio helper
@@ -442,6 +449,22 @@ export default function ProductDetail({
 
               {/* Tax Info */}
               <p className="text-[10px] text-[#888888] tracking-wider font-light uppercase">MRP inclusive of all taxes &amp; delivery insurance</p>
+
+              {/* Today's Gold Rate Notice */}
+              <div className="bg-[#FAF8F6] border border-solid border-[#E7DED2]/60 rounded-xl p-3.5 space-y-1.5 max-w-sm text-left">
+                <div className="flex justify-between items-center text-[10px] font-extrabold uppercase tracking-wider text-[#8A6623]">
+                  <span>Today's Gold Rate (22K)</span>
+                  <span className="text-[#C8A646]">₹{Math.round(goldRate22k / 10).toLocaleString('en-IN')} / g</span>
+                </div>
+                {(publishedAt || lastUpdated) && (
+                  <div className="flex justify-between items-center text-[8.5px] text-zinc-400 font-bold uppercase tracking-widest">
+                    <span>Last Updated</span>
+                    <span>{new Date(publishedAt || lastUpdated).toLocaleString('en-IN', {
+                      day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+                    })}</span>
+                  </div>
+                )}
+              </div>
 
               {/* EMI Information */}
               <p className="text-xs text-[#5E5E5E] font-light leading-relaxed">

@@ -53,6 +53,8 @@ export default function Header({
         return 'Admin / Orders & Consults';
       case 'customers':
         return 'Admin / Customers CRM';
+      case 'pricing':
+        return 'Admin / Gold Rate Management';
       default:
         return 'Admin';
     }
@@ -70,6 +72,8 @@ export default function Header({
         return 'Orders & Bookings';
       case 'customers':
         return 'CRM Directory';
+      case 'pricing':
+        return 'Gold Rate Management';
       default:
         return 'Admin Console';
     }

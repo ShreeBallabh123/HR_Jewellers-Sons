@@ -12,6 +12,7 @@ import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminCategories from './pages/admin/AdminCategories';
 import AdminCustomers from './pages/admin/AdminCustomers';
+import GoldRateManagement from './pages/admin/GoldRateManagement';
 
 // Forms imports
 import LoginForm from './forms/LoginForm';
@@ -152,7 +153,7 @@ export default function Admin() {
 
     // Unhandled orders
     orders
-      .filter(o => o.status === 'pending')
+      .filter(o => o.orderStatus === 'pending')
       .forEach(o => {
         list.push({
           id: `o-${o.id}`,
@@ -340,6 +341,13 @@ export default function Admin() {
           orders={orders}
           consultations={consultations}
           savingsEnrollments={savingsEnrollments}
+        />
+      )}
+
+      {activeTab === 'pricing' && (
+        <GoldRateManagement
+          setAdminNotification={setAdminNotification}
+          adminUser={currentUser}
         />
       )}
     </AdminLayout>

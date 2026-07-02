@@ -542,18 +542,73 @@ export default function ProductForm({
             <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-[#E6C687]"></span>
             <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Pricing &amp; Commercials</h4>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
+          
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div className="space-y-1.5">
-              <label htmlFor="prod-price-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Estimated Cost Override (INR)</label>
-              <input
-                id="prod-price-form"
-                type="number"
-                placeholder="e.g. 42000"
-                value={getVal('price')}
-                onChange={(e) => updateField('price', e.target.value === '' ? '' : +e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-              />
+              <label htmlFor="prod-calc-mode" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Price Mode</label>
+              <select
+                id="prod-calc-mode"
+                value={getVal('priceCalculationMode', 'manual')}
+                onChange={(e) => updateField('priceCalculationMode', e.target.value)}
+                className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
+              >
+                <option value="manual">Manual (Fixed Price)</option>
+                <option value="dynamic">Dynamic (Auto Recalculate)</option>
+              </select>
             </div>
+
+            {getVal('priceCalculationMode', 'manual') === 'manual' ? (
+              <div className="space-y-1.5">
+                <label htmlFor="prod-price-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Fixed Selling Price (INR)</label>
+                <input
+                  id="prod-price-form"
+                  type="number"
+                  placeholder="e.g. 42000"
+                  value={getVal('price')}
+                  onChange={(e) => updateField('price', e.target.value === '' ? '' : +e.target.value)}
+                  className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
+                  required={getVal('priceCalculationMode', 'manual') === 'manual'}
+                />
+              </div>
+            ) : (
+              <>
+                <div className="space-y-1.5">
+                  <label htmlFor="prod-purity-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Gold Purity</label>
+                  <select
+                    id="prod-purity-form"
+                    value={getVal('goldPurity', getVal('carat', '22K'))}
+                    onChange={(e) => {
+                      updateField('goldPurity', e.target.value);
+                      updateField('carat', e.target.value);
+                    }}
+                    className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
+                  >
+                    <option value="24K">24K (Pure Gold)</option>
+                    <option value="22K">22K (Standard)</option>
+                    <option value="18K">18K (Premium)</option>
+                    <option value="14K">14K (Economy)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="prod-gold-weight-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Gold Weight (grams)</label>
+                  <input
+                    id="prod-gold-weight-form"
+                    type="number"
+                    step="0.001"
+                    placeholder="e.g. 8.45"
+                    value={getVal('goldWeight', getVal('netWeight', ''))}
+                    onChange={(e) => {
+                      updateField('goldWeight', e.target.value === '' ? '' : +e.target.value);
+                      updateField('netWeight', e.target.value === '' ? '' : +e.target.value);
+                    }}
+                    className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
+                    required={getVal('priceCalculationMode', 'manual') === 'dynamic'}
+                  />
+                </div>
+              </>
+            )}
+
             <div className="space-y-1.5">
               <label htmlFor="prod-hallmark-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Hallmark Stamp</label>
               <select
@@ -566,33 +621,90 @@ export default function ProductForm({
                 <option value="IGI Diamond Certificate">IGI Diamond Certificate</option>
               </select>
             </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-makingCharges-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Making Charge (%)</label>
-              <input
-                id="prod-makingCharges-form"
-                type="number"
-                placeholder="e.g. 12"
-                value={getVal('makingCharges')}
-                onChange={(e) => updateField('makingCharges', e.target.value === '' ? '' : +e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-discount-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Discount Off Item (%)</label>
-              <div className="relative">
+          </div>
+
+          {getVal('priceCalculationMode', 'manual') === 'dynamic' && (
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 pt-2">
+              <div className="space-y-1.5">
+                <label htmlFor="prod-making-charge-type" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Making Charge Type</label>
+                <select
+                  id="prod-making-charge-type"
+                  value={getVal('makingChargeType', 'percentage')}
+                  onChange={(e) => updateField('makingChargeType', e.target.value)}
+                  className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
+                >
+                  <option value="percentage">Percentage (%)</option>
+                  <option value="fixed">Fixed Price (₹)</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="prod-making-charge-value" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">
+                  Making Charge {getVal('makingChargeType', 'percentage') === 'percentage' ? '(%)' : '(₹)'}
+                </label>
                 <input
-                  id="prod-discount-form"
+                  id="prod-making-charge-value"
                   type="number"
-                  min="0"
-                  max="100"
-                  placeholder="e.g. 20"
-                  value={getVal('discountPercent', 20)}
-                  onChange={(e) => updateField('discountPercent', e.target.value === '' ? '' : +e.target.value)}
-                  className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl pl-4 pr-16 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
+                  placeholder={getVal('makingChargeType', 'percentage') === 'percentage' ? 'e.g. 12' : 'e.g. 1500'}
+                  value={getVal('makingChargeValue', getVal('makingCharges', ''))}
+                  onChange={(e) => {
+                    updateField('makingChargeValue', e.target.value === '' ? '' : +e.target.value);
+                    updateField('makingCharges', e.target.value === '' ? '' : +e.target.value);
+                  }}
+                  className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
                 />
-                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">% OFF</span>
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="prod-stone-price" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Stone/Diamond Price (₹)</label>
+                <input
+                  id="prod-stone-price"
+                  type="number"
+                  placeholder="e.g. 8500"
+                  value={getVal('stonePrice', getVal('diamondValue', ''))}
+                  onChange={(e) => {
+                    updateField('stonePrice', e.target.value === '' ? '' : +e.target.value);
+                    updateField('diamondValue', e.target.value === '' ? '' : +e.target.value);
+                  }}
+                  className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="prod-other-charges" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Other Charges (₹)</label>
+                <input
+                  id="prod-other-charges"
+                  type="number"
+                  placeholder="e.g. 450"
+                  value={getVal('otherCharges', getVal('pearlsValue', ''))}
+                  onChange={(e) => {
+                    updateField('otherCharges', e.target.value === '' ? '' : +e.target.value);
+                    updateField('pearlsValue', e.target.value === '' ? '' : +e.target.value);
+                  }}
+                  className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="prod-discount-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Discount Off Item (%)</label>
+                <div className="relative">
+                  <input
+                    id="prod-discount-form"
+                    type="number"
+                    min="0"
+                    max="100"
+                    placeholder="e.g. 20"
+                    value={getVal('discountPercent', 20)}
+                    onChange={(e) => updateField('discountPercent', e.target.value === '' ? '' : +e.target.value)}
+                    className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl pl-4 pr-16 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
+                  />
+                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">% OFF</span>
+                </div>
               </div>
             </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div className="space-y-1.5">
               <label htmlFor="prod-discountOffMaking-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Discount Off Making charge (%)</label>
               <div className="relative">
@@ -609,8 +721,7 @@ export default function ProductForm({
                 <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">% OFF</span>
               </div>
             </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+
             <div className="space-y-1.5">
               <label htmlFor="prod-gst-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">GST Rate (%)</label>
               <div className="relative">
@@ -628,6 +739,7 @@ export default function ProductForm({
                 <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-amber-500 dark:text-amber-400 font-extrabold select-none pointer-events-none">%</span>
               </div>
             </div>
+
             <div className="space-y-1.5">
               <label htmlFor="prod-badge-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Product Badge (e.g. Trending)</label>
               <input
@@ -639,8 +751,9 @@ export default function ProductForm({
                 className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
               />
             </div>
-            <div className="space-y-1.5 col-span-2">
-              <label htmlFor="prod-stock-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Stock Availability Status</label>
+
+            <div className="space-y-1.5">
+              <label htmlFor="prod-stock-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Stock Status</label>
               <select
                 id="prod-stock-form"
                 value={getVal('stockStatus', 'In Stock')}

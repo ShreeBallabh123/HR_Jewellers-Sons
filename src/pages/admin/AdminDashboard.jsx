@@ -36,7 +36,7 @@ export default function AdminDashboard({
 }) {
   // Aggregate stats
   const totalProducts = products.length;
-  const activeOrdersCount = orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
+  const activeOrdersCount = orders.filter(o => o.orderStatus !== 'delivered' && o.orderStatus !== 'cancelled').length;
   const totalCustomers = Array.from(new Set(orders.map(o => o.email || o.phone))).length;
 
   // Recent 5 orders
@@ -257,17 +257,17 @@ export default function AdminDashboard({
                         <span className="text-[9px] text-zinc-400 block">{order.mobile || order.phone}</span>
                       </td>
                       <td className="py-3 font-semibold font-sans">
-                        ₹{(order.totalAmount || order.price || 0).toLocaleString('en-IN')}
+                        ₹{(order.total || order.totalAmount || order.price || 0).toLocaleString('en-IN')}
                       </td>
                       <td className="py-3 text-right">
                         <span className={`inline-block px-2.5 py-0.5 rounded-full text-[8px] font-extrabold uppercase tracking-widest border border-solid ${
-                          order.status === 'delivered'
+                          order.orderStatus === 'delivered'
                             ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 border-emerald-200'
-                            : order.status === 'pending'
+                            : order.orderStatus === 'pending'
                             ? 'bg-amber-50 dark:bg-amber-950/20 text-amber-600 border-amber-200'
                             : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-500 border-zinc-200'
                         }`}>
-                          {order.status || 'pending'}
+                          {order.orderStatus || 'pending'}
                         </span>
                       </td>
                     </tr>

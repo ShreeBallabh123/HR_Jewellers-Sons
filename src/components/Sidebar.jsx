@@ -4,7 +4,8 @@ import {
   Gem, 
   Boxes, 
   ShoppingBag, 
-  Users 
+  Users,
+  TrendingUp
 } from 'lucide-react';
 import hrLogo from '../assets/logo.png';
 
@@ -139,6 +140,31 @@ export default function Sidebar({
                 )}
               </button>
             </div>
+
+          <div>
+            {!isSidebarCollapsed ? (
+              <span className="text-[9px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold block mb-2 px-3">Pricing</span>
+            ) : (
+              <div className="w-8 h-[1px] bg-zinc-200 dark:bg-zinc-800 mx-auto mb-3"></div>
+            )}
+            <div className="space-y-1">
+              <button
+                onClick={() => setActiveTab('pricing')}
+                className={`w-full flex items-center gap-3 py-2 transition-all relative cursor-pointer border-none bg-transparent text-left ${isSidebarCollapsed ? 'justify-center rounded-lg px-2' : 'px-3 rounded-lg'
+                  } ${activeTab === 'pricing'
+                    ? 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-950 dark:text-zinc-100 border border-solid border-zinc-200 dark:border-zinc-700/60 shadow-xs font-bold'
+                    : 'hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
+                  }`}
+                title="Gold Rate Management"
+              >
+                <TrendingUp className={`w-4.5 h-4.5 ${activeTab === 'pricing' ? 'text-zinc-950 dark:text-[#E6C687]' : 'text-zinc-400 dark:text-zinc-500'}`} />
+                {!isSidebarCollapsed && <span>Gold Pricing</span>}
+                {activeTab === 'pricing' && !isSidebarCollapsed && (
+                  <span className="absolute right-3 w-1 h-1 bg-zinc-950 dark:bg-[#E6C687] rounded-full"></span>
+                )}
+              </button>
+            </div>
+          </div>
           </div>
         </nav>
       </div>
