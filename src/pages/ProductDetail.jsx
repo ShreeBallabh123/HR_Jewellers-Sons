@@ -348,7 +348,7 @@ export default function ProductDetail({
                 <img
                   src={detailActiveImg || detailProduct.img}
                   alt={detailProduct.name}
-                  className="w-full h-full object-contain object-top mt-[-8%] select-none pointer-events-none transition-all duration-300 mix-blend-multiply"
+                  className="w-full h-full object-contain select-none pointer-events-none transition-all duration-300 mix-blend-multiply"
                   style={{
                     ...pdpZoomStyle,
                     transition: 'transform 0.15s ease-out, transform-origin 0.15s ease-out',
