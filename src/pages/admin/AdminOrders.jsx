@@ -8,7 +8,8 @@ import {
   Clock, 
   ShoppingBag, 
   BadgeIndianRupee,
-  Gem 
+  Gem,
+  Download
 } from 'lucide-react';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 
@@ -42,6 +43,283 @@ export default function AdminOrders({
   const [orderStatusFilter, setOrderStatusFilter] = useState('all');
 
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
+
+  const handleDownloadInvoice = (order) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert("Please allow popups to download/print invoices");
+      return;
+    }
+
+    const orderId = order.id || 'N/A';
+    const dateStr = safeFormatDateTime(order.createdDate || order.date);
+    const recipient = order.recipientName || 'Valued Customer';
+    const mobile = order.mobile || 'N/A';
+    const email = order.email || 'N/A';
+    const address = order.address || 'N/A';
+    const method = order.paymentMethod?.toUpperCase() || 'COD/UPI';
+    const subtotal = order.subtotal || 0;
+    const gst = order.gst || 0;
+    const total = order.total || order.totalAmount || 0;
+
+    const itemsHTML = (order.items || []).map((item, idx) => `
+      <tr style="border-bottom: 1px solid #ECECEC;">
+        <td style="padding: 12px 8px; text-align: center;">${idx + 1}</td>
+        <td style="padding: 12px 8px;">
+          <div style="font-weight: bold; color: #111;">${item.name || 'Signature Item'}</div>
+          ${item.desc ? `<div style="font-size: 10px; color: #666; margin-top: 3px;">${item.desc}</div>` : ''}
+        </td>
+        <td style="padding: 12px 8px; text-align: center;">${item.carat || '22K'} / ${item.weight || 'N/A'}</td>
+        <td style="padding: 12px 8px; text-align: center;">${item.quantity || 1}</td>
+        <td style="padding: 12px 8px; text-align: right;">₹ ${Number(item.price || 0).toLocaleString('en-IN')}</td>
+        <td style="padding: 12px 8px; text-align: right; font-weight: bold;">₹ ${Number((item.price || 0) * (item.quantity || 1)).toLocaleString('en-IN')}</td>
+      </tr>
+    `).join('');
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Invoice - ${orderId}</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap');
+            body {
+              font-family: 'Inter', sans-serif;
+              color: #333;
+              margin: 0;
+              padding: 40px;
+              background: #fff;
+              -webkit-print-color-adjust: exact;
+            }
+            .invoice-card {
+              max-w: 800px;
+              margin: 0 auto;
+              border: 1px solid #EAEAEA;
+              padding: 40px;
+              border-radius: 12px;
+              box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            }
+            .header {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              border-bottom: 2px solid #C8A646;
+              padding-bottom: 20px;
+              margin-bottom: 30px;
+            }
+            .logo-section {
+              text-align: left;
+            }
+            .logo-text {
+              font-family: 'Cinzel', serif;
+              font-size: 24px;
+              font-weight: bold;
+              letter-spacing: 2px;
+              color: #1A1A1A;
+              line-height: 1.1;
+            }
+            .logo-subtext {
+              font-family: 'Cinzel', serif;
+              font-size: 14px;
+              font-weight: 600;
+              letter-spacing: 3px;
+              color: #C8A646;
+              margin-top: 4px;
+            }
+            .company-details {
+              font-size: 11px;
+              color: #666;
+              margin-top: 8px;
+              line-height: 1.5;
+            }
+            .invoice-title-section {
+              text-align: right;
+            }
+            .invoice-title {
+              font-family: 'Cinzel', serif;
+              font-size: 28px;
+              font-weight: 700;
+              letter-spacing: 1px;
+              color: #C8A646;
+            }
+            .invoice-meta {
+              font-size: 12px;
+              color: #555;
+              margin-top: 10px;
+              line-height: 1.6;
+            }
+            .billing-section {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 30px;
+              gap: 20px;
+            }
+            .bill-box {
+              flex: 1;
+              background: #FAF9F6;
+              border-radius: 8px;
+              padding: 16px;
+              border: 1px solid #F1EFEA;
+            }
+            .bill-title {
+              font-size: 10px;
+              font-weight: bold;
+              text-transform: uppercase;
+              letter-spacing: 1.5px;
+              color: #8A6623;
+              margin-bottom: 8px;
+            }
+            .bill-details {
+              font-size: 12px;
+              color: #333;
+              line-height: 1.6;
+            }
+            .table-items {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 30px;
+              font-size: 12px;
+            }
+            .table-items th {
+              background: #12071B;
+              color: #fff;
+              font-weight: 600;
+              text-transform: uppercase;
+              font-size: 10px;
+              letter-spacing: 1px;
+              padding: 10px 8px;
+            }
+            .total-section {
+              display: flex;
+              justify-content: flex-end;
+              margin-top: 20px;
+            }
+            .total-box {
+              width: 280px;
+              font-size: 13px;
+              line-height: 2;
+            }
+            .total-row {
+              display: flex;
+              justify-content: space-between;
+              border-bottom: 1px solid #ECECEC;
+              padding: 4px 0;
+            }
+            .grand-total-row {
+              display: flex;
+              justify-content: space-between;
+              font-weight: 800;
+              font-size: 16px;
+              color: #C8A646;
+              padding-top: 8px;
+            }
+            .footer-note {
+              margin-top: 50px;
+              border-top: 1px solid #EAEAEA;
+              padding-top: 20px;
+              text-align: center;
+              font-size: 10px;
+              color: #888;
+              line-height: 1.5;
+            }
+            @media print {
+              body {
+                padding: 0;
+              }
+              .invoice-card {
+                border: none;
+                box-shadow: none;
+                padding: 0;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="invoice-card">
+            <div class="header">
+              <div class="logo-section">
+                <div class="logo-text">HR JEWELLERS</div>
+                <div class="logo-subtext">&amp; SONS</div>
+                <div class="company-details">
+                  BIS Hallmarked Luxury Boutique<br/>
+                  Station Road, Near Town Hall, Bikaner - 334001<br/>
+                  Contact: +91 97838 43978 | info@hrjewellers.com
+                </div>
+              </div>
+              <div class="invoice-title-section">
+                <div class="invoice-title">TAX INVOICE</div>
+                <div class="invoice-meta">
+                  <b>Invoice No:</b> #${orderId.slice(0, 8).toUpperCase()}<br/>
+                  <b>Date:</b> ${dateStr}<br/>
+                  <b>Payment Mode:</b> ${method}
+                </div>
+              </div>
+            </div>
+
+            <div class="billing-section">
+              <div class="bill-box">
+                <div class="bill-title">Billed To</div>
+                <div class="bill-details">
+                  <strong>${recipient}</strong><br/>
+                  Phone: ${mobile}<br/>
+                  Email: ${email}
+                </div>
+              </div>
+              <div class="bill-box">
+                <div class="bill-title">Delivery Address</div>
+                <div class="bill-details">
+                  ${address !== 'N/A' ? address : 'Showroom Pickup (Bikaner Branch)'}
+                </div>
+              </div>
+            </div>
+
+            <table class="table-items">
+              <thead>
+                <tr>
+                  <th style="width: 50px; text-align: center;">S.No</th>
+                  <th style="text-align: left;">Item Description</th>
+                  <th style="width: 120px; text-align: center;">Carat / Weight</th>
+                  <th style="width: 60px; text-align: center;">Qty</th>
+                  <th style="width: 100px; text-align: right;">Unit Price</th>
+                  <th style="width: 120px; text-align: right;">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${itemsHTML}
+              </tbody>
+            </table>
+
+            <div class="total-section">
+              <div class="total-box">
+                <div class="total-row">
+                  <span>Subtotal</span>
+                  <span>₹ ${subtotal.toLocaleString('en-IN')}</span>
+                </div>
+                <div class="total-row">
+                  <span>GST (3%)</span>
+                  <span>₹ ${gst.toLocaleString('en-IN')}</span>
+                </div>
+                <div class="grand-total-row">
+                  <span>Grand Total</span>
+                  <span>₹ ${total.toLocaleString('en-IN')}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="footer-note">
+              Thank you for your patronage! All gold jewellery is BIS 916 Hallmarked and certified.<br/>
+              <em>This is a computer-generated tax invoice and requires no physical signature.</em>
+            </div>
+          </div>
+          <script>
+            window.onload = function() {
+              window.print();
+            }
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
 
   // Update order status callback
   const handleUpdateOrderStatus = async (orderId, newStatus) => {
@@ -230,10 +508,17 @@ export default function AdminOrders({
                   {/* Actions */}
                   <div className="flex gap-2 pt-1">
                     <button
+                      onClick={() => handleDownloadInvoice(order)}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 cursor-pointer border-none text-[10px] font-bold uppercase tracking-wider"
+                      title="Download Invoice"
+                    >
+                      <Download className="w-3.5 h-3.5" /> Invoice
+                    </button>
+                    <button
                       onClick={() => setSelectedOrderDetails(order)}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-650 dark:text-zinc-350 cursor-pointer border-none text-[10px] font-bold uppercase tracking-wider"
                     >
-                      <Eye className="w-3.5 h-3.5" /> View Details
+                      <Eye className="w-3.5 h-3.5" /> Details
                     </button>
                     <button
                       onClick={() => handleDeleteOrder(order.id)}
@@ -309,6 +594,13 @@ export default function AdminOrders({
                         </select>
                       </td>
                       <td className="py-3.5 text-right space-x-2">
+                        <button
+                          onClick={() => handleDownloadInvoice(order)}
+                          className="p-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 cursor-pointer border-none"
+                          title="Download Invoice"
+                        >
+                          <Download className="w-4 h-4" />
+                        </button>
                         <button
                           onClick={() => setSelectedOrderDetails(order)}
                           className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-650 dark:text-zinc-350 cursor-pointer border-none"
