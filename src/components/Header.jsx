@@ -111,7 +111,7 @@ export default function Header({
               {showNotifications && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)}></div>
-                  <div className="absolute right-0 mt-2.5 w-[min(calc(100vw-2rem),24rem)] bg-white dark:bg-zinc-955 border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_15px_40px_rgba(0,0,0,0.3)] z-50 overflow-hidden text-zinc-800 dark:text-zinc-200">
+                  <div className="absolute right-0 mt-2.5 w-80 sm:w-96 bg-white dark:bg-zinc-955 border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_15px_40px_rgba(0,0,0,0.3)] z-50 overflow-hidden text-zinc-800 dark:text-zinc-200">
                     <div className="flex items-center justify-between px-4 py-3 bg-zinc-50 dark:bg-zinc-900 border-b border-solid border-zinc-200 dark:border-zinc-800">
                       <span className="text-[10px] font-mono font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
                         Action Centre ({notifications.length})

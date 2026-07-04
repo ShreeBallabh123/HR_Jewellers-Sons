@@ -77,19 +77,8 @@ export default function Navbar({
             <img
               src={hrLogoMark}
               alt="HR Jewellers &amp; Sons Logo"
-              className="w-[58px] h-[58px] lg:w-[68px] lg:h-[68px] object-contain select-none"
+              className="w-[88px] h-[88px] object-contain select-none"
             />
-            <div className="flex flex-col justify-center">
-              <span className="serif-luxury text-[15px] lg:text-[18px] font-bold leading-tight tracking-[2.5px] text-[#1A1A1A]">
-                HR JEWELLERS
-              </span>
-              <span className="serif-luxury text-[11px] lg:text-[13px] font-semibold leading-none tracking-[3.5px] text-[#C8A646] mt-0.5">
-                &amp; SONS
-              </span>
-              <span className="text-[7px] tracking-[0.25em] uppercase font-sans font-light text-gray-400 mt-1">
-                Timeless Elegance
-              </span>
-            </div>
           </button>
 
           {/* Search Bar */}
@@ -473,16 +462,8 @@ export default function Navbar({
             <img
               src={hrLogoMark}
               alt="HR Logo"
-              className="w-11 h-11 object-contain select-none"
+              className="w-16 h-16 object-contain select-none"
             />
-            <div className="flex flex-col justify-center">
-              <span className="serif-luxury text-[13px] font-bold tracking-[1.5px] text-[#1A1A1A]">
-                HR JEWELLERS
-              </span>
-              <span className="serif-luxury text-[9px] font-bold tracking-[2.5px] text-[#C8A646] -mt-0.5">
-                &amp; SONS
-              </span>
-            </div>
           </button>
 
           {/* Mobile Action Controls */}
@@ -584,11 +565,7 @@ export default function Navbar({
             {/* Menu Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-solid border-zinc-100 shrink-0">
               <div className="flex items-center gap-3">
-                <img src={hrLogoMark} alt="HR Logo" className="w-10 h-10 object-contain" />
-                <div>
-                  <div className="text-[13px] font-bold tracking-[1.5px] text-[#1A1A1A] serif-luxury">HR JEWELLERS</div>
-                  <div className="text-[10px] font-bold tracking-[2px] text-[#C8A646] serif-luxury">&amp; SONS</div>
-                </div>
+                <img src={hrLogoMark} alt="HR Logo" className="w-16 h-16 object-contain" />
               </div>
               <button
                 onClick={() => setMobileMenuOpen(false)}
