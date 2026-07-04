@@ -12,19 +12,26 @@ export default function Footer({
         
         {/* Brand Column */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-4">
-          <div className="relative group">
-            <div className="absolute inset-0 bg-[#E6C687]/10 rounded-full blur-lg opacity-75 group-hover:opacity-100 transition-opacity duration-500" />
-            <img
-              src={hrLogo}
-              alt="HR Jewellers &amp; Sons Logo"
-              className="relative w-32 h-32 object-contain select-none mix-blend-screen filter drop-shadow-[0_2px_15px_rgba(230,198,135,0.4)] hover:scale-105 transition-transform duration-300"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <p className="text-xs tracking-[0.2em] text-[#E6C687] font-sans uppercase font-bold mt-1">
-              SINCE 1924
-            </p>
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="relative group shrink-0">
+              <div className="absolute inset-0 bg-[#E6C687]/10 rounded-full blur-lg opacity-75 group-hover:opacity-100 transition-opacity duration-500" />
+              <img
+                src={hrLogo}
+                alt="HR Jewellers &amp; Sons Logo"
+                className="relative w-24 h-24 object-contain select-none mix-blend-screen filter drop-shadow-[0_2px_15px_rgba(230,198,135,0.4)] hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            <div className="text-center sm:text-left space-y-1">
+              <h3 className="serif-luxury text-2xl font-bold tracking-[2.5px] text-[#E6C687] leading-none">
+                H.R. JEWELLERS
+              </h3>
+              <h4 className="serif-luxury text-base font-bold tracking-[4px] text-[#E6C687]/90 mt-0.5">
+                &amp; SONS
+              </h4>
+              <p className="text-[10px] tracking-[0.2em] text-[#E6C687]/70 font-sans uppercase font-medium mt-1">
+                SINCE 1924
+              </p>
+            </div>
           </div>
 
           <p className="serif-luxury italic text-[11px] text-[#E6C687]/80 leading-normal font-medium max-w-[250px]">
