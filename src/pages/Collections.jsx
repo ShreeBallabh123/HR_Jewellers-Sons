@@ -64,6 +64,8 @@ export default function Collections({
   setPurityFilter: setExternalPurityFilter,
   maxPriceFilter: externalMaxPrice,
   setMaxPriceFilter: setExternalMaxPrice,
+  genderFilter: externalGenderFilter,
+  setGenderFilter: setExternalGenderFilter,
   navigateToPDP,
   triggerAudio: triggerAudioProp,
 }) {
@@ -82,7 +84,7 @@ export default function Collections({
   const [maxPriceFilter, setMaxPriceFilter] = useState(externalMaxPrice || 100000000);
   const [priceFilter, setPriceFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
-  const [genderFilter, setGenderFilter] = useState('all');
+  const [genderFilter, setGenderFilter] = useState(externalGenderFilter || 'all');
   const [stoneFilter, setStoneFilter] = useState('all');
   const [occasionFilter, setOccasionFilter] = useState('all');
   const [sortFilter, setSortFilter] = useState('popularity');
@@ -146,6 +148,17 @@ export default function Collections({
 
   // Reset to page 1 when filters change
   useEffect(() => { setCollectionsPage(1); }, [activeCategoryTab, metalFilter, purityFilter, maxPriceFilter, stoneFilter, genderFilter, occasionFilter, sortFilter]);
+
+  // Bidirectional sync for genderFilter state
+  useEffect(() => {
+    if (externalGenderFilter !== undefined && externalGenderFilter !== genderFilter) {
+      setGenderFilter(externalGenderFilter);
+    }
+  }, [externalGenderFilter]);
+
+  useEffect(() => {
+    setExternalGenderFilter?.(genderFilter);
+  }, [genderFilter, setExternalGenderFilter]);
 
   const formatPrice = (price) => {
     if (price === undefined || price === null) return '0';

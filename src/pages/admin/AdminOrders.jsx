@@ -452,7 +452,15 @@ export default function AdminOrders({
                   {c.description && (
                     <p className="text-[10px] text-zinc-500 leading-relaxed border-t border-solid border-zinc-100 dark:border-zinc-800 pt-2">{c.description}</p>
                   )}
-                  {c.imageUrl && (
+                  {c.imageUrls && c.imageUrls.length > 0 ? (
+                    <div className="flex flex-wrap gap-2 pt-1.5 pb-1">
+                      {c.imageUrls.map((url, idx) => (
+                        <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="text-[9px] font-black text-[#C8A646] hover:underline bg-[#C8A646]/10 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                          🖼 Sketch {idx + 1}
+                        </a>
+                      ))}
+                    </div>
+                  ) : c.imageUrl && (
                     <a href={c.imageUrl} target="_blank" rel="noopener noreferrer" className="block text-[10px] font-bold text-[#C8A646] hover:underline">
                       🖼 View Sketch / Image
                     </a>
@@ -502,7 +510,15 @@ export default function AdminOrders({
                         {c.description || '-'}
                       </td>
                       <td className="py-3.5">
-                        {c.imageUrl ? (
+                        {c.imageUrls && c.imageUrls.length > 0 ? (
+                          <div className="flex flex-wrap gap-1.5">
+                            {c.imageUrls.map((url, idx) => (
+                              <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="text-[#C8A646] font-extrabold hover:underline bg-[#C8A646]/10 px-2 py-0.5 rounded-full text-[9px] uppercase tracking-wider">
+                                img #{idx + 1}
+                              </a>
+                            ))}
+                          </div>
+                        ) : c.imageUrl ? (
                           <a href={c.imageUrl} target="_blank" rel="noopener noreferrer" className="text-[#C8A646] font-bold hover:underline block max-w-[150px] truncate">
                             View image sketch
                           </a>

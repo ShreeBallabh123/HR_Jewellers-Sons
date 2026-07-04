@@ -17,7 +17,9 @@ export default function MainLayout({
   setCoinWeightFilter,
   setMetalFilter,
   setMaxPriceFilter,
-  navigateToPDP
+  navigateToPDP,
+  genderFilter,
+  setGenderFilter
 }) {
   const { cartOpen, setCartOpen } = useCart();
 
@@ -37,6 +39,8 @@ export default function MainLayout({
         setMetalFilter={setMetalFilter}
         setMaxPriceFilter={setMaxPriceFilter}
         navigateToPDP={navigateToPDP}
+        genderFilter={genderFilter}
+        setGenderFilter={setGenderFilter}
       />
 
       {/* Main Content Area */}

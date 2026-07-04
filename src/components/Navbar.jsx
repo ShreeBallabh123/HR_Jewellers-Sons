@@ -30,7 +30,9 @@ export default function Navbar({
   setCoinWeightFilter,
   setMetalFilter,
   setMaxPriceFilter,
-  navigateToPDP
+  navigateToPDP,
+  genderFilter,
+  setGenderFilter
 }) {
   const { cartItems, setCartOpen, cartItemCount } = useCart();
   const { wishlistItems, setWishlistOpen } = useWishlist();
@@ -625,19 +627,32 @@ export default function Navbar({
               <div className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 px-2 pt-3 pb-2">Collections</div>
 
               {[
-                { label: 'Rings', icon: '💍', tab: 'Rings' },
-                { label: 'Earrings', icon: '✨', tab: 'Earrings' },
-                { label: 'Necklaces', icon: '📿', tab: 'Necklace' },
-                { label: 'Bangles', icon: '🔮', tab: 'Bangles' },
-                { label: 'Bracelets', icon: '🌟', tab: 'Bracelets' },
-                { label: 'Mangalsutras', icon: '❤️', tab: 'Mangalsutras' },
+                { label: 'Rings', tab: 'Rings' },
+                { label: 'Earrings', tab: 'Earrings' },
+                { label: 'Necklaces', tab: 'Necklace' },
+                { label: 'Bangles', tab: 'Bangles' },
+                { label: 'Bracelets', tab: 'Bracelets' },
+                { label: 'Mangalsutras', tab: 'Mangalsutras' },
+                { label: 'For Men', gender: 'men' },
+                { label: 'For Women', gender: 'women' },
+                { label: 'For Kids', gender: 'kids' },
               ].map(item => (
                 <button
-                  key={item.tab}
-                  onClick={() => { setMobileMenuOpen(false); changeCategoryTab(item.tab); navigateTo('collections'); }}
-                  className="flex items-center gap-4 w-full text-left px-4 py-3.5 rounded-xl active:bg-zinc-50 border-none cursor-pointer transition-colors"
+                  key={item.label}
+                  onClick={() => {
+                    triggerAudio('click');
+                    setMobileMenuOpen(false);
+                    if (item.gender) {
+                      setMetalFilter('all');
+                      setGenderFilter(item.gender);
+                      changeCategoryTab('Collections');
+                    } else {
+                      changeCategoryTab(item.tab);
+                    }
+                    navigateTo('collections');
+                  }}
+                  className="flex items-center w-full text-left px-4 py-3.5 rounded-xl active:bg-zinc-50 border-none cursor-pointer transition-colors"
                 >
-                  <span className="text-xl w-9 text-center">{item.icon}</span>
                   <span className="text-[14px] font-semibold text-zinc-800">{item.label}</span>
                   <svg className="w-4 h-4 text-zinc-300 ml-auto" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -648,10 +663,9 @@ export default function Navbar({
               <div className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 px-2 pt-3 pb-2">More</div>
 
               <button
-                onClick={() => { setMobileMenuOpen(false); navigateTo('gold-coins'); setCoinPurityTab('24K'); setCoinWeightFilter('all'); }}
-                className="flex items-center gap-4 w-full text-left px-4 py-3.5 rounded-xl active:bg-zinc-50 border-none cursor-pointer transition-colors"
+                onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('gold-coins'); setCoinPurityTab('24K'); setCoinWeightFilter('all'); }}
+                className="flex items-center w-full text-left px-4 py-3.5 rounded-xl active:bg-zinc-50 border-none cursor-pointer transition-colors"
               >
-                <span className="text-xl w-9 text-center">🪙</span>
                 <span className="text-[14px] font-semibold text-zinc-800">Gold Coins</span>
                 <svg className="w-4 h-4 text-zinc-300 ml-auto" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -659,10 +673,9 @@ export default function Navbar({
               </button>
 
               <button
-                onClick={() => { setMobileMenuOpen(false); navigateTo('offers'); }}
-                className="flex items-center gap-4 w-full text-left px-4 py-3.5 rounded-xl active:bg-zinc-50 border-none cursor-pointer transition-colors"
+                onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('offers'); }}
+                className="flex items-center w-full text-left px-4 py-3.5 rounded-xl active:bg-zinc-50 border-none cursor-pointer transition-colors"
               >
-                <span className="text-xl w-9 text-center">🏷️</span>
                 <span className="text-[14px] font-semibold text-zinc-800">Offers &amp; Showrooms</span>
                 <svg className="w-4 h-4 text-zinc-300 ml-auto" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

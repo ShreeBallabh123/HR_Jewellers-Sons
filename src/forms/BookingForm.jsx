@@ -18,9 +18,9 @@ export default function BookingForm({
     budget: ''
   });
 
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(false);
-  const [uploadedUrl, setUploadedUrl] = useState('');
+  const [uploadedUrls, setUploadedUrls] = useState([]);
   const [uploadStatusMessage, setUploadStatusMessage] = useState('');
   const [formSuccess, setFormSuccess] = useState(false);
 
@@ -30,23 +30,35 @@ export default function BookingForm({
   };
 
   const handleFileChange = async (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setSelectedFile(file);
+    if (e.target.files && e.target.files.length > 0) {
+      const files = Array.from(e.target.files);
       setUploadProgress(true);
-      setUploadStatusMessage('Uploading image sketch to secure storage...');
-      setUploadedUrl('');
-
-      try {
-        const uploadResult = await ImageUploadService.uploadImage(file);
-        setUploadedUrl(uploadResult.url);
-        setUploadStatusMessage('✓ Image uploaded successfully!');
-      } catch (err) {
-        console.error("Image upload failed:", err);
-        setUploadStatusMessage('❌ Image upload failed. Please try again.');
-      } finally {
-        setUploadProgress(false);
+      setUploadStatusMessage(`Uploading ${files.length} design sketch(es)...`);
+      
+      const newUrls = [];
+      let successCount = 0;
+      
+      for (const file of files) {
+        try {
+          const uploadResult = await ImageUploadService.uploadImage(file);
+          newUrls.push(uploadResult.url);
+          successCount++;
+        } catch (err) {
+          console.error("Image upload failed for:", file.name, err);
+        }
       }
+      
+      if (successCount > 0) {
+        setUploadedUrls((prev) => [...prev, ...newUrls]);
+        setSelectedFiles((prev) => [...prev, ...files.slice(0, successCount)]);
+      }
+      
+      if (successCount === files.length) {
+        setUploadStatusMessage(`✓ All ${files.length} images uploaded successfully!`);
+      } else {
+        setUploadStatusMessage(`✓ Uploaded ${successCount}/${files.length} images successfully.`);
+      }
+      setUploadProgress(false);
     }
   };
 
@@ -57,13 +69,34 @@ export default function BookingForm({
     const payload = {
       ...formData,
       type,
-      imageUrl: uploadedUrl,
+      imageUrl: uploadedUrls[0] || '',
+      imageUrls: uploadedUrls,
       createdDate: new Date().toISOString()
     };
 
     const isSuccess = await bookConsultation(payload);
 
     if (isSuccess) {
+      if (type === 'custom_design') {
+        // Open WhatsApp to send message with design url(s) to Admin
+        let text = `*New Custom Design Request*\n\n`;
+        text += `*Name:* ${formData.name}\n`;
+        text += `*Phone:* ${formData.phone}\n`;
+        text += `*Category:* ${formData.categoryType}\n`;
+        text += `*Budget:* ${formData.budget}\n`;
+        text += `*Details:* ${formData.description}\n\n`;
+        
+        if (uploadedUrls.length > 0) {
+          text += `*Reference Image(s):*\n`;
+          uploadedUrls.forEach((url, i) => {
+            text += `- Image ${i + 1}: ${url}\n`;
+          });
+        }
+        
+        const waUrl = `https://wa.me/919783843978?text=${encodeURIComponent(text)}`;
+        window.open(waUrl, '_blank');
+      }
+
       setFormSuccess(true);
       setFormData({
         name: '',
@@ -75,8 +108,8 @@ export default function BookingForm({
         categoryType: 'Rings',
         budget: ''
       });
-      setSelectedFile(null);
-      setUploadedUrl('');
+      setSelectedFiles([]);
+      setUploadedUrls([]);
       setUploadStatusMessage('');
     }
   };
@@ -239,17 +272,18 @@ export default function BookingForm({
 
           {/* Reference sketch file upload */}
           <div className="space-y-1">
-            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">Design sketch or reference image</label>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">Design sketch(es) or reference image(s)</label>
             <div className="relative border-2 border-dashed border-zinc-200 hover:border-gold rounded-xl p-4 text-center cursor-pointer transition-all">
               <input
                 type="file"
                 accept="image/*"
+                multiple
                 onChange={handleFileChange}
                 className="absolute inset-0 opacity-0 cursor-pointer"
               />
               <span className="text-lg block mb-1">🖼️</span>
               <span className="text-[10px] text-zinc-400 block">
-                {selectedFile ? selectedFile.name : 'Choose image file or drag here'}
+                {selectedFiles.length > 0 ? `Selected ${selectedFiles.length} file(s)` : 'Choose image file(s) or drag here'}
               </span>
             </div>
             {uploadStatusMessage && (
@@ -262,6 +296,27 @@ export default function BookingForm({
               }`}>
                 {uploadStatusMessage}
               </p>
+            )}
+            
+            {/* Gallery Previews of uploaded images */}
+            {uploadedUrls.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-2.5">
+                {uploadedUrls.map((url, idx) => (
+                  <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-solid border-zinc-100 group bg-zinc-50 flex items-center justify-center shadow-sm">
+                    <img src={url} alt={`Sketch ${idx + 1}`} className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUploadedUrls(prev => prev.filter((_, i) => i !== idx));
+                        setSelectedFiles(prev => prev.filter((_, i) => i !== idx));
+                      }}
+                      className="absolute inset-0 bg-red-600/80 text-white font-extrabold text-[9px] uppercase tracking-wider opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity border-none cursor-pointer"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </>

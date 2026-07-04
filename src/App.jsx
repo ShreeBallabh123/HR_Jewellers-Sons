@@ -117,6 +117,7 @@ function AppContent() {
   const [maxPriceFilter, setMaxPriceFilter] = useState(10000000);
   const [coinPurityTab, setCoinPurityTab] = useState('24K');
   const [coinWeightFilter, setCoinWeightFilter] = useState('all');
+  const [genderFilter, setGenderFilter] = useState('all');
 
   const { products, loading: productsLoading } = useProducts();
   const { rates, loading: ratesLoading } = useRates();
@@ -268,6 +269,7 @@ function AppContent() {
         changeCategoryTab={(tab) => {
           setActiveCategoryTab(tab);
           setMetalFilter('all');
+          setGenderFilter('all');
         }}
         soundEnabled={soundEnabled}
         toggleSound={toggleSound}
@@ -277,6 +279,8 @@ function AppContent() {
         setMetalFilter={setMetalFilter}
         setMaxPriceFilter={setMaxPriceFilter}
         navigateToPDP={navigateToPDP}
+        genderFilter={genderFilter}
+        setGenderFilter={setGenderFilter}
       >
         {/* Suspense Wrapper for Page Components Lazy Loading */}
         <React.Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center font-bold text-xs uppercase tracking-widest text-[#4A126D]">Loading Boutique Workspace...</div>}>
@@ -300,6 +304,8 @@ function AppContent() {
               setPurityFilter={setPurityFilter}
               maxPriceFilter={maxPriceFilter}
               setMaxPriceFilter={setMaxPriceFilter}
+              genderFilter={genderFilter}
+              setGenderFilter={setGenderFilter}
               navigateToPDP={navigateToPDP}
               triggerAudio={triggerAudio}
             />
