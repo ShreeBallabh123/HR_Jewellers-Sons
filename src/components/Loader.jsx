@@ -23,12 +23,12 @@ export default function Loader() {
           <img
             src={hrLogo}
             alt="HR Jewellers &amp; Sons Logo"
-            className="w-[280px] h-[280px] md:w-[360px] md:h-[360px] lg:w-[440px] lg:h-[440px] object-contain select-none relative z-10 filter drop-shadow-[0_4px_20px_rgba(200,166,70,0.15)]"
+            className="w-[180px] md:w-[240px] lg:w-[300px] h-auto object-contain select-none relative z-10 filter drop-shadow-[0_4px_20px_rgba(200,166,70,0.15)]"
           />
         </div>
 
         <h1 
-          className="serif-luxury text-xl md:text-2xl lg:text-3xl font-black uppercase tracking-[6px] text-[#D4AF37] -mt-14 md:-mt-20 lg:-mt-28 select-none"
+          className="serif-luxury text-[15px] md:text-[20px] lg:text-[24px] font-black uppercase tracking-[5px] text-[#D4AF37] mt-3.5 select-none"
           style={{
             textShadow: '0 1px 0 #c5a85a, 0 2px 0 #b8963e, 0 3px 0 #a9842f, 0 4px 0 #9a7220, 0 5px 0 #8b6111, 0 6px 6px rgba(0,0,0,0.15)'
           }}
