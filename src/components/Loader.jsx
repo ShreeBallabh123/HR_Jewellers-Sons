@@ -1,5 +1,5 @@
 import React from 'react';
-import hrLogo from '../assets/logo_new.png';
+import hrLogo from '../assets/logo_splash.png';
 
 export default function Loader() {
   return (
@@ -26,15 +26,6 @@ export default function Loader() {
             className="w-[180px] md:w-[240px] lg:w-[300px] h-auto object-contain select-none relative z-10 filter drop-shadow-[0_4px_20px_rgba(200,166,70,0.15)]"
           />
         </div>
-
-        <h1 
-          className="serif-luxury text-[15px] md:text-[20px] lg:text-[24px] font-black uppercase tracking-[5px] text-[#D4AF37] mt-3.5 select-none"
-          style={{
-            textShadow: '0 1px 0 #c5a85a, 0 2px 0 #b8963e, 0 3px 0 #a9842f, 0 4px 0 #9a7220, 0 5px 0 #8b6111, 0 6px 6px rgba(0,0,0,0.15)'
-          }}
-        >
-          HR JEWELLERS AND SONS
-        </h1>
 
         {/* Luxury Loading Indicator */}
         <div className="w-[140px] h-[2px] bg-[#C8A646]/15 rounded-full mt-10 overflow-hidden relative">
