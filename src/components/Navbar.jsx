@@ -5,8 +5,8 @@ import { useWishlist } from '../hooks/useWishlist';
 import { useRates } from '../hooks/useRates';
 import { useProducts } from '../hooks/useProducts';
 
-import hrLogo from '../assets/logo.png';
-import hrLogoMark from '../assets/logo-mark.png';
+import hrLogo from '../assets/logo_new.png';
+import hrLogoMark from '../assets/logo_new.png';
 
 // Import local category tab icons
 import solitariesImg from '../assets/solitaries.png';
