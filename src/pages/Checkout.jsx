@@ -30,6 +30,7 @@ export default function Checkout({ navigateTo, triggerAudio }) {
 
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedOrderId, setPlacedOrderId] = useState('');
+  const [placedOrderTotal, setPlacedOrderTotal] = useState(0);
   const [submittingOrder, setSubmittingOrder] = useState(false);
 
   const updateCartQuantity = (itemId, amount) => {
@@ -75,6 +76,7 @@ export default function Checkout({ navigateTo, triggerAudio }) {
         createdDate: new Date().toISOString()
       };
 
+      setPlacedOrderTotal(orderPayload.total);
       const result = await bookingApi.createOrder(orderPayload);
       setPlacedOrderId(result.id);
       setOrderPlaced(true);
@@ -118,7 +120,7 @@ export default function Checkout({ navigateTo, triggerAudio }) {
             </div>
             <div className="flex justify-between text-gray-500 border-t border-gray-150 pt-2 mt-2">
               <span className="text-[#031838] font-bold">Total Amount</span>
-              <span className="font-bold text-base text-[#B8893C]">₹ {(cartTotal + Math.round(cartTotal * 0.03)).toLocaleString('en-IN')}</span>
+              <span className="font-bold text-base text-[#B8893C]">₹ {placedOrderTotal.toLocaleString('en-IN')}</span>
             </div>
           </div>
 
