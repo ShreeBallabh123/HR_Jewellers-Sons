@@ -134,9 +134,20 @@ export default function AdminProducts({
     }
   };
 
-  // Save product details to firestore
   const handleSaveProduct = async (e) => {
     e.preventDefault();
+
+    const targetProduct = editingProduct || newProduct;
+    if (!targetProduct.name || !targetProduct.name.trim()) {
+      setAdminNotification({ message: 'Product Name is required!', type: 'error' });
+      alert('Product Name is required!');
+      return;
+    }
+    if (!targetProduct.category || !targetProduct.category.trim()) {
+      setAdminNotification({ message: 'Product Category is required!', type: 'error' });
+      alert('Product Category is required!');
+      return;
+    }
 
     try {
       if (editingProduct) {

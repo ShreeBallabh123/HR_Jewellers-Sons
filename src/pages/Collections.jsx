@@ -114,9 +114,8 @@ export default function Collections({
     return [...new Set([...base, ...fromDB])];
   }, [categories]);
 
-  // Filtered + sorted products
   const filteredJewellery = useMemo(() => {
-    let result = [...(products || [])];
+    let result = [...(products || [])].filter(p => p.name && p.name.trim() !== '');
     if (activeCategoryTab && activeCategoryTab !== 'Collections') {
       const tab = activeCategoryTab.toLowerCase();
       result = result.filter(p => {
