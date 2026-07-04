@@ -70,15 +70,17 @@ export default function MainLayout({
         </a>
       </div>
 
-      {/* Footer Details */}
-      <Footer
-        navigateTo={navigateTo}
-        handleCategoryNav={(cat) => {
-          changeCategoryTab(cat === 'gold' ? 'Collections' : cat.charAt(0).toUpperCase() + cat.slice(1));
-          navigateTo('collections');
-        }}
-        triggerAudio={triggerAudio}
-      />
+      {/* Footer Details — desktop only */}
+      <div className="hidden lg:block">
+        <Footer
+          navigateTo={navigateTo}
+          handleCategoryNav={(cat) => {
+            changeCategoryTab(cat === 'gold' ? 'Collections' : cat.charAt(0).toUpperCase() + cat.slice(1));
+            navigateTo('collections');
+          }}
+          triggerAudio={triggerAudio}
+        />
+      </div>
 
       {/* Shopping Bag Drawer Overlay */}
       <CartDrawer 

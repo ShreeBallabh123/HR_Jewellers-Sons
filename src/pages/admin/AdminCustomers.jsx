@@ -75,7 +75,7 @@ export default function AdminCustomers({
   );
 
   return (
-    <div className="space-y-6 text-[#1A1A1A] dark:text-zinc-100 font-sans text-left">
+    <div className="space-y-6 text-[#1A1A1A] dark:text-zinc-100 font-sans text-left w-full overflow-x-hidden">
       
       {/* Search Header */}
       <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">

@@ -103,51 +103,53 @@ export default function AdminOrders({
     );
 
   return (
-    <div className="space-y-6 text-[#1A1A1A] dark:text-zinc-100 font-sans text-left">
+    <div className="w-full max-w-full overflow-x-hidden text-[#1A1A1A] dark:text-zinc-100 font-sans text-left space-y-4">
       
-      {/* Sub Tabs Controls */}
-      <div className="flex border-b border-solid border-zinc-200 dark:border-zinc-800 gap-6 select-none font-bold uppercase tracking-wider text-[11px] mb-4 overflow-x-auto whitespace-nowrap">
-        {[
-          { id: 'orders', label: 'Bespoke Orders', icon: ShoppingBag },
-          { id: 'consultations', label: 'Video Consultations', icon: Calendar },
-          { id: 'custom_designs', label: 'Custom Designs', icon: Gem },
-          { id: 'schemes', label: 'Savings Scheme (11+1)', icon: BadgeIndianRupee }
-        ].map(sub => {
-          const Icon = sub.icon;
-          const isActive = activeSubTab === sub.id;
-          return (
-            <button
-              key={sub.id}
-              onClick={() => setActiveSubTab(sub.id)}
-              className={`py-3.5 border-b-2 border-solid flex items-center gap-2 cursor-pointer bg-transparent border-none shrink-0 ${
-                isActive
-                  ? 'border-[#C8A646] text-[#C8A646] font-extrabold'
-                  : 'border-transparent text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300'
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              <span>{sub.label}</span>
-            </button>
-          );
-        })}
+      {/* Sub Tabs Controls — scrollable horizontally, doesn't expand parent */}
+      <div className="-mx-3 sm:mx-0">
+        <div className="flex border-b border-solid border-zinc-200 dark:border-zinc-800 gap-4 sm:gap-6 select-none font-bold uppercase tracking-wider text-[10px] sm:text-[11px] mb-4 overflow-x-auto whitespace-nowrap px-3 sm:px-0 scrollbar-none">
+          {[
+            { id: 'orders', label: 'Bespoke Orders', icon: ShoppingBag },
+            { id: 'consultations', label: 'Video Consultations', icon: Calendar },
+            { id: 'custom_designs', label: 'Custom Designs', icon: Gem },
+            { id: 'schemes', label: 'Savings Scheme (11+1)', icon: BadgeIndianRupee }
+          ].map(sub => {
+            const Icon = sub.icon;
+            const isActive = activeSubTab === sub.id;
+            return (
+              <button
+                key={sub.id}
+                onClick={() => setActiveSubTab(sub.id)}
+                className={`py-3 border-b-2 border-solid flex items-center gap-1.5 cursor-pointer bg-transparent border-none shrink-0 ${
+                  isActive
+                    ? 'border-[#C8A646] text-[#C8A646] font-extrabold'
+                    : 'border-transparent text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5 shrink-0" />
+                <span>{sub.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* RENDER ACTIVE SUB TAB */}
       
       {activeSubTab === 'orders' && (
-        <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+        <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 sm:p-8 space-y-5 shadow-xs w-full overflow-hidden">
           {/* Header Search Filter */}
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-solid border-zinc-100 dark:border-zinc-850 pb-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b border-solid border-zinc-100 dark:border-zinc-850 pb-4">
             <div>
               <h3 className="text-base font-black tracking-wider text-zinc-900 dark:text-[#E6C687] uppercase">Secure Orders Ledger</h3>
               <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">Manage customer deliveries, track dispatch updates and mark status changes.</p>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto items-center">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <select
                 value={orderStatusFilter}
                 onChange={(e) => setOrderStatusFilter(e.target.value)}
-                className="bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-650 dark:text-zinc-350 focus:outline-none cursor-pointer w-full sm:w-auto font-sans font-bold"
+                className="bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-650 dark:text-zinc-350 focus:outline-none cursor-pointer w-full font-sans font-bold"
               >
                 <option value="all">All Statuses</option>
                 <option value="pending">Pending</option>
@@ -161,12 +163,92 @@ export default function AdminOrders({
                 placeholder="Search Buyer or ID..."
                 value={orderSearch}
                 onChange={(e) => setOrderSearch(e.target.value)}
-                className="bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-lg px-3.5 py-1.5 text-xs w-full sm:w-60 text-zinc-850 dark:text-zinc-150 placeholder-zinc-450 focus:outline-none font-semibold"
+                className="bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-lg px-3.5 py-2 text-xs w-full text-zinc-850 dark:text-zinc-150 placeholder-zinc-450 focus:outline-none font-semibold"
               />
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* MOBILE CARD VIEW (< md) */}
+          <div className="block md:hidden space-y-3">
+            {filteredOrders.length === 0 ? (
+              <p className="py-10 text-center text-zinc-450 uppercase tracking-wider font-bold text-xs">No registered orders found</p>
+            ) : (
+              filteredOrders.map(order => (
+                <div key={order.id} className="bg-zinc-50 dark:bg-zinc-900/50 border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 space-y-3">
+                  {/* Top row: name + status badge */}
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="min-w-0">
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block text-sm truncate">{order.recipientName || 'Anonymous Buyer'}</span>
+                      <span className="text-[10px] text-zinc-450 font-mono block">{order.mobile}</span>
+                    </div>
+                    <select
+                      value={order.orderStatus || 'pending'}
+                      onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
+                      className={`shrink-0 bg-white dark:bg-zinc-900 border border-solid border-zinc-200 dark:border-zinc-800 rounded-lg px-2 py-1 text-[9px] font-extrabold uppercase tracking-wider cursor-pointer focus:outline-none ${
+                        order.orderStatus === 'delivered'
+                          ? 'text-emerald-600'
+                          : order.orderStatus === 'pending'
+                          ? 'text-amber-500'
+                          : 'text-zinc-500'
+                      }`}
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="processing">Processing</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+
+                  {/* Meta row */}
+                  <div className="grid grid-cols-2 gap-2 text-[10px]">
+                    <div>
+                      <span className="text-zinc-400 font-bold uppercase tracking-wider block">Amount</span>
+                      <span className="font-bold text-zinc-850 dark:text-zinc-200 font-sans">₹{(order.total || order.totalAmount || 0).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-400 font-bold uppercase tracking-wider block">Delivery</span>
+                      <span className="font-semibold capitalize text-zinc-600 dark:text-zinc-400">{order.deliveryType || 'Home'}</span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-400 font-bold uppercase tracking-wider block">Order ID</span>
+                      <span className="font-mono text-zinc-400">{order.id?.slice(0, 10)}…</span>
+                    </div>
+                    <div className="min-w-0 overflow-hidden">
+                      <span className="text-zinc-400 font-bold uppercase tracking-wider block">Date</span>
+                      <span className="text-zinc-500 block truncate">{safeFormatDateTime(order.createdDate || order.date)}</span>
+                    </div>
+                  </div>
+
+                  {/* Items */}
+                  {order.items?.length > 0 && (
+                    <div className="text-[10px] text-zinc-500 truncate border-t border-solid border-zinc-100 dark:border-zinc-800 pt-2">
+                      {order.items.map(i => `${i.name} ×${i.quantity}`).join(', ')}
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => setSelectedOrderDetails(order)}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-650 dark:text-zinc-350 cursor-pointer border-none text-[10px] font-bold uppercase tracking-wider"
+                    >
+                      <Eye className="w-3.5 h-3.5" /> View Details
+                    </button>
+                    <button
+                      onClick={() => handleDeleteOrder(order.id)}
+                      className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 cursor-pointer border-none text-[10px] font-bold uppercase tracking-wider"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* DESKTOP TABLE VIEW (≥ md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
                 <tr className="border-b border-solid border-zinc-100 dark:border-zinc-800 text-[10px] uppercase font-bold tracking-wider text-zinc-400">
@@ -252,13 +334,51 @@ export default function AdminOrders({
       )}
 
       {activeSubTab === 'consultations' && (
-        <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+        <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 sm:p-8 space-y-5 shadow-xs w-full overflow-hidden">
           <div className="border-b border-solid border-zinc-100 dark:border-zinc-850 pb-4">
             <h3 className="text-base font-black tracking-wider text-zinc-900 dark:text-[#E6C687] uppercase">Showroom lounge bookings</h3>
             <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">Track video consultations slots and appointment requests.</p>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* MOBILE CARDS */}
+          <div className="block md:hidden space-y-3">
+            {(() => {
+              const onlyConsults = consultations.filter(c => c.type !== 'custom_design');
+              if (onlyConsults.length === 0) return <p className="py-10 text-center text-zinc-450 uppercase tracking-wider font-bold text-xs">No consultations booked</p>;
+              return onlyConsults.map(c => (
+                <div key={c.id} className="bg-zinc-50 dark:bg-zinc-900/50 border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 space-y-3">
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="min-w-0">
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block text-sm">{c.name}</span>
+                      <span className="text-[10px] text-zinc-450 font-mono block">{c.phone}</span>
+                    </div>
+                    <span className="shrink-0 px-2 py-1 rounded-lg bg-[#C8A646]/10 text-[#C8A646] text-[9px] font-extrabold uppercase tracking-wider">
+                      {c.preferredType || 'Gold Jewellery'}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-[10px]">
+                    <div>
+                      <span className="text-zinc-400 font-bold uppercase tracking-wider block">Date</span>
+                      <span className="text-zinc-600 dark:text-zinc-400">{c.date || safeFormatDateTime(c.createdDate)}</span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-400 font-bold uppercase tracking-wider block">Time Slot</span>
+                      <span className="text-zinc-600 dark:text-zinc-400">{c.timeSlot || 'Anytime'}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteConsultation(c.id)}
+                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 cursor-pointer border-none text-[10px] font-bold uppercase tracking-wider"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Delete Booking
+                  </button>
+                </div>
+              ));
+            })()}
+          </div>
+
+          {/* DESKTOP TABLE */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
                 <tr className="border-b border-solid border-zinc-100 dark:border-zinc-800 text-[10px] uppercase font-bold tracking-wider text-zinc-400">
@@ -309,13 +429,47 @@ export default function AdminOrders({
       )}
 
       {activeSubTab === 'custom_designs' && (
-        <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+        <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 sm:p-8 space-y-5 shadow-xs w-full overflow-hidden">
           <div className="border-b border-solid border-zinc-100 dark:border-zinc-850 pb-4">
             <h3 className="text-base font-black tracking-wider text-zinc-900 dark:text-[#E6C687] uppercase">Custom Design Requests</h3>
             <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">Track bespoke jewellery sketches and custom style curation submissions.</p>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* MOBILE CARDS */}
+          <div className="block md:hidden space-y-3">
+            {(() => {
+              const onlyCustomDesigns = consultations.filter(c => c.type === 'custom_design');
+              if (onlyCustomDesigns.length === 0) return <p className="py-10 text-center text-zinc-450 uppercase tracking-wider font-bold text-xs">No custom designs requested</p>;
+              return onlyCustomDesigns.map(c => (
+                <div key={c.id} className="bg-zinc-50 dark:bg-zinc-900/50 border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 space-y-3">
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="min-w-0">
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block text-sm">{c.name}</span>
+                      <span className="text-[10px] text-zinc-450 font-mono block">{c.phone}</span>
+                    </div>
+                    <span className="text-[9px] text-zinc-400 font-mono shrink-0">{safeFormatDateTime(c.createdDate)}</span>
+                  </div>
+                  {c.description && (
+                    <p className="text-[10px] text-zinc-500 leading-relaxed border-t border-solid border-zinc-100 dark:border-zinc-800 pt-2">{c.description}</p>
+                  )}
+                  {c.imageUrl && (
+                    <a href={c.imageUrl} target="_blank" rel="noopener noreferrer" className="block text-[10px] font-bold text-[#C8A646] hover:underline">
+                      🖼 View Sketch / Image
+                    </a>
+                  )}
+                  <button
+                    onClick={() => handleDeleteConsultation(c.id)}
+                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 cursor-pointer border-none text-[10px] font-bold uppercase tracking-wider"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Delete Request
+                  </button>
+                </div>
+              ));
+            })()}
+          </div>
+
+          {/* DESKTOP TABLE */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
                 <tr className="border-b border-solid border-zinc-100 dark:border-zinc-800 text-[10px] uppercase font-bold tracking-wider text-zinc-400">
@@ -375,13 +529,59 @@ export default function AdminOrders({
 
 
       {activeSubTab === 'schemes' && (
-        <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+        <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 sm:p-8 space-y-5 shadow-xs w-full overflow-hidden">
           <div className="border-b border-solid border-zinc-100 dark:border-zinc-850 pb-4">
             <h3 className="text-base font-black tracking-wider text-zinc-900 dark:text-[#E6C687] uppercase">Gold scheme enrollments</h3>
             <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">Gold Mine 11+1 Installments scheme enrollee directory list.</p>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* MOBILE CARDS */}
+          <div className="block md:hidden space-y-3">
+            {savingsEnrollments.length === 0 ? (
+              <p className="py-10 text-center text-zinc-450 uppercase tracking-wider font-bold text-xs">No members enrolled</p>
+            ) : (
+              savingsEnrollments.map(s => (
+                <div key={s.id} className="bg-zinc-50 dark:bg-zinc-900/50 border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 space-y-3">
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="min-w-0">
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block text-sm">{s.fullName}</span>
+                      <span className="text-[10px] text-zinc-450 font-mono block">{s.mobileNumber}</span>
+                    </div>
+                    <span className="shrink-0 px-2 py-1 rounded-lg bg-amber-50 text-amber-600 text-[9px] font-extrabold uppercase tracking-wider border border-solid border-amber-200">11+1 Scheme</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-[10px]">
+                    <div>
+                      <span className="text-zinc-400 font-bold uppercase tracking-wider block">Monthly Amount</span>
+                      <span className="font-bold text-zinc-850 dark:text-zinc-200 font-sans">₹{(s.monthlyInstallment || 0).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-400 font-bold uppercase tracking-wider block">Nominee</span>
+                      <span className="text-zinc-600 dark:text-zinc-400">{s.nomineeName || '—'}</span>
+                    </div>
+                    {s.emailAddress && (
+                      <div className="col-span-2">
+                        <span className="text-zinc-400 font-bold uppercase tracking-wider block">Email</span>
+                        <span className="text-zinc-600 dark:text-zinc-400 truncate block">{s.emailAddress}</span>
+                      </div>
+                    )}
+                    <div className="col-span-2">
+                      <span className="text-zinc-400 font-bold uppercase tracking-wider block">Enrolled On</span>
+                      <span className="text-zinc-600 dark:text-zinc-400">{safeFormatDateTime(s.createdDate)}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteScheme(s.id)}
+                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 cursor-pointer border-none text-[10px] font-bold uppercase tracking-wider"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Remove Enrollment
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* DESKTOP TABLE */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
                 <tr className="border-b border-solid border-zinc-100 dark:border-zinc-800 text-[10px] uppercase font-bold tracking-wider text-zinc-400">

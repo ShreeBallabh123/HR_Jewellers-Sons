@@ -36,7 +36,7 @@ export default function AdminLayout({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
-    <div className="flex w-full min-h-screen bg-zinc-50 text-zinc-900">
+    <div className="flex w-full min-h-screen bg-zinc-50 text-zinc-900 overflow-x-hidden">
 
       
       {/* Sidebar panel */}
@@ -51,7 +51,7 @@ export default function AdminLayout({
       />
 
       {/* Main console content */}
-      <div className="flex-grow flex flex-col min-h-screen">
+      <div className="flex-grow flex flex-col min-h-screen min-w-0 w-0 overflow-x-hidden">
         <Header
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -69,7 +69,7 @@ export default function AdminLayout({
           setCrmSearch={setCrmSearch}
         />
 
-        <main className="flex-1 p-4 sm:p-8 pb-24 md:pb-8 flex flex-col justify-between">
+        <main className="flex-1 p-3 sm:p-6 md:p-8 pb-24 md:pb-8 flex flex-col justify-between w-full overflow-x-hidden min-w-0">
           {children}
         </main>
 
@@ -89,14 +89,14 @@ export default function AdminLayout({
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`flex flex-col items-center gap-1.5 py-1 px-2 transition-all duration-200 relative cursor-pointer border-none bg-transparent ${
+                className={`flex flex-col items-center gap-1 py-1.5 px-1 transition-all duration-200 relative cursor-pointer border-none bg-transparent min-w-0 flex-1 ${
                   isActive
                     ? 'text-[#C8A646] font-bold'
                     : 'text-zinc-400 hover:text-zinc-650'
                 }`}
               >
                 <Icon className={`w-5 h-5 ${isActive ? 'text-[#C8A646]' : 'text-zinc-400'}`} />
-                <span className="text-[7.5px] sm:text-[9px] uppercase tracking-wider whitespace-nowrap">{item.name}</span>
+                <span className="text-[7px] sm:text-[8.5px] uppercase tracking-wide whitespace-nowrap truncate w-full text-center">{item.name}</span>
               </button>
             );
           })}

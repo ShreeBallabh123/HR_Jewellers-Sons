@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
 import { useRates } from '../hooks/useRates';
@@ -517,9 +518,15 @@ export default function Navbar({
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-1.5 hover:bg-slate-50 rounded-full focus:outline-none border-none bg-transparent"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-              </svg>
+              {mobileMenuOpen ? (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+              )}
             </button>
 
           </div>
@@ -568,52 +575,114 @@ export default function Navbar({
           )}
         </div>
 
-        {/* Mobile Dropdown Drawer Menu */}
-        {mobileMenuOpen && (
-          <div className="flex flex-col bg-[#FAF9F7] border border-solid border-slate-100 rounded-2xl p-4 space-y-3 animate-slide-up text-xs font-semibold text-gray-800 uppercase tracking-wider">
-            <button
-              onClick={() => { setMobileMenuOpen(false); navigateTo('savings'); }}
-              className="text-left py-2 border-b border-solid border-slate-200/50 border-none bg-transparent"
-            >
-              11+1 savings scheme
-            </button>
-            <button
-              onClick={() => { setMobileMenuOpen(false); changeCategoryTab('Rings'); navigateTo('collections'); }}
-              className="text-left py-2 border-b border-solid border-slate-200/50 border-none bg-transparent"
-            >
-              Rings
-            </button>
-            <button
-              onClick={() => { setMobileMenuOpen(false); changeCategoryTab('Earrings'); navigateTo('collections'); }}
-              className="text-left py-2 border-b border-solid border-slate-200/50 border-none bg-transparent"
-            >
-              Earrings
-            </button>
-            <button
-              onClick={() => { setMobileMenuOpen(false); changeCategoryTab('Necklace'); navigateTo('collections'); }}
-              className="text-left py-2 border-b border-solid border-slate-200/50 border-none bg-transparent"
-            >
-              Necklaces
-            </button>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                navigateTo('gold-coins');
-                setCoinPurityTab('24K');
-                setCoinWeightFilter('all');
-              }}
-              className="text-left py-2 border-b border-solid border-slate-200/50 border-none bg-transparent"
-            >
-              Gold Coins
-            </button>
-            <button
-              onClick={() => { setMobileMenuOpen(false); navigateTo('offers'); }}
-              className="text-left py-2 border-none bg-transparent"
-            >
-              Offers &amp; Showrooms
-            </button>
+        {/* Mobile Full-Screen Menu Overlay — portal to escape nav's backdrop-filter stacking context */}
+        {mobileMenuOpen && ReactDOM.createPortal(
+          <div
+            className="fixed inset-0 w-screen h-screen bg-white z-[99999] flex flex-col overflow-y-auto"
+            style={{ animation: 'slideDownFadeIn 0.25s ease-out forwards', top: 0, left: 0, right: 0, bottom: 0 }}
+          >
+            {/* Menu Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-solid border-zinc-100 shrink-0">
+              <div className="flex items-center gap-3">
+                <img src={hrLogoMark} alt="HR Logo" className="w-10 h-10 object-contain" />
+                <div>
+                  <div className="text-[13px] font-bold tracking-[1.5px] text-[#1A1A1A] serif-luxury">HR JEWELLERS</div>
+                  <div className="text-[10px] font-bold tracking-[2px] text-[#C8A646] serif-luxury">&amp; SONS</div>
+                </div>
+              </div>
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-zinc-100 active:bg-zinc-200 border-none cursor-pointer"
+              >
+                <svg className="w-5 h-5 text-zinc-700" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Nav Items */}
+            <nav className="flex flex-col px-5 py-4 space-y-1 flex-1">
+              {/* 11+1 Savings — highlighted */}
+              <button
+                onClick={() => { setMobileMenuOpen(false); navigateTo('savings'); }}
+                className="flex items-center gap-4 w-full text-left px-4 py-4 rounded-2xl bg-[#C8A646]/10 active:bg-[#C8A646]/20 border-none cursor-pointer transition-colors mb-2"
+              >
+                <span className="w-10 h-10 rounded-full bg-[#C8A646]/20 flex items-center justify-center text-[#C8A646] shrink-0">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </span>
+                <div>
+                  <div className="text-[13px] font-extrabold text-[#C8A646] uppercase tracking-wider">11+1 Savings Scheme</div>
+                  <div className="text-[11px] text-zinc-500 font-medium mt-0.5">Invest 11 months, get 12th FREE</div>
+                </div>
+              </button>
+
+              <div className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 px-2 pt-3 pb-2">Collections</div>
+
+              {[
+                { label: 'Rings', icon: '💍', tab: 'Rings' },
+                { label: 'Earrings', icon: '✨', tab: 'Earrings' },
+                { label: 'Necklaces', icon: '📿', tab: 'Necklace' },
+                { label: 'Bangles', icon: '🔮', tab: 'Bangles' },
+                { label: 'Bracelets', icon: '🌟', tab: 'Bracelets' },
+                { label: 'Mangalsutras', icon: '❤️', tab: 'Mangalsutras' },
+              ].map(item => (
+                <button
+                  key={item.tab}
+                  onClick={() => { setMobileMenuOpen(false); changeCategoryTab(item.tab); navigateTo('collections'); }}
+                  className="flex items-center gap-4 w-full text-left px-4 py-3.5 rounded-xl active:bg-zinc-50 border-none cursor-pointer transition-colors"
+                >
+                  <span className="text-xl w-9 text-center">{item.icon}</span>
+                  <span className="text-[14px] font-semibold text-zinc-800">{item.label}</span>
+                  <svg className="w-4 h-4 text-zinc-300 ml-auto" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              ))}
+
+              <div className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 px-2 pt-3 pb-2">More</div>
+
+              <button
+                onClick={() => { setMobileMenuOpen(false); navigateTo('gold-coins'); setCoinPurityTab('24K'); setCoinWeightFilter('all'); }}
+                className="flex items-center gap-4 w-full text-left px-4 py-3.5 rounded-xl active:bg-zinc-50 border-none cursor-pointer transition-colors"
+              >
+                <span className="text-xl w-9 text-center">🪙</span>
+                <span className="text-[14px] font-semibold text-zinc-800">Gold Coins</span>
+                <svg className="w-4 h-4 text-zinc-300 ml-auto" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => { setMobileMenuOpen(false); navigateTo('offers'); }}
+                className="flex items-center gap-4 w-full text-left px-4 py-3.5 rounded-xl active:bg-zinc-50 border-none cursor-pointer transition-colors"
+              >
+                <span className="text-xl w-9 text-center">🏷️</span>
+                <span className="text-[14px] font-semibold text-zinc-800">Offers &amp; Showrooms</span>
+                <svg className="w-4 h-4 text-zinc-300 ml-auto" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </nav>
+
+            {/* WhatsApp CTA at bottom */}
+            <div className="px-5 pb-8 pt-4 shrink-0">
+              <a
+                href="https://wa.me/919783843978?text=Hello%20H.R.%20Jewellers"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2.5 w-full py-4 rounded-2xl bg-[#25D366] text-white font-bold text-[14px] shadow-md"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 001.37 5.037L2 22l5.135-1.348a9.954 9.954 0 004.878 1.28c5.505 0 9.988-4.478 9.989-9.984 0-2.67-1.037-5.18-2.925-7.07C17.186 3.037 14.678 2 12.012 2z" />
+                </svg>
+                Chat on WhatsApp
+              </a>
+            </div>
           </div>
-        )}
+        , document.body)}
 
       </div>
     </nav>

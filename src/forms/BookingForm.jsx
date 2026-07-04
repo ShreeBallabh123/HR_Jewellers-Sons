@@ -13,7 +13,9 @@ export default function BookingForm({
     date: '',
     timeSlot: '',
     description: '',
-    preferredType: 'Gold Jewellery'
+    preferredType: 'Gold Jewellery',
+    categoryType: 'Rings',
+    budget: ''
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -69,7 +71,9 @@ export default function BookingForm({
         date: '',
         timeSlot: '',
         description: '',
-        preferredType: 'Gold Jewellery'
+        preferredType: 'Gold Jewellery',
+        categoryType: 'Rings',
+        budget: ''
       });
       setSelectedFile(null);
       setUploadedUrl('');
@@ -184,6 +188,41 @@ export default function BookingForm({
         </>
       ) : (
         <>
+          {/* Category Type */}
+          <div className="space-y-1">
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">Category Type</label>
+            <select
+              name="categoryType"
+              value={formData.categoryType}
+              onChange={handleInputChange}
+              className="w-full h-11 px-4 rounded-xl border border-solid border-slate-100 focus:border-gold focus:outline-none bg-white"
+              required
+            >
+              <option value="Rings">Rings 💍</option>
+              <option value="Earrings">Earrings ✨</option>
+              <option value="Necklaces">Necklaces 📿</option>
+              <option value="Bangles">Bangles 🔮</option>
+              <option value="Bracelets">Bracelets 🌟</option>
+              <option value="Mangalsutras">Mangalsutras ❤️</option>
+              <option value="Coins">Gold/Silver Coins 🪙</option>
+              <option value="Other">Other Custom Ornaments</option>
+            </select>
+          </div>
+
+          {/* Budget */}
+          <div className="space-y-1">
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">Target Budget</label>
+            <input
+              type="text"
+              name="budget"
+              value={formData.budget}
+              onChange={handleInputChange}
+              placeholder="e.g. ₹50,000 or 1.5 Lakhs"
+              className="w-full h-11 px-4 rounded-xl border border-solid border-slate-100 focus:border-gold focus:outline-none"
+              required
+            />
+          </div>
+
           {/* Design Description */}
           <div className="space-y-1">
             <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">Bespoke Ornaments Details</label>

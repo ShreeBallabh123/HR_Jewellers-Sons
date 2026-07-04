@@ -139,11 +139,10 @@ export default function Collections({
     return result;
   }, [products, activeCategoryTab, metalFilter, purityFilter, maxPriceFilter, stoneFilter, genderFilter, occasionFilter, sortFilter, calculatePrice]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredJewellery.length / ITEMS_PER_PAGE));
+  const totalPages = 1;
   const paginatedProducts = useMemo(() => {
-    const start = (collectionsPage - 1) * ITEMS_PER_PAGE;
-    return filteredJewellery.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredJewellery, collectionsPage]);
+    return filteredJewellery;
+  }, [filteredJewellery]);
 
   // Reset to page 1 when filters change
   useEffect(() => { setCollectionsPage(1); }, [activeCategoryTab, metalFilter, purityFilter, maxPriceFilter, stoneFilter, genderFilter, occasionFilter, sortFilter]);
@@ -157,7 +156,7 @@ export default function Collections({
     <>
       {/* SORT + FILTER STICKY BAR FOR MOBILE ONLY */}
 
-      <div className={`lg:hidden fixed bottom-[56px] left-0 w-full z-30 border-t flex items-center justify-center shadow-[0_-4px_20px_rgba(0,0,0,0.12)] backdrop-blur-md transition-colors duration-500 ${isCatalogDark
+      <div className={`lg:hidden fixed bottom-0 left-0 w-full z-30 border-t flex items-center justify-center shadow-[0_-4px_20px_rgba(0,0,0,0.12)] backdrop-blur-md transition-colors duration-500 ${isCatalogDark
         ? "bg-[#1D0E29]/95 border-gold/15 text-white shadow-2xl"
         : "bg-[#FCFAFF]/95 border-[#DDA0DD]/20 text-[#4A126D]"
         }`}>
@@ -743,7 +742,7 @@ export default function Collections({
                           className="group rounded-xl sm:rounded-3xl p-2 sm:p-5 flex flex-col justify-between border border-solid border-[#EAEAEA] transition-all duration-300 relative cursor-pointer overflow-hidden bg-white text-[#1B1B1B] shadow-sm hover:shadow-[0_15px_30px_rgba(0,0,0,0.06)] hover:border-[#DDA0DD]/45 hover:-translate-y-1.5 h-auto text-left"
                         >
                           {/* Image & Overlays */}
-                          <div className="aspect-square rounded-xl sm:rounded-[1.5rem] overflow-hidden relative bg-[#F8F9FA] border border-solid border-[#DDA0DD]/5 shrink-0 text-center">
+                          <div className="aspect-square rounded-xl sm:rounded-[1.5rem] overflow-hidden relative bg-white border border-solid border-[#DDA0DD]/5 shrink-0 text-center">
 
                             {prod.img ? (
                               <img
@@ -844,68 +843,7 @@ export default function Collections({
             </div>
           </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 pt-8 pb-4 select-none flex-wrap">
-              <button
-                onClick={() => {
-                  if (collectionsPage > 1) {
-                    triggerAudio('click');
-                    setCollectionsPage(collectionsPage - 1);
-                    window.scrollTo({ top: 400, behavior: 'smooth' });
-                  }
-                }}
-                disabled={collectionsPage === 1}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border border-solid cursor-pointer ${
-                  collectionsPage === 1
-                    ? 'text-gray-300 border-gray-150 bg-gray-50/50 cursor-not-allowed opacity-50'
-                    : 'text-[#4A126D] bg-[#FBF9FF] border-gray-200 hover:border-[#DDA0DD] hover:text-[#DDA0DD]'
-                }`}
-              >
-                ← Prev
-              </button>
 
-              {Array.from({ length: totalPages }).map((_, idx) => {
-                const pageNum = idx + 1;
-                const isActive = collectionsPage === pageNum;
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => {
-                      triggerAudio('click');
-                      setCollectionsPage(pageNum);
-                      window.scrollTo({ top: 400, behavior: 'smooth' });
-                    }}
-                    className={`w-9 h-9 rounded-xl text-xs font-bold transition-all duration-300 border border-solid cursor-pointer flex items-center justify-center ${
-                      isActive
-                        ? 'bg-[#4A126D] text-white border-[#DDA0DD] shadow-md scale-105'
-                        : 'text-gray-600 bg-white border-gray-200 hover:border-[#DDA0DD] hover:text-[#4A126D]'
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-
-              <button
-                onClick={() => {
-                  if (collectionsPage < totalPages) {
-                    triggerAudio('click');
-                    setCollectionsPage(collectionsPage + 1);
-                    window.scrollTo({ top: 400, behavior: 'smooth' });
-                  }
-                }}
-                disabled={collectionsPage === totalPages}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border border-solid cursor-pointer ${
-                  collectionsPage === totalPages
-                    ? 'text-gray-300 border-gray-150 bg-gray-50/50 cursor-not-allowed opacity-50'
-                    : 'text-[#4A126D] bg-[#FBF9FF] border-gray-200 hover:border-[#DDA0DD] hover:text-[#DDA0DD]'
-                }`}
-              >
-                Next →
-              </button>
-            </div>
-          )}
         </div>
       </div>
 

@@ -384,8 +384,13 @@ export default function Home({
           <source src={heroBgVideo} type="video/mp4" />
         </video>
 
-        {/* Mobile bottom fog effect */}
-        <div className="sm:hidden absolute bottom-0 left-0 w-full h-28 pointer-events-none bg-gradient-to-t from-white/85 via-white/45 to-transparent backdrop-blur-xs select-none" />
+        {/* Mobile bottom fog/fade effect */}
+        <div
+          className="sm:hidden absolute bottom-0 left-0 w-full h-36 pointer-events-none select-none"
+          style={{
+            background: 'linear-gradient(to top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.75) 35%, rgba(255,255,255,0.35) 65%, transparent 100%)'
+          }}
+        />
       </section>
 
       {/* Divider */}
@@ -500,7 +505,7 @@ export default function Home({
           ========================================================== */}
         <section className="w-full bg-[#F8F5F0] py-20 flex flex-col items-center justify-center overflow-hidden">
           <div
-            className="w-full aspect-[2400/778] overflow-hidden bg-white relative group select-none outline-none"
+            className="w-full h-[200px] sm:h-auto sm:aspect-[2400/778] overflow-hidden bg-white relative group select-none outline-none"
             tabIndex={0}
             onKeyDown={handlePromoKeyDown}
             onTouchStart={handlePromoTouchStart}

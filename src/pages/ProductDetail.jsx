@@ -233,6 +233,8 @@ export default function ProductDetail({
     return Number(price).toLocaleString('en-IN');
   };
 
+  const [manualZoomScale, setManualZoomScale] = useState(1);
+
   const handleZoomMouseMove = (e) => {
     setPdpHovered(true);
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -240,7 +242,7 @@ export default function ProductDetail({
     const y = ((e.clientY - top) / height) * 100;
     setPdpZoomStyle({
       transformOrigin: `${x}% ${y}%`,
-      transform: 'scale(1.2)',
+      transform: 'scale(2.2)',
     });
   };
 
@@ -253,7 +255,7 @@ export default function ProductDetail({
   };
 
   return (
-    <div className="bg-white text-[#181818] min-h-screen pb-24 relative select-none font-sans">
+    <div className="bg-white text-[#181818] min-h-screen pb-24 relative font-sans">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 py-8 space-y-16 animate-fade-in">
 
         {/* Breadcrumbs */}
@@ -345,16 +347,52 @@ export default function ProductDetail({
                   />
                 </div>
               ) : (
-                <img
-                  src={detailActiveImg || detailProduct.img}
-                  alt={detailProduct.name}
-                  className="w-full h-full object-contain select-none pointer-events-none transition-all duration-300 mix-blend-multiply"
-                  style={{
-                    ...pdpZoomStyle,
-                    transition: 'transform 0.15s ease-out, transform-origin 0.15s ease-out',
-                    filter: 'brightness(1.06) contrast(1.04)',
-                  }}
-                />
+                <>
+                  <img
+                    src={detailActiveImg || detailProduct.img}
+                    alt={detailProduct.name}
+                    className="w-full h-full object-contain pointer-events-none transition-all duration-300 mix-blend-multiply"
+                    style={{
+                      transformOrigin: pdpHovered ? pdpZoomStyle.transformOrigin : 'center center',
+                      transform: pdpHovered ? pdpZoomStyle.transform : `scale(${manualZoomScale})`,
+                      transition: 'transform 0.15s ease-out, transform-origin 0.15s ease-out',
+                      filter: 'brightness(1.06) contrast(1.04)',
+                    }}
+                  />
+
+                  {/* Floating Zoom Controls for Mobile & Desktop */}
+                  <div className="absolute bottom-4 right-4 z-30 flex items-center gap-1 bg-white/90 backdrop-blur-md px-2 py-1 rounded-full border border-solid border-zinc-200/60 shadow-[0_2px_10px_rgba(0,0,0,0.06)] select-none">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        triggerAudio('click');
+                        setManualZoomScale(prev => Math.max(1, prev - 0.5));
+                      }}
+                      disabled={manualZoomScale <= 1}
+                      className="w-7 h-7 flex items-center justify-center rounded-full bg-transparent hover:bg-zinc-100 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-800 border-none cursor-pointer font-bold text-base transition-colors"
+                      title="Zoom Out"
+                    >
+                      −
+                    </button>
+                    <span className="text-[10px] font-bold text-zinc-700 w-10 text-center font-sans tracking-tight">
+                      {Math.round(manualZoomScale * 100)}%
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        triggerAudio('click');
+                        setManualZoomScale(prev => Math.min(3, prev + 0.5));
+                      }}
+                      disabled={manualZoomScale >= 3}
+                      className="w-7 h-7 flex items-center justify-center rounded-full bg-transparent hover:bg-zinc-100 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-800 border-none cursor-pointer font-bold text-base transition-colors"
+                      title="Zoom In"
+                    >
+                      +
+                    </button>
+                  </div>
+                </>
               )}
             </div>
 
@@ -614,7 +652,7 @@ export default function ProductDetail({
 
             {/* Purchase Actions CTA */}
             <div className="space-y-4 pt-4 border-t border-[#E7DED2] text-left">
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3">
                 {/* Primary: BUY NOW */}
                 <button
                   onClick={() => {
@@ -627,7 +665,7 @@ export default function ProductDetail({
                     });
                     setTimeout(() => setCartOpen(true), 200);
                   }}
-                  className="flex-1 h-[60px] bg-gradient-to-r from-[#B8893C] via-[#D5A75C] to-[#B8893C] hover:brightness-110 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all duration-300 rounded-lg flex items-center justify-center hover:scale-[1.01] active:scale-[0.99] cursor-pointer shadow-md border-none font-bold"
+                  className="w-full sm:w-auto sm:flex-1 h-12 sm:h-14 bg-gradient-to-r from-[#B8893C] via-[#D5A75C] to-[#B8893C] hover:brightness-110 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all duration-300 rounded-full flex items-center justify-center hover:scale-[1.01] active:scale-[0.99] cursor-pointer shadow-md border-none font-bold shrink-0"
                 >
                   BUY NOW
                 </button>
@@ -639,7 +677,7 @@ export default function ProductDetail({
                     setPlanModalProduct(detailProduct);
                     setPlanModalOpen(true);
                   }}
-                  className="flex-1 h-[60px] bg-gradient-to-r from-[#4A126D] via-[#7B2CBF] to-[#4A126D] hover:brightness-110 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all duration-300 rounded-lg flex items-center justify-center hover:scale-[1.01] active:scale-[0.99] cursor-pointer shadow-md border-none font-bold"
+                  className="w-full sm:w-auto sm:flex-1 h-12 sm:h-14 bg-gradient-to-r from-[#4A126D] via-[#7B2CBF] to-[#4A126D] hover:brightness-110 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all duration-300 rounded-full flex items-center justify-center hover:scale-[1.01] active:scale-[0.99] cursor-pointer shadow-md border-none font-bold shrink-0"
                 >
                   11+1 PLAN
                 </button>
@@ -648,7 +686,7 @@ export default function ProductDetail({
               {/* Scheme Enroll Button */}
               <button
                 onClick={() => { triggerAudio('shimmer'); navigateTo('savings'); }}
-                className="w-full h-[60px] border border-[#E7DED2] text-[#5E5E5E] bg-transparent hover:bg-[#F7F3EE] hover:border-[#B8893C] font-semibold text-xs uppercase tracking-[0.2em] transition-all duration-300 rounded-none flex items-center justify-center gap-2 cursor-pointer font-bold"
+                className="w-full h-12 sm:h-14 border border-[#E7DED2] text-[#5E5E5E] bg-transparent hover:bg-[#F7F3EE] hover:border-[#B8893C] font-semibold text-xs uppercase tracking-[0.2em] transition-all duration-300 rounded-full flex items-center justify-center gap-2 cursor-pointer font-bold shrink-0"
               >
                 ENROLL IN GRP SAVING PLAN &amp; BENEFIT
               </button>

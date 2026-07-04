@@ -1,5 +1,5 @@
 import React from 'react';
-import hrLogo from '../assets/logo.png';
+import hrLogo from '../assets/logo_new.png';
 
 export default function Footer({
   navigateTo,

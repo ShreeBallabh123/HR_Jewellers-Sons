@@ -80,26 +80,26 @@ export default function Header({
   };
 
   return (
-    <header className="flex flex-col sm:flex-row justify-between items-center bg-white border-b border-solid border-zinc-200 text-zinc-900 p-4 sm:px-6 gap-4 min-h-[80px] py-4 mb-8 select-none w-full shadow-sm">
-      <div className="flex flex-col text-left">
-        <span className="text-[10px] font-mono tracking-wider text-zinc-400 dark:text-zinc-500 font-bold block mb-1 uppercase">
+    <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white border-b border-solid border-zinc-200 text-zinc-900 px-4 sm:px-6 py-3.5 sm:py-4 gap-3 sm:gap-4 mb-6 sm:mb-8 select-none w-full shadow-sm">
+      <div className="flex flex-col text-left min-w-0">
+        <span className="text-[9px] font-mono tracking-wider text-zinc-400 dark:text-zinc-500 font-bold block mb-0.5 uppercase truncate">
           {getBreadcrumbs()}
         </span>
-        <h2 className="text-xl font-bold tracking-tight text-zinc-950 dark:text-zinc-55 leading-none">
+        <h2 className="text-lg sm:text-xl font-bold tracking-tight text-zinc-950 dark:text-zinc-55 leading-none">
           {getPageTitle()}
         </h2>
       </div>
 
-      <div className="flex flex-wrap gap-2.5 items-center justify-end w-full sm:w-auto">
+      <div className="flex gap-2 items-center flex-wrap w-full sm:w-auto justify-start sm:justify-end">
         {adminUser && (
-          <div className="flex gap-2 w-full sm:w-auto items-center">
+          <>
             {/* Notifications icon */}
             <div className="relative z-50">
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
                 className="relative p-2 rounded-lg border border-solid border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 cursor-pointer transition-all focus:outline-none flex items-center justify-center"
               >
-                <Bell className="w-4.5 h-4.5" />
+                <Bell className="w-4 h-4" />
                 {notifications.length > 0 && (
                   <span className="absolute -top-1 -right-1 min-w-4 h-4 bg-amber-500 text-white text-[8px] font-black rounded-full flex items-center justify-center px-1 border border-solid border-white dark:border-zinc-900 shadow-sm animate-pulse">
                     {notifications.length}
@@ -111,7 +111,7 @@ export default function Header({
               {showNotifications && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)}></div>
-                  <div className="absolute right-0 mt-2.5 w-80 sm:w-96 bg-white dark:bg-zinc-955 border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_15px_40px_rgba(0,0,0,0.3)] z-50 overflow-hidden animate-slide-up text-zinc-800 dark:text-zinc-200">
+                  <div className="absolute right-0 mt-2.5 w-[min(calc(100vw-2rem),24rem)] bg-white dark:bg-zinc-955 border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_15px_40px_rgba(0,0,0,0.3)] z-50 overflow-hidden text-zinc-800 dark:text-zinc-200">
                     <div className="flex items-center justify-between px-4 py-3 bg-zinc-50 dark:bg-zinc-900 border-b border-solid border-zinc-200 dark:border-zinc-800">
                       <span className="text-[10px] font-mono font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
                         Action Centre ({notifications.length})
@@ -177,7 +177,7 @@ export default function Header({
             {/* Storefront redirect */}
             <a
               href="/"
-              className="border border-solid border-zinc-200 hover:border-zinc-300 text-zinc-700 bg-white font-bold text-xs px-3.5 py-2 rounded-lg transition-all text-center flex items-center gap-1.5 shadow-xs"
+              className="border border-solid border-zinc-200 hover:border-zinc-300 text-zinc-700 bg-white font-bold text-xs px-3 py-2 rounded-lg transition-all text-center flex items-center gap-1.5 shadow-xs whitespace-nowrap"
             >
               <span>Visit Store</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -186,12 +186,12 @@ export default function Header({
             {/* Logout button */}
             <button
               onClick={handleAdminLogout}
-              className="bg-zinc-900 hover:bg-zinc-700 text-white font-bold text-xs px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-xs cursor-pointer border-none"
+              className="bg-zinc-900 hover:bg-zinc-700 text-white font-bold text-xs px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-xs cursor-pointer border-none whitespace-nowrap"
             >
               <span>Log Out</span>
               <LogOut className="w-3.5 h-3.5" />
             </button>
-          </div>
+          </>
         )}
       </div>
     </header>

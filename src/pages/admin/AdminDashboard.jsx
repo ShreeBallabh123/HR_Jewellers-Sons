@@ -71,7 +71,7 @@ export default function AdminDashboard({
   }, [products]);
 
   return (
-    <div className="space-y-6 text-[#1A1A1A] dark:text-zinc-100 font-sans text-left">
+    <div className="space-y-6 text-[#1A1A1A] dark:text-zinc-100 font-sans text-left w-full overflow-x-hidden">
       {/* 4 Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         

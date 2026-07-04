@@ -19,7 +19,7 @@ export default function ProductCard({
       className="group relative flex flex-col justify-between p-4 rounded-3xl bg-white border border-solid border-slate-100 hover:border-gold/30 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_15px_40px_rgba(200,166,70,0.08)] transition-all duration-500 cursor-pointer overflow-hidden text-[#4A126D]"
     >
       {/* Visual Image Section */}
-      <div className="relative aspect-square rounded-2xl bg-[#F8F9FA] flex items-center justify-center p-4 overflow-hidden">
+      <div className="relative aspect-square rounded-2xl bg-white flex items-center justify-center p-4 overflow-hidden">
         <img
           src={product.img}
           alt={product.name}

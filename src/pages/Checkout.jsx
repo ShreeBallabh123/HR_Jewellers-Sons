@@ -8,6 +8,12 @@ export default function Checkout({ navigateTo, triggerAudio }) {
   const [checkoutFlowStep, setCheckoutFlowStep] = useState(1);
   const [checkoutForm, setCheckoutForm] = useState({ method: 'card', name: '', phone: '', address: '' });
   const [deliveryType, setDeliveryType] = useState('home'); // 'home' or 'store'
+  const [upiId, setUpiId] = useState('');
+  const [cardNo, setCardNo] = useState('');
+  const [cardName, setCardName] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvv, setCardCvv] = useState('');
+  const [netbankBank, setNetbankBank] = useState('');
   const [deliveryForm, setDeliveryForm] = useState({
     email: '',
     mobile: '',
@@ -431,14 +437,105 @@ export default function Checkout({ navigateTo, triggerAudio }) {
                     {/* Right Content */}
                     <div className="flex-1 px-4 sm:px-8 py-4 sm:py-2 text-left">
                       <h3 className="text-sm font-bold text-[#031838] mb-3">
-                        Pay with {checkoutForm.method === 'cod' ? 'Cash on Showroom Delivery' : 'Card, Net Banking or UPI'}
+                        Pay with {checkoutForm.method === 'cod' ? 'Cash on Showroom Delivery' : checkoutForm.method === 'card' ? 'Credit / Debit Card' : checkoutForm.method === 'netbanking' ? 'Net Banking' : 'UPI'}
                       </h3>
-                      <p className="text-xs text-gray-400 leading-relaxed mb-6">
-                        {checkoutForm.method === 'cod'
-                          ? 'Your order will be confirmed and you can pay at the showroom or upon delivery.'
-                          : "You'll be securely redirected to enter your payment details and complete your purchase via WhatsApp confirmation."
-                        }
-                      </p>
+
+                      {checkoutForm.method === 'cod' && (
+                        <p className="text-xs text-gray-400 leading-relaxed mb-6">
+                          Your order will be confirmed and you can pay at the showroom or upon delivery.
+                        </p>
+                      )}
+
+                      {/* Card Details Inputs */}
+                      {checkoutForm.method === 'card' && (
+                        <div className="space-y-4 mb-6">
+                          <div className="space-y-1">
+                            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">Name on Card</label>
+                            <input
+                              type="text"
+                              value={cardName}
+                              onChange={(e) => setCardName(e.target.value)}
+                              placeholder="e.g. Anil Soni"
+                              className="w-full h-11 px-4 rounded-xl border border-solid border-slate-200 focus:border-gold focus:outline-none text-xs"
+                              required
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">Card Number</label>
+                            <input
+                              type="text"
+                              value={cardNo}
+                              onChange={(e) => setCardNo(e.target.value.replace(/\s?/g, '').replace(/(\d{4})/g, '$1 ').trim())}
+                              maxLength="19"
+                              placeholder="1234 5678 1234 5678"
+                              className="w-full h-11 px-4 rounded-xl border border-solid border-slate-200 focus:border-gold focus:outline-none text-xs"
+                              required
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                              <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">Expiry Date</label>
+                              <input
+                                type="text"
+                                value={cardExpiry}
+                                onChange={(e) => setCardExpiry(e.target.value)}
+                                placeholder="MM/YY"
+                                maxLength="5"
+                                className="w-full h-11 px-4 rounded-xl border border-solid border-slate-200 focus:border-gold focus:outline-none text-xs"
+                                required
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">CVV</label>
+                              <input
+                                type="password"
+                                value={cardCvv}
+                                onChange={(e) => setCardCvv(e.target.value)}
+                                placeholder="***"
+                                maxLength="3"
+                                className="w-full h-11 px-4 rounded-xl border border-solid border-slate-200 focus:border-gold focus:outline-none text-xs"
+                                required
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Net Banking Inputs */}
+                      {checkoutForm.method === 'netbanking' && (
+                        <div className="space-y-1 mb-6">
+                          <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">Select Your Bank</label>
+                          <select
+                            value={netbankBank}
+                            onChange={(e) => setNetbankBank(e.target.value)}
+                            className="w-full h-11 px-4 rounded-xl border border-solid border-slate-200 focus:border-gold focus:outline-none text-xs bg-white"
+                            required
+                          >
+                            <option value="">Choose a bank</option>
+                            <option value="SBI">State Bank of India</option>
+                            <option value="HDFC">HDFC Bank</option>
+                            <option value="ICICI">ICICI Bank</option>
+                            <option value="Axis">Axis Bank</option>
+                            <option value="Kotak">Kotak Mahindra Bank</option>
+                            <option value="PNB">Punjab National Bank</option>
+                          </select>
+                        </div>
+                      )}
+
+                      {/* UPI Input */}
+                      {checkoutForm.method === 'upi' && (
+                        <div className="space-y-1 mb-6">
+                          <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">UPI ID / Virtual Payment Address (VPA)</label>
+                          <input
+                            type="text"
+                            value={upiId}
+                            onChange={(e) => setUpiId(e.target.value)}
+                            placeholder="e.g. name@upi or name@okaxis"
+                            className="w-full h-11 px-4 rounded-xl border border-solid border-slate-200 focus:border-gold focus:outline-none text-xs"
+                            required
+                          />
+                        </div>
+                      )}
 
                       <button
                         onClick={handleCartCheckoutSubmit}
