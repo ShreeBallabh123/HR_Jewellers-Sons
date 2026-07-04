@@ -231,13 +231,13 @@ export default function BookingForm({
               className="w-full h-11 px-4 rounded-xl border border-solid border-slate-100 focus:border-gold focus:outline-none bg-white"
               required
             >
-              <option value="Rings">Rings 💍</option>
-              <option value="Earrings">Earrings ✨</option>
-              <option value="Necklaces">Necklaces 📿</option>
-              <option value="Bangles">Bangles 🔮</option>
-              <option value="Bracelets">Bracelets 🌟</option>
-              <option value="Mangalsutras">Mangalsutras ❤️</option>
-              <option value="Coins">Gold/Silver Coins 🪙</option>
+              <option value="Rings">Rings</option>
+              <option value="Earrings">Earrings</option>
+              <option value="Necklaces">Necklaces</option>
+              <option value="Bangles">Bangles</option>
+              <option value="Bracelets">Bracelets</option>
+              <option value="Mangalsutras">Mangalsutras</option>
+              <option value="Coins">Gold/Silver Coins</option>
               <option value="Other">Other Custom Ornaments</option>
             </select>
           </div>
