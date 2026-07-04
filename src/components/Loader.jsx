@@ -27,6 +27,10 @@ export default function Loader() {
           />
         </div>
 
+        <h1 className="serif-luxury text-sm md:text-base font-bold tracking-[8px] text-[#C8A646] mt-5 uppercase select-none">
+          HR JEWELLERS AND SONS
+        </h1>
+
         {/* Luxury Loading Indicator */}
         <div className="w-[140px] h-[2px] bg-[#C8A646]/15 rounded-full mt-10 overflow-hidden relative">
           <div className="h-full bg-gradient-to-r from-[#8A6623] via-[#C8A646] to-[#8A6623] rounded-full absolute top-0 left-0 animate-luxury-loader" />

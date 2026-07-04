@@ -627,15 +627,15 @@ export default function Navbar({
               <div className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 px-2 pt-3 pb-2">Collections</div>
 
               {[
+                { label: 'For Men', gender: 'men' },
+                { label: 'For Women', gender: 'women' },
+                { label: 'For Kids', gender: 'kids' },
                 { label: 'Rings', tab: 'Rings' },
                 { label: 'Earrings', tab: 'Earrings' },
                 { label: 'Necklaces', tab: 'Necklace' },
                 { label: 'Bangles', tab: 'Bangles' },
                 { label: 'Bracelets', tab: 'Bracelets' },
                 { label: 'Mangalsutras', tab: 'Mangalsutras' },
-                { label: 'For Men', gender: 'men' },
-                { label: 'For Women', gender: 'women' },
-                { label: 'For Kids', gender: 'kids' },
               ].map(item => (
                 <button
                   key={item.label}
