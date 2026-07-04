@@ -27,7 +27,12 @@ export default function Loader() {
           />
         </div>
 
-        <h1 className="serif-luxury text-2xl md:text-3xl font-black tracking-[6px] uppercase select-none bg-gradient-to-r from-[#C5A85A] via-[#FDF3CD] to-[#B8963E] bg-clip-text text-transparent filter drop-shadow-[0_2px_10px_rgba(184,150,62,0.4)] mt-6 animate-pulse" style={{ animationDuration: '3s' }}>
+        <h1 
+          className="serif-luxury text-xl md:text-2xl lg:text-3xl font-black uppercase tracking-[6px] text-[#D4AF37] -mt-14 md:-mt-20 lg:-mt-28 select-none"
+          style={{
+            textShadow: '0 1px 0 #c5a85a, 0 2px 0 #b8963e, 0 3px 0 #a9842f, 0 4px 0 #9a7220, 0 5px 0 #8b6111, 0 6px 6px rgba(0,0,0,0.15)'
+          }}
+        >
           HR JEWELLERS AND SONS
         </h1>
 
