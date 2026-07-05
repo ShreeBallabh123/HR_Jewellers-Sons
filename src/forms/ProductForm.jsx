@@ -35,6 +35,120 @@ export default function ProductForm({
     }
   };
 
+  const FloatingInput = ({
+    id,
+    label,
+    type = 'text',
+    field,
+    required = false,
+    min,
+    max,
+    step,
+    suffix,
+    onChange,
+    placeholder,
+    className = ""
+  }) => {
+    const value = getVal(field);
+    const handleChange = onChange || ((e) => {
+      const val = e.target.value;
+      updateField(field, type === 'number' ? (val === '' ? '' : +val) : val);
+    });
+
+    return (
+      <div className={`flex flex-col gap-1.5 text-left ${className}`}>
+        <label
+          htmlFor={id}
+          className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase"
+        >
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
+        <div className="relative">
+          <input
+            id={id}
+            type={type}
+            min={min}
+            max={max}
+            step={step}
+            placeholder={placeholder || `Enter ${label}`}
+            value={value}
+            onChange={handleChange}
+            className={`w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 ${suffix ? 'pr-16' : ''} text-xs text-zinc-950 dark:text-zinc-100 placeholder-zinc-300 dark:placeholder-zinc-600 focus:outline-none focus:border-[#B8893C] dark:focus:border-[#E6C687] focus:ring-1 focus:ring-[#B8893C]/20 font-semibold`}
+            required={required}
+          />
+          {suffix && (
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">
+              {suffix}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const FloatingSelect = ({
+    id,
+    label,
+    field,
+    required = false,
+    onChange,
+    children,
+    className = ""
+  }) => {
+    const value = getVal(field);
+    const handleChange = onChange || ((e) => updateField(field, e.target.value));
+
+    return (
+      <div className={`flex flex-col gap-1.5 text-left ${className}`}>
+        <label
+          htmlFor={id}
+          className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase"
+        >
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
+        <select
+          id={id}
+          value={value}
+          onChange={handleChange}
+          className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-[#B8893C] dark:focus:border-[#E6C687] cursor-pointer font-semibold"
+          required={required}
+        >
+          {children}
+        </select>
+      </div>
+    );
+  };
+
+  const FloatingTextarea = ({
+    id,
+    label,
+    field,
+    required = false,
+    rows = "2",
+    placeholder
+  }) => {
+    const value = getVal(field);
+    return (
+      <div className="flex flex-col gap-1.5 text-left">
+        <label
+          htmlFor={id}
+          className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase"
+        >
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
+        <textarea
+          id={id}
+          rows={rows}
+          placeholder={placeholder || `Enter ${label}`}
+          value={value}
+          onChange={(e) => updateField(field, e.target.value)}
+          className="w-full bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-950 dark:text-zinc-100 placeholder-zinc-300 dark:placeholder-zinc-600 focus:outline-none focus:border-[#B8893C] dark:focus:border-[#E6C687] resize-none font-semibold"
+          required={required}
+        ></textarea>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b border-solid border-zinc-100 dark:border-zinc-850 pb-4">
@@ -74,127 +188,94 @@ export default function ProductForm({
             <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">General Information</h4>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
-            <div className="space-y-1.5 col-span-2">
-              <label htmlFor="prod-name-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Jewellery Name</label>
-              <input
-                id="prod-name-form"
-                type="text"
-                placeholder="e.g. Royal Mayur Solitaire Ring"
-                value={getVal('name')}
-                onChange={(e) => updateField('name', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 focus:ring-1 focus:ring-zinc-900/5 font-semibold"
-                required
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-sku-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">SKU Code</label>
-              <input
-                id="prod-sku-form"
-                type="text"
-                placeholder="e.g. HRJ-RNG-0982"
-                value={getVal('sku')}
-                onChange={(e) => updateField('sku', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 focus:ring-1 focus:ring-zinc-900/5 font-semibold"
-                required
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-category-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Category Portfolio</label>
-              <select
-                id="prod-category-form"
-                value={getVal('category')}
-                onChange={(e) => updateField('category', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-                required
-              >
-                <option value="">Select Category</option>
-                {categories.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-categoryType-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Metal Type</label>
-              <select
-                id="prod-categoryType-form"
-                value={getVal('categoryType', 'Gold')}
-                onChange={(e) => updateField('categoryType', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-              >
-                <option value="Gold">Gold</option>
-                <option value="925 Sterling Silver">925 Sterling Silver</option>
-                <option value="Normal Silver">Normal Silver</option>
-                <option value="999 Silver">999 Silver</option>
-              </select>
-            </div>
+            <FloatingInput
+              id="prod-name-form"
+              label="Jewellery Name"
+              field="name"
+              required
+              className="col-span-2"
+            />
+            <FloatingInput
+              id="prod-sku-form"
+              label="SKU Code"
+              field="sku"
+              required
+            />
+             <FloatingSelect
+              id="prod-category-form"
+              label="Category Portfolio"
+              field="category"
+              required
+            >
+              <option value="">Select Category Portfolio</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </FloatingSelect>
+            <FloatingSelect
+              id="prod-categoryType-form"
+              label="Metal Type"
+              field="categoryType"
+              required
+            >
+              <option value="">Select Metal Type</option>
+              <option value="Gold">Gold</option>
+              <option value="925 Sterling Silver">925 Sterling Silver</option>
+              <option value="Normal Silver">Normal Silver</option>
+              <option value="999 Silver">999 Silver</option>
+            </FloatingSelect>
             {/* Silver Weight — show only when 999 Silver is selected */}
             {getVal('categoryType') === '999 Silver' && (
-              <div className="space-y-1.5">
-                <label htmlFor="prod-silverWeight-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Silver Weight</label>
-                <select
-                  id="prod-silverWeight-form"
-                  value={getVal('silverWeight')}
-                  onChange={(e) => updateField('silverWeight', e.target.value)}
-                  className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-                >
-                  <option value="">- Select Weight -</option>
-                  <option value="500 gm">500 gm</option>
-                  <option value="1 Kg">1 Kg</option>
-                </select>
-              </div>
+              <FloatingSelect
+                id="prod-silverWeight-form"
+                label="Silver Weight"
+                field="silverWeight"
+              >
+                <option value="">Select Silver Weight</option>
+                <option value="500 gm">500 gm</option>
+                <option value="1 Kg">1 Kg</option>
+              </FloatingSelect>
             )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label htmlFor="prod-gender-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Gender</label>
-              <select
-                id="prod-gender-form"
-                value={getVal('gender', 'Unisex')}
-                onChange={(e) => updateField('gender', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-              >
-                <option value="Unisex">Unisex</option>
-                <option value="Women">Women</option>
-                <option value="Men">Men</option>
-                <option value="Kids">Kids</option>
-              </select>
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-occasion-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Occasion</label>
-              <select
-                id="prod-occasion-form"
-                value={getVal('occasion', 'Everyday Wear')}
-                onChange={(e) => updateField('occasion', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-              >
-                <option value="Everyday Wear">Everyday Wear</option>
-                <option value="Festive">Festive</option>
-                <option value="Wedding">Wedding</option>
-                <option value="Engagement">Engagement</option>
-                <option value="Anniversary">Anniversary</option>
-                <option value="Gifting">Gifting</option>
-                <option value="Workwear">Workwear</option>
-                <option value="Romantic">Romantic</option>
-                <option value="Vacation">Vacation</option>
-                <option value="Special Occasion">Special Occasion</option>
-                <option value="Valentine">Valentine</option>
-              </select>
-            </div>
+            <FloatingSelect
+              id="prod-gender-form"
+              label="Gender"
+              field="gender"
+            >
+              <option value="">Select Gender</option>
+              <option value="Unisex">Unisex</option>
+              <option value="Women">Women</option>
+              <option value="Men">Men</option>
+              <option value="Kids">Kids</option>
+            </FloatingSelect>
+            <FloatingSelect
+              id="prod-occasion-form"
+              label="Occasion"
+              field="occasion"
+            >
+              <option value="">Select Occasion</option>
+              <option value="Everyday Wear">Everyday Wear</option>
+              <option value="Festive">Festive</option>
+              <option value="Wedding">Wedding</option>
+              <option value="Engagement">Engagement</option>
+              <option value="Anniversary">Anniversary</option>
+              <option value="Gifting">Gifting</option>
+              <option value="Workwear">Workwear</option>
+              <option value="Romantic">Romantic</option>
+              <option value="Vacation">Vacation</option>
+              <option value="Special Occasion">Special Occasion</option>
+              <option value="Valentine">Valentine</option>
+            </FloatingSelect>
           </div>
 
-          <div className="space-y-1.5">
-            <label htmlFor="prod-desc-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Jewellery Parameters &amp; Details Description</label>
-            <textarea
-              id="prod-desc-form"
-              rows="2"
-              placeholder="Complete dimensions details, custom diamond metrics, hallmark stamps details..."
-              value={getVal('desc')}
-              onChange={(e) => updateField('desc', e.target.value)}
-              className="w-full bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 resize-none font-semibold"
-              required
-            ></textarea>
-          </div>
+          <FloatingTextarea
+            id="prod-desc-form"
+            label="Jewellery Parameters & Details Description"
+            field="desc"
+            required
+          />
         </div>
 
         {/* Section: Metal Specifications */}
@@ -204,48 +285,40 @@ export default function ProductForm({
             <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Metal Specifications</h4>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div className="space-y-1.5">
-              <label htmlFor="prod-carat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Carat &amp; Purity</label>
-              <select
-                id="prod-carat-form"
-                value={getVal('carat')}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (editingProduct) {
-                    setEditingProduct({ ...editingProduct, carat: val, metalPurity: val });
-                  } else {
-                    setNewProduct({ ...newProduct, carat: val, metalPurity: val });
-                  }
-                }}
-                className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-              >
-                <option value="9K">9K</option>
-                <option value="14K">14K</option>
-                <option value="18K">18K</option>
-                <option value="20K">20K</option>
-                <option value="22K">22K</option>
-                <option value="24K">24K (Pure Gold)</option>
-                <option value="92.5">92.5 (Silver)</option>
-              </select>
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-netWeight-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Net Weight</label>
-              <input
-                id="prod-netWeight-form"
-                type="text"
-                placeholder="e.g. 1.687 g"
-                value={getVal('netWeight')}
-                onChange={(e) => updateField('netWeight', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-grossWeight-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Gross Weight</label>
-              <input
+            <FloatingSelect
+              id="prod-carat-form"
+              label="Carat & Purity"
+              field="carat"
+              onChange={(e) => {
+                const val = e.target.value;
+                if (editingProduct) {
+                  setEditingProduct({ ...editingProduct, carat: val, metalPurity: val });
+                } else {
+                  setNewProduct({ ...newProduct, carat: val, metalPurity: val });
+                }
+              }}
+            >
+              <option value="">Select Carat & Purity</option>
+              <option value="9K">9K</option>
+              <option value="14K">14K</option>
+              <option value="18K">18K</option>
+              <option value="20K">20K</option>
+              <option value="22K">22K</option>
+              <option value="24K">24K (Pure Gold)</option>
+              <option value="92.5">92.5 (Silver)</option>
+            </FloatingSelect>
+
+            <FloatingInput
+              id="prod-netWeight-form"
+              label="Net Weight"
+              field="netWeight"
+            />
+
+            <div className="relative">
+              <FloatingInput
                 id="prod-grossWeight-form"
-                type="text"
-                placeholder="e.g. 1.75 g"
-                value={getVal('grossWeight')}
+                label="Gross Weight"
+                field="grossWeight"
                 onChange={(e) => {
                   const val = e.target.value;
                   if (editingProduct) {
@@ -254,7 +327,6 @@ export default function ProductForm({
                     setNewProduct({ ...newProduct, grossWeight: val, weight: val });
                   }
                 }}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
               />
               {/* Standard Coin Weights Selectors */}
               {(getVal('category') === 'gold-coins' || getVal('category')?.toLowerCase().includes('coin')) && (
@@ -289,36 +361,28 @@ export default function ProductForm({
                 </div>
               )}
             </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-dimensions-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Product Dimensions</label>
-              <input
-                id="prod-dimensions-form"
-                type="text"
-                placeholder="e.g. 12mm - 8mm - 4mm"
-                value={getVal('productDimensions')}
-                onChange={(e) => updateField('productDimensions', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-              />
-            </div>
+
+            <FloatingInput
+              id="prod-dimensions-form"
+              label="Product Dimensions"
+              field="productDimensions"
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label htmlFor="prod-metalColor-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Metal Color/Finishing</label>
-              <select
-                id="prod-metalColor-form"
-                value={getVal('metalColor', 'Yellow Gold')}
-                onChange={(e) => updateField('metalColor', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-3 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-              >
-                <option value="Yellow Gold">Yellow Gold</option>
-                <option value="Rose Gold">Rose Gold</option>
-                <option value="White Gold">White Gold</option>
-                <option value="Platinum Plated Silver">Platinum Plated Silver</option>
-                <option value="Rose Gold Plated Silver">Rose Gold Plated Silver</option>
-                <option value="Gold Plated Silver">Gold Plated Silver</option>
-              </select>
-            </div>
+            <FloatingSelect
+              id="prod-metalColor-form"
+              label="Metal Color/Finishing"
+              field="metalColor"
+            >
+              <option value="">Select Metal Color/Finishing</option>
+              <option value="Yellow Gold">Yellow Gold</option>
+              <option value="Rose Gold">Rose Gold</option>
+              <option value="White Gold">White Gold</option>
+              <option value="Platinum Plated Silver">Platinum Plated Silver</option>
+              <option value="Rose Gold Plated Silver">Rose Gold Plated Silver</option>
+              <option value="Gold Plated Silver">Gold Plated Silver</option>
+            </FloatingSelect>
           </div>
         </div>
 
@@ -329,210 +393,148 @@ export default function ProductForm({
             <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Diamonds &amp; Stone Details</h4>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-6 gap-4">
-            <div className="space-y-1.5">
-              <label htmlFor="prod-diamondShape-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Diamond Shape</label>
-              <select
-                id="prod-diamondShape-form"
-                value={getVal('diamondShape', 'Round')}
-                onChange={(e) => updateField('diamondShape', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-3 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-              >
-                <option value="Round">Round</option>
-                <option value="Princess">Princess</option>
-                <option value="Cushion">Cushion</option>
-                <option value="Oval">Oval</option>
-                <option value="Emerald">Emerald</option>
-                <option value="Pear">Pear</option>
-                <option value="Marquise">Marquise</option>
-                <option value="Radiant">Radiant</option>
-                <option value="Asscher">Asscher</option>
-                <option value="Heart">Heart</option>
-              </select>
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-diamondWeight-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Diamond Weight</label>
-              <input
-                id="prod-diamondWeight-form"
-                type="text"
-                placeholder="e.g. 0.33 Ct"
-                value={getVal('diamondWeight')}
-                onChange={(e) => updateField('diamondWeight', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-diamondColor-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Color Grade</label>
-              <select
-                id="prod-diamondColor-form"
-                value={getVal('diamondColor', 'GH')}
-                onChange={(e) => updateField('diamondColor', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-3 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-              >
-                <option value="EF">EF</option>
-                <option value="GH">GH</option>
-                <option value="HI">HI</option>
-                <option value="IJ">IJ</option>
-                <option value="JK">JK</option>
-                <option value="KL">KL</option>
-                <option value="LM">LM</option>
-                <option value="NZ">NZ</option>
-                <option value="DF">DF</option>
-              </select>
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-diamondClarity-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Clarity Grade</label>
-              <select
-                id="prod-diamondClarity-form"
-                value={getVal('diamondClarity', 'VVS1')}
-                onChange={(e) => updateField('diamondClarity', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-3 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-              >
-                <option value="FL">FL</option>
-                <option value="IF">IF</option>
-                <option value="VVS1">VVS1</option>
-                <option value="VVS2">VVS2</option>
-                <option value="VS1">VS1</option>
-                <option value="VS2">VS2</option>
-                <option value="SI1">SI1</option>
-                <option value="SI2">SI2</option>
-                <option value="I1">I1</option>
-                <option value="I2">I2</option>
-                <option value="I3">I3</option>
-              </select>
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-diamondCut-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Cut Grade</label>
-              <select
-                id="prod-diamondCut-form"
-                value={getVal('diamondCut', 'Excellent')}
-                onChange={(e) => updateField('diamondCut', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-3 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-              >
-                <option value="Excellent">Excellent</option>
-                <option value="Very Good">Very Good</option>
-                <option value="Good">Good</option>
-                <option value="Fair">Fair</option>
-                <option value="Poor">Poor</option>
-              </select>
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-diamondQuantity-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Diamond Pcs</label>
-              <input
-                id="prod-diamondQuantity-form"
-                type="text"
-                placeholder="e.g. 1pcs"
-                value={getVal('diamondQuantity')}
-                onChange={(e) => updateField('diamondQuantity', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-              />
-            </div>
+            <FloatingSelect
+              id="prod-diamondShape-form"
+              label="Diamond Shape"
+              field="diamondShape"
+            >
+              <option value="">Select Diamond Shape</option>
+              <option value="Round">Round</option>
+              <option value="Princess">Princess</option>
+              <option value="Cushion">Cushion</option>
+              <option value="Oval">Oval</option>
+              <option value="Emerald">Emerald</option>
+              <option value="Pear">Pear</option>
+              <option value="Marquise">Marquise</option>
+              <option value="Radiant">Radiant</option>
+              <option value="Asscher">Asscher</option>
+              <option value="Heart">Heart</option>
+            </FloatingSelect>
+
+            <FloatingInput
+              id="prod-diamondWeight-form"
+              label="Diamond Weight"
+              field="diamondWeight"
+            />
+
+            <FloatingSelect
+              id="prod-diamondColor-form"
+              label="Color Grade"
+              field="diamondColor"
+            >
+              <option value="">Select Color Grade</option>
+              <option value="EF">EF</option>
+              <option value="GH">GH</option>
+              <option value="HI">HI</option>
+              <option value="IJ">IJ</option>
+              <option value="JK">JK</option>
+              <option value="KL">KL</option>
+              <option value="LM">LM</option>
+              <option value="NZ">NZ</option>
+              <option value="DF">DF</option>
+            </FloatingSelect>
+
+            <FloatingSelect
+              id="prod-diamondClarity-form"
+              label="Clarity Grade"
+              field="diamondClarity"
+            >
+              <option value="">Select Clarity Grade</option>
+              <option value="FL">FL</option>
+              <option value="IF">IF</option>
+              <option value="VVS1">VVS1</option>
+              <option value="VVS2">VVS2</option>
+              <option value="VS1">VS1</option>
+              <option value="VS2">VS2</option>
+              <option value="SI1">SI1</option>
+              <option value="SI2">SI2</option>
+              <option value="I1">I1</option>
+              <option value="I2">I2</option>
+              <option value="I3">I3</option>
+            </FloatingSelect>
+
+            <FloatingSelect
+              id="prod-diamondCut-form"
+              label="Cut Grade"
+              field="diamondCut"
+            >
+              <option value="">Select Cut Grade</option>
+              <option value="Excellent">Excellent</option>
+              <option value="Very Good">Very Good</option>
+              <option value="Good">Good</option>
+              <option value="Fair">Fair</option>
+              <option value="Poor">Poor</option>
+            </FloatingSelect>
+
+            <FloatingInput
+              id="prod-diamondQuantity-form"
+              label="Diamond Pcs"
+              field="diamondQuantity"
+            />
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="space-y-1.5">
-              <label htmlFor="prod-diamondValue-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Diamond Value (₹)</label>
-              <input
-                id="prod-diamondValue-form"
-                type="number"
-                placeholder="e.g. 15000"
-                value={getVal('diamondValue')}
-                onChange={(e) => updateField('diamondValue', e.target.value === '' ? '' : +e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-stoneCarat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Stone weight</label>
-              <input
-                id="prod-stoneCarat-form"
-                type="text"
-                placeholder="e.g. 0.45 Ct"
-                value={getVal('stoneCarat')}
-                onChange={(e) => updateField('stoneCarat', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none font-semibold"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-beadsCarat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Beads weight</label>
-              <input
-                id="prod-beadsCarat-form"
-                type="text"
-                placeholder="e.g. 1.20 Ct"
-                value={getVal('beadsCarat')}
-                onChange={(e) => updateField('beadsCarat', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none font-semibold"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-pearlsCarat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Pearls weight</label>
-              <input
-                id="prod-pearlsCarat-form"
-                type="text"
-                placeholder="e.g. 0.85 Ct"
-                value={getVal('pearlsCarat')}
-                onChange={(e) => updateField('pearlsCarat', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none font-semibold"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-gemstoneCarat-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Gemstone weight</label>
-              <input
-                id="prod-gemstoneCarat-form"
-                type="text"
-                placeholder="e.g. 2.15 Ct"
-                value={getVal('gemstoneCarat')}
-                onChange={(e) => updateField('gemstoneCarat', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none font-semibold"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-polki-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Polki weight</label>
-              <input
-                id="prod-polki-form"
-                type="text"
-                placeholder="e.g. 1.25 Ct"
-                value={getVal('polki')}
-                onChange={(e) => updateField('polki', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none font-semibold"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-polkiValue-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Polki Value (₹)</label>
-              <input
-                id="prod-polkiValue-form"
-                type="number"
-                placeholder="e.g. 12000"
-                value={getVal('polkiValue')}
-                onChange={(e) => updateField('polkiValue', e.target.value === '' ? '' : +e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="prod-pearlsValue-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Other Value (₹)</label>
-              <input
-                id="prod-pearlsValue-form"
-                type="number"
-                placeholder="e.g. 8000"
-                value={getVal('pearlsValue')}
-                onChange={(e) => updateField('pearlsValue', e.target.value === '' ? '' : +e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-              />
-            </div>
-            <div className="space-y-1.5 col-span-2">
-              <label htmlFor="prod-discountOffDiamond-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Discount Off Diamond (%)</label>
-              <div className="relative">
-                <input
-                  id="prod-discountOffDiamond-form"
-                  type="number"
-                  min="0"
-                  max="100"
-                  placeholder="e.g. 10"
-                  value={getVal('discountOffDiamond')}
-                  onChange={(e) => updateField('discountOffDiamond', e.target.value === '' ? '' : +e.target.value)}
-                  className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl pl-4 pr-16 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-                />
-                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">% OFF</span>
-              </div>
-            </div>
+            <FloatingInput
+              id="prod-diamondValue-form"
+              label="Diamond Value"
+              field="diamondValue"
+              type="number"
+            />
+
+            <FloatingInput
+              id="prod-stoneCarat-form"
+              label="Stone weight"
+              field="stoneCarat"
+            />
+
+            <FloatingInput
+              id="prod-beadsCarat-form"
+              label="Beads weight"
+              field="beadsCarat"
+            />
+
+            <FloatingInput
+              id="prod-pearlsCarat-form"
+              label="Pearls weight"
+              field="pearlsCarat"
+            />
+
+            <FloatingInput
+              id="prod-gemstoneCarat-form"
+              label="Gemstone weight"
+              field="gemstoneCarat"
+            />
+
+            <FloatingInput
+              id="prod-polki-form"
+              label="Polki weight"
+              field="polki"
+            />
+
+            <FloatingInput
+              id="prod-polkiValue-form"
+              label="Polki Value"
+              field="polkiValue"
+              type="number"
+            />
+
+            <FloatingInput
+              id="prod-pearlsValue-form"
+              label="Other Value"
+              field="pearlsValue"
+              type="number"
+            />
+
+            <FloatingInput
+              id="prod-discountOffDiamond-form"
+              label="Discount Off Diamond"
+              field="discountOffDiamond"
+              type="number"
+              min="0"
+              max="100"
+              suffix="% OFF"
+              className="col-span-2"
+            />
           </div>
         </div>
 
@@ -544,227 +546,162 @@ export default function ProductForm({
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div className="space-y-1.5">
-              <label htmlFor="prod-calc-mode" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Price Mode</label>
-              <select
-                id="prod-calc-mode"
-                value={getVal('priceCalculationMode', 'manual')}
-                onChange={(e) => updateField('priceCalculationMode', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-              >
-                <option value="manual">Manual (Fixed Price)</option>
-                <option value="dynamic">Dynamic (Auto Recalculate)</option>
-              </select>
-            </div>
+            <FloatingSelect
+              id="prod-calc-mode"
+              label="Price Mode"
+              field="priceCalculationMode"
+              onChange={(e) => updateField('priceCalculationMode', e.target.value)}
+            >
+              <option value="manual">Manual (Fixed Price)</option>
+              <option value="dynamic">Dynamic (Auto Recalculate)</option>
+            </FloatingSelect>
 
             {getVal('priceCalculationMode', 'manual') === 'manual' ? (
-              <div className="space-y-1.5">
-                <label htmlFor="prod-price-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Fixed Selling Price (INR)</label>
-                <input
-                  id="prod-price-form"
-                  type="number"
-                  placeholder="e.g. 42000"
-                  value={getVal('price')}
-                  onChange={(e) => updateField('price', e.target.value === '' ? '' : +e.target.value)}
-                  className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-                  required={getVal('priceCalculationMode', 'manual') === 'manual'}
-                />
-              </div>
+              <FloatingInput
+                id="prod-price-form"
+                label="Fixed Selling Price (INR)"
+                field="price"
+                type="number"
+                required={getVal('priceCalculationMode', 'manual') === 'manual'}
+              />
             ) : (
               <>
-                <div className="space-y-1.5">
-                  <label htmlFor="prod-purity-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Gold Purity</label>
-                  <select
-                    id="prod-purity-form"
-                    value={getVal('goldPurity', getVal('carat', '22K'))}
-                    onChange={(e) => {
-                      updateField('goldPurity', e.target.value);
-                      updateField('carat', e.target.value);
-                    }}
-                    className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-                  >
-                    <option value="24K">24K (Pure Gold)</option>
-                    <option value="22K">22K (Standard)</option>
-                    <option value="18K">18K (Premium)</option>
-                    <option value="14K">14K (Economy)</option>
-                  </select>
-                </div>
+                <FloatingSelect
+                  id="prod-purity-form"
+                  label="Gold Purity"
+                  field="goldPurity"
+                  onChange={(e) => {
+                    updateField('goldPurity', e.target.value);
+                    updateField('carat', e.target.value);
+                  }}
+                >
+                  <option value="24K">24K (Pure Gold)</option>
+                  <option value="22K">22K (Standard)</option>
+                  <option value="18K">18K (Premium)</option>
+                  <option value="14K">14K (Economy)</option>
+                </FloatingSelect>
 
-                <div className="space-y-1.5">
-                  <label htmlFor="prod-gold-weight-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Gold Weight (grams)</label>
-                  <input
-                    id="prod-gold-weight-form"
-                    type="number"
-                    step="0.001"
-                    placeholder="e.g. 8.45"
-                    value={getVal('goldWeight', getVal('netWeight', ''))}
-                    onChange={(e) => {
-                      updateField('goldWeight', e.target.value === '' ? '' : +e.target.value);
-                      updateField('netWeight', e.target.value === '' ? '' : +e.target.value);
-                    }}
-                    className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-                    required={getVal('priceCalculationMode', 'manual') === 'dynamic'}
-                  />
-                </div>
+                <FloatingInput
+                  id="prod-gold-weight-form"
+                  label="Gold Weight (grams)"
+                  field="goldWeight"
+                  type="number"
+                  step="0.001"
+                  onChange={(e) => {
+                    updateField('goldWeight', e.target.value === '' ? '' : +e.target.value);
+                    updateField('netWeight', e.target.value === '' ? '' : +e.target.value);
+                  }}
+                  required={getVal('priceCalculationMode', 'manual') === 'dynamic'}
+                />
               </>
             )}
 
-            <div className="space-y-1.5">
-              <label htmlFor="prod-hallmark-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Hallmark Stamp</label>
-              <select
-                id="prod-hallmark-form"
-                value={getVal('hallmark', 'BIS 916 Government Certified')}
-                onChange={(e) => updateField('hallmark', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-              >
-                <option value="BIS 916 Government Certified">BIS 916 Government Certified</option>
-                <option value="IGI Diamond Certificate">IGI Diamond Certificate</option>
-              </select>
-            </div>
+            <FloatingSelect
+              id="prod-hallmark-form"
+              label="Hallmark Stamp"
+              field="hallmark"
+            >
+              <option value="BIS 916 Government Certified">BIS 916 Government Certified</option>
+              <option value="IGI Diamond Certificate">IGI Diamond Certificate</option>
+            </FloatingSelect>
           </div>
 
           {getVal('priceCalculationMode', 'manual') === 'dynamic' && (
             <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 pt-2">
-              <div className="space-y-1.5">
-                <label htmlFor="prod-making-charge-type" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Making Charge Type</label>
-                <select
-                  id="prod-making-charge-type"
-                  value={getVal('makingChargeType', 'percentage')}
-                  onChange={(e) => updateField('makingChargeType', e.target.value)}
-                  className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-                >
-                  <option value="percentage">Percentage (%)</option>
-                  <option value="fixed">Fixed Price (₹)</option>
-                </select>
-              </div>
+              <FloatingSelect
+                id="prod-making-charge-type"
+                label="Making Charge Type"
+                field="makingChargeType"
+                onChange={(e) => updateField('makingChargeType', e.target.value)}
+              >
+                <option value="percentage">Percentage (%)</option>
+                <option value="fixed">Fixed Price (₹)</option>
+              </FloatingSelect>
 
-              <div className="space-y-1.5">
-                <label htmlFor="prod-making-charge-value" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">
-                  Making Charge {getVal('makingChargeType', 'percentage') === 'percentage' ? '(%)' : '(₹)'}
-                </label>
-                <input
-                  id="prod-making-charge-value"
-                  type="number"
-                  placeholder={getVal('makingChargeType', 'percentage') === 'percentage' ? 'e.g. 12' : 'e.g. 1500'}
-                  value={getVal('makingChargeValue', getVal('makingCharges', ''))}
-                  onChange={(e) => {
-                    updateField('makingChargeValue', e.target.value === '' ? '' : +e.target.value);
-                    updateField('makingCharges', e.target.value === '' ? '' : +e.target.value);
-                  }}
-                  className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-                />
-              </div>
+              <FloatingInput
+                id="prod-making-charge-value"
+                label={`Making Charge ${getVal('makingChargeType', 'percentage') === 'percentage' ? '(%)' : '(₹)'}`}
+                field="makingChargeValue"
+                type="number"
+                onChange={(e) => {
+                  updateField('makingChargeValue', e.target.value === '' ? '' : +e.target.value);
+                  updateField('makingCharges', e.target.value === '' ? '' : +e.target.value);
+                }}
+              />
 
-              <div className="space-y-1.5">
-                <label htmlFor="prod-stone-price" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Stone/Diamond Price (₹)</label>
-                <input
-                  id="prod-stone-price"
-                  type="number"
-                  placeholder="e.g. 8500"
-                  value={getVal('stonePrice', getVal('diamondValue', ''))}
-                  onChange={(e) => {
-                    updateField('stonePrice', e.target.value === '' ? '' : +e.target.value);
-                    updateField('diamondValue', e.target.value === '' ? '' : +e.target.value);
-                  }}
-                  className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-                />
-              </div>
+              <FloatingInput
+                id="prod-stone-price"
+                label="Stone/Diamond Price"
+                field="stonePrice"
+                type="number"
+                onChange={(e) => {
+                  updateField('stonePrice', e.target.value === '' ? '' : +e.target.value);
+                  updateField('diamondValue', e.target.value === '' ? '' : +e.target.value);
+                }}
+              />
 
-              <div className="space-y-1.5">
-                <label htmlFor="prod-other-charges" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Other Charges (₹)</label>
-                <input
-                  id="prod-other-charges"
-                  type="number"
-                  placeholder="e.g. 450"
-                  value={getVal('otherCharges', getVal('pearlsValue', ''))}
-                  onChange={(e) => {
-                    updateField('otherCharges', e.target.value === '' ? '' : +e.target.value);
-                    updateField('pearlsValue', e.target.value === '' ? '' : +e.target.value);
-                  }}
-                  className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-                />
-              </div>
+              <FloatingInput
+                id="prod-other-charges"
+                label="Other Charges"
+                field="otherCharges"
+                type="number"
+                onChange={(e) => {
+                  updateField('otherCharges', e.target.value === '' ? '' : +e.target.value);
+                  updateField('pearlsValue', e.target.value === '' ? '' : +e.target.value);
+                }}
+              />
 
-              <div className="space-y-1.5">
-                <label htmlFor="prod-discount-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Discount Off Item (%)</label>
-                <div className="relative">
-                  <input
-                    id="prod-discount-form"
-                    type="number"
-                    min="0"
-                    max="100"
-                    placeholder="e.g. 20"
-                    value={getVal('discountPercent', 20)}
-                    onChange={(e) => updateField('discountPercent', e.target.value === '' ? '' : +e.target.value)}
-                    className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl pl-4 pr-16 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-                  />
-                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">% OFF</span>
-                </div>
-              </div>
+              <FloatingInput
+                id="prod-discount-form"
+                label="Discount Off Item"
+                field="discountPercent"
+                type="number"
+                min="0"
+                max="100"
+                suffix="% OFF"
+              />
             </div>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div className="space-y-1.5">
-              <label htmlFor="prod-discountOffMaking-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Discount Off Making charge (%)</label>
-              <div className="relative">
-                <input
-                  id="prod-discountOffMaking-form"
-                  type="number"
-                  min="0"
-                  max="100"
-                  placeholder="e.g. 15"
-                  value={getVal('discountOffMaking')}
-                  onChange={(e) => updateField('discountOffMaking', e.target.value === '' ? '' : +e.target.value)}
-                  className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl pl-4 pr-16 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-                />
-                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">% OFF</span>
-              </div>
-            </div>
+            <FloatingInput
+              id="prod-discountOffMaking-form"
+              label="Discount Off Making charge"
+              field="discountOffMaking"
+              type="number"
+              min="0"
+              max="100"
+              suffix="% OFF"
+            />
 
-            <div className="space-y-1.5">
-              <label htmlFor="prod-gst-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">GST Rate (%)</label>
-              <div className="relative">
-                <input
-                  id="prod-gst-form"
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="0.5"
-                  placeholder="e.g. 3"
-                  value={getVal('gstPercent', 3)}
-                  onChange={(e) => updateField('gstPercent', e.target.value === '' ? 3 : +e.target.value)}
-                  className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-amber-200 dark:border-amber-800/40 rounded-xl pl-4 pr-10 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-amber-400 dark:focus:border-amber-500 focus:ring-1 focus:ring-amber-400/20 font-semibold"
-                />
-                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[10px] text-amber-500 dark:text-amber-400 font-extrabold select-none pointer-events-none">%</span>
-              </div>
-            </div>
+            <FloatingInput
+              id="prod-gst-form"
+              label="GST Rate"
+              field="gstPercent"
+              type="number"
+              min="0"
+              max="100"
+              step="0.5"
+              suffix="%"
+              onChange={(e) => updateField('gstPercent', e.target.value === '' ? 3 : +e.target.value)}
+            />
 
-            <div className="space-y-1.5">
-              <label htmlFor="prod-badge-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Product Badge (e.g. Trending)</label>
-              <input
-                id="prod-badge-form"
-                type="text"
-                placeholder="e.g. Best Seller"
-                value={getVal('badge')}
-                onChange={(e) => updateField('badge', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-905 dark:text-zinc-100 placeholder-zinc-450 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 font-semibold"
-              />
-            </div>
+            <FloatingInput
+              id="prod-badge-form"
+              label="Product Badge"
+              field="badge"
+            />
 
-            <div className="space-y-1.5">
-              <label htmlFor="prod-stock-form" className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Stock Status</label>
-              <select
-                id="prod-stock-form"
-                value={getVal('stockStatus', 'In Stock')}
-                onChange={(e) => updateField('stockStatus', e.target.value)}
-                className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-200 cursor-pointer font-semibold"
-              >
-                <option value="In Stock">In Stock (Available immediately)</option>
-                <option value="Out of Stock">Out of Stock (Request Booking Only)</option>
-                <option value="Preorder">Preorder (Making charges adjustments)</option>
-              </select>
-            </div>
+            <FloatingSelect
+              id="prod-stock-form"
+              label="Stock Status"
+              field="stockStatus"
+            >
+              <option value="">Select Stock Status</option>
+              <option value="In Stock">In Stock (Available immediately)</option>
+              <option value="Out of Stock">Out of Stock (Request Booking Only)</option>
+              <option value="Preorder">Preorder (Making charges adjustments)</option>
+            </FloatingSelect>
           </div>
         </div>
 

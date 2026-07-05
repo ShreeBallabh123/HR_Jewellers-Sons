@@ -129,8 +129,8 @@ export default function CheckoutForm({
                   className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0 cursor-pointer"
                 >
                   <option value="">—</option>
-                  <option value="Tilak Nagar Flagship, Bikaner">Tilak Nagar Flagship, Bikaner</option>
-                  <option value="Station Road, Bikaner">Station Road, Bikaner</option>
+                  <option value="Tilak Nagar Branch, Bikaner">Tilak Nagar Branch, Bikaner</option>
+                  <option value="JNV Branch, Bikaner">JNV Branch, Bikaner</option>
                 </select>
               </div>
               {deliveryForm.storeBranch && (

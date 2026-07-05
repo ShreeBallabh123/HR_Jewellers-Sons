@@ -241,7 +241,7 @@ export default function AdminOrders({
                 <div class="logo-subtext">&amp; SONS</div>
                 <div class="company-details">
                   BIS Hallmarked Luxury Boutique<br/>
-                  Station Road, Near Town Hall, Bikaner - 334001<br/>
+                  4-D-37, Near Murti Circle, J.N.V. Colony, Bikaner, Rajasthan (334001)<br/>
                   Contact: +91 97838 43978 | info@hrjewellers.com
                 </div>
               </div>
@@ -267,7 +267,7 @@ export default function AdminOrders({
               <div class="bill-box">
                 <div class="bill-title">Delivery Address</div>
                 <div class="bill-details">
-                  ${address !== 'N/A' ? address : 'Showroom Pickup (Bikaner Branch)'}
+                  ${address !== 'N/A' && address !== '' ? address : `Showroom Pickup (${order.storeBranch || 'Bikaner Branch'})`}
                 </div>
               </div>
             </div>

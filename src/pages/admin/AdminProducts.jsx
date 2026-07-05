@@ -26,11 +26,11 @@ export default function AdminProducts({
     weight: '',
     productDimensions: '',
     metalColor: 'Yellow Gold',
-    diamondShape: 'Round',
+    diamondShape: '',
     diamondWeight: '',
-    diamondColor: 'GH',
-    diamondClarity: 'VVS1',
-    diamondCut: 'Excellent',
+    diamondColor: '',
+    diamondClarity: '',
+    diamondCut: '',
     diamondQuantity: '',
     diamondValue: '',
     stoneCarat: '',
@@ -157,7 +157,7 @@ export default function AdminProducts({
         setAdminNotification({ message: 'Jewellery updated successfully!', type: 'success' });
       } else {
         // Create mode save
-        await productsApi.createProduct(newProduct);
+        await productsApi.addProduct(newProduct);
         setNewProduct({
           name: '',
           sku: '',
@@ -173,11 +173,11 @@ export default function AdminProducts({
           weight: '',
           productDimensions: '',
           metalColor: 'Yellow Gold',
-          diamondShape: 'Round',
+          diamondShape: '',
           diamondWeight: '',
-          diamondColor: 'GH',
-          diamondClarity: 'VVS1',
-          diamondCut: 'Excellent',
+          diamondColor: '',
+          diamondClarity: '',
+          diamondCut: '',
           diamondQuantity: '',
           diamondValue: '',
           stoneCarat: '',

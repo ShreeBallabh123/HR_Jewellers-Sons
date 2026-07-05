@@ -134,9 +134,9 @@ const getCategoryFallbackImage = (catNameOrId) => {
   if (norm.includes('coin')) return goldCoinsImg;
   if (norm.includes('anklet')) return ankletsImg;
   if (norm.includes('pendant')) return pendantsImg;
+  if (norm.includes('earring')) return sapphireHeritageSet;
   if (norm.includes('ring')) return ringsImg;
   if (norm.includes('necklace')) return necklacesImg;
-  if (norm.includes('earring')) return sapphireHeritageSet;
   if (norm.includes('bangle')) return goldKada;
   if (norm.includes('bracelet')) return diamondBracelet;
   if (norm.includes('chain')) return goldChainsImg;

@@ -70,9 +70,9 @@ export default function Checkout({ navigateTo, triggerAudio }) {
           weight: item.weight || '',
           desc: item.desc || ''
         })),
-        subtotal: cartTotal,
-        gst: Math.round(cartTotal * 0.03),
-        total: cartTotal + Math.round(cartTotal * 0.03),
+        subtotal: Math.round(cartTotal / 1.03),
+        gst: cartTotal - Math.round(cartTotal / 1.03),
+        total: cartTotal,
         createdDate: new Date().toISOString()
       };
 
@@ -330,8 +330,8 @@ export default function Checkout({ navigateTo, triggerAudio }) {
                           <span className="text-[9px] uppercase tracking-wider text-gray-400 block">Store</span>
                           <select value={deliveryForm.storeBranch} onChange={(e) => setDeliveryForm({ ...deliveryForm, storeBranch: e.target.value })} className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0 cursor-pointer">
                             <option value="">—</option>
-                            <option value="Tilak Nagar Flagship, Bikaner">Tilak Nagar Flagship, Bikaner</option>
-                            <option value="Station Road, Bikaner">Station Road, Bikaner</option>
+                            <option value="Tilak Nagar Branch, Bikaner">Tilak Nagar Branch, Bikaner</option>
+                            <option value="JNV Branch, Bikaner">JNV Branch, Bikaner</option>
                           </select>
                         </div>
                         {deliveryForm.storeBranch && (
@@ -569,17 +569,17 @@ export default function Checkout({ navigateTo, triggerAudio }) {
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal ({cartItems.reduce((a, c) => a + c.quantity, 0)} Item{cartItems.reduce((a, c) => a + c.quantity, 0) !== 1 ? 's' : ''})</span>
-                  <span className="font-bold text-[#031838]">₹ {cartTotal.toLocaleString('en-IN')}</span>
+                  <span className="font-bold text-[#031838]">₹ {Math.round(cartTotal / 1.03).toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>GST</span>
-                  <span className="font-bold text-[#031838]">₹ {Math.round(cartTotal * 0.03).toLocaleString('en-IN')}</span>
+                  <span>GST (3% Inc.)</span>
+                  <span className="font-bold text-[#031838]">₹ {(cartTotal - Math.round(cartTotal / 1.03)).toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
               <div className="border-t border-gray-100 pt-3 flex justify-between items-center">
                 <span className="text-sm font-bold text-[#031838]">Total Payable</span>
-                <span className="text-lg font-black text-[#031838]">₹ {(cartTotal + Math.round(cartTotal * 0.03)).toLocaleString('en-IN')}</span>
+                <span className="text-lg font-black text-[#031838]">₹ {cartTotal.toLocaleString('en-IN')}</span>
               </div>
 
               {/* Action Button */}

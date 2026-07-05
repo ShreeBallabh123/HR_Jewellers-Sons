@@ -73,13 +73,13 @@ export default function ProductDetail({
   // Self-contained data — pulled from context, no prop drilling
   const { wishlistItems = [], toggleWishlist } = useWishlist();
   const { handleAddToCart, setCartOpen } = useCart();
-  const { 
-    goldRate24k = 78500, 
-    goldRate22k = 71958, 
-    silverRate1kg: silverRate = 92000, 
-    lastUpdated, 
-    publishedAt, 
-    calculatePrice 
+  const {
+    goldRate24k = 78500,
+    goldRate22k = 71958,
+    silverRate1kg: silverRate = 92000,
+    lastUpdated,
+    publishedAt,
+    calculatePrice
   } = useRates();
   const { products = [], loading: productsLoading } = useProducts();
 
@@ -120,18 +120,18 @@ export default function ProductDetail({
 
   // Helper properties computed safely after states
   const isSilver = !!detailProduct && (
-    (detailProduct.categoryType || '').toLowerCase().includes('silver') || 
-    (detailProduct.category || '').toLowerCase().includes('silver') || 
-    (detailProduct.metalPurity || detailProduct.carat || '').toLowerCase().includes('92.5') || 
+    (detailProduct.categoryType || '').toLowerCase().includes('silver') ||
+    (detailProduct.category || '').toLowerCase().includes('silver') ||
+    (detailProduct.metalPurity || detailProduct.carat || '').toLowerCase().includes('92.5') ||
     (detailProduct.metalPurity || detailProduct.carat || '').toLowerCase().includes('925')
   );
 
   // Calculate live dynamic product price, taking into account user's custom metal/karat selection
   const computedProductPrice = detailProduct && typeof calculatePrice === 'function'
     ? calculatePrice({
-        ...detailProduct,
-        carat: isSilver ? '92.5' : (pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : detailProduct.carat)
-      }).total
+      ...detailProduct,
+      carat: isSilver ? '92.5' : (pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : detailProduct.carat)
+    }).total
     : (detailProduct ? Number(detailProduct.price || 0) : 0);
 
   // Scroll listener for sticky buy bar
@@ -216,7 +216,7 @@ export default function ProductDetail({
 
   // Size Category Checkers
 
-  const isRing = (detailProduct.categoryType || '').toLowerCase() === 'ring' || (detailProduct.category || '').toLowerCase().includes('ring');
+  const isRing = ((detailProduct.categoryType || '').toLowerCase() === 'ring' || (detailProduct.category || '').toLowerCase().includes('ring')) && !((detailProduct.category || '').toLowerCase().includes('earring')) && !((detailProduct.categoryType || '').toLowerCase().includes('earring'));
   const isBangle = (detailProduct.categoryType || '').toLowerCase() === 'bangle' || (detailProduct.category || '').toLowerCase().includes('bangle') || (detailProduct.categoryType || '').toLowerCase() === 'bracelet' || (detailProduct.category || '').toLowerCase().includes('bracelet');
   const isChain = (detailProduct.categoryType || '').toLowerCase() === 'chain' || (detailProduct.category || '').toLowerCase().includes('chain') || (detailProduct.categoryType || '').toLowerCase() === 'necklace' || (detailProduct.category || '').toLowerCase().includes('necklace');
   const hasSizes = isRing || isBangle || isChain;
@@ -269,10 +269,10 @@ export default function ProductDetail({
 
         {/* Main Two-Column Split Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-12 lg:gap-20 items-start">
-          
+
           {/* LEFT COLUMN: Gallery View (Non-sticky/No-holder) */}
           <div className="space-y-8 self-start w-full text-center">
-            
+
             {/* Hero Display Card */}
             <div
               className="relative bg-white flex items-start justify-center p-0 w-full aspect-square lg:aspect-auto lg:h-[550px] overflow-hidden group cursor-zoom-in transition-all duration-500"
@@ -337,13 +337,13 @@ export default function ProductDetail({
               {/* Render Media */}
               {isVideoUrl(detailActiveImg || detailProduct.img) ? (
                 <div className="w-full h-full flex items-center justify-center bg-black rounded-none overflow-hidden">
-                  <video 
-                    src={detailActiveImg || detailProduct.img} 
-                    autoPlay 
-                    loop 
-                    muted 
-                    controls 
-                    className="w-full h-full object-contain" 
+                  <video
+                    src={detailActiveImg || detailProduct.img}
+                    autoPlay
+                    loop
+                    muted
+                    controls
+                    className="w-full h-full object-contain"
                   />
                 </div>
               ) : (
@@ -444,7 +444,7 @@ export default function ProductDetail({
 
           {/* RIGHT COLUMN: Configuration & Buy Section */}
           <div className="space-y-8 text-left lg:pl-4">
-            
+
             {/* Collection Name & Product Name */}
             <div className="space-y-2.5">
               <span className="text-[10px] uppercase tracking-[0.2em] text-[#B8893C] font-semibold block font-sans">
@@ -453,7 +453,7 @@ export default function ProductDetail({
               <h1 className="text-[34px] md:text-[44px] lg:text-[54px] font-semibold text-[#181818] tracking-tight leading-tight font-serif serif-luxury">
                 {detailProduct.name}
               </h1>
-              
+
               {/* Premium Review Badge */}
               <div className="flex items-center gap-2 text-xs font-light text-[#5E5E5E] font-sans">
                 <div className="flex items-center text-[#B8893C] gap-0.5">
@@ -531,14 +531,14 @@ export default function ProductDetail({
                 className="w-full flex items-center justify-between text-[10px] font-semibold text-[#181818] tracking-[0.2em] uppercase focus:outline-none cursor-pointer border-none bg-transparent p-0"
               >
                 <span>Metal &amp; Size Customization</span>
-                <svg 
+                <svg
                   className={`w-3 h-3 text-[#B8893C] transform transition-transform duration-300 ${pdpCustomizeOpen ? 'rotate-180' : ''}`}
                   fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              
+
               {pdpCustomizeOpen && (
                 <div className="space-y-6 pt-2 font-sans text-xs">
                   {/* Metal Selection */}
@@ -577,15 +577,15 @@ export default function ProductDetail({
                       <div className="flex justify-between items-center text-[10px] tracking-wider uppercase font-semibold text-[#888888]">
                         <span>Select Size:</span>
                         {isRing && (
-                          <button 
-                            onClick={() => { triggerAudio("click"); setSizeGuideOpen(true); }} 
+                          <button
+                            onClick={() => { triggerAudio("click"); setSizeGuideOpen(true); }}
                             className="text-gray-900 hover:text-[#B8893C] font-semibold transition-colors duration-300 underline cursor-pointer text-[10px] uppercase font-sans border-none bg-transparent"
                           >
                             Size Guide
                           </button>
                         )}
                       </div>
-                      
+
                       <div className="relative">
                         <select
                           value={selectedSize}
@@ -611,7 +611,7 @@ export default function ProductDetail({
 
                           {isBangle && (detailProduct?.bangleSizes && detailProduct.bangleSizes.length > 0
                             ? detailProduct.bangleSizes
-                            : ['1-2','1-4','1-6','1-8','2-0','2-2','2-4','2-6','2-8','3-0','3-2','3-4']
+                            : ['1-2', '1-4', '1-6', '1-8', '2-0', '2-2', '2-4', '2-6', '2-8', '3-0', '3-2', '3-4']
                           ).map((sz) => (
                             <option key={sz} value={sz}>{sz} Bangle Size</option>
                           ))}
@@ -623,10 +623,10 @@ export default function ProductDetail({
                             <option key={sz} value={sz}>{sz} IND</option>
                           ))}
                         </select>
-                        
+
                         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#888888]">
                           <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                           </svg>
                         </div>
                       </div>
@@ -657,11 +657,11 @@ export default function ProductDetail({
                 <button
                   onClick={() => {
                     triggerAudio('click');
-                    handleAddToCart({ 
-                      ...detailProduct, 
+                    handleAddToCart({
+                      ...detailProduct,
                       price: computedProductPrice,
-                      carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedSize}`, 
-                      desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc 
+                      carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedSize}`,
+                      desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc
                     });
                     setTimeout(() => setCartOpen(true), 200);
                   }}
@@ -698,7 +698,7 @@ export default function ProductDetail({
               <details className="group border-b border-[#E7DED2] pb-4" open>
                 <summary className="flex items-center justify-between text-[10px] font-semibold text-[#181818] uppercase tracking-[0.2em] cursor-pointer select-none py-2 list-none">
                   <span>Product Details &amp; Story</span>
-                  <svg 
+                  <svg
                     className="w-3 h-3 text-[#B8893C] transform transition-transform duration-300 group-open:rotate-180"
                     fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
                   >
@@ -719,7 +719,7 @@ export default function ProductDetail({
               <details className="group border-b border-[#E7DED2] pb-4">
                 <summary className="flex items-center justify-between text-[10px] font-semibold text-[#181818] uppercase tracking-[0.2em] cursor-pointer select-none py-2 list-none">
                   <span>Specifications</span>
-                  <svg 
+                  <svg
                     className="w-3 h-3 text-[#B8893C] transform transition-transform duration-300 group-open:rotate-180"
                     fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
                   >
@@ -731,13 +731,13 @@ export default function ProductDetail({
                     <span>Product Details</span>
                     <span className="font-mono flex items-center gap-1">
                       SKU: {detailProduct.sku || 'HRJS-PD-' + detailProduct.id}
-                      <button 
-                        onClick={(e) => { 
-                          e.preventDefault(); 
-                          navigator.clipboard.writeText(detailProduct.sku || 'HRJS-PD-' + detailProduct.id); 
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigator.clipboard.writeText(detailProduct.sku || 'HRJS-PD-' + detailProduct.id);
                           triggerAudio('click');
-                          alert('SKU Copied to Clipboard!'); 
-                        }} 
+                          alert('SKU Copied to Clipboard!');
+                        }}
                         className="text-gray-400 hover:text-gray-600 transition-colors ml-1 cursor-pointer focus:outline-none border-none bg-transparent"
                         title="Copy SKU"
                       >
@@ -879,7 +879,7 @@ export default function ProductDetail({
               <details className="group border-b border-[#E7DED2] pb-4">
                 <summary className="flex items-center justify-between text-[10px] font-semibold text-[#181818] uppercase tracking-[0.2em] cursor-pointer select-none py-2 list-none">
                   <span>Shipping &amp; Boutique Pick-up</span>
-                  <svg 
+                  <svg
                     className="w-3 h-3 text-[#B8893C] transform transition-transform duration-300 group-open:rotate-180"
                     fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
                   >
@@ -887,7 +887,7 @@ export default function ProductDetail({
                   </svg>
                 </summary>
                 <div className="pt-2 text-xs text-[#5E5E5E] leading-relaxed font-light">
-                  <p>We offer free insured shipping to all pincodes within India. Estimated dispatch: 3-5 business days. You can also opt for physical collection from our showrooms in Jaipur or Tilak Nagar branch.</p>
+                  <p>We offer free insured shipping to all pincodes within India. Estimated dispatch: 3-5 business days. You can also opt for physical collection from our showrooms in JNV branch or Tilak Nagar branch.</p>
                 </div>
               </details>
             </div>
@@ -963,35 +963,9 @@ export default function ProductDetail({
                   </h4>
 
                   <div className="bg-[#FAF9F6] border border-[#E7DED2]/60 rounded-3xl p-6 space-y-6 shadow-xs">
-                    {/* Tab Switcher */}
-                    <div className="flex bg-[#F5F2EB]/60 rounded-full border border-[#E7DED2]/40 p-1">
-                      <button
-                        onClick={() => { triggerAudio('click'); setPdpPriceTab('breakup'); }}
-                        className={`flex-1 py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-full transition-all cursor-pointer border-none ${
-                          pdpPriceTab === 'breakup'
-                            ? 'bg-[#8A5A44] text-white shadow-md'
-                            : 'text-gray-500 hover:text-gray-800 bg-transparent'
-                        }`}
-                      >
-                        Price Breakup
-                      </button>
-                      <button
-                        onClick={() => { triggerAudio('click'); setPdpPriceTab('comparison'); }}
-                        className={`flex-1 py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-full transition-all cursor-pointer border-none ${
-                          pdpPriceTab === 'comparison'
-                            ? 'bg-[#8A5A44] text-white shadow-md'
-                            : 'text-gray-500 hover:text-gray-800 bg-transparent'
-                        }`}
-                      >
-                        Price Comparison
-                      </button>
-                    </div>
-
-                    {/* Content Tabs */}
-                    {pdpPriceTab === 'breakup' ? (
-                      <div className="space-y-4 text-xs font-light text-gray-700">
-                        {/* Metal Row */}
-                        {netWeight > 0 && (
+                    <div className="space-y-4 text-xs font-light text-gray-700">
+                      {/* Metal Row */}
+                      {netWeight > 0 && (
                         <div className="flex justify-between items-center py-1">
                           <span>
                             {displayCarat} {isSilver ? 'Silver' : 'Gold'}{netWeight > 0 ? ` (${netWeight}g @ ₹${metalRatePerGram.toLocaleString('en-IN')}/g)` : ''}
@@ -1000,142 +974,84 @@ export default function ProductDetail({
                             ₹{metalValue.toLocaleString('en-IN')}
                           </span>
                         </div>
-                        )}
+                      )}
 
-                        {/* Diamond Row */}
-                        {hasDiamond && diamondValue > 0 && (
-                          <div className="flex justify-between items-center py-1">
-                            <div className="flex items-center gap-2">
-                              <span>
-                                Diamond ({detailProduct.diamondQuantity || '1 pcs'}{detailProduct.diamondCarat || detailProduct.diamondWeight ? `, ${detailProduct.diamondCarat || detailProduct.diamondWeight}ct` : ''})
-                              </span>
-                              {discountOffDiamond > 0 && (
+                      {/* Diamond Row */}
+                      {hasDiamond && diamondValue > 0 && (
+                        <div className="flex justify-between items-center py-1">
+                          <div className="flex items-center gap-2">
+                            <span>
+                              Diamond ({detailProduct.diamondQuantity || '1 pcs'}{detailProduct.diamondCarat || detailProduct.diamondWeight ? `, ${detailProduct.diamondCarat || detailProduct.diamondWeight}ct` : ''})
+                            </span>
+                            {discountOffDiamond > 0 && (
                               <span className="bg-[#E8F5E9] text-[#006361] text-[9px] font-bold px-1.5 py-0.5 rounded font-sans">
                                 {discountOffDiamond}% OFF
                               </span>
-                              )}
-                            </div>
-                            <div className="space-x-2 font-mono">
-                              {discountOffDiamond > 0 && (
+                            )}
+                          </div>
+                          <div className="space-x-2 font-mono">
+                            {discountOffDiamond > 0 && (
                               <span className="text-gray-400 line-through">
                                 ₹{baseDiamondValue.toLocaleString('en-IN')}
                               </span>
-                              )}
-                              <span className="font-semibold text-gray-900">
-                                ₹{diamondValue.toLocaleString('en-IN')}
-                              </span>
-                            </div>
+                            )}
+                            <span className="font-semibold text-gray-900">
+                              ₹{diamondValue.toLocaleString('en-IN')}
+                            </span>
                           </div>
-                        )}
+                        </div>
+                      )}
 
-                        {/* Making Charges Row */}
-                        {makingCharges > 0 && (
+                      {/* Making Charges Row */}
+                      {makingCharges > 0 && (
                         <div className="flex justify-between items-center py-1">
                           <div className="flex items-center gap-2">
                             <span>Making Charges</span>
                             {discountOffMaking > 0 && (
-                            <span className="bg-[#FFF3E0] text-[#E65100] text-[9px] font-bold px-1.5 py-0.5 rounded font-sans">
-                              {discountOffMaking}% OFF
-                            </span>
+                              <span className="bg-[#FFF3E0] text-[#E65100] text-[9px] font-bold px-1.5 py-0.5 rounded font-sans">
+                                {discountOffMaking}% OFF
+                              </span>
                             )}
                           </div>
                           <div className="space-x-2 font-mono">
                             {discountOffMaking > 0 && (
-                            <span className="text-gray-400 line-through">
-                              ₹{baseMakingCharges.toLocaleString('en-IN')}
-                            </span>
+                              <span className="text-gray-400 line-through">
+                                ₹{baseMakingCharges.toLocaleString('en-IN')}
+                              </span>
                             )}
                             <span className="font-semibold text-gray-900">
                               ₹{makingCharges.toLocaleString('en-IN')}
                             </span>
                           </div>
                         </div>
-                        )}
+                      )}
 
-                        {/* GST Row */}
-                        <div className="flex justify-between items-center py-1">
-                          <span>GST ({Math.round(productGstRate * 100)}%)</span>
-                          <span className="font-semibold font-mono text-gray-900">
-                            ₹{discountedGst.toLocaleString('en-IN')}
-                          </span>
-                        </div>
+                      {/* GST Row */}
+                      <div className="flex justify-between items-center py-1">
+                        <span>GST ({Math.round(productGstRate * 100)}%)</span>
+                        <span className="font-semibold font-mono text-gray-900">
+                          ₹{discountedGst.toLocaleString('en-IN')}
+                        </span>
+                      </div>
 
-                        <hr className="border-gray-200/60 my-2" />
+                      <hr className="border-gray-200/60 my-2" />
 
-                        {/* Total Row */}
-                        <div className="flex justify-between items-center text-sm font-bold text-gray-900">
-                          <span>Total</span>
-                          <span className="font-mono text-base font-bold">
-                            ₹{finalPrice.toLocaleString('en-IN')}
-                          </span>
-                        </div>
+                      {/* Total Row */}
+                      <div className="flex justify-between items-center text-sm font-bold text-gray-900">
+                        <span>Total</span>
+                        <span className="font-mono text-base font-bold">
+                          ₹{finalPrice.toLocaleString('en-IN')}
+                        </span>
+                      </div>
 
-                        {/* You Save Row */}
-                        {saveAmount > 0 && (
+                      {/* You Save Row */}
+                      {saveAmount > 0 && (
                         <div className="flex justify-between items-center py-1 text-[11px] text-[#006361] font-semibold">
                           <span>🎉 You Save</span>
                           <span className="font-mono">₹{saveAmount.toLocaleString('en-IN')}</span>
                         </div>
-                        )}
-                      </div>
-
-                    ) : (
-                      <div className="space-y-4 text-xs font-light text-gray-700">
-                        {/* Price Comparison Table */}
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-left border-collapse font-sans">
-                            <thead>
-                              <tr className="border-b border-gray-200/60 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                                <th className="py-2.5">Diamond Comparison</th>
-                                <th className="py-2.5">Lucira Grown Diamond</th>
-                                <th className="py-2.5">Mined Diamond</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200/40 text-[11px]">
-                              <tr>
-                                <td className="py-3 font-medium text-gray-500">₹ Price</td>
-                                <td className="py-3 font-mono font-bold text-gray-900">
-                                  ₹{diamondValue.toLocaleString('en-IN')}
-                                </td>
-                                <td className="py-3 font-mono text-gray-500">
-                                  ₹{minedDiamondPrice.toLocaleString('en-IN')}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="py-3 font-medium text-gray-500">💎 Carat</td>
-                                <td className="py-3 text-gray-900 font-semibold">
-                                  {detailProduct.diamondCarat || detailProduct.diamondWeight || '0.339ct'}
-                                </td>
-                                <td className="py-3 text-gray-500">
-                                  {detailProduct.diamondCarat || detailProduct.diamondWeight || '0.339ct'}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="py-3 font-medium text-gray-500">🔍 Clarity</td>
-                                <td className="py-3 text-gray-900 font-semibold">
-                                  {detailProduct.diamondClarity || 'E-F'}
-                                </td>
-                                <td className="py-3 text-gray-500">SI</td>
-                              </tr>
-                              <tr>
-                                <td className="py-3 font-medium text-gray-500">🎨 Color</td>
-                                <td className="py-3 text-gray-900 font-semibold">
-                                  {detailProduct.diamondColor || 'VVS/VS'}
-                                </td>
-                                <td className="py-3 text-gray-500">IJ</td>
-                              </tr>
-                              <tr className="font-bold">
-                                <td className="py-3 text-gray-900 font-bold">Total Saving</td>
-                                <td className="py-3 text-[#006361] font-mono font-bold">
-                                  ₹{diamondSaving.toLocaleString('en-IN')}
-                                </td>
-                                <td className="py-3 text-[#EF5A3F] font-mono font-bold">₹0</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
 
                   {/* Save Green Banner */}
@@ -1149,6 +1065,71 @@ export default function ProductDetail({
                       </span>
                     </div>
                   )}
+
+                  {/* Similar Collection Section */}
+                  {(() => {
+                    const similarProducts = products
+                      .filter(p => p.id !== detailProduct.id && p.category === detailProduct.category)
+                      .slice(0, 8);
+
+                    const fallbackSimilar = similarProducts.length > 0
+                      ? similarProducts
+                      : products.filter(p => p.id !== detailProduct.id).slice(0, 8);
+
+                    if (fallbackSimilar.length === 0) return null;
+
+                    return (
+                      <div className="pt-6 space-y-3 border-t border-[#E7DED2]/60 mt-6 text-left">
+                        <h4 className="text-[10px] font-semibold text-[#181818] uppercase tracking-[0.2em]">
+                          Similar Collection:
+                        </h4>
+                        <div className="flex gap-3 overflow-x-auto pb-2 pt-1 scrollbar-thin scrollbar-thumb-[#E7DED2] scrollbar-track-transparent snap-x">
+                          {fallbackSimilar.map((item) => {
+                            const finalItemPrice = calculatePrice(item).total;
+                            const itemDiscount = item.discountPercent !== undefined && item.discountPercent !== null && item.discountPercent !== '' ? Number(item.discountPercent) : 20;
+                            const itemHasDiscount = item.discountPercent === undefined || item.discountPercent === null || item.discountPercent === '' || Number(item.discountPercent) > 0;
+                            const itemOriginalPrice = itemHasDiscount ? Math.round(finalItemPrice / (1 - itemDiscount / 100)) : finalItemPrice;
+
+                            return (
+                              <div
+                                key={item.id}
+                                onClick={() => {
+                                  triggerAudio('click');
+                                  setDetailProduct(item);
+                                  setDetailActiveImg(item.img);
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                                className="group cursor-pointer bg-white border border-[#E7DED2]/40 rounded-xl p-2 hover:shadow-sm hover:border-[#B8893C]/40 transition-all duration-300 flex flex-col justify-between w-28 sm:w-32 shrink-0 select-none snap-start"
+                              >
+                                <div className="aspect-square bg-gray-50 rounded-lg overflow-hidden mb-1.5 relative flex items-center justify-center">
+                                  <img
+                                    src={item.img}
+                                    alt={item.name}
+                                    className="w-11/12 h-11/12 object-contain group-hover:scale-105 transition-transform duration-350"
+                                  />
+                                </div>
+                                <div className="space-y-0.5">
+                                  <h5 className="text-[9px] font-semibold text-gray-800 line-clamp-1 group-hover:text-[#B8893C] transition-colors leading-tight">
+                                    {item.name}
+                                  </h5>
+                                  <div className="flex flex-wrap items-baseline gap-0.5">
+                                    <span className="text-[9px] font-bold text-gray-900 font-mono">
+                                      ₹{Math.round(finalItemPrice).toLocaleString('en-IN')}
+                                    </span>
+                                    {itemHasDiscount && (
+                                      <span className="text-[7.5px] text-[#4CAF50] font-bold whitespace-nowrap font-sans">
+                                        {itemDiscount}% OFF
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               );
             })()}
@@ -1157,7 +1138,7 @@ export default function ProductDetail({
         </div>
 
         {/* Horizontal Scrolling Text Ticker */}
-        <div className="bg-[#F7F3EE] border-t border-b border-[#E7DED2] py-4 overflow-hidden select-none my-12" style={{width: '100vw', position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw'}}>
+        <div className="bg-[#F7F3EE] border-t border-b border-[#E7DED2] py-4 overflow-hidden select-none my-12" style={{ width: '100vw', position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw' }}>
           <div className="animate-marquee flex whitespace-nowrap">
             <div className="flex items-center gap-8 px-4 text-[9px] tracking-[0.25em] uppercase font-bold text-[#5E5E5E] shrink-0">
               <span>Bespoke Jewelry, Handcrafted For You</span>
@@ -1199,7 +1180,7 @@ export default function ProductDetail({
         </div>
 
         {/* STORY BEHIND THE PRODUCT */}
-        <div className="bg-[#F7F3EE] py-12 select-none" style={{width: '100vw', position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw'}}>
+        <div className="bg-[#F7F3EE] py-12 select-none" style={{ width: '100vw', position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw' }}>
           <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 flex flex-col md:flex-row items-center gap-12 md:gap-20">
 
             {/* LEFT: Text Content */}
@@ -1239,13 +1220,13 @@ export default function ProductDetail({
         {/* ==========================================================
           FEATURE: PREMIUM OUR PROCESS SECTION
           ========================================================== */}
-        <section 
+        <section
           onMouseEnter={() => setProcessPaused(true)}
           onMouseLeave={() => setProcessPaused(false)}
           className="bg-[#FCFAF7] py-20 px-6 sm:px-12 select-none border-b border-[#E7DED2] overflow-hidden text-left"
         >
           <div className="max-w-[1836px] mx-auto relative px-4 text-left">
-            
+
             {/* Heading */}
             <div className="text-center md:text-left mb-12 space-y-4">
               <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[#B8893C] font-semibold font-sans block">
@@ -1256,16 +1237,16 @@ export default function ProductDetail({
               </h2>
             </div>
 
-             {/* Horizontal Timeline Navigation on Top */}
+            {/* Horizontal Timeline Navigation on Top */}
             <div className="flex items-center justify-between max-w-5xl mx-auto mb-16 relative px-4 select-none">
               {/* Connecting progress line */}
               <div className="absolute top-1/2 -translate-y-1/2 left-[20px] right-[20px] h-[1px] bg-[#E7DED2] z-0">
-                <div 
+                <div
                   className="h-full bg-[#B8893C] transition-all duration-500 ease-out origin-left"
                   style={{ width: `${(activeProcessStep / 5) * 100}%` }}
                 />
               </div>
-              
+
               {processStepsData.map((step, idx) => {
                 const isActive = activeProcessStep === idx;
                 return (
@@ -1278,17 +1259,15 @@ export default function ProductDetail({
                     className="relative z-10 flex flex-col items-center group focus:outline-none cursor-pointer border-none bg-transparent"
                   >
                     {/* Dot/Number */}
-                    <div className={`w-10 h-10 rounded-full border flex items-center justify-center font-sans text-xs transition-all duration-300 ${
-                      isActive
+                    <div className={`w-10 h-10 rounded-full border flex items-center justify-center font-sans text-xs transition-all duration-300 ${isActive
                         ? 'bg-[#B8893C] border-[#B8893C] text-white scale-110'
                         : 'bg-white border-[#E7DED2] text-[#888888] hover:border-[#B8893C] hover:text-[#B8893C]'
-                    }`}>
+                      }`}>
                       {step.num}
                     </div>
                     {/* Hover Step Label */}
-                    <span className={`absolute top-12 text-[9px] font-semibold tracking-wider uppercase whitespace-nowrap transition-all duration-300 hidden md:block ${
-                      isActive ? 'text-[#B8893C] opacity-100 translate-y-0' : 'text-[#888888] opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0'
-                    }`}>
+                    <span className={`absolute top-12 text-[9px] font-semibold tracking-wider uppercase whitespace-nowrap transition-all duration-300 hidden md:block ${isActive ? 'text-[#B8893C] opacity-100 translate-y-0' : 'text-[#888888] opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0'
+                      }`}>
                       {step.title}
                     </span>
                   </button>
@@ -1321,7 +1300,7 @@ export default function ProductDetail({
                   <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[#B8893C] font-semibold font-sans">
                     Step {processStepsData[activeProcessStep].num} of 06
                   </span>
-                  <h3 
+                  <h3
                     key={`title-${activeProcessStep}`}
                     className="text-3xl sm:text-4xl font-light text-[#181818] tracking-wide font-serif serif-luxury animate-fadeSlideIn"
                   >
@@ -1330,7 +1309,7 @@ export default function ProductDetail({
                   <div className="w-12 h-[1px] bg-[#B8893C]" />
                 </div>
 
-                <p 
+                <p
                   key={`desc-${activeProcessStep}`}
                   className="text-[#5E5E5E] text-xs sm:text-sm leading-relaxed font-sans font-light relative z-10 max-w-lg animate-fadeSlideIn [animation-delay:150ms]"
                 >
@@ -1414,11 +1393,11 @@ export default function ProductDetail({
                 >
                   {/* Image Frame */}
                   <div className="w-full aspect-[4/5] overflow-hidden bg-[#F3EEE7] text-center">
-                    <img 
-                      src={item.img} 
-                      alt={item.name} 
-                      loading="lazy" 
-                      className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out" 
+                    <img
+                      src={item.img}
+                      alt={item.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
                     />
                   </div>
                   {/* Quote */}

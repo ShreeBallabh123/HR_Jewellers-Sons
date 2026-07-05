@@ -809,11 +809,23 @@ export default function Collections({
                               </p>
                             </div>
 
-                            <div className="pt-1 sm:pt-2.5 border-t border-gray-100/80 flex items-center justify-between mt-auto">
-                              <span className="font-extrabold text-[10px] sm:text-sm text-[#DDA0DD] tracking-wide font-sans">
-                                ₹{formatPrice(calculatePrice(prod).total)}
-                              </span>
-                              <span className="text-[6px] sm:text-[8.5px] font-semibold px-1.5 sm:px-2.5 py-0.5 rounded-full uppercase tracking-widest bg-[#DDA0DD]/10 text-[#DDA0DD] border border-solid border-[#DDA0DD]/20 hidden sm:inline">
+                            <div className="pt-1 sm:pt-2.5 border-t border-gray-100/80 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mt-auto w-full">
+                              <div className="flex flex-wrap items-baseline gap-1.5">
+                                <span className="font-extrabold text-[10px] sm:text-sm text-[#DDA0DD] tracking-wide font-sans">
+                                  ₹{formatPrice(calculatePrice(prod).total)}
+                                </span>
+                                {(prod.discountPercent === undefined || prod.discountPercent === null || prod.discountPercent === '' || Number(prod.discountPercent) > 0) && (
+                                  <>
+                                    <span className="text-[7.5px] sm:text-[10px] line-through text-gray-400 font-sans">
+                                      ₹{formatPrice(Math.round(calculatePrice(prod).total / (1 - (Number(prod.discountPercent) || 20) / 100)))}
+                                    </span>
+                                    <span className="text-[7px] sm:text-[9.5px] text-[#4CAF50] font-extrabold tracking-wide font-sans uppercase">
+                                      {Number(prod.discountPercent) || 20}% OFF
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                              <span className="text-[6px] sm:text-[8.5px] font-semibold px-1.5 sm:px-2.5 py-0.5 rounded-full uppercase tracking-widest bg-[#DDA0DD]/10 text-[#DDA0DD] border border-solid border-[#DDA0DD]/20 hidden sm:inline whitespace-nowrap">
                                 {prod.carat || '22K Gold'}
                               </span>
                             </div>
