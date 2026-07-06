@@ -96,29 +96,56 @@ export default function AdminProducts({
 
   // Gallery Sub-images uploads
   const handleSubImagesUpload = async (e, mode) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-    setSubImagesUploadProgress(`Uploading ${files.length} items...`);
+    setSubImagesUploadProgress(`Uploading 0 of ${files.length}...`);
     try {
+      let completedCount = 0;
+      let failedCount = 0;
       const urls = [];
-      for (let i = 0; i < files.length; i++) {
-        const res = await ImageUploadService.uploadImage(files[i]);
-        urls.push(res.url);
+
+      const uploadPromises = files.map(async (file) => {
+        try {
+          const res = await ImageUploadService.uploadImage(file);
+          if (res && res.url) {
+            urls.push(res.url);
+          } else {
+            failedCount++;
+          }
+        } catch (err) {
+          console.error(`Failed to upload ${file.name}:`, err);
+          failedCount++;
+        } finally {
+          completedCount++;
+          setSubImagesUploadProgress(`Uploading ${completedCount} of ${files.length}...`);
+        }
+      });
+
+      await Promise.all(uploadPromises);
+
+      if (urls.length > 0) {
+        if (mode === 'edit') {
+          setEditingProduct(prev => ({
+            ...prev,
+            subImages: [...(prev.subImages || []), ...urls]
+          }));
+        } else {
+          setNewProduct(prev => ({
+            ...prev,
+            subImages: [...(prev.subImages || []), ...urls]
+          }));
+        }
       }
 
-      if (mode === 'edit') {
-        setEditingProduct(prev => ({
-          ...prev,
-          subImages: [...(prev.subImages || []), ...urls]
-        }));
+      // Reset file input value so onChange can be triggered again for the same files
+      e.target.value = '';
+
+      if (failedCount > 0) {
+        setSubImagesUploadProgress(`Uploaded ${urls.length} items (${failedCount} failed).`);
       } else {
-        setNewProduct(prev => ({
-          ...prev,
-          subImages: [...(prev.subImages || []), ...urls]
-        }));
+        setSubImagesUploadProgress('Gallery added!');
       }
-      setSubImagesUploadProgress('Gallery added!');
     } catch (err) {
       console.error(err);
       setSubImagesUploadProgress('Gallery upload error.');

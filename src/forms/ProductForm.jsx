@@ -1047,9 +1047,8 @@ export default function ProductForm({
                   type="file"
                   accept="image/*,video/*"
                   multiple
-                  disabled={!getVal('img')}
                   onChange={(e) => handleSubImagesUpload(e, editingProduct ? 'edit' : 'new')}
-                  className="text-xs text-zinc-500 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="text-xs text-zinc-500 font-semibold"
                 />
                 {subImagesUploadProgress && <p className="text-[9px] text-[#BCA057] mt-1.5 font-bold">{subImagesUploadProgress}</p>}
               </div>
