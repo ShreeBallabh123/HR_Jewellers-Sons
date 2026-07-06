@@ -278,6 +278,40 @@ export default function AdminProducts({
     }
   };
 
+  const downloadFile = async (url, filename) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      let ext = 'png';
+      if (url.includes('.webp')) ext = 'webp';
+      else if (url.includes('.jpg')) ext = 'jpg';
+      else if (url.includes('.jpeg')) ext = 'jpeg';
+      else if (url.includes('.mp4')) ext = 'mp4';
+      link.download = `${filename}.${ext}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("CORS block or fetch error. Opening in new tab:", error);
+      window.open(url, '_blank');
+    }
+  };
+
+  const handleDownloadProductImages = async (product) => {
+    if (product.img) {
+      await downloadFile(product.img, `${product.sku || 'product'}_cover`);
+    }
+    if (Array.isArray(product.subImages) && product.subImages.length > 0) {
+      for (let i = 0; i < product.subImages.length; i++) {
+        await downloadFile(product.subImages[i], `${product.sku || 'product'}_gallery_${i + 1}`);
+      }
+    }
+  };
+
   const filtered = products
     .filter(p => productCategoryFilter === 'all' || p.category === productCategoryFilter)
     .filter(p => p.name?.toLowerCase().includes(productSearch.toLowerCase()) || p.sku?.toLowerCase().includes(productSearch.toLowerCase()));
@@ -426,21 +460,31 @@ export default function AdminProducts({
                   </div>
 
                   {/* Actions buttons */}
-                  <div className="flex gap-2 pt-2 border-t border-solid border-zinc-100 dark:border-zinc-850">
+                  <div className="flex gap-1.5 pt-2 border-t border-solid border-zinc-100 dark:border-zinc-850">
                     <button
                       type="button"
                       onClick={() => {
                         setEditingProduct(prod);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
-                      className="flex-1 py-1.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg text-[9px] uppercase font-bold tracking-widest cursor-pointer border-none"
+                      className="flex-1 py-1.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-705 dark:text-zinc-305 rounded-lg text-[8px] uppercase font-bold tracking-widest cursor-pointer border-none"
                     >
                       Edit
                     </button>
                     <button
                       type="button"
+                      onClick={() => handleDownloadProductImages(prod)}
+                      className="py-1.5 px-2 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-705 dark:text-zinc-305 rounded-lg text-[8px] uppercase font-bold tracking-widest cursor-pointer border-none flex items-center justify-center"
+                      title="Download Images"
+                    >
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => handleDeleteProduct(prod.id)}
-                      className="py-1.5 px-2 bg-red-500/10 hover:bg-red-500/20 text-red-650 dark:text-red-400 rounded-lg text-[9px] uppercase font-bold tracking-widest cursor-pointer border-none"
+                      className="py-1.5 px-2 bg-red-500/10 hover:bg-red-500/20 text-red-650 dark:text-red-400 rounded-lg text-[8px] uppercase font-bold tracking-widest cursor-pointer border-none"
                     >
                       Delete
                     </button>

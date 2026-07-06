@@ -6,6 +6,29 @@ const isVideoUrl = (url) => {
   return url.includes('.mp4') || url.includes('.webm') || url.includes('/video/upload/');
 };
 
+const downloadFile = async (url, filename = 'downloaded_image') => {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    let ext = 'png';
+    if (url.includes('.webp')) ext = 'webp';
+    else if (url.includes('.jpg')) ext = 'jpg';
+    else if (url.includes('.jpeg')) ext = 'jpeg';
+    else if (url.includes('.mp4')) ext = 'mp4';
+    link.download = `${filename}.${ext}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error("CORS block or fetch error. Opening in new tab:", error);
+    window.open(url, '_blank');
+  }
+};
+
 export default function ProductForm({
   editingProduct,
   setEditingProduct,
@@ -1027,13 +1050,22 @@ export default function ProductForm({
                     alt="Cover preview"
                     className="w-full h-full object-cover"
                   />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(editingProduct ? 'edit' : 'new')}
-                    className="absolute inset-0 bg-red-500/80 hover:bg-red-650 opacity-0 group-hover:opacity-100 text-white text-[9px] font-bold uppercase transition-opacity flex items-center justify-center cursor-pointer border-none"
-                  >
-                    Delete
-                  </button>
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
+                    <button
+                      type="button"
+                      onClick={() => downloadFile(getVal('img'), `${getVal('sku') || 'product'}_cover`)}
+                      className="w-full py-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-[8px] font-bold uppercase tracking-wider rounded cursor-pointer border-none"
+                    >
+                      Download
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(editingProduct ? 'edit' : 'new')}
+                      className="w-full py-1 bg-red-650 hover:bg-red-700 text-white text-[8px] font-bold uppercase tracking-wider rounded cursor-pointer border-none"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -1068,13 +1100,22 @@ export default function ProductForm({
                       ) : (
                         <img src={subImg} alt="" className="w-full h-full object-cover" />
                       )}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveSubImage(idx, editingProduct ? 'edit' : 'new')}
-                        className="absolute inset-0 bg-red-500/80 hover:bg-red-650 opacity-0 group-hover:opacity-100 text-white text-[9px] font-bold uppercase transition-opacity flex items-center justify-center cursor-pointer border-none"
-                      >
-                        Delete
-                      </button>
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 p-1">
+                        <button
+                          type="button"
+                          onClick={() => downloadFile(subImg, `${getVal('sku') || 'product'}_gallery_${idx + 1}`)}
+                          className="w-full py-0.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-[7px] font-bold uppercase tracking-wider rounded cursor-pointer border-none leading-none"
+                        >
+                          Down
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSubImage(idx, editingProduct ? 'edit' : 'new')}
+                          className="w-full py-0.5 bg-red-650 hover:bg-red-700 text-white text-[7px] font-bold uppercase tracking-wider rounded cursor-pointer border-none leading-none"
+                        >
+                          Del
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
