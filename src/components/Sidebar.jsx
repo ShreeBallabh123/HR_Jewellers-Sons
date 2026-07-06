@@ -19,7 +19,7 @@ export default function Sidebar({
   setIsSidebarCollapsed
 }) {
   return (
-    <aside className={`bg-white dark:bg-[#09090B] border-r border-solid border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-400 flex flex-col justify-between shrink-0 hidden md:flex transition-all duration-200 select-none sticky top-0 h-screen overflow-y-auto scrollbar-none ${isSidebarCollapsed ? 'w-[72px] p-4' : 'w-[240px] p-6'}`}>
+    <aside className={`bg-white dark:bg-[#09090B] border-r border-solid border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-400 flex flex-col justify-between shrink-0 hidden md:flex transition-all duration-200 select-none sticky top-0 h-screen overflow-y-hidden ${isSidebarCollapsed ? 'w-[72px] p-4' : 'w-[240px] p-6'}`}>
       <div className="space-y-6">
 
         {/* Logo Branding */}
