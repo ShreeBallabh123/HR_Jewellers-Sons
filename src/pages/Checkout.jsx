@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../hooks/useCart';
 import { bookingApi } from '../api/booking.api';
 
@@ -32,6 +32,143 @@ export default function Checkout({ navigateTo, triggerAudio }) {
   const [placedOrderId, setPlacedOrderId] = useState('');
   const [placedOrderTotal, setPlacedOrderTotal] = useState(0);
   const [submittingOrder, setSubmittingOrder] = useState(false);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const handleRazorpayPayment = async () => {
+    if (cartItems.length === 0) return;
+    if (!window.Razorpay) {
+      alert("Razorpay payment gateway failed to load. Please check your internet connection.");
+      return;
+    }
+    setSubmittingOrder(true);
+    try {
+      const orderTotalAmount = cartTotal + Math.round(cartTotal * 0.03);
+      const orderAmountPaise = Math.round(orderTotalAmount * 100);
+
+      // Create Razorpay Order
+      const res = await fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: orderAmountPaise, currency: 'INR' })
+      });
+
+      if (!res.ok) {
+        const errObj = await res.json();
+        throw new Error(errObj.error || 'Failed to initialize order on server');
+      }
+
+      const orderData = await res.json();
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TADQ3BiesyzemD',
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'HR Jewellers & Sons',
+        description: `Purchase of ${cartItems.reduce((a, c) => a + c.quantity, 0)} items`,
+        order_id: orderData.order_id,
+        handler: async function (response) {
+          try {
+            // Verify payment signature
+            const verifyRes = await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature
+              })
+            });
+
+            if (!verifyRes.ok) {
+              const verifyErrObj = await verifyRes.json();
+              throw new Error(verifyErrObj.error || 'Payment verification failed');
+            }
+
+            const verification = await verifyRes.json();
+
+            if (verification.success) {
+              const orderPayload = {
+                recipientName: deliveryForm.recipientName,
+                email: deliveryForm.email,
+                mobile: deliveryForm.mobile,
+                whatsapp: deliveryForm.whatsapp || '',
+                deliveryType,
+                storeBranch: deliveryType === 'store' ? deliveryForm.storeBranch : '',
+                storeCity: deliveryType === 'store' ? deliveryForm.storeCity : '',
+                address: deliveryType === 'home'
+                  ? `${deliveryForm.apartment}, ${deliveryForm.street}, ${deliveryForm.locality}, ${deliveryForm.landmark || ''}, PIN: ${deliveryForm.pincode}`
+                  : '',
+                pincode: deliveryForm.pincode,
+                paymentMethod: 'razorpay',
+                paymentId: response.razorpay_payment_id,
+                razorpayOrderId: response.razorpay_order_id,
+                paymentStatus: 'paid',
+                orderStatus: 'pending',
+                items: cartItems.map(item => ({
+                  id: item.id,
+                  name: item.name,
+                  price: item.price,
+                  quantity: item.quantity,
+                  carat: item.carat || '',
+                  weight: item.weight || '',
+                  desc: item.desc || ''
+                })),
+                subtotal: cartTotal,
+                gst: Math.round(cartTotal * 0.03),
+                total: orderTotalAmount,
+                createdDate: new Date().toISOString()
+              };
+
+              setPlacedOrderTotal(orderPayload.total);
+              const result = await bookingApi.createOrder(orderPayload);
+              setPlacedOrderId(result.id);
+              setOrderPlaced(true);
+              clearCart();
+            } else {
+              alert("Payment verification failed. Please try again.");
+            }
+          } catch (verifyErr) {
+            console.error("Verification error:", verifyErr);
+            alert(`Signature verification failed: ${verifyErr.message}`);
+          } finally {
+            setSubmittingOrder(false);
+          }
+        },
+        prefill: {
+          name: deliveryForm.recipientName || '',
+          email: deliveryForm.email || '',
+          contact: deliveryForm.mobile || ''
+        },
+        theme: { color: '#B8893C' },
+        modal: {
+          ondismiss: function () {
+            setSubmittingOrder(false);
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (failedResp) {
+        alert(`Payment failed: ${failedResp.error.description}`);
+        setSubmittingOrder(false);
+      });
+      rzp.open();
+
+    } catch (err) {
+      console.error(err);
+      alert(`Razorpay Error: ${err.message}`);
+      setSubmittingOrder(false);
+    }
+  };
 
   const updateCartQuantity = (itemId, amount) => {
     const item = cartItems.find(i => i.id === itemId);
@@ -448,102 +585,22 @@ export default function Checkout({ navigateTo, triggerAudio }) {
                         </p>
                       )}
 
-                      {/* Card Details Inputs */}
-                      {checkoutForm.method === 'card' && (
-                        <div className="space-y-4 mb-6">
-                          <div className="space-y-1">
-                            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">Name on Card</label>
-                            <input
-                              type="text"
-                              value={cardName}
-                              onChange={(e) => setCardName(e.target.value)}
-                              placeholder="e.g. Anil Soni"
-                              className="w-full h-11 px-4 rounded-xl border border-solid border-slate-200 focus:border-gold focus:outline-none text-xs"
-                              required
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">Card Number</label>
-                            <input
-                              type="text"
-                              value={cardNo}
-                              onChange={(e) => setCardNo(e.target.value.replace(/\s?/g, '').replace(/(\d{4})/g, '$1 ').trim())}
-                              maxLength="19"
-                              placeholder="1234 5678 1234 5678"
-                              className="w-full h-11 px-4 rounded-xl border border-solid border-slate-200 focus:border-gold focus:outline-none text-xs"
-                              required
-                            />
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                              <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">Expiry Date</label>
-                              <input
-                                type="text"
-                                value={cardExpiry}
-                                onChange={(e) => setCardExpiry(e.target.value)}
-                                placeholder="MM/YY"
-                                maxLength="5"
-                                className="w-full h-11 px-4 rounded-xl border border-solid border-slate-200 focus:border-gold focus:outline-none text-xs"
-                                required
-                              />
-                            </div>
-                            <div className="space-y-1">
-                              <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">CVV</label>
-                              <input
-                                type="password"
-                                value={cardCvv}
-                                onChange={(e) => setCardCvv(e.target.value)}
-                                placeholder="***"
-                                maxLength="3"
-                                className="w-full h-11 px-4 rounded-xl border border-solid border-slate-200 focus:border-gold focus:outline-none text-xs"
-                                required
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Net Banking Inputs */}
-                      {checkoutForm.method === 'netbanking' && (
-                        <div className="space-y-1 mb-6">
-                          <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">Select Your Bank</label>
-                          <select
-                            value={netbankBank}
-                            onChange={(e) => setNetbankBank(e.target.value)}
-                            className="w-full h-11 px-4 rounded-xl border border-solid border-slate-200 focus:border-gold focus:outline-none text-xs bg-white"
-                            required
-                          >
-                            <option value="">Choose a bank</option>
-                            <option value="SBI">State Bank of India</option>
-                            <option value="HDFC">HDFC Bank</option>
-                            <option value="ICICI">ICICI Bank</option>
-                            <option value="Axis">Axis Bank</option>
-                            <option value="Kotak">Kotak Mahindra Bank</option>
-                            <option value="PNB">Punjab National Bank</option>
-                          </select>
-                        </div>
-                      )}
-
-                      {/* UPI Input */}
-                      {checkoutForm.method === 'upi' && (
-                        <div className="space-y-1 mb-6">
-                          <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold">UPI ID / Virtual Payment Address (VPA)</label>
-                          <input
-                            type="text"
-                            value={upiId}
-                            onChange={(e) => setUpiId(e.target.value)}
-                            placeholder="e.g. name@upi or name@okaxis"
-                            className="w-full h-11 px-4 rounded-xl border border-solid border-slate-200 focus:border-gold focus:outline-none text-xs"
-                            required
-                          />
+                      {checkoutForm.method !== 'cod' && (
+                        <div className="bg-zinc-50 dark:bg-zinc-900/40 p-5 rounded-2xl border border-solid border-zinc-200/60 mb-6 text-xs text-gray-505 space-y-2">
+                          <p className="font-bold text-gray-800 flex items-center gap-1.5">
+                            <span className="text-emerald-600">🔒</span> Razorpay Secure Online Payment
+                          </p>
+                          <p>You can pay via Credit/Debit Cards, UPI (GPay, PhonePe, Paytm), Net Banking, or Mobile Wallets. Razorpay will open a secure window to process your payment.</p>
+                          <p className="text-[10px] text-gray-400 italic">Please do not reload or close this page during the transaction.</p>
                         </div>
                       )}
 
                       <button
-                        onClick={handleCartCheckoutSubmit}
-                        className="w-full sm:w-auto px-16 py-3.5 rounded-lg bg-[#E84F35] hover:bg-[#d63d22] text-white text-xs uppercase font-black tracking-widest transition-all shadow-md cursor-pointer border-none font-bold"
+                        onClick={checkoutForm.method === 'cod' ? handleCartCheckoutSubmit : handleRazorpayPayment}
+                        disabled={submittingOrder}
+                        className="w-full sm:w-auto px-16 py-3.5 rounded-lg bg-[#E84F35] hover:bg-[#d63d22] text-white text-xs uppercase font-black tracking-widest transition-all shadow-md cursor-pointer border-none font-bold disabled:opacity-55 disabled:cursor-not-allowed"
                       >
-                        PROCEED TO PAY
+                        {submittingOrder ? 'Processing...' : 'PROCEED TO PAY'}
                       </button>
                     </div>
                   </div>
