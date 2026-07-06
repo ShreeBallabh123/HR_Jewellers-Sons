@@ -82,6 +82,18 @@ export default function AdminProducts({
     }
   };
 
+  // Remove cover image
+  const handleRemoveImage = (mode) => {
+    if (mode === 'edit') {
+      setEditingProduct(prev => ({ ...prev, img: '' }));
+    } else {
+      setNewProduct(prev => ({ ...prev, img: '' }));
+    }
+    setImageUploadProgress('');
+    const fileInput = document.getElementById('prod-image-picker');
+    if (fileInput) fileInput.value = '';
+  };
+
   // Gallery Sub-images uploads
   const handleSubImagesUpload = async (e, mode) => {
     const files = e.target.files;
@@ -256,6 +268,7 @@ export default function AdminProducts({
         onSubmit={handleSaveProduct}
         handleImageUpload={handleImageUpload}
         imageUploadProgress={imageUploadProgress}
+        handleRemoveImage={handleRemoveImage}
         handleSubImagesUpload={handleSubImagesUpload}
         subImagesUploadProgress={subImagesUploadProgress}
         handleRemoveSubImage={handleRemoveSubImage}

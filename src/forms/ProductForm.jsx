@@ -15,6 +15,7 @@ export default function ProductForm({
   onSubmit,
   handleImageUpload,
   imageUploadProgress,
+  handleRemoveImage,
   handleSubImagesUpload,
   subImagesUploadProgress,
   handleRemoveSubImage,
@@ -1020,12 +1021,19 @@ export default function ProductForm({
                 {imageUploadProgress && <p className="text-[9px] text-[#BCA057] mt-1.5 font-bold">{imageUploadProgress}</p>}
               </div>
               {getVal('img') && (
-                <div className="relative w-20 h-24 rounded-lg overflow-hidden border border-solid border-zinc-200 dark:border-zinc-800">
+                <div className="relative group w-20 h-24 rounded-lg overflow-hidden border border-solid border-zinc-200 dark:border-zinc-800">
                   <img
                     src={getVal('img')}
                     alt="Cover preview"
                     className="w-full h-full object-cover"
                   />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(editingProduct ? 'edit' : 'new')}
+                    className="absolute inset-0 bg-red-500/80 hover:bg-red-650 opacity-0 group-hover:opacity-100 text-white text-[9px] font-bold uppercase transition-opacity flex items-center justify-center cursor-pointer border-none"
+                  >
+                    Delete
+                  </button>
                 </div>
               )}
             </div>

@@ -133,6 +133,7 @@ export default function AdminCategories({
               <span className="text-[10px] font-extrabold text-zinc-800 dark:text-zinc-300 block mb-1">Category Showcase banner</span>
               <p className="text-[9px] text-zinc-400 dark:text-zinc-550 font-medium mb-3">Upload a clean catalog portfolio visual banner.</p>
               <input
+                id="cat-image-picker"
                 type="file"
                 accept="image/*"
                 onChange={handleCatImageUpload}
@@ -141,8 +142,20 @@ export default function AdminCategories({
               {catImageUploadProgress && <p className="text-[9px] text-[#BCA057] mt-1 font-bold">{catImageUploadProgress}</p>}
             </div>
             {newCatImg && (
-              <div className="relative w-28 h-16 rounded overflow-hidden border border-solid border-zinc-200 dark:border-zinc-800">
+              <div className="relative group w-28 h-16 rounded overflow-hidden border border-solid border-zinc-200 dark:border-zinc-800">
                 <img src={newCatImg} alt="Preview" className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNewCatImg('');
+                    setCatImageUploadProgress('');
+                    const fileInput = document.getElementById('cat-image-picker');
+                    if (fileInput) fileInput.value = '';
+                  }}
+                  className="absolute inset-0 bg-red-500/80 hover:bg-red-650 opacity-0 group-hover:opacity-100 text-white text-[9px] font-bold uppercase transition-opacity flex items-center justify-center cursor-pointer border-none"
+                >
+                  Delete
+                </button>
               </div>
             )}
           </div>
