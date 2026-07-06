@@ -69,7 +69,7 @@ export default function Checkout({ navigateTo, triggerAudio }) {
       const orderData = await res.json();
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TADQ3BiesyzemD',
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TAEDNGVFKx1WUP',
         amount: orderData.amount,
         currency: orderData.currency,
         name: 'HR Jewellers & Sons',

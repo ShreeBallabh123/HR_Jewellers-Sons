@@ -30,8 +30,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Amount must be at least 100 paise' });
     }
 
-    const key_id = process.env.RAZORPAY_KEY_ID || 'rzp_test_TADQ3BiesyzemD';
-    const key_secret = process.env.RAZORPAY_KEY_SECRET || 'Vu337yzbxOk7p4VlkuxHUPtT';
+    const key_id = process.env.RAZORPAY_KEY_ID || 'rzp_test_TAEDNGVFKx1WUP';
+    const key_secret = process.env.RAZORPAY_KEY_SECRET || 'ne2v3Tl1NMbxzLZ9E7pO3ryX';
 
     const razorpay = new Razorpay({
       key_id,

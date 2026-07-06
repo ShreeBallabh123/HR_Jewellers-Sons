@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing payment details' });
     }
 
-    const key_secret = process.env.RAZORPAY_KEY_SECRET || 'Vu337yzbxOk7p4VlkuxHUPtT';
+    const key_secret = process.env.RAZORPAY_KEY_SECRET || 'ne2v3Tl1NMbxzLZ9E7pO3ryX';
 
     // Algorithm: HMAC-SHA256(order_id + "|" + payment_id, KEY_SECRET)
     const expectedSignature = crypto
