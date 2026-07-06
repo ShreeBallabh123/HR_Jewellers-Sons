@@ -37,6 +37,7 @@ export const RateService = {
       stonePrice:     result.stonePrice,
       otherCharges:   result.otherCharges,
       gst:            result.gst,
+      subtotal:       result.subtotal,
       total:          result.total,
       metalType:      result.metalType,
       isLive:         result.isLive,

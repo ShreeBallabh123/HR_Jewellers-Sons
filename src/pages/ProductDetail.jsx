@@ -128,10 +128,13 @@ export default function ProductDetail({
 
   // Calculate live dynamic product price, taking into account user's custom metal/karat selection
   const computedProductPrice = detailProduct && typeof calculatePrice === 'function'
-    ? calculatePrice({
-      ...detailProduct,
-      carat: isSilver ? '92.5' : (pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : detailProduct.carat)
-    }).total
+    ? (() => {
+        const prices = calculatePrice({
+          ...detailProduct,
+          carat: isSilver ? '92.5' : (pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : detailProduct.carat)
+        });
+        return prices.subtotal !== undefined ? prices.subtotal : prices.total;
+      })()
     : (detailProduct ? Number(detailProduct.price || 0) : 0);
 
   // Scroll listener for sticky buy bar
@@ -903,10 +906,10 @@ export default function ProductDetail({
               const displayCarat = carat;
               const netWeight = parseFloat(detailProduct.netWeight || detailProduct.weight) || 0;
 
-              // ── Step 1: Extract GST from total price ───────────────────────
-              // finalPrice is GST-inclusive. Back-calculate GST.
-              const discountedGst = Math.round(finalPrice * productGstRate / (1 + productGstRate));
-              const discountedSubtotal = finalPrice - discountedGst; // pre-GST total
+              // ── Step 1: Calculate GST on top of finalPrice ──────────────────
+              // finalPrice is the base item value. Calculate GST on top of it.
+              const discountedGst = Math.round(finalPrice * productGstRate);
+              const discountedSubtotal = finalPrice; // pre-GST total is the base item value
 
               // ── Step 2: Calculate metal value at current live rate ─────────
               let metalRatePerGram = 0;
@@ -949,7 +952,7 @@ export default function ProductDetail({
               const originalSubtotal = metalValue + baseMakingCharges + baseDiamondValue;
               const originalGst = Math.round(originalSubtotal * productGstRate);
               const originalTotal = originalSubtotal + originalGst;
-              const saveAmount = Math.max(0, originalTotal - finalPrice);
+              const saveAmount = Math.max(0, originalTotal - (finalPrice + discountedGst));
 
               // Diamond comparison value (mined vs lab-grown)
               const minedDiamondPrice = diamondValue > 0 ? Math.round(diamondValue * 3.5627) : 0;
@@ -1040,7 +1043,7 @@ export default function ProductDetail({
                       <div className="flex justify-between items-center text-sm font-bold text-gray-900">
                         <span>Total</span>
                         <span className="font-mono text-base font-bold">
-                          ₹{finalPrice.toLocaleString('en-IN')}
+                          ₹{(finalPrice + discountedGst).toLocaleString('en-IN')}
                         </span>
                       </div>
 

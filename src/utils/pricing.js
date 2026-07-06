@@ -128,8 +128,8 @@ export function calculateManualBreakdown(product) {
 
   const gstPct  = parseFloat(product.gstPercent || product.gstPercentage || 3);
   const gstRate = gstPct / 100;
-  const gst     = Math.round(dbPrice * gstRate / (1 + gstRate));
-  const subtotal= dbPrice - gst;
+  const gst     = Math.round(dbPrice * gstRate);
+  const subtotal= dbPrice;
 
   return {
     goldValue:    subtotal,
@@ -138,7 +138,7 @@ export function calculateManualBreakdown(product) {
     otherCharges: 0,
     subtotal,
     gst,
-    total: dbPrice,
+    total: dbPrice + gst,
     metalType: detectMetalType(product),
     isLive: false,
     purity: product.carat || product.goldPurity || '22K',

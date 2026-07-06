@@ -11,7 +11,7 @@ export default function ProductCard({
 }) {
   const { calculatePrice, formatPrice, goldRate22k, lastUpdated, publishedAt } = useRates();
   const prices = calculatePrice(product);
-  const displayPrice = prices.total;
+  const displayPrice = prices.subtotal !== undefined ? prices.subtotal : prices.total;
 
   return (
     <div
