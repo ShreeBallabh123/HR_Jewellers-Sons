@@ -133,9 +133,9 @@ export default function ProductDetail({
           ...detailProduct,
           carat: isSilver ? '92.5' : (pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : detailProduct.carat)
         });
-        return prices.subtotal !== undefined ? prices.subtotal : prices.total;
+        return prices.total !== undefined ? prices.total : (prices.subtotal || 0);
       })()
-    : (detailProduct ? Number(detailProduct.price || 0) : 0);
+    : (detailProduct ? Math.round(Number(detailProduct.price || 0) * 1.03) : 0);
 
   // Scroll listener for sticky buy bar
   useEffect(() => {

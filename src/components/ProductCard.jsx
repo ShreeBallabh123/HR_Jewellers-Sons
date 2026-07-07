@@ -11,7 +11,7 @@ export default function ProductCard({
 }) {
   const { calculatePrice, formatPrice, goldRate22k, lastUpdated, publishedAt } = useRates();
   const prices = calculatePrice(product);
-  const displayPrice = prices.subtotal !== undefined ? prices.subtotal : prices.total;
+  const displayPrice = prices.total !== undefined ? prices.total : (prices.subtotal || 0);
 
   return (
     <div
@@ -78,7 +78,7 @@ export default function ProductCard({
           {/* Price Tag info */}
           <div className="mt-3 flex items-center justify-between border-t border-solid border-slate-50 pt-3">
             <div className="flex flex-col">
-              <span className="text-[7.5px] uppercase font-sans tracking-wider text-zinc-400 font-bold leading-none">Price estimate</span>
+              <span className="text-[7.5px] uppercase font-sans tracking-wider text-zinc-400 font-bold leading-none">Price (incl. GST)</span>
               <span className="font-sans text-[13px] font-extrabold text-[#1A1A1A] mt-1">
                 {formatPrice(displayPrice)}
               </span>

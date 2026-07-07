@@ -51,7 +51,7 @@ export default function Checkout({ navigateTo, triggerAudio }) {
     }
     setSubmittingOrder(true);
     try {
-      const orderTotalAmount = cartTotal + Math.round(cartTotal * 0.03);
+      const orderTotalAmount = cartTotal;
       const orderAmountPaise = Math.round(orderTotalAmount * 100);
 
       // Create Razorpay Order
@@ -122,8 +122,8 @@ export default function Checkout({ navigateTo, triggerAudio }) {
                   weight: item.weight || '',
                   desc: item.desc || ''
                 })),
-                subtotal: cartTotal,
-                gst: Math.round(cartTotal * 0.03),
+                subtotal: Math.round(cartTotal / 1.03),
+                gst: Math.round(cartTotal - cartTotal / 1.03),
                 total: orderTotalAmount,
                 createdDate: new Date().toISOString()
               };
@@ -207,9 +207,9 @@ export default function Checkout({ navigateTo, triggerAudio }) {
           weight: item.weight || '',
           desc: item.desc || ''
         })),
-        subtotal: cartTotal,
-        gst: Math.round(cartTotal * 0.03),
-        total: cartTotal + Math.round(cartTotal * 0.03),
+        subtotal: Math.round(cartTotal / 1.03),
+        gst: Math.round(cartTotal - cartTotal / 1.03),
+        total: cartTotal,
         createdDate: new Date().toISOString()
       };
 
@@ -626,17 +626,17 @@ export default function Checkout({ navigateTo, triggerAudio }) {
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal ({cartItems.reduce((a, c) => a + c.quantity, 0)} Item{cartItems.reduce((a, c) => a + c.quantity, 0) !== 1 ? 's' : ''})</span>
-                  <span className="font-bold text-[#031838]">₹ {cartTotal.toLocaleString('en-IN')}</span>
+                  <span className="font-bold text-[#031838]">₹ {Math.round(cartTotal / 1.03).toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>GST (3%)</span>
-                  <span className="font-bold text-[#031838]">₹ {Math.round(cartTotal * 0.03).toLocaleString('en-IN')}</span>
+                  <span className="font-bold text-[#031838]">₹ {Math.round(cartTotal - cartTotal / 1.03).toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
               <div className="border-t border-gray-100 pt-3 flex justify-between items-center">
                 <span className="text-sm font-bold text-[#031838]">Total Payable</span>
-                <span className="text-lg font-black text-[#031838]">₹ {(cartTotal + Math.round(cartTotal * 0.03)).toLocaleString('en-IN')}</span>
+                <span className="text-lg font-black text-[#031838]">₹ {cartTotal.toLocaleString('en-IN')}</span>
               </div>
 
               {/* Action Button */}

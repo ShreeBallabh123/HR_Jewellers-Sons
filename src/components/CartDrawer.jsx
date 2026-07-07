@@ -140,15 +140,15 @@ export default function CartDrawer({ isOpen, onClose, navigateTo }) {
             <div className="space-y-2.5 text-xs text-left">
               <div className="flex justify-between text-gray-500 font-medium">
                 <span>Subtotal ({cartItemCount} item{cartItemCount !== 1 ? 's' : ''})</span>
-                <span className="font-bold text-[#031838] font-sans">₹ {cartTotal.toLocaleString('en-IN')}</span>
+                <span className="font-bold text-[#031838] font-sans">₹ {Math.round(cartTotal / 1.03).toLocaleString('en-IN')}</span>
               </div>
               <div className="flex justify-between text-gray-500 font-medium">
                 <span>GST (3%)</span>
-                <span className="font-bold text-[#031838] font-sans">₹ {Math.round(cartTotal * 0.03).toLocaleString('en-IN')}</span>
+                <span className="font-bold text-[#031838] font-sans">₹ {Math.round(cartTotal - cartTotal / 1.03).toLocaleString('en-IN')}</span>
               </div>
               <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
                 <span className="text-sm font-bold text-[#031838]">Total Payable</span>
-                <span className="text-base font-black text-[#031838] font-sans">₹ {(cartTotal + Math.round(cartTotal * 0.03)).toLocaleString('en-IN')}</span>
+                <span className="text-base font-black text-[#031838] font-sans">₹ {cartTotal.toLocaleString('en-IN')}</span>
               </div>
             </div>
 
