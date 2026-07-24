@@ -90,11 +90,12 @@ async function getBucket() {
   return storage.bucket(`${serviceAccount.project_id}.firebasestorage.app`);
 }
 
-function cleanName(fileName) {
-  // Remove extension
+function cleanName(fileName, categoryName = 'Jewellery', index = 1) {
   let base = path.basename(fileName, path.extname(fileName));
-  // Clean up typical ChatGPT name format, e.g. "ChatGPT Image Jul 14, 2026, 11_05_06 PM"
-  // Replace underscores in time with colons
+  if (base.toLowerCase().includes('chatgpt image') || base.toLowerCase().includes('image')) {
+    const formattedCat = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+    return `Royal ${formattedCat} Design #${index}`;
+  }
   base = base.replace(/_(\d{2})_(\d{2})/g, ':$1:$2');
   base = base.replace(/_/g, ' ');
   return base;

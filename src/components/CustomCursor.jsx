@@ -126,10 +126,10 @@ export default function CustomCursor() {
       <div
         className={`fixed top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full border border-solid transition-all duration-300 ease-out flex items-center justify-center ${
           isHovered
-            ? 'w-14 h-14 border-[#E6C687] bg-[#4A126D]/15 backdrop-blur-[2px] shadow-[0_0_20px_rgba(230,198,135,0.4)] scale-110'
+            ? 'w-10 h-10 border-[#E6C687] bg-transparent shadow-[0_0_12px_rgba(230,198,135,0.3)] scale-105'
             : isClicked
-            ? 'w-7 h-7 border-[#DDA0DD] bg-[#DDA0DD]/20 shadow-[0_0_15px_rgba(221,160,221,0.5)] scale-90'
-            : 'w-9 h-9 border-[#DDA0DD]/70 bg-transparent shadow-[0_0_10px_rgba(221,160,221,0.2)]'
+            ? 'w-6 h-6 border-[#DDA0DD] bg-transparent shadow-[0_0_10px_rgba(221,160,221,0.4)] scale-90'
+            : 'w-8 h-8 border-[#DDA0DD]/60 bg-transparent shadow-[0_0_8px_rgba(221,160,221,0.15)]'
         }`}
         style={{
           transform: `translate3d(${followerPos.x}px, ${followerPos.y}px, 0) translate(-50%, -50%)`
@@ -137,7 +137,7 @@ export default function CustomCursor() {
       >
         {/* Subtle spinning diamond star on hover */}
         {isHovered && (
-          <div className="w-2.5 h-2.5 bg-[#E6C687] rotate-45 animate-[spin_4s_linear_infinite] shadow-[0_0_8px_#E6C687]" />
+          <div className="w-1.5 h-1.5 bg-[#E6C687] rotate-45 animate-[spin_4s_linear_infinite] shadow-[0_0_6px_#E6C687]" />
         )}
       </div>
 
