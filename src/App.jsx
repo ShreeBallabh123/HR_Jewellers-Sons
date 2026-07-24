@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AppProviders from './contexts/AppProviders';
+import CustomCursor from './components/CustomCursor';
 import { useAuth } from './hooks/useAuth';
 import { useRates } from './hooks/useRates';
 import { useProducts } from './hooks/useProducts';
@@ -415,6 +416,7 @@ function AppContent() {
 export default function App() {
   return (
     <AppProviders>
+      <CustomCursor />
       <AppContent />
     </AppProviders>
   );
