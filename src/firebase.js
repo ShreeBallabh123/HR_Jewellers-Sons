@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
+import { getMessaging, isSupported } from 'firebase/messaging';
 
 // Standard Web App Configuration for 'hr-jewellery' project.
 // Real environment credentials should be specified in the production environment variables (.env.local or Vercel settings).
@@ -19,4 +20,14 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
-export { db, auth, storage };
+
+let messaging = null;
+isSupported().then((supported) => {
+  if (supported) {
+    messaging = getMessaging(app);
+  }
+}).catch((err) => {
+  console.error("Firebase Messaging is not supported on this browser:", err);
+});
+
+export { db, auth, storage, messaging };

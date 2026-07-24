@@ -32,6 +32,25 @@ const safeFormatDateTime = (dt) => {
   return '';
 };
 
+const getJsDate = (dt) => {
+  if (!dt) return new Date(0);
+  try {
+    if (typeof dt.toDate === 'function') {
+      return dt.toDate();
+    }
+    if (dt.seconds !== undefined) {
+      return new Date(dt.seconds * 1000);
+    }
+    const d = new Date(dt);
+    if (!isNaN(d.getTime())) {
+      return d;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  return new Date(0);
+};
+
 export default function AdminOrders({
   orders = [],
   consultations = [],
@@ -41,6 +60,7 @@ export default function AdminOrders({
   const [activeSubTab, setActiveSubTab] = useState('orders'); // 'orders', 'consultations', 'schemes'
   const [orderSearch, setOrderSearch] = useState('');
   const [orderStatusFilter, setOrderStatusFilter] = useState('all');
+  const [orderSort, setOrderSort] = useState('latest');
 
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
 
@@ -326,6 +346,30 @@ export default function AdminOrders({
     try {
       await bookingApi.updateOrderStatus(orderId, newStatus);
       setAdminNotification({ message: `Order status set to: ${newStatus}`, type: 'success' });
+
+      // Retrieve recipientName and mobile from matching order
+      const order = (orders || []).find(o => o.id === orderId);
+      if (order && order.mobile) {
+        fetch('/api/send-order-status-notification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId,
+            newStatus,
+            recipientName: order.recipientName || 'Customer',
+            mobile: order.mobile
+          })
+        }).then(res => {
+          if (!res.ok) {
+            console.error("FCM dispatch API returned error:", res.statusText);
+          }
+          return res.json();
+        }).then(data => {
+          console.log("FCM dispatch response:", data);
+        }).catch(err => {
+          console.error("Failed to fetch FCM dispatch API:", err);
+        });
+      }
     } catch (err) {
       console.error(err);
       setAdminNotification({ message: 'Failed to update order status.', type: 'error' });
@@ -378,7 +422,12 @@ export default function AdminOrders({
       o.recipientName?.toLowerCase().includes(orderSearch.toLowerCase()) || 
       o.mobile?.includes(orderSearch) ||
       o.id?.includes(orderSearch)
-    );
+    )
+    .sort((a, b) => {
+      const dateA = getJsDate(a.createdDate || a.date);
+      const dateB = getJsDate(b.createdDate || b.date);
+      return orderSort === 'latest' ? dateB - dateA : dateA - dateB;
+    });
 
   return (
     <div className="w-full max-w-full overflow-x-hidden text-[#1A1A1A] dark:text-zinc-100 font-sans text-left space-y-4">
@@ -435,6 +484,14 @@ export default function AdminOrders({
                 <option value="shipped">Shipped</option>
                 <option value="delivered">Delivered</option>
                 <option value="cancelled">Cancelled</option>
+              </select>
+              <select
+                value={orderSort}
+                onChange={(e) => setOrderSort(e.target.value)}
+                className="bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-650 dark:text-zinc-350 focus:outline-none cursor-pointer w-full font-sans font-bold"
+              >
+                <option value="latest">Latest First</option>
+                <option value="oldest">Oldest First</option>
               </select>
               <input
                 type="text"

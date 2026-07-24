@@ -37,7 +37,7 @@ export default function Navbar({
   const { cartItems, setCartOpen, cartItemCount } = useCart();
   const { wishlistItems, setWishlistOpen } = useWishlist();
   const { products } = useProducts();
-  const { formatPrice } = useRates();
+  const { formatPrice, calculatePrice } = useRates();
 
   const [searchVal, setSearchVal] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
@@ -128,7 +128,7 @@ export default function Navbar({
                     <img src={prod.img} alt={prod.name} className="w-10 h-10 object-contain rounded-lg border border-solid border-[#ECECEC] bg-[#FAF9F7]" />
                     <div>
                       <div className="text-[12px] font-bold text-[#1A1A1A] line-clamp-1">{prod.name}</div>
-                      <div className="text-[10px] text-[#C8A646] font-bold font-sans">₹{formatPrice(prod.price)}</div>
+                      <div className="text-[10px] text-[#C8A646] font-bold font-sans">₹{formatPrice(calculatePrice(prod).total)}</div>
                     </div>
                   </button>
                 ))}
@@ -569,7 +569,7 @@ export default function Navbar({
                   <img src={prod.img} alt={prod.name} className="w-8 h-8 object-contain rounded-md border border-solid border-[#ECECEC] bg-[#FAF9F7]" />
                   <div>
                     <div className="text-[11px] font-bold text-[#1A1A1A] line-clamp-1">{prod.name}</div>
-                    <div className="text-[9px] text-[#C8A646] font-bold font-sans">₹{formatPrice(prod.price)}</div>
+                    <div className="text-[9px] text-[#C8A646] font-bold font-sans">₹{formatPrice(calculatePrice(prod).total)}</div>
                   </div>
                 </button>
               ))}

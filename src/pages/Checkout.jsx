@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../hooks/useCart';
 import { bookingApi } from '../api/booking.api';
+import { requestAndSaveToken } from '../utils/notifications';
 
 export default function Checkout({ navigateTo, triggerAudio }) {
   const { cartItems, cartTotal, handleUpdateQuantity, handleRemoveFromCart, clearCart } = useCart();
@@ -130,6 +131,7 @@ export default function Checkout({ navigateTo, triggerAudio }) {
 
               setPlacedOrderTotal(orderPayload.total);
               const result = await bookingApi.createOrder(orderPayload);
+              requestAndSaveToken(deliveryForm.mobile).catch(err => console.error("Error registering notification token:", err));
               setPlacedOrderId(result.id);
               setOrderPlaced(true);
               clearCart();
@@ -215,6 +217,7 @@ export default function Checkout({ navigateTo, triggerAudio }) {
 
       setPlacedOrderTotal(orderPayload.total);
       const result = await bookingApi.createOrder(orderPayload);
+      requestAndSaveToken(deliveryForm.mobile).catch(err => console.error("Error registering notification token:", err));
       setPlacedOrderId(result.id);
       setOrderPlaced(true);
       clearCart();

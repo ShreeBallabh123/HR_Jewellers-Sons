@@ -897,19 +897,23 @@ export default function ProductDetail({
 
             {/* Price & Savings Details Section */}
             {(() => {
-              const finalPrice = computedProductPrice;
-              if (!finalPrice) return null;
+              const prices = detailProduct && typeof calculatePrice === 'function'
+                ? calculatePrice({
+                    ...detailProduct,
+                    carat: isSilver ? '92.5' : (pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : detailProduct.carat)
+                  })
+                : null;
+              if (!prices) return null;
+
+              const finalPrice = prices.subtotal;
+              const discountedSubtotal = prices.subtotal;
+              const discountedGst = prices.gst;
 
               // Product-level constants from DB
               const productGstRate = (Number(detailProduct.gstPercent) || 3) / 100;
               const carat = detailProduct.carat || detailProduct.metalPurity || '22K';
               const displayCarat = carat;
               const netWeight = parseFloat(detailProduct.netWeight || detailProduct.weight) || 0;
-
-              // ── Step 1: Calculate GST on top of finalPrice ──────────────────
-              // finalPrice is the base item value. Calculate GST on top of it.
-              const discountedGst = Math.round(finalPrice * productGstRate);
-              const discountedSubtotal = finalPrice; // pre-GST total is the base item value
 
               // ── Step 2: Calculate metal value at current live rate ─────────
               let metalRatePerGram = 0;
