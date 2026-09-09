@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AppProviders from './contexts/AppProviders';
-import CustomCursor from './components/CustomCursor';
+
 import { useAuth } from './hooks/useAuth';
 import { useRates } from './hooks/useRates';
 import { useProducts } from './hooks/useProducts';
@@ -83,6 +83,7 @@ const Checkout = React.lazy(() => import('./pages/Checkout'));
 const Showrooms = React.lazy(() => import('./pages/Showrooms'));
 const TermsAndConditions = React.lazy(() => import('./pages/TermsAndConditions'));
 const PrivacyPolicy = React.lazy(() => import('./pages/PrivacyPolicy'));
+const AboutUs = React.lazy(() => import('./pages/AboutUs'));
 
 import { StorageService } from './services/StorageService';
 
@@ -97,7 +98,7 @@ function AppContent() {
       const validPages = [
         'admin', 'savings', 'gold-reserve', 'offers', 'gold-coins', 'heritage', 
         'valuation', 'collections', 'showrooms', 'terms-and-conditions', 
-        'privacy-policy', 'product-detail', 'savings-enroll', 'checkout'
+        'privacy-policy', 'product-detail', 'savings-enroll', 'checkout', 'about-us'
       ];
       if (validPages.includes(targetPage)) {
         return targetPage;
@@ -407,6 +408,13 @@ function AppContent() {
             />
           )}
 
+          {currentPage === 'about-us' && (
+            <AboutUs
+              navigateTo={navigateTo}
+              triggerAudio={triggerAudio}
+            />
+          )}
+
         </React.Suspense>
       </MainLayout>
     </ErrorBoundary>
@@ -416,7 +424,6 @@ function AppContent() {
 export default function App() {
   return (
     <AppProviders>
-      <CustomCursor />
       <AppContent />
     </AppProviders>
   );

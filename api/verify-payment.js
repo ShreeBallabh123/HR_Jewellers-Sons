@@ -1,5 +1,32 @@
 import crypto from 'crypto';
 
+// Helper to parse request body in any serverless/node environment
+async function getRequestBody(req) {
+  if (req.body !== undefined) {
+    if (typeof req.body === 'string') {
+      try {
+        return JSON.parse(req.body);
+      } catch (e) {
+        return {};
+      }
+    }
+    return req.body;
+  }
+  return new Promise((resolve) => {
+    let bodyData = '';
+    req.on('data', chunk => {
+      bodyData += chunk;
+    });
+    req.on('end', () => {
+      try {
+        resolve(bodyData ? JSON.parse(bodyData) : {});
+      } catch (e) {
+        resolve({});
+      }
+    });
+  });
+}
+
 export default async function handler(req, res) {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -19,7 +46,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const body = await getRequestBody(req);
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body || {};
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return res.status(400).json({ error: 'Missing payment details' });

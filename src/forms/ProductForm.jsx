@@ -1,5 +1,10 @@
-import React from 'react';
+import React, { createContext, useContext } from 'react';
 import { AlertTriangle } from 'lucide-react';
+
+const ProductFormContext = createContext({
+  getVal: () => '',
+  updateField: () => {},
+});
 
 const isVideoUrl = (url) => {
   if (!url) return false;
@@ -27,6 +32,140 @@ const downloadFile = async (url, filename = 'downloaded_image') => {
     console.error("CORS block or fetch error. Opening in new tab:", error);
     window.open(url, '_blank');
   }
+};
+
+const FloatingInput = ({
+  id,
+  label,
+  type = 'text',
+  field,
+  value: propValue,
+  required = false,
+  min,
+  max,
+  step,
+  suffix,
+  onChange,
+  placeholder,
+  className = ""
+}) => {
+  const { getVal, updateField } = useContext(ProductFormContext);
+  const value = propValue !== undefined ? propValue : (field ? getVal(field) : '');
+  const handleChange = onChange || ((e) => {
+    const val = e.target.value;
+    if (field) {
+      updateField(field, type === 'number' ? (val === '' ? '' : +val) : val);
+    }
+  });
+
+  return (
+    <div className={`flex flex-col gap-1.5 text-left ${className}`}>
+      <label
+        htmlFor={id}
+        className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase"
+      >
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      <div className="relative">
+        <input
+          id={id}
+          type={type}
+          min={min}
+          max={max}
+          step={step}
+          placeholder={placeholder || `Enter ${label}`}
+          value={value}
+          onChange={handleChange}
+          className={`w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 ${suffix ? 'pr-16' : ''} text-xs text-zinc-950 dark:text-zinc-100 placeholder-zinc-300 dark:placeholder-zinc-600 focus:outline-none focus:border-[#B8893C] dark:focus:border-[#E6C687] focus:ring-1 focus:ring-[#B8893C]/20 font-semibold`}
+          required={required}
+        />
+        {suffix && (
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">
+            {suffix}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const FloatingSelect = ({
+  id,
+  label,
+  field,
+  value: propValue,
+  required = false,
+  onChange,
+  children,
+  className = ""
+}) => {
+  const { getVal, updateField } = useContext(ProductFormContext);
+  const value = propValue !== undefined ? propValue : (field ? getVal(field) : '');
+  const handleChange = onChange || ((e) => {
+    if (field) {
+      updateField(field, e.target.value);
+    }
+  });
+
+  return (
+    <div className={`flex flex-col gap-1.5 text-left ${className}`}>
+      <label
+        htmlFor={id}
+        className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase"
+      >
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      <select
+        id={id}
+        value={value}
+        onChange={handleChange}
+        className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-[#B8893C] dark:focus:border-[#E6C687] cursor-pointer font-semibold"
+        required={required}
+      >
+        {children}
+      </select>
+    </div>
+  );
+};
+
+const FloatingTextarea = ({
+  id,
+  label,
+  field,
+  value: propValue,
+  required = false,
+  rows = "2",
+  onChange,
+  placeholder,
+  className = ""
+}) => {
+  const { getVal, updateField } = useContext(ProductFormContext);
+  const value = propValue !== undefined ? propValue : (field ? getVal(field) : '');
+  const handleChange = onChange || ((e) => {
+    if (field) {
+      updateField(field, e.target.value);
+    }
+  });
+
+  return (
+    <div className={`flex flex-col gap-1.5 text-left ${className}`}>
+      <label
+        htmlFor={id}
+        className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase"
+      >
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      <textarea
+        id={id}
+        rows={rows}
+        placeholder={placeholder || `Enter ${label}`}
+        value={value}
+        onChange={handleChange}
+        className="w-full bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-950 dark:text-zinc-100 placeholder-zinc-300 dark:placeholder-zinc-600 focus:outline-none focus:border-[#B8893C] dark:focus:border-[#E6C687] resize-none font-semibold"
+        required={required}
+      ></textarea>
+    </div>
+  );
 };
 
 export default function ProductForm({
@@ -59,122 +198,16 @@ export default function ProductForm({
     }
   };
 
-  const FloatingInput = ({
-    id,
-    label,
-    type = 'text',
-    field,
-    required = false,
-    min,
-    max,
-    step,
-    suffix,
-    onChange,
-    placeholder,
-    className = ""
-  }) => {
-    const value = getVal(field);
-    const handleChange = onChange || ((e) => {
-      const val = e.target.value;
-      updateField(field, type === 'number' ? (val === '' ? '' : +val) : val);
-    });
-
-    return (
-      <div className={`flex flex-col gap-1.5 text-left ${className}`}>
-        <label
-          htmlFor={id}
-          className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase"
-        >
-          {label} {required && <span className="text-red-500">*</span>}
-        </label>
-        <div className="relative">
-          <input
-            id={id}
-            type={type}
-            min={min}
-            max={max}
-            step={step}
-            placeholder={placeholder || `Enter ${label}`}
-            value={value}
-            onChange={handleChange}
-            className={`w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 ${suffix ? 'pr-16' : ''} text-xs text-zinc-950 dark:text-zinc-100 placeholder-zinc-300 dark:placeholder-zinc-600 focus:outline-none focus:border-[#B8893C] dark:focus:border-[#E6C687] focus:ring-1 focus:ring-[#B8893C]/20 font-semibold`}
-            required={required}
-          />
-          {suffix && (
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-zinc-450 dark:text-zinc-500 font-extrabold select-none pointer-events-none">
-              {suffix}
-            </span>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const FloatingSelect = ({
-    id,
-    label,
-    field,
-    required = false,
-    onChange,
-    children,
-    className = ""
-  }) => {
-    const value = getVal(field);
-    const handleChange = onChange || ((e) => updateField(field, e.target.value));
-
-    return (
-      <div className={`flex flex-col gap-1.5 text-left ${className}`}>
-        <label
-          htmlFor={id}
-          className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase"
-        >
-          {label} {required && <span className="text-red-500">*</span>}
-        </label>
-        <select
-          id={id}
-          value={value}
-          onChange={handleChange}
-          className="w-full h-10 bg-white dark:bg-[#09090B] border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 text-xs text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-[#B8893C] dark:focus:border-[#E6C687] cursor-pointer font-semibold"
-          required={required}
-        >
-          {children}
-        </select>
-      </div>
-    );
-  };
-
-  const FloatingTextarea = ({
-    id,
-    label,
-    field,
-    required = false,
-    rows = "2",
-    placeholder
-  }) => {
-    const value = getVal(field);
-    return (
-      <div className="flex flex-col gap-1.5 text-left">
-        <label
-          htmlFor={id}
-          className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase"
-        >
-          {label} {required && <span className="text-red-500">*</span>}
-        </label>
-        <textarea
-          id={id}
-          rows={rows}
-          placeholder={placeholder || `Enter ${label}`}
-          value={value}
-          onChange={(e) => updateField(field, e.target.value)}
-          className="w-full bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-950 dark:text-zinc-100 placeholder-zinc-300 dark:placeholder-zinc-600 focus:outline-none focus:border-[#B8893C] dark:focus:border-[#E6C687] resize-none font-semibold"
-          required={required}
-        ></textarea>
-      </div>
-    );
+  const contextValue = {
+    getVal,
+    updateField,
+    editingProduct,
+    newProduct
   };
 
   return (
-    <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+    <ProductFormContext.Provider value={contextValue}>
+      <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b border-solid border-zinc-100 dark:border-zinc-850 pb-4">
         <div>
           <h3 className="text-base font-black tracking-wider text-zinc-900 dark:text-[#E6C687] uppercase">
@@ -1145,5 +1178,6 @@ export default function ProductForm({
         </div>
       </form>
     </div>
+    </ProductFormContext.Provider>
   );
 }

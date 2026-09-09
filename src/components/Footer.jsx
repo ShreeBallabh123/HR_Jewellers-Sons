@@ -152,6 +152,15 @@ export default function Footer({
                 <span className="tracking-wide">Gold Coins</span>
               </button>
             </li>
+            <li>
+              <button
+                onClick={() => { triggerAudio('click'); navigateTo('about-us'); }}
+                className="hover:text-[#E6C687] hover:translate-x-1.5 transition-all duration-300 flex items-center justify-center md:justify-start gap-2 font-bold text-[#E6C687] cursor-pointer focus:outline-none border-none bg-transparent pt-1"
+              >
+                <span className="text-xs">✦</span>
+                <span className="tracking-wide underline underline-offset-4 decoration-[#E6C687]/40">About Us</span>
+              </button>
+            </li>
           </ul>
         </div>
 
@@ -252,6 +261,21 @@ export default function Footer({
           </div>
 
           <div className="space-y-3.5">
+            <button
+              onClick={() => { triggerAudio('click'); navigateTo('about-us'); }}
+              className="w-full flex items-center justify-between p-3.5 rounded-2xl border border-solid border-[#E6C687]/25 hover:border-[#E6C687]/60 bg-[#E6C687]/10 hover:bg-[#E6C687]/20 transition-all duration-300 group cursor-pointer text-left"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full border border-solid border-[#E6C687]/40 flex items-center justify-center text-[#E6C687] bg-white/5 transition-all">
+                  <span className="text-xs">✦</span>
+                </div>
+                <span className="text-xs font-bold tracking-widest text-[#E6C687] font-sans">ABOUT OUR MAISON</span>
+              </div>
+              <svg className="w-3.5 h-3.5 text-[#E6C687] transform group-hover:translate-x-1.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+
             <a
               href="https://wa.me/919783843978?text=Hello%20HR%20Jewellers,%20I%20am%20interested%20in%20your%20luxury%20collections."
               target="_blank"
@@ -310,6 +334,34 @@ export default function Footer({
           </div>
         </div>
 
+      </div>
+
+      {/* Bottom Sub-Footer Bar */}
+      <div className="max-w-[1400px] mx-auto mt-14 pt-8 border-t border-solid border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-white/60 font-sans">
+        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6 font-medium">
+          <button 
+            onClick={() => { triggerAudio('click'); navigateTo('about-us'); }} 
+            className="hover:text-[#E6C687] transition-colors cursor-pointer border-none bg-transparent text-white/70"
+          >
+            About Us
+          </button>
+          <button 
+            onClick={() => { triggerAudio('click'); navigateTo('terms-and-conditions'); }} 
+            className="hover:text-[#E6C687] transition-colors cursor-pointer border-none bg-transparent text-white/70"
+          >
+            Terms &amp; Conditions
+          </button>
+          <button 
+            onClick={() => { triggerAudio('click'); navigateTo('privacy-policy'); }} 
+            className="hover:text-[#E6C687] transition-colors cursor-pointer border-none bg-transparent text-white/70"
+          >
+            Privacy Policy
+          </button>
+        </div>
+
+        <p className="text-center sm:text-right text-white/50 text-[10px]">
+          &copy; {new Date().getFullYear()} HR Jewellers &amp; Sons. All Rights Reserved.
+        </p>
       </div>
     </footer>
   );

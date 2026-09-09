@@ -82,5 +82,38 @@ export default defineConfig({
         });
       }
     }
-  ]
+  ],
+  build: {
+    // Increase chunk size warning limit
+    chunkSizeWarningLimit: 1000,
+    // Enable minification
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        // Manual chunking — split large vendor bundles for better caching
+        manualChunks(id) {
+          // Firebase into its own chunk
+          if (id.includes('node_modules/firebase')) {
+            return 'vendor-firebase';
+          }
+          // Framer Motion + GSAP + Lenis animation libs
+          if (id.includes('framer-motion') || id.includes('gsap') || id.includes('lenis')) {
+            return 'vendor-animations';
+          }
+          // Recharts charting lib
+          if (id.includes('recharts')) {
+            return 'vendor-charts';
+          }
+          // Lucide icons
+          if (id.includes('lucide-react')) {
+            return 'vendor-icons';
+          }
+          // React core
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'vendor-react';
+          }
+        }
+      }
+    }
+  }
 })

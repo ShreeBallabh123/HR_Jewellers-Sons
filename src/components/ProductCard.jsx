@@ -24,6 +24,7 @@ export default function ProductCard({
           src={product.img}
           alt={product.name}
           loading="lazy"
+          decoding="async"
           className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
         />
 

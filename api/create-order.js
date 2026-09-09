@@ -1,5 +1,32 @@
 import Razorpay from 'razorpay';
 
+// Helper to parse request body in any serverless/node environment
+async function getRequestBody(req) {
+  if (req.body !== undefined) {
+    if (typeof req.body === 'string') {
+      try {
+        return JSON.parse(req.body);
+      } catch (e) {
+        return {};
+      }
+    }
+    return req.body;
+  }
+  return new Promise((resolve) => {
+    let bodyData = '';
+    req.on('data', chunk => {
+      bodyData += chunk;
+    });
+    req.on('end', () => {
+      try {
+        resolve(bodyData ? JSON.parse(bodyData) : {});
+      } catch (e) {
+        resolve({});
+      }
+    });
+  });
+}
+
 export default async function handler(req, res) {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -19,7 +46,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { amount, currency = 'INR', receipt = 'receipt_order_1' } = req.body;
+    const body = await getRequestBody(req);
+    const { amount, currency = 'INR', receipt = 'receipt_order_1' } = body || {};
 
     if (!amount) {
       return res.status(400).json({ error: 'Amount is required' });

@@ -74,8 +74,8 @@ export default function MainLayout({
         </a>
       </div>
 
-      {/* Footer Details — desktop only */}
-      <div className="hidden lg:block">
+      {/* Footer Details */}
+      <div className="w-full">
         <Footer
           navigateTo={navigateTo}
           handleCategoryNav={(cat) => {

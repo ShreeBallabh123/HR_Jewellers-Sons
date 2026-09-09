@@ -171,19 +171,6 @@ export default function Navbar({
               </div>
             </a>
 
-            {/* Showrooms Locator */}
-            <button
-              onClick={() => { triggerAudio('click'); navigateTo('offers'); }}
-              className="group relative flex flex-col items-center justify-center w-12 h-12 rounded-full hover:bg-[#FAF9F7] transition-all duration-300 cursor-pointer focus:outline-none border-none bg-transparent"
-            >
-              <div className="text-[#C8A646] transition-transform duration-300 group-hover:scale-110 active:scale-95">
-                <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-            </button>
-
             {/* Wishlist */}
             <button
               onClick={() => { triggerAudio('click'); setWishlistOpen(true); }}
@@ -222,21 +209,21 @@ export default function Navbar({
         </div>
 
         {/* Bottom Row: NAVIGATION LINKS */}
-        <div className="w-full flex justify-center mt-3 mb-1">
-          <div className="w-full max-w-[1240px] bg-white border border-solid border-[#ECECEC] rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] px-8 py-3.5 flex justify-center items-center">
-            <div className="flex items-center justify-center space-x-6 xl:space-x-8 text-[11px] font-sans tracking-[0.12em] uppercase font-bold text-[#1A1A1A] w-full font-semibold">
+        <div className="w-full flex justify-center mt-3 mb-1 px-2 xl:px-4">
+          <div className="w-full max-w-[1400px] bg-white border border-solid border-[#ECECEC] rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] px-4 lg:px-5 xl:px-8 py-3.5 flex justify-center items-center">
+            <div className="flex items-center justify-between w-full text-[10.5px] lg:text-[11px] xl:text-[11.5px] font-sans tracking-[0.05em] lg:tracking-[0.06em] xl:tracking-[0.08em] uppercase font-bold text-[#1A1A1A] whitespace-nowrap gap-1.5 lg:gap-3 xl:gap-4 select-none">
               
               {/* 11+1 Scheme Dropdown */}
-              <div className="relative group h-full flex items-center">
+              <div className="relative group h-full flex items-center shrink-0">
                 <button
                   onClick={() => { triggerAudio('click'); navigateTo('savings'); }}
-                  className="relative hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1.5 focus:outline-none border-none bg-transparent"
+                  className="relative hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1.5 whitespace-nowrap shrink-0 focus:outline-none border-none bg-transparent"
                 >
-                  <span>11+1 Scheme</span>
-                  <span className="px-1.5 py-0.5 text-[8px] tracking-normal font-sans font-extrabold text-white bg-gradient-to-r from-[#D58B8B] to-[#C8A646] rounded-full uppercase scale-95 shadow-sm font-semibold">
+                  <span className="whitespace-nowrap">11+1 Scheme</span>
+                  <span className="px-1.5 py-0.5 text-[8px] tracking-normal font-sans font-extrabold text-white bg-gradient-to-r from-[#D58B8B] to-[#C8A646] rounded-full uppercase scale-95 shadow-sm font-semibold shrink-0">
                     NEW
                   </span>
-                  <svg className="w-3 h-3 text-gray-405 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <svg className="w-3 h-3 text-gray-405 group-hover:rotate-180 transition-transform duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                   </svg>
                 </button>
@@ -259,61 +246,61 @@ export default function Navbar({
               {/* standard categories */}
               <button
                 onClick={() => { triggerAudio('click'); changeCategoryTab('Bracelets'); navigateTo('collections'); }}
-                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none border-none bg-transparent"
+                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 whitespace-nowrap shrink-0 focus:outline-none border-none bg-transparent"
               >
                 Watch Jewellery
               </button>
 
               <button
                 onClick={() => { triggerAudio('click'); changeCategoryTab('Rings'); navigateTo('collections'); }}
-                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none border-none bg-transparent"
+                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 whitespace-nowrap shrink-0 focus:outline-none border-none bg-transparent"
               >
                 Rings
               </button>
 
               <button
                 onClick={() => { triggerAudio('click'); changeCategoryTab('Earrings'); navigateTo('collections'); }}
-                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none border-none bg-transparent"
+                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 whitespace-nowrap shrink-0 focus:outline-none border-none bg-transparent"
               >
                 Earrings
               </button>
 
               <button
                 onClick={() => { triggerAudio('click'); changeCategoryTab('Necklace'); navigateTo('collections'); }}
-                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none border-none bg-transparent"
+                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 whitespace-nowrap shrink-0 focus:outline-none border-none bg-transparent"
               >
                 Necklaces
               </button>
 
               <button
                 onClick={() => { triggerAudio('click'); changeCategoryTab('Necklace'); navigateTo('collections'); }}
-                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none border-none bg-transparent"
+                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 whitespace-nowrap shrink-0 focus:outline-none border-none bg-transparent"
               >
                 Pendants
               </button>
 
               <button
                 onClick={() => { triggerAudio('click'); changeCategoryTab('Rings'); navigateTo('collections'); }}
-                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none border-none bg-transparent"
+                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 whitespace-nowrap shrink-0 focus:outline-none border-none bg-transparent"
               >
                 Solitaires
               </button>
 
               <button
                 onClick={() => { triggerAudio('click'); changeCategoryTab('Collections'); navigateTo('collections'); }}
-                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none border-none bg-transparent"
+                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 whitespace-nowrap shrink-0 focus:outline-none border-none bg-transparent"
               >
                 All Jewellery
               </button>
 
               {/* Gifts Dropdown */}
-              <div className="relative group h-full flex items-center">
+              <div className="relative group h-full flex items-center shrink-0">
                 <button
                   onClick={() => { triggerAudio('click'); changeCategoryTab('Gifts & Pooja'); navigateTo('collections'); }}
-                  className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none border-none bg-transparent"
+                  className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 whitespace-nowrap shrink-0 focus:outline-none border-none bg-transparent"
                 >
-                  <span>Gifts</span>
-                  <svg className="w-3 h-3 text-gray-450 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <span className="whitespace-nowrap">Gifts</span>
+                  <svg className="w-3 h-3 text-gray-450 group-hover:rotate-180 transition-transform duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                   </svg>
                 </button>
@@ -352,7 +339,7 @@ export default function Navbar({
               </div>
 
               {/* Gold Coins Dropdown */}
-              <div className="relative group h-full flex items-center">
+              <div className="relative group h-full flex items-center shrink-0">
                 <button
                   onClick={() => {
                     triggerAudio('click');
@@ -360,10 +347,10 @@ export default function Navbar({
                     setCoinPurityTab('24K');
                     setCoinWeightFilter('all');
                   }}
-                  className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none border-none bg-transparent"
+                  className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 whitespace-nowrap shrink-0 focus:outline-none border-none bg-transparent"
                 >
-                  <span>Gold Coins</span>
-                  <svg className="w-3 h-3 text-gray-450 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <span className="whitespace-nowrap">Gold Coins</span>
+                  <svg className="w-3 h-3 text-gray-450 group-hover:rotate-180 transition-transform duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                   </svg>
                 </button>
@@ -431,13 +418,13 @@ export default function Navbar({
               </div>
 
               {/* Offers */}
-              <div className="relative group h-full flex items-center">
+              <div className="relative group h-full flex items-center shrink-0">
                 <button
                   onClick={() => { triggerAudio('click'); navigateTo('offers'); }}
-                  className="hover:text-[#D58B8B] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none text-[#D58B8B] border-none bg-transparent"
+                  className="hover:text-[#D58B8B] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none text-[#D58B8B] whitespace-nowrap shrink-0 border-none bg-transparent"
                 >
-                  <span>Offers</span>
-                  <svg className="w-3 h-3 text-[#D58B8B]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <span className="whitespace-nowrap">Offers</span>
+                  <svg className="w-3 h-3 text-[#D58B8B] shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                   </svg>
                 </button>
@@ -456,6 +443,14 @@ export default function Navbar({
                   </button>
                 </div>
               </div>
+
+              {/* About Us */}
+              <button
+                onClick={() => { triggerAudio('click'); navigateTo('about-us'); }}
+                className="hover:text-[#C8A646] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 whitespace-nowrap shrink-0 focus:outline-none border-none bg-transparent"
+              >
+                <span className="whitespace-nowrap">About Us</span>
+              </button>
 
             </div>
           </div>
@@ -660,7 +655,18 @@ export default function Navbar({
                 </button>
               ))}
 
-              <div className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 px-2 pt-3 pb-2">More</div>
+              <div className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 px-2 pt-3 pb-2">More &amp; About</div>
+
+              <button
+                onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('about-us'); }}
+                className="flex items-center w-full text-left px-4 py-3.5 rounded-xl bg-[#C8A646]/10 active:bg-[#C8A646]/20 border border-solid border-[#C8A646]/25 cursor-pointer transition-colors"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="w-6 h-6 rounded-full bg-[#C8A646] text-white flex items-center justify-center text-xs font-bold shadow-xs">✦</span>
+                  <span className="text-[14px] font-bold text-[#1A1A1A]">About Us</span>
+                </div>
+                <span className="text-[9px] font-extrabold text-[#C8A646] uppercase tracking-wider ml-auto bg-white px-2 py-0.5 rounded-full shadow-xs">1924</span>
+              </button>
 
               <button
                 onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('gold-coins'); setCoinPurityTab('24K'); setCoinWeightFilter('all'); }}
@@ -676,7 +682,7 @@ export default function Navbar({
                 onClick={() => { triggerAudio('click'); setMobileMenuOpen(false); navigateTo('offers'); }}
                 className="flex items-center w-full text-left px-4 py-3.5 rounded-xl active:bg-zinc-50 border-none cursor-pointer transition-colors"
               >
-                <span className="text-[14px] font-semibold text-zinc-800">Offers &amp; Showrooms</span>
+                <span className="text-[14px] font-semibold text-zinc-800">Offers</span>
                 <svg className="w-4 h-4 text-zinc-300 ml-auto" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>

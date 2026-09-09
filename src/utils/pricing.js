@@ -15,6 +15,17 @@ export const PURITY_MULTIPLIERS = {
 };
 
 /**
+ * Parse floats safely by stripping any currency symbols, commas, or spaces.
+ */
+export function safeParseFloat(val) {
+  if (val === undefined || val === null || val === '') return 0;
+  if (typeof val === 'number') return val;
+  const cleaned = String(val).replace(/[^\d.-]/g, '');
+  const parsed = parseFloat(cleaned);
+  return isNaN(parsed) ? 0 : parsed;
+}
+
+/**
  * Get the per-gram rate for a given gold purity.
  * @param {string} purity  — '24K' | '22K' | '18K' | '14K' | '9K'
  * @param {number} rate24k — 24K rate per 10 grams (as stored in Firestore)
@@ -54,12 +65,12 @@ export function calculateDynamicPrice(product, rates = {}) {
 
   // ── 2. Read product pricing inputs ───────────────────────────────────────
   const purity           = product.goldPurity || product.carat || '22K';
-  const weight           = parseFloat(product.goldWeight || product.netWeight || product.weight || 0);
+  const weight           = safeParseFloat(product.goldWeight || product.netWeight || product.weight || 0);
   const makingType       = product.makingChargeType || 'percentage';   // 'fixed' | 'percentage'
-  const makingValue      = parseFloat(product.makingChargeValue || product.makingCharges || 0);
-  const stonePriceVal    = parseFloat(product.stonePrice || product.diamondValue || 0);
-  const otherChargesVal  = parseFloat(product.otherCharges || 0);
-  const gstPct           = parseFloat(product.gstPercentage || product.gstPercent || 3);
+  const makingValue      = safeParseFloat(product.makingChargeValue || product.makingCharges || 0);
+  const stonePriceVal    = safeParseFloat(product.stonePrice || product.diamondValue || 0);
+  const otherChargesVal  = safeParseFloat(product.otherCharges || 0);
+  const gstPct           = safeParseFloat(product.gstPercentage || product.gstPercent || 3);
 
   // ── 3. Detect metal type ──────────────────────────────────────────────────
   const metalType = detectMetalType(product);
@@ -123,10 +134,10 @@ export function calculateDynamicPrice(product, rates = {}) {
  * Reverse-engineers GST from stored price.
  */
 export function calculateManualBreakdown(product) {
-  const dbPrice = Number(product.price || 0);
+  const dbPrice = safeParseFloat(product.price);
   if (!dbPrice) return emptyBreakdown();
 
-  const gstPct  = parseFloat(product.gstPercent || product.gstPercentage || 3);
+  const gstPct  = safeParseFloat(product.gstPercent || product.gstPercentage || 3);
   const gstRate = gstPct / 100;
   const gst     = Math.round(dbPrice * gstRate);
   const subtotal= dbPrice;
@@ -142,7 +153,7 @@ export function calculateManualBreakdown(product) {
     metalType: detectMetalType(product),
     isLive: false,
     purity: product.carat || product.goldPurity || '22K',
-    weight: parseFloat(product.netWeight || product.weight || 0),
+    weight: safeParseFloat(product.netWeight || product.weight || 0),
     makingType: 'fixed',
     gstPct,
   };

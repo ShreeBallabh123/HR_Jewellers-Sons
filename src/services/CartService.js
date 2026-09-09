@@ -1,3 +1,5 @@
+import { safeParseFloat } from '../utils/pricing';
+
 export const CartService = {
   // Add item to cart or increment quantity
   addItem(cartItems, newItem) {
@@ -35,13 +37,13 @@ export const CartService = {
   // Get total cart price
   calculateTotal(cartItems) {
     return cartItems.reduce(
-      (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1),
+      (sum, item) => sum + safeParseFloat(item.price) * safeParseFloat(item.quantity || 1),
       0
     );
   },
 
   // Get total cart item count
   getItemCount(cartItems) {
-    return cartItems.reduce((count, item) => count + Number(item.quantity || 0), 0);
+    return cartItems.reduce((count, item) => count + safeParseFloat(item.quantity), 0);
   }
 };

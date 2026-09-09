@@ -53,6 +53,9 @@ export default function Checkout({ navigateTo, triggerAudio }) {
     setSubmittingOrder(true);
     try {
       const orderTotalAmount = cartTotal;
+      if (!orderTotalAmount || isNaN(orderTotalAmount) || orderTotalAmount <= 0) {
+        throw new Error(`Invalid order amount: ${orderTotalAmount}. Please check your cart items.`);
+      }
       const orderAmountPaise = Math.round(orderTotalAmount * 100);
 
       // Create Razorpay Order

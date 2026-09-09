@@ -25,7 +25,6 @@ import kadaImg from '../assets/kada.png';
 
 // Section Video / Image Assets
 import heroBgVideo from '../assets/hero_video.mp4';
-import strokesOfGeniusVideo from '../assets/strokes_of_genius.mp4';
 import campaignDaintyDreams from '../assets/campaign_dainty_dreams.webp';
 import campaignRawReverie from '../assets/campaign_raw_reverie.webp';
 import campaignClayWhispers from '../assets/campaign_clay_whispers.webp';
@@ -378,7 +377,7 @@ export default function Home({
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
           className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none opacity-100"
         >
           <source src={heroBgVideo} type="video/mp4" />
@@ -437,6 +436,8 @@ export default function Home({
                         <img
                           src={catImg}
                           alt={cat.name}
+                          loading="lazy"
+                          decoding="async"
                           className="w-[72%] h-[72%] object-contain object-center transition-transform duration-[250ms] ease-out group-hover:scale-[1.03] filter drop-shadow-[0_8px_12px_rgba(90,74,74,0.12)] mix-blend-multiply"
                         />
                       </div>
