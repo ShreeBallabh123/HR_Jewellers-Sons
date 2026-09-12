@@ -10,7 +10,9 @@ import { deriveRates } from '../utils/pricing';
 const DEFAULTS = {
   goldRate24k:  78500,
   goldRate22k:  71958,
+  goldRate20k:  65417,
   goldRate18k:  58875,
+  goldRate14k:  45788,
   silverRate:   92000,
   platinumRate: 3500,
   lastUpdated:  null,
@@ -28,12 +30,14 @@ export function useGoldRate() {
     const unsubscribe = goldRateService.subscribeToRates(
       (data) => {
         // Derive missing purity rates from 24K if not explicitly set
-        const derived = deriveRates(data.goldRate24k || DEFAULTS.goldRate24k);
+        const derived = deriveRates(data.goldRate24k || DEFAULTS.goldRate24k, data.purityPercentages || {});
         setRates({
           ...DEFAULTS,
           ...data,
           goldRate22k: data.goldRate22k || derived.goldRate22k,
+          goldRate20k: data.goldRate20k || derived.goldRate20k,
           goldRate18k: data.goldRate18k || derived.goldRate18k,
+          goldRate14k: data.goldRate14k || derived.goldRate14k,
         });
         setLoading(false);
       },
@@ -47,14 +51,20 @@ export function useGoldRate() {
   }, []);
 
   // Derived convenience values
-  const goldRate22kPerGram = useMemo(() => rates.goldRate22k / 10, [rates.goldRate22k]);
   const goldRate24kPerGram = useMemo(() => rates.goldRate24k / 10, [rates.goldRate24k]);
+  const goldRate22kPerGram = useMemo(() => rates.goldRate22k / 10, [rates.goldRate22k]);
+  const goldRate20kPerGram = useMemo(() => rates.goldRate20k / 10, [rates.goldRate20k]);
+  const goldRate18kPerGram = useMemo(() => rates.goldRate18k / 10, [rates.goldRate18k]);
+  const goldRate14kPerGram = useMemo(() => rates.goldRate14k / 10, [rates.goldRate14k]);
   const silverRate1g       = useMemo(() => rates.silverRate / 1000, [rates.silverRate]);
 
   return {
     ...rates,
-    goldRate22kPerGram,
     goldRate24kPerGram,
+    goldRate22kPerGram,
+    goldRate20kPerGram,
+    goldRate18kPerGram,
+    goldRate14kPerGram,
     silverRate1g,
     loading,
     error,

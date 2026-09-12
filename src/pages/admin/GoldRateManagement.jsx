@@ -3,40 +3,72 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   TrendingUp, Save, Zap, RefreshCw,
   Clock, User, CheckCircle2, AlertCircle,
-  ChevronDown, ChevronUp, Info
+  ChevronDown, ChevronUp, Info, Percent, Sparkles
 } from 'lucide-react';
 import { goldRateService } from '../../services/goldRateService';
-import { deriveRates, formatINR } from '../../utils/pricing';
+import { deriveRates, formatINR, DEFAULT_PURITY_PERCENTAGES } from '../../utils/pricing';
 
-// ─── Small reusable input card ───────────────────────────────────────────────
-function RateInputCard({ id, label, sublabel, value, onChange, unit = '₹ / 10g', accentColor = 'amber', badge, disabled }) {
+// ─── Purity Rate Card with Embedded Formula ─────────────────────────────────
+function RateInputCard({
+  id,
+  label,
+  sublabel,
+  karat,
+  percentage,
+  onPercentageChange,
+  value,
+  onChange,
+  unit = '₹ / 10g',
+  accentColor = 'amber',
+  badge,
+  disabled,
+  isMaster = false,
+  baseRate24k = 0,
+}) {
   const accent = {
-    amber:    { ring: 'focus:border-amber-400 focus:ring-amber-400/20', dot: 'bg-amber-400', text: 'text-amber-600' },
-    yellow:   { ring: 'focus:border-yellow-400 focus:ring-yellow-400/20', dot: 'bg-yellow-400', text: 'text-yellow-600' },
-    orange:   { ring: 'focus:border-orange-400 focus:ring-orange-400/20', dot: 'bg-orange-400', text: 'text-orange-500' },
-    blue:     { ring: 'focus:border-blue-400 focus:ring-blue-400/20', dot: 'bg-blue-400', text: 'text-blue-500' },
-    purple:   { ring: 'focus:border-purple-400 focus:ring-purple-400/20', dot: 'bg-purple-400', text: 'text-purple-500' },
+    amber:    { border: 'border-amber-300 dark:border-amber-700/60', ring: 'focus:border-amber-400 focus:ring-amber-400/20', dot: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400', bgBadge: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700' },
+    yellow:   { border: 'border-yellow-300 dark:border-yellow-700/60', ring: 'focus:border-yellow-400 focus:ring-yellow-400/20', dot: 'bg-yellow-500', text: 'text-yellow-600 dark:text-yellow-400', bgBadge: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700' },
+    emerald:  { border: 'border-emerald-300 dark:border-emerald-700/60', ring: 'focus:border-emerald-400 focus:ring-emerald-400/20', dot: 'bg-emerald-500', text: 'text-emerald-600 dark:text-emerald-400', bgBadge: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700' },
+    orange:   { border: 'border-orange-300 dark:border-orange-700/60', ring: 'focus:border-orange-400 focus:ring-orange-400/20', dot: 'bg-orange-500', text: 'text-orange-600 dark:text-orange-400', bgBadge: 'bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-300 dark:border-orange-700' },
+    purple:   { border: 'border-purple-300 dark:border-purple-700/60', ring: 'focus:border-purple-400 focus:ring-purple-400/20', dot: 'bg-purple-500', text: 'text-purple-600 dark:text-purple-400', bgBadge: 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700' },
+    blue:     { border: 'border-blue-300 dark:border-blue-700/60', ring: 'focus:border-blue-400 focus:ring-blue-400/20', dot: 'bg-blue-500', text: 'text-blue-600 dark:text-blue-400', bgBadge: 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' },
   }[accentColor] || {};
 
   return (
-    <div className={`bg-white dark:bg-zinc-900/60 border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 space-y-3 relative overflow-hidden transition-all ${disabled ? 'opacity-60' : 'hover:border-zinc-300 dark:hover:border-zinc-700'}`}>
-      {/* Accent dot */}
-      <span className={`absolute top-0 left-0 right-0 h-0.5 ${accent.dot} opacity-60`} />
+    <div className={`bg-white dark:bg-zinc-900/70 border border-solid ${accent.border || 'border-zinc-200 dark:border-zinc-800'} rounded-2xl p-5 space-y-3.5 relative overflow-hidden transition-all shadow-xs ${isMaster ? 'ring-2 ring-amber-400/30 shadow-md' : 'hover:border-zinc-300 dark:hover:border-zinc-700'}`}>
+      {/* Accent top stripe */}
+      <span className={`absolute top-0 left-0 right-0 h-1 ${accent.dot}`} />
 
-      <div className="flex items-center justify-between">
+      {/* Header with Title & Formula Formula Badge */}
+      <div className="flex items-start justify-between gap-2">
         <div>
-          <label htmlFor={id} className="text-[10px] font-extrabold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 block">
-            {label}
-          </label>
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-black uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+              {label}
+            </span>
+            {badge && (
+              <span className={`text-[8px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full border ${accent.bgBadge}`}>
+                {badge}
+              </span>
+            )}
+          </div>
           {sublabel && <p className="text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5 font-medium">{sublabel}</p>}
         </div>
-        {badge && (
-          <span className={`text-[8px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full ${accent.text} bg-current/10 border border-current/20`}>
-            {badge}
-          </span>
+
+        {/* Formula Badge: e.g. 24K × [83.33%] */}
+        {karat && (
+          <div className="text-right">
+            <div className="inline-flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-lg border border-solid border-zinc-200 dark:border-zinc-700 font-mono text-[9px] font-bold text-zinc-700 dark:text-zinc-300">
+              <span>{isMaster ? 'Base' : '24K ×'}</span>
+              <span className={`font-black ${accent.text}`}>
+                [{percentage ?? (isMaster ? '100%' : '—')}%]
+              </span>
+            </div>
+          </div>
         )}
       </div>
 
+      {/* Main Rate Input */}
       <div className="relative">
         <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-black text-zinc-400 pointer-events-none select-none">₹</span>
         <input
@@ -47,17 +79,43 @@ function RateInputCard({ id, label, sublabel, value, onChange, unit = '₹ / 10g
           disabled={disabled}
           value={value}
           onChange={(e) => onChange(e.target.value === '' ? '' : Number(e.target.value))}
-          className={`w-full h-12 bg-zinc-50 dark:bg-zinc-900 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl pl-8 pr-20 text-sm font-black text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 ${accent.ring} transition-all disabled:cursor-not-allowed`}
+          placeholder={isMaster ? 'Enter 24K rate (e.g. 78500)' : '0'}
+          className={`w-full h-12 bg-zinc-50 dark:bg-zinc-900 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl pl-8 pr-20 text-sm font-black text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 ${accent.ring} transition-all disabled:opacity-85 disabled:cursor-not-allowed`}
         />
         <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[9px] font-bold text-zinc-400 pointer-events-none select-none whitespace-nowrap">
           {unit}
         </span>
       </div>
 
+      {/* Percentage fine-tuning row for non-master cards */}
+      {!isMaster && onPercentageChange && (
+        <div className="flex items-center justify-between pt-1 border-t border-solid border-zinc-100 dark:border-zinc-850 text-[10px]">
+          <span className="text-zinc-400 dark:text-zinc-500 font-bold flex items-center gap-1">
+            <Percent className="w-3 h-3 text-zinc-400" /> Purity [X %]:
+          </span>
+          <div className="flex items-center gap-1">
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              max="100"
+              value={percentage}
+              onChange={(e) => onPercentageChange(e.target.value === '' ? '' : Number(e.target.value))}
+              className="w-16 h-6 px-1.5 text-right font-black font-mono text-[10px] bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-amber-400"
+            />
+            <span className="font-bold text-zinc-400">%</span>
+          </div>
+        </div>
+      )}
+
+      {/* Derived Per Gram summary */}
       {value > 0 && (
-        <p className={`text-[10px] font-bold ${accent.text}`}>
-          ≈ {formatINR(Math.round(value / 10))} / gram
-        </p>
+        <div className="flex items-center justify-between text-[10px] font-bold">
+          <span className="text-zinc-400">1 Gram Rate:</span>
+          <span className={`${accent.text} font-mono font-extrabold`}>
+            ≈ {formatINR(Math.round(value / 10))} / g
+          </span>
+        </div>
       )}
     </div>
   );
@@ -82,9 +140,22 @@ function MetaRow({ icon: Icon, label, value, highlight }) {
 export default function GoldRateManagement({ setAdminNotification, adminUser }) {
   const [savedRates, setSavedRates]   = useState(null);
   const [draftRates, setDraftRates]   = useState({
-    goldRate24k: '', goldRate22k: '', goldRate18k: '',
-    silverRate: '', platinumRate: '',
+    goldRate24k: '',
+    goldRate22k: '',
+    goldRate20k: '',
+    goldRate18k: '',
+    goldRate14k: '',
+    silverRate: '',
+    platinumRate: '',
   });
+
+  const [percentages, setPercentages] = useState({
+    '22k': DEFAULT_PURITY_PERCENTAGES['22K'],
+    '20k': DEFAULT_PURITY_PERCENTAGES['20K'],
+    '18k': DEFAULT_PURITY_PERCENTAGES['18K'],
+    '14k': DEFAULT_PURITY_PERCENTAGES['14K'],
+  });
+
   const [loading, setLoading]           = useState(true);
   const [saving, setSaving]             = useState(false);
   const [publishing, setPublishing]     = useState(false);
@@ -97,11 +168,24 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
     goldRateService.subscribeToRates(
       (data) => {
         setSavedRates(data);
+        const storedPercentages = {
+          '22k': Number(data.purityPercentages?.['22k'] ?? DEFAULT_PURITY_PERCENTAGES['22K']),
+          '20k': Number(data.purityPercentages?.['20k'] ?? DEFAULT_PURITY_PERCENTAGES['20K']),
+          '18k': Number(data.purityPercentages?.['18k'] ?? DEFAULT_PURITY_PERCENTAGES['18K']),
+          '14k': Number(data.purityPercentages?.['14k'] ?? DEFAULT_PURITY_PERCENTAGES['14K']),
+        };
+        setPercentages(storedPercentages);
+
+        const rate24k = data.goldRate24k || '';
+        const derived = rate24k ? deriveRates(rate24k, storedPercentages) : {};
+
         setDraftRates({
-          goldRate24k: data.goldRate24k  || '',
-          goldRate22k: data.goldRate22k  || '',
-          goldRate18k: data.goldRate18k  || '',
-          silverRate:  data.silverRate   || '',
+          goldRate24k: rate24k,
+          goldRate22k: data.goldRate22k || derived.goldRate22k || '',
+          goldRate20k: data.goldRate20k || derived.goldRate20k || '',
+          goldRate18k: data.goldRate18k || derived.goldRate18k || '',
+          goldRate14k: data.goldRate14k || derived.goldRate14k || '',
+          silverRate:  data.silverRate  || '',
           platinumRate: data.platinumRate || '',
         });
         setLoading(false);
@@ -114,15 +198,53 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
     );
   }, []);
 
-  // Auto-derive 22K and 18K from 24K when autoDerive is enabled
+  // Recalculate 22K, 20K, 18K, 14K from 24K and current purity percentages
+  const recalculateFrom24k = (base24k, currentPercentages = percentages) => {
+    if (!base24k || base24k <= 0) {
+      return {
+        goldRate22k: '',
+        goldRate20k: '',
+        goldRate18k: '',
+        goldRate14k: '',
+      };
+    }
+    const d = deriveRates(base24k, currentPercentages);
+    return {
+      goldRate22k: d.goldRate22k,
+      goldRate20k: d.goldRate20k,
+      goldRate18k: d.goldRate18k,
+      goldRate14k: d.goldRate14k,
+    };
+  };
+
+  // Master 24K Change handler: auto-populates 22K, 20K, 18K, 14K
   const handle24kChange = (val) => {
     const update = { ...draftRates, goldRate24k: val };
     if (autoDerive && val > 0) {
-      const d = deriveRates(val);
-      update.goldRate22k = d.goldRate22k;
-      update.goldRate18k = d.goldRate18k;
+      const derived = recalculateFrom24k(val, percentages);
+      update.goldRate22k = derived.goldRate22k;
+      update.goldRate20k = derived.goldRate20k;
+      update.goldRate18k = derived.goldRate18k;
+      update.goldRate14k = derived.goldRate14k;
     }
     setDraftRates(update);
+  };
+
+  // Percentage change handler for specific karat
+  const handlePercentageChange = (karatKey, pctVal) => {
+    const updatedPercentages = { ...percentages, [karatKey]: pctVal };
+    setPercentages(updatedPercentages);
+
+    if (autoDerive && draftRates.goldRate24k > 0) {
+      const derived = recalculateFrom24k(draftRates.goldRate24k, updatedPercentages);
+      setDraftRates(prev => ({
+        ...prev,
+        goldRate22k: derived.goldRate22k,
+        goldRate20k: derived.goldRate20k,
+        goldRate18k: derived.goldRate18k,
+        goldRate14k: derived.goldRate14k,
+      }));
+    }
   };
 
   const handleSave = async () => {
@@ -132,7 +254,11 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
     }
     setSaving(true);
     try {
-      await goldRateService.saveRates(draftRates, adminUser?.email || 'admin');
+      const payload = {
+        ...draftRates,
+        purityPercentages: percentages,
+      };
+      await goldRateService.saveRates(payload, adminUser?.email || 'admin');
       setAdminNotification({ message: 'Gold rates saved as draft.', type: 'success' });
     } catch (err) {
       console.error(err);
@@ -150,8 +276,12 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
     }
     setPublishing(true);
     try {
-      await goldRateService.publishRates(draftRates, adminUser?.email || 'admin');
-      setAdminNotification({ message: '✓ Gold rates published live! All product prices updated.', type: 'success' });
+      const payload = {
+        ...draftRates,
+        purityPercentages: percentages,
+      };
+      await goldRateService.publishRates(payload, adminUser?.email || 'admin');
+      setAdminNotification({ message: '✓ Gold rates published live! 24K, 22K, 20K & 18K updated across website.', type: 'success' });
     } catch (err) {
       console.error(err);
       setAdminNotification({ message: 'Failed to publish rates.', type: 'error' });
@@ -175,7 +305,7 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
       <div className="flex items-center justify-center py-24">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 rounded-full border-2 border-[#C8A646] border-t-transparent animate-spin" />
-          <p className="text-xs text-zinc-400 font-bold uppercase tracking-widest">Loading Rate Engine...</p>
+          <p className="text-xs text-zinc-400 font-bold uppercase tracking-widest">Loading Gold Rate Formula Engine...</p>
         </div>
       </div>
     );
@@ -191,10 +321,12 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-[#C8A646] flex items-center justify-center shadow-sm">
               <TrendingUp className="w-4 h-4 text-white" />
             </div>
-            <h2 className="text-lg font-black tracking-wide text-zinc-900 dark:text-zinc-100 uppercase">Gold Rate Management</h2>
+            <h2 className="text-lg font-black tracking-wide text-zinc-900 dark:text-zinc-100 uppercase">
+              Gold Rate Management
+            </h2>
           </div>
           <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium pl-10">
-            Set today's live gold rates. All dynamic products recalculate instantly.
+            Set today's live 24K bullion rate. 22K, 20K, 18K & 14K auto-calculate with real-time formula [24K × X%].
           </p>
         </div>
 
@@ -207,14 +339,34 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
         )}
       </div>
 
-      {/* ── Info banner ── */}
-      <div className="bg-amber-50 dark:bg-amber-950/20 border border-solid border-amber-200 dark:border-amber-800/40 rounded-xl p-4 flex items-start gap-3">
-        <Info className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-        <div className="space-y-0.5">
-          <p className="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-400">How Dynamic Pricing Works</p>
-          <p className="text-[11px] text-amber-600 dark:text-amber-500 font-medium leading-relaxed">
-            Enter today's 24K rate. 22K and 18K are auto-derived. Click <strong>Save</strong> to store a draft, then <strong>Publish Rates</strong> to push live prices to all customers instantly — no manual product edits needed.
-          </p>
+      {/* ── Formula Overview Banner (Client Specification Direct Display) ── */}
+      <div className="bg-gradient-to-r from-[#FAF6EE] to-[#F5EEDC] dark:from-[#211A10] dark:to-[#17130B] border border-solid border-[#E2D2B0] dark:border-[#524122] rounded-2xl p-5 shadow-xs">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-black text-xs uppercase tracking-wider">
+              <Sparkles className="w-4 h-4 text-amber-600" />
+              Automated Purity Calculation Formula
+            </div>
+            <p className="text-[11px] text-amber-900/80 dark:text-amber-300/80 font-medium">
+              Enter <strong>24K Rate</strong>. The system automatically derives <strong>22K</strong>, <strong>20K</strong>, and <strong>18K</strong> using formula:
+            </p>
+          </div>
+
+          {/* Visual Formula Pills matching handwritten note */}
+          <div className="flex flex-wrap items-center gap-2 text-[10px] font-mono font-black">
+            <span className="px-2.5 py-1 bg-white/80 dark:bg-black/40 border border-amber-300/60 dark:border-amber-700/60 rounded-lg text-amber-900 dark:text-amber-200">
+              24K = 24K × [100%]
+            </span>
+            <span className="px-2.5 py-1 bg-white/80 dark:bg-black/40 border border-yellow-300/60 dark:border-yellow-700/60 rounded-lg text-yellow-900 dark:text-yellow-200">
+              22K = 24K × [{percentages['22k']}%]
+            </span>
+            <span className="px-2.5 py-1 bg-white/80 dark:bg-black/40 border border-emerald-400/60 dark:border-emerald-700/60 rounded-lg text-emerald-900 dark:text-emerald-200 font-extrabold">
+              20K = 24K × [{percentages['20k']}%]
+            </span>
+            <span className="px-2.5 py-1 bg-white/80 dark:bg-black/40 border border-orange-300/60 dark:border-orange-700/60 rounded-lg text-orange-900 dark:text-orange-200">
+              18K = 24K × [{percentages['18k']}%]
+            </span>
+          </div>
         </div>
       </div>
 
@@ -224,16 +376,23 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
         {/* Left: Rate Inputs (2/3 width) */}
         <div className="lg:col-span-2 space-y-6">
 
-          {/* Core Gold Rates */}
+          {/* Core Gold Rates Container */}
           <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
             <div className="flex items-center justify-between border-b border-solid border-zinc-100 dark:border-zinc-850 pb-4">
               <div>
-                <h3 className="text-sm font-black tracking-wider text-zinc-900 dark:text-[#E6C687] uppercase">Gold Rates</h3>
-                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">Enter ₹ per 10 grams (as quoted by bullion market)</p>
+                <h3 className="text-sm font-black tracking-wider text-zinc-900 dark:text-[#E6C687] uppercase">
+                  Gold Karat Rates
+                </h3>
+                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">
+                  Enter rate in ₹ per 10 grams (Bullion Standard)
+                </p>
               </div>
+
               {/* Auto-derive toggle */}
               <label className="flex items-center gap-2 cursor-pointer select-none shrink-0">
-                <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">Auto-derive 22K/18K</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">
+                  Auto-Calculate with Formula
+                </span>
                 <div
                   onClick={() => setAutoDerive(!autoDerive)}
                   className={`w-9 h-5 rounded-full transition-colors duration-200 relative cursor-pointer border border-solid ${autoDerive ? 'bg-[#C8A646] border-[#C8A646]' : 'bg-zinc-200 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700'}`}
@@ -243,36 +402,88 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
               </label>
             </div>
 
+            {/* Master 24K Input */}
+            <RateInputCard
+              id="rate-24k"
+              label="24K Pure Gold (Master Base Rate)"
+              sublabel="Enter bullion market rate — automatically computes 22K, 20K & 18K"
+              karat="24K"
+              isMaster={true}
+              badge="MASTER BASE"
+              value={draftRates.goldRate24k}
+              onChange={handle24kChange}
+              accentColor="amber"
+            />
+
+            {/* Derived 22K, 20K, 18K Karat Inputs Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <RateInputCard
-                id="rate-24k"
-                label="24K Gold Rate"
-                sublabel="Pure gold — MCX/IBJA rate"
-                badge="PRIMARY"
-                value={draftRates.goldRate24k}
-                onChange={handle24kChange}
-                accentColor="amber"
-              />
+              {/* 22K Card */}
               <RateInputCard
                 id="rate-22k"
-                label="22K Gold Rate"
-                sublabel={autoDerive ? 'Auto-derived from 24K' : 'Enter manually'}
-                badge="22K"
+                label="22K Gold"
+                sublabel="Standard Hallmark (916)"
+                karat="22K"
+                percentage={percentages['22k']}
+                onPercentageChange={(pct) => handlePercentageChange('22k', pct)}
+                badge="916 BIS"
                 value={draftRates.goldRate22k}
                 onChange={(v) => setDraftRates({ ...draftRates, goldRate22k: v })}
                 accentColor="yellow"
                 disabled={autoDerive}
+                baseRate24k={draftRates.goldRate24k}
               />
+
+              {/* 20K Card (Client Specified Highlight) */}
+              <RateInputCard
+                id="rate-20k"
+                label="20K Gold"
+                sublabel="Traditional / Kundan / Polki (833)"
+                karat="20K"
+                percentage={percentages['20k']}
+                onPercentageChange={(pct) => handlePercentageChange('20k', pct)}
+                badge="833 KUNDAN"
+                value={draftRates.goldRate20k}
+                onChange={(v) => setDraftRates({ ...draftRates, goldRate20k: v })}
+                accentColor="emerald"
+                disabled={autoDerive}
+                baseRate24k={draftRates.goldRate24k}
+              />
+
+              {/* 18K Card */}
               <RateInputCard
                 id="rate-18k"
-                label="18K Gold Rate"
-                sublabel={autoDerive ? 'Auto-derived from 24K' : 'Enter manually'}
-                badge="18K"
+                label="18K Gold"
+                sublabel="Diamond & Gemstone Jewellery (750)"
+                karat="18K"
+                percentage={percentages['18k']}
+                onPercentageChange={(pct) => handlePercentageChange('18k', pct)}
+                badge="750 DIAMOND"
                 value={draftRates.goldRate18k}
                 onChange={(v) => setDraftRates({ ...draftRates, goldRate18k: v })}
                 accentColor="orange"
                 disabled={autoDerive}
+                baseRate24k={draftRates.goldRate24k}
               />
+            </div>
+
+            {/* 14K Card (Daily wear / Modern lightweight) */}
+            <div className="pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
+                <RateInputCard
+                  id="rate-14k"
+                  label="14K Gold Rate"
+                  sublabel="Modern Lightweight Daily Wear (585)"
+                  karat="14K"
+                  percentage={percentages['14k']}
+                  onPercentageChange={(pct) => handlePercentageChange('14k', pct)}
+                  badge="585 MODERN"
+                  value={draftRates.goldRate14k}
+                  onChange={(v) => setDraftRates({ ...draftRates, goldRate14k: v })}
+                  accentColor="purple"
+                  disabled={autoDerive}
+                  baseRate24k={draftRates.goldRate24k}
+                />
+              </div>
             </div>
           </div>
 
@@ -284,8 +495,12 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
               className="w-full flex items-center justify-between px-6 py-4 text-left cursor-pointer bg-transparent border-none hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors"
             >
               <div>
-                <h3 className="text-sm font-black tracking-wider text-zinc-900 dark:text-[#E6C687] uppercase">Optional Rates</h3>
-                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">Silver & Platinum — for future-ready pricing</p>
+                <h3 className="text-sm font-black tracking-wider text-zinc-900 dark:text-[#E6C687] uppercase">
+                  Other Precious Metals
+                </h3>
+                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">
+                  Silver & Platinum live rates
+                </p>
               </div>
               {showOptional ? <ChevronUp className="w-4 h-4 text-zinc-400" /> : <ChevronDown className="w-4 h-4 text-zinc-400" />}
             </button>
@@ -302,8 +517,8 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
                   <div className="px-6 pb-6 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-solid border-zinc-100 dark:border-zinc-850 pt-6">
                     <RateInputCard
                       id="rate-silver"
-                      label="Silver Rate"
-                      sublabel="₹ per kilogram"
+                      label="Fine Silver Rate"
+                      sublabel="999 / 925 Sterling Silver"
                       value={draftRates.silverRate}
                       onChange={(v) => setDraftRates({ ...draftRates, silverRate: v })}
                       unit="₹ / kg"
@@ -312,7 +527,7 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
                     <RateInputCard
                       id="rate-platinum"
                       label="Platinum Rate"
-                      sublabel="₹ per gram"
+                      sublabel="950 Pure Platinum"
                       value={draftRates.platinumRate}
                       onChange={(v) => setDraftRates({ ...draftRates, platinumRate: v })}
                       unit="₹ / gram"
@@ -355,19 +570,41 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
           <div className="bg-gradient-to-br from-[#1a1208] to-[#2d1f06] border border-solid border-[#C8A646]/30 rounded-2xl p-6 space-y-5 shadow-lg relative overflow-hidden">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAiIHN0cm9rZT0iI0M4QTY0NiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiIGZpbGw9Im5vbmUiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-60" />
             <div className="relative space-y-4">
-              <p className="text-[9px] uppercase tracking-[0.3em] text-[#C8A646]/70 font-bold">Live Rate Preview</p>
+              <div className="flex items-center justify-between">
+                <p className="text-[9px] uppercase tracking-[0.3em] text-[#C8A646]/80 font-bold">
+                  Live Rates Overview
+                </p>
+                <span className="text-[8px] font-mono px-2 py-0.5 rounded bg-[#C8A646]/20 text-[#E6C687] font-black">
+                  Per 10g & 1g
+                </span>
+              </div>
+
               {[
-                { label: '24K Gold', value: draftRates.goldRate24k, unit: '/10g' },
-                { label: '22K Gold', value: draftRates.goldRate22k, unit: '/10g' },
-                { label: '18K Gold', value: draftRates.goldRate18k, unit: '/10g' },
-              ].map(({ label, value, unit }) => (
-                <div key={label} className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-[#C8A646]/70 uppercase tracking-wider">{label}</span>
+                { label: '24K Pure Gold', formula: '100%', value: draftRates.goldRate24k, unit: '/10g', color: 'text-amber-400' },
+                { label: '22K Standard', formula: `${percentages['22k']}%`, value: draftRates.goldRate22k, unit: '/10g', color: 'text-yellow-400' },
+                { label: '20K Traditional', formula: `${percentages['20k']}%`, value: draftRates.goldRate20k, unit: '/10g', color: 'text-emerald-400' },
+                { label: '18K Ornaments', formula: `${percentages['18k']}%`, value: draftRates.goldRate18k, unit: '/10g', color: 'text-orange-400' },
+                { label: '14K Modern', formula: `${percentages['14k']}%`, value: draftRates.goldRate14k, unit: '/10g', color: 'text-purple-400' },
+              ].map(({ label, formula, value, unit, color }) => (
+                <div key={label} className="flex items-center justify-between border-b border-white/5 pb-2.5 last:border-b-0 last:pb-0">
+                  <div>
+                    <span className="text-[11px] font-bold text-[#C8A646]/90 uppercase tracking-wider block">
+                      {label}
+                    </span>
+                    <span className="text-[9px] font-mono text-zinc-400">
+                      Formula: [{formula}]
+                    </span>
+                  </div>
                   <div className="text-right">
-                    <span className="text-base font-black text-[#E6C687]">
+                    <span className={`text-base font-black ${color}`}>
                       {value ? `₹${Number(value).toLocaleString('en-IN')}` : '—'}
                     </span>
-                    <span className="text-[8px] text-[#C8A646]/50 ml-1">{unit}</span>
+                    <span className="text-[8px] text-[#C8A646]/60 ml-1">{unit}</span>
+                    {value > 0 && (
+                      <span className="block text-[9px] font-mono text-zinc-300">
+                        (₹{Math.round(Number(value) / 10).toLocaleString('en-IN')}/g)
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -413,9 +650,11 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
                   <Zap className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">Publish Rate Changes?</h3>
+                  <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
+                    Publish Rate Changes?
+                  </h3>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">
-                    This will push new gold rates live immediately. All products set to <strong>Dynamic</strong> pricing will update their displayed prices instantly for all customers.
+                    This will push new 24K, 22K, 20K & 18K gold rates live immediately. All dynamic jewellery items will update their calculated prices in real time.
                   </p>
                 </div>
               </div>
@@ -423,13 +662,16 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
               {/* Rate summary */}
               <div className="bg-zinc-50 dark:bg-zinc-900 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl p-4 space-y-2">
                 {[
-                  { label: '24K', value: draftRates.goldRate24k },
-                  { label: '22K', value: draftRates.goldRate22k },
-                  { label: '18K', value: draftRates.goldRate18k },
+                  { label: '24K (Pure Gold)', value: draftRates.goldRate24k },
+                  { label: `22K [${percentages['22k']}%]`, value: draftRates.goldRate22k },
+                  { label: `20K [${percentages['20k']}%]`, value: draftRates.goldRate20k },
+                  { label: `18K [${percentages['18k']}%]`, value: draftRates.goldRate18k },
                 ].map(({ label, value }) => value ? (
                   <div key={label} className="flex justify-between text-xs">
-                    <span className="text-zinc-500 font-medium">{label} Gold</span>
-                    <span className="font-black text-zinc-900 dark:text-zinc-100">₹{Number(value).toLocaleString('en-IN')}<span className="text-[9px] text-zinc-400 font-medium ml-1">/10g</span></span>
+                    <span className="text-zinc-500 font-medium">{label}</span>
+                    <span className="font-black text-zinc-900 dark:text-zinc-100 font-mono">
+                      ₹{Number(value).toLocaleString('en-IN')}<span className="text-[9px] text-zinc-400 font-medium ml-1">/10g</span>
+                    </span>
                   </div>
                 ) : null)}
               </div>

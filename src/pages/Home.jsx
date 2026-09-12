@@ -25,6 +25,7 @@ import kadaImg from '../assets/kada.png';
 
 // Section Video / Image Assets
 import heroBgVideo from '../assets/hero_video.mp4';
+import strokesOfGeniusVideo from '../assets/strokes_of_genius.mp4';
 import campaignDaintyDreams from '../assets/campaign_dainty_dreams.webp';
 import campaignRawReverie from '../assets/campaign_raw_reverie.webp';
 import campaignClayWhispers from '../assets/campaign_clay_whispers.webp';

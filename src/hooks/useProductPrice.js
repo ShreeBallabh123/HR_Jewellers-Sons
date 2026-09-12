@@ -22,7 +22,9 @@ export function useProductPrice(product) {
     return calculateDynamicPrice(product, {
       goldRate24k:  rates.goldRate24k,
       goldRate22k:  rates.goldRate22k,
+      goldRate20k:  rates.goldRate20k  || Math.round(rates.goldRate24k * (20 / 24)),
       goldRate18k:  rates.goldRate18k  || Math.round(rates.goldRate24k * 0.75),
+      goldRate14k:  rates.goldRate14k  || Math.round(rates.goldRate24k * (14 / 24)),
       silverRate:   rates.silverRate   || rates.silverRate1kg,
       platinumRate: rates.platinumRate || 3500,
     });
@@ -30,7 +32,9 @@ export function useProductPrice(product) {
     product,
     rates.goldRate24k,
     rates.goldRate22k,
+    rates.goldRate20k,
     rates.goldRate18k,
+    rates.goldRate14k,
     rates.silverRate,
     rates.silverRate1kg,
     rates.platinumRate,

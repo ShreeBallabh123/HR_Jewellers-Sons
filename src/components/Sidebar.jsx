@@ -5,7 +5,9 @@ import {
   Boxes, 
   ShoppingBag, 
   Users,
-  TrendingUp
+  TrendingUp,
+  ShieldCheck,
+  KeyRound
 } from 'lucide-react';
 import hrLogo from '../assets/logo.png';
 
@@ -143,7 +145,7 @@ export default function Sidebar({
 
           <div>
             {!isSidebarCollapsed ? (
-              <span className="text-[9px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold block mb-2 px-3">Pricing</span>
+              <span className="text-[9px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold block mb-2 px-3">Pricing &amp; Settings</span>
             ) : (
               <div className="w-8 h-[1px] bg-zinc-200 dark:bg-zinc-800 mx-auto mb-3"></div>
             )}
@@ -160,6 +162,22 @@ export default function Sidebar({
                 <TrendingUp className={`w-4.5 h-4.5 ${activeTab === 'pricing' ? 'text-zinc-950 dark:text-[#E6C687]' : 'text-zinc-400 dark:text-zinc-500'}`} />
                 {!isSidebarCollapsed && <span>Gold Pricing</span>}
                 {activeTab === 'pricing' && !isSidebarCollapsed && (
+                  <span className="absolute right-3 w-1 h-1 bg-zinc-950 dark:bg-[#E6C687] rounded-full"></span>
+                )}
+              </button>
+
+              <button
+                onClick={() => setActiveTab('security')}
+                className={`w-full flex items-center gap-3 py-2 transition-all relative cursor-pointer border-none bg-transparent text-left ${isSidebarCollapsed ? 'justify-center rounded-lg px-2' : 'px-3 rounded-lg'
+                  } ${activeTab === 'security'
+                    ? 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-950 dark:text-zinc-100 border border-solid border-zinc-200 dark:border-zinc-700/60 shadow-xs font-bold'
+                    : 'hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
+                  }`}
+                title="Vault Security & Password"
+              >
+                <KeyRound className={`w-4.5 h-4.5 ${activeTab === 'security' ? 'text-zinc-950 dark:text-[#E6C687]' : 'text-zinc-400 dark:text-zinc-500'}`} />
+                {!isSidebarCollapsed && <span>Vault Security</span>}
+                {activeTab === 'security' && !isSidebarCollapsed && (
                   <span className="absolute right-3 w-1 h-1 bg-zinc-950 dark:bg-[#E6C687] rounded-full"></span>
                 )}
               </button>
@@ -182,8 +200,12 @@ export default function Sidebar({
 
         {adminUser && (
           <div className="pt-4 border-t border-solid border-zinc-200 dark:border-zinc-800 space-y-2">
-            <div className={`flex items-center rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border border-solid border-zinc-150 dark:border-zinc-800/60 ${isSidebarCollapsed ? 'justify-center p-2' : 'space-x-3 p-3'
-              }`}>
+            <div 
+              onClick={() => setActiveTab('security')}
+              title="Click to manage Vault Password & Security"
+              className={`flex items-center rounded-xl bg-zinc-50 hover:bg-amber-50/50 dark:bg-zinc-900/50 dark:hover:bg-zinc-800/70 border border-solid border-zinc-150 dark:border-zinc-800/60 cursor-pointer transition-all duration-200 ${isSidebarCollapsed ? 'justify-center p-2' : 'space-x-3 p-3'
+              }`}
+            >
               <div className="w-7 h-7 rounded-lg bg-zinc-250 dark:bg-zinc-800 border border-solid border-zinc-300 dark:border-zinc-700 flex items-center justify-center shrink-0 text-zinc-950 dark:text-[#E6C687] font-black text-xs">
                 {adminUser.email?.charAt(0).toUpperCase() || 'A'}
               </div>
@@ -192,9 +214,12 @@ export default function Sidebar({
                   <span className="font-semibold text-[10px] text-zinc-900 dark:text-zinc-100 block truncate leading-none mb-1">
                     {adminUser.email}
                   </span>
-                  <span className="px-1.5 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-650 dark:text-zinc-400 text-[7.5px] font-extrabold tracking-wider uppercase inline-block leading-none border border-solid border-zinc-300/40 dark:border-zinc-700/40">
-                    {adminRole}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-1.5 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-650 dark:text-zinc-400 text-[7.5px] font-extrabold tracking-wider uppercase inline-block leading-none border border-solid border-zinc-300/40 dark:border-zinc-700/40">
+                      {adminRole}
+                    </span>
+                    <span className="text-[8px] text-[#A88038] font-bold">Key 🔑</span>
+                  </div>
                 </div>
               )}
             </div>

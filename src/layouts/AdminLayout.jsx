@@ -9,7 +9,8 @@ import {
   Boxes, 
   ShoppingBag, 
   Users,
-  TrendingUp 
+  TrendingUp,
+  KeyRound
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
@@ -77,11 +78,12 @@ export default function AdminLayout({
         <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-solid border-zinc-200 px-1 py-2 flex items-center justify-around md:hidden shadow-[0_-4px_16px_rgba(0,0,0,0.06)] select-none">
           {[
             { id: 'dashboard', name: 'Overview', icon: LayoutDashboard },
-            { id: 'products', name: 'Add Jewellery', icon: Gem },
+            { id: 'products', name: 'Add Items', icon: Gem },
             { id: 'inventory', name: 'Categories', icon: Boxes },
             { id: 'orders', name: 'Orders', icon: ShoppingBag },
             { id: 'customers', name: 'Customers', icon: Users },
-            { id: 'pricing', name: 'Gold Rate', icon: TrendingUp }
+            { id: 'pricing', name: 'Gold Rate', icon: TrendingUp },
+            { id: 'security', name: 'Security', icon: KeyRound }
           ].map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;

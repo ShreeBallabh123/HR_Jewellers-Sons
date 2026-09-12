@@ -1,9 +1,12 @@
-import React, { createContext, useContext } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import React, { createContext, useContext, useMemo } from 'react';
+import { AlertTriangle, Calculator, Sparkles, TrendingUp, CheckCircle2 } from 'lucide-react';
+import { useRates } from '../hooks/useRates';
+import { calculateDynamicPrice, formatINR } from '../utils/pricing';
 
 const ProductFormContext = createContext({
   getVal: () => '',
   updateField: () => {},
+  updateFields: () => {},
 });
 
 const isVideoUrl = (url) => {
@@ -183,6 +186,16 @@ export default function ProductForm({
   handleRemoveSubImage,
   handleFormKeyDown
 }) {
+  const { 
+    goldRate24k = 78500, 
+    goldRate22k = 71958, 
+    goldRate20k = 65417, 
+    goldRate18k = 58875, 
+    goldRate14k = 45788, 
+    silverRate = 92000, 
+    platinumRate = 3500 
+  } = useRates();
+
   const getVal = (field, defaultVal = '') => {
     if (editingProduct) {
       return editingProduct[field] !== undefined ? editingProduct[field] : defaultVal;
@@ -192,17 +205,44 @@ export default function ProductForm({
 
   const updateField = (field, val) => {
     if (editingProduct) {
-      setEditingProduct({ ...editingProduct, [field]: val });
+      setEditingProduct(prev => ({ ...(prev || {}), [field]: val }));
     } else {
-      setNewProduct({ ...newProduct, [field]: val });
+      setNewProduct(prev => ({ ...(prev || {}), [field]: val }));
     }
   };
+
+  const updateFields = (fieldsObj) => {
+    if (editingProduct) {
+      setEditingProduct(prev => ({ ...(prev || {}), ...fieldsObj }));
+    } else {
+      setNewProduct(prev => ({ ...(prev || {}), ...fieldsObj }));
+    }
+  };
+
+  // Compute live dynamic price breakdown when dynamic mode is selected
+  const isDynamicMode = getVal('priceCalculationMode', 'manual') === 'dynamic';
+  const targetProductObj = editingProduct || newProduct;
+
+  const liveBreakdown = useMemo(() => {
+    if (!isDynamicMode) return null;
+    return calculateDynamicPrice(targetProductObj, {
+      goldRate24k,
+      goldRate22k,
+      goldRate20k,
+      goldRate18k,
+      goldRate14k,
+      silverRate,
+      platinumRate
+    });
+  }, [targetProductObj, isDynamicMode, goldRate24k, goldRate22k, goldRate20k, goldRate18k, goldRate14k, silverRate, platinumRate]);
 
   const contextValue = {
     getVal,
     updateField,
+    updateFields,
     editingProduct,
-    newProduct
+    newProduct,
+    liveBreakdown
   };
 
   return (
@@ -597,9 +637,18 @@ export default function ProductForm({
 
         {/* Section: Pricing & Commercial details */}
         <div className="space-y-4 pt-4 border-t border-solid border-zinc-100 dark:border-zinc-850 text-left">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-[#E6C687]"></span>
-            <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Pricing &amp; Commercials</h4>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+              <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">
+                Pricing &amp; Commercials
+              </h4>
+            </div>
+            {isDynamicMode && (
+              <span className="px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300/60 text-[9px] font-mono font-bold flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-[#A88038]" /> Live Bullion Synced
+              </span>
+            )}
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
@@ -607,10 +656,19 @@ export default function ProductForm({
               id="prod-calc-mode"
               label="Price Mode"
               field="priceCalculationMode"
-              onChange={(e) => updateField('priceCalculationMode', e.target.value)}
+              onChange={(e) => {
+                const mode = e.target.value;
+                updateFields({
+                  priceCalculationMode: mode,
+                  goldPurity: getVal('goldPurity') || getVal('carat') || '22K',
+                  carat: getVal('carat') || '22K',
+                  makingChargeType: getVal('makingChargeType') || 'percentage',
+                  gstPercent: getVal('gstPercent', 3)
+                });
+              }}
             >
               <option value="manual">Manual (Fixed Price)</option>
-              <option value="dynamic">Dynamic (Auto Recalculate)</option>
+              <option value="dynamic">Dynamic (Auto Recalculate with Live Rates)</option>
             </FloatingSelect>
 
             {getVal('priceCalculationMode', 'manual') === 'manual' ? (
@@ -625,28 +683,34 @@ export default function ProductForm({
               <>
                 <FloatingSelect
                   id="prod-purity-form"
-                  label="Gold Purity"
+                  label="Gold Purity (Karat)"
                   field="goldPurity"
                   onChange={(e) => {
-                    updateField('goldPurity', e.target.value);
-                    updateField('carat', e.target.value);
+                    const p = e.target.value;
+                    updateFields({ goldPurity: p, carat: p });
                   }}
                 >
-                  <option value="24K">24K (Pure Gold)</option>
-                  <option value="22K">22K (Standard)</option>
-                  <option value="18K">18K (Premium)</option>
-                  <option value="14K">14K (Economy)</option>
+                  <option value="24K">24K (Pure Gold - 100%)</option>
+                  <option value="22K">22K (Standard Hallmark - 91.6%)</option>
+                  <option value="20K">20K (Traditional Kundan - 83.3%)</option>
+                  <option value="18K">18K (Diamond/Ornaments - 75.0%)</option>
+                  <option value="14K">14K (Modern Daily - 58.3%)</option>
                 </FloatingSelect>
 
                 <FloatingInput
                   id="prod-gold-weight-form"
-                  label="Gold Weight (grams)"
+                  label="Gold Net Weight (grams)"
                   field="goldWeight"
                   type="number"
                   step="0.001"
+                  min="0"
                   onChange={(e) => {
-                    updateField('goldWeight', e.target.value === '' ? '' : +e.target.value);
-                    updateField('netWeight', e.target.value === '' ? '' : +e.target.value);
+                    const w = e.target.value === '' ? '' : Number(e.target.value);
+                    updateFields({ 
+                      goldWeight: w, 
+                      netWeight: w, 
+                      weight: w 
+                    });
                   }}
                   required={getVal('priceCalculationMode', 'manual') === 'dynamic'}
                 />
@@ -660,6 +724,8 @@ export default function ProductForm({
             >
               <option value="BIS 916 Government Certified">BIS 916 Government Certified</option>
               <option value="IGI Diamond Certificate">IGI Diamond Certificate</option>
+              <option value="BIS Hallmark 750 (18K)">BIS Hallmark 750 (18K)</option>
+              <option value="Uncertified / Custom">Uncertified / Custom</option>
             </FloatingSelect>
           </div>
 
@@ -671,8 +737,8 @@ export default function ProductForm({
                 field="makingChargeType"
                 onChange={(e) => updateField('makingChargeType', e.target.value)}
               >
-                <option value="percentage">Percentage (%)</option>
-                <option value="fixed">Fixed Price (₹)</option>
+                <option value="percentage">Percentage (%) of Gold Value</option>
+                <option value="fixed">Fixed Amount (₹)</option>
               </FloatingSelect>
 
               <FloatingInput
@@ -680,31 +746,35 @@ export default function ProductForm({
                 label={`Making Charge ${getVal('makingChargeType', 'percentage') === 'percentage' ? '(%)' : '(₹)'}`}
                 field="makingChargeValue"
                 type="number"
+                step="0.1"
+                min="0"
                 onChange={(e) => {
-                  updateField('makingChargeValue', e.target.value === '' ? '' : +e.target.value);
-                  updateField('makingCharges', e.target.value === '' ? '' : +e.target.value);
+                  const mv = e.target.value === '' ? '' : Number(e.target.value);
+                  updateFields({ makingChargeValue: mv, makingCharges: mv });
                 }}
               />
 
               <FloatingInput
                 id="prod-stone-price"
-                label="Stone/Diamond Price"
+                label="Stone / Diamond Price (₹)"
                 field="stonePrice"
                 type="number"
+                min="0"
                 onChange={(e) => {
-                  updateField('stonePrice', e.target.value === '' ? '' : +e.target.value);
-                  updateField('diamondValue', e.target.value === '' ? '' : +e.target.value);
+                  const sp = e.target.value === '' ? '' : Number(e.target.value);
+                  updateFields({ stonePrice: sp, diamondValue: sp });
                 }}
               />
 
               <FloatingInput
                 id="prod-other-charges"
-                label="Other Charges"
+                label="Other Charges / Pearls (₹)"
                 field="otherCharges"
                 type="number"
+                min="0"
                 onChange={(e) => {
-                  updateField('otherCharges', e.target.value === '' ? '' : +e.target.value);
-                  updateField('pearlsValue', e.target.value === '' ? '' : +e.target.value);
+                  const oc = e.target.value === '' ? '' : Number(e.target.value);
+                  updateFields({ otherCharges: oc, pearlsValue: oc });
                 }}
               />
 
@@ -720,10 +790,11 @@ export default function ProductForm({
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          {/* GST Rate Manual Configuration & Presets */}
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-1">
             <FloatingInput
               id="prod-discountOffMaking-form"
-              label="Discount Off Making charge"
+              label="Discount Off Making Charge"
               field="discountOffMaking"
               type="number"
               min="0"
@@ -731,22 +802,63 @@ export default function ProductForm({
               suffix="% OFF"
             />
 
-            <FloatingInput
-              id="prod-gst-form"
-              label="GST Rate"
-              field="gstPercent"
-              type="number"
-              min="0"
-              max="100"
-              step="0.5"
-              suffix="%"
-              onChange={(e) => updateField('gstPercent', e.target.value === '' ? 3 : +e.target.value)}
-            />
+            {/* Manual GST Rate with Quick Presets */}
+            <div className="space-y-1.5 text-left">
+              <div className="flex items-center justify-between">
+                <label htmlFor="prod-gst-form" className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
+                  GST Rate (%) <span className="text-zinc-400 font-normal lowercase">(Manual Edit)</span>
+                </label>
+              </div>
+
+              <div className="relative">
+                <input
+                  id="prod-gst-form"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  placeholder="3"
+                  value={getVal('gstPercent', 3)}
+                  onChange={(e) => {
+                    const gVal = e.target.value === '' ? 0 : Number(e.target.value);
+                    updateFields({ gstPercent: gVal, gstPercentage: gVal });
+                  }}
+                  className="w-full h-10 bg-white dark:bg-zinc-905 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl px-4 pr-10 text-xs text-zinc-950 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#B8893C] font-semibold"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-zinc-400 font-extrabold select-none pointer-events-none">
+                  %
+                </span>
+              </div>
+
+              {/* Quick Preset Pills */}
+              <div className="flex items-center gap-1.5 pt-1 text-[9px] font-bold flex-wrap">
+                {[
+                  { label: '3% (Standard)', value: 3 },
+                  { label: '0% (Export/SEZ)', value: 0 },
+                  { label: '5%', value: 5 },
+                  { label: '18%', value: 18 }
+                ].map(preset => (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => updateFields({ gstPercent: preset.value, gstPercentage: preset.value })}
+                    className={`px-1.5 py-0.5 rounded border border-solid cursor-pointer transition-colors ${
+                      Number(getVal('gstPercent', 3)) === preset.value
+                        ? 'bg-[#C8A646] text-white border-[#C8A646]'
+                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-200'
+                    }`}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <FloatingInput
               id="prod-badge-form"
               label="Product Badge"
               field="badge"
+              placeholder="e.g. Best Seller, Trending"
             />
 
             <FloatingSelect
@@ -754,12 +866,77 @@ export default function ProductForm({
               label="Stock Status"
               field="stockStatus"
             >
-              <option value="">Select Stock Status</option>
               <option value="In Stock">In Stock (Available immediately)</option>
               <option value="Out of Stock">Out of Stock (Request Booking Only)</option>
               <option value="Preorder">Preorder (Making charges adjustments)</option>
             </FloatingSelect>
           </div>
+
+          {/* ⚡ Real-Time Auto-Calculated Live Price Breakdown Card */}
+          {isDynamicMode && liveBreakdown && (
+            <div className="mt-4 p-5 rounded-2xl bg-gradient-to-br from-[#FAF7F0] via-white to-[#F7F2E6] dark:from-zinc-900 dark:via-zinc-950 dark:to-zinc-900 border border-solid border-[#D5A529]/40 shadow-sm text-zinc-900 dark:text-zinc-100">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-solid border-[#D5A529]/20 pb-3 mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-[#D5A529]/20 flex items-center justify-center text-[#A88038]">
+                    <Calculator className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h5 className="text-xs font-black uppercase tracking-wider text-zinc-900 dark:text-[#E6C687]">
+                      Live Auto-Calculated Price Breakdown
+                    </h5>
+                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400">
+                      Based on today's live rate: 24K @ ₹{goldRate24k?.toLocaleString('en-IN')}/10g ({liveBreakdown.purity} rate: ₹{Math.round((liveBreakdown.goldValue / (liveBreakdown.weight || 1)) || 0).toLocaleString('en-IN')}/g)
+                    </p>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <span className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block">Estimated Selling Price</span>
+                  <span className="text-lg font-black text-[#A88038] dark:text-[#F3D9A4] font-mono">
+                    ₹{liveBreakdown.total?.toLocaleString('en-IN')}
+                  </span>
+                </div>
+              </div>
+
+              {/* Grid Breakdown */}
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+                <div className="bg-white/80 dark:bg-zinc-800/60 p-2.5 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60">
+                  <span className="text-[9px] text-zinc-400 font-bold uppercase block">Gold Metal ({liveBreakdown.weight}g)</span>
+                  <span className="font-extrabold text-zinc-900 dark:text-zinc-100 font-mono">
+                    ₹{liveBreakdown.goldValue?.toLocaleString('en-IN')}
+                  </span>
+                </div>
+
+                <div className="bg-white/80 dark:bg-zinc-800/60 p-2.5 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60">
+                  <span className="text-[9px] text-zinc-400 font-bold uppercase block">Making Charges</span>
+                  <span className="font-extrabold text-zinc-900 dark:text-zinc-100 font-mono">
+                    ₹{liveBreakdown.makingCharge?.toLocaleString('en-IN')}
+                  </span>
+                </div>
+
+                <div className="bg-white/80 dark:bg-zinc-800/60 p-2.5 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60">
+                  <span className="text-[9px] text-zinc-400 font-bold uppercase block">Stones &amp; Other</span>
+                  <span className="font-extrabold text-zinc-900 dark:text-zinc-100 font-mono">
+                    ₹{(liveBreakdown.stonePrice + liveBreakdown.otherCharges)?.toLocaleString('en-IN')}
+                  </span>
+                </div>
+
+                <div className="bg-white/80 dark:bg-zinc-800/60 p-2.5 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60">
+                  <span className="text-[9px] text-zinc-400 font-bold uppercase block">GST ({liveBreakdown.gstPct}%)</span>
+                  <span className="font-extrabold text-amber-700 dark:text-amber-400 font-mono">
+                    ₹{liveBreakdown.gst?.toLocaleString('en-IN')}
+                  </span>
+                </div>
+
+                <div className="bg-[#D5A529]/15 p-2.5 rounded-xl border border-[#D5A529]/40 col-span-2 sm:col-span-1">
+                  <span className="text-[9px] text-[#A88038] font-black uppercase block">Final Total Price</span>
+                  <span className="font-black text-[#A88038] dark:text-[#F3D9A4] font-mono text-sm">
+                    ₹{liveBreakdown.total?.toLocaleString('en-IN')}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Section: Size Customization Selector */}

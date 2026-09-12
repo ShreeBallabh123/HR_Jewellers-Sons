@@ -6,7 +6,16 @@ export const RatesContext = createContext();
 const DEFAULTS = {
   goldRate24k:  78500,
   goldRate22k:  71958,
+  goldRate20k:  65417,
   goldRate18k:  58875,
+  goldRate14k:  45788,
+  purityPercentages: {
+    '24k': 100.00,
+    '22k': 91.67,
+    '20k': 83.33,
+    '18k': 75.00,
+    '14k': 58.33,
+  },
   silverRate:   92000,
   silverRate1kg: 92000,
   platinumRate: 3500,

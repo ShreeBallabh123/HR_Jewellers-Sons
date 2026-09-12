@@ -3,7 +3,8 @@ import {
   Bell, 
   CheckCheck,
   ExternalLink, 
-  LogOut 
+  LogOut,
+  KeyRound
 } from 'lucide-react';
 
 
@@ -55,6 +56,8 @@ export default function Header({
         return 'Admin / Customers CRM';
       case 'pricing':
         return 'Admin / Gold Rate Management';
+      case 'security':
+        return 'Admin / Security & Password';
       default:
         return 'Admin';
     }
@@ -74,6 +77,8 @@ export default function Header({
         return 'CRM Directory';
       case 'pricing':
         return 'Gold Rate Management';
+      case 'security':
+        return 'Vault Security & Password';
       default:
         return 'Admin Console';
     }
@@ -110,8 +115,8 @@ export default function Header({
               {/* Notification Dropdown Panel */}
               {showNotifications && (
                 <>
-                  <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)}></div>
-                  <div className="absolute right-0 mt-2.5 w-80 sm:w-96 bg-white dark:bg-zinc-955 border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_15px_40px_rgba(0,0,0,0.3)] z-50 overflow-hidden text-zinc-800 dark:text-zinc-200">
+                  <div className="fixed inset-0 z-40 bg-black/20 sm:bg-transparent backdrop-blur-[1px] sm:backdrop-blur-none" onClick={() => setShowNotifications(false)}></div>
+                  <div className="max-sm:fixed max-sm:inset-x-3 max-sm:top-16 max-sm:w-auto sm:absolute sm:right-0 sm:w-96 mt-2.5 bg-white dark:bg-zinc-900 border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.18)] dark:shadow-[0_15px_40px_rgba(0,0,0,0.4)] z-50 overflow-hidden text-zinc-800 dark:text-zinc-200 max-w-[calc(100vw-24px)] mx-auto">
                     <div className="flex items-center justify-between px-4 py-3 bg-zinc-50 dark:bg-zinc-900 border-b border-solid border-zinc-200 dark:border-zinc-800">
                       <span className="text-[10px] font-mono font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
                         Action Centre ({notifications.length})
@@ -173,6 +178,21 @@ export default function Header({
                 </>
               )}
             </div>
+
+            {/* Security & Password Quick Action */}
+            <button
+              onClick={() => setActiveTab('security')}
+              className={`border border-solid font-bold text-xs px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-xs cursor-pointer whitespace-nowrap ${
+                activeTab === 'security'
+                  ? 'bg-amber-50 border-[#D5A529] text-[#8A6623]'
+                  : 'border-zinc-200 hover:border-[#D5A529]/60 text-zinc-700 hover:text-zinc-950 bg-white'
+              }`}
+              title="Change Vault Password & Security"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-[#A88038]" />
+              <span className="hidden sm:inline">Password &amp; Security</span>
+              <span className="sm:hidden">Security</span>
+            </button>
 
             {/* Storefront redirect */}
             <a

@@ -58,7 +58,16 @@ function getDefaultRates() {
   return {
     goldRate24k:  78500,
     goldRate22k:  71958,
+    goldRate20k:  65417,
     goldRate18k:  58875,
+    goldRate14k:  45788,
+    purityPercentages: {
+      '24k': 100.00,
+      '22k': 91.67,
+      '20k': 83.33,
+      '18k': 75.00,
+      '14k': 58.33,
+    },
     silverRate:   92000,
     platinumRate: 3500,
     lastUpdated:  new Date().toISOString(),
@@ -71,11 +80,24 @@ function getDefaultRates() {
 function buildRatePayload(ratesData, adminEmail, publish, publishedAt = null) {
   const now = new Date().toISOString();
   const rate24k = Number(ratesData.goldRate24k) || 78500;
+  const p22 = Number(ratesData.purityPercentages?.['22k'] ?? ratesData.purityPercentages?.['22K'] ?? 91.67);
+  const p20 = Number(ratesData.purityPercentages?.['20k'] ?? ratesData.purityPercentages?.['20K'] ?? 83.33);
+  const p18 = Number(ratesData.purityPercentages?.['18k'] ?? ratesData.purityPercentages?.['18K'] ?? 75.00);
+  const p14 = Number(ratesData.purityPercentages?.['14k'] ?? ratesData.purityPercentages?.['14K'] ?? 58.33);
 
   return {
     goldRate24k:  rate24k,
-    goldRate22k:  Number(ratesData.goldRate22k) || Math.round(rate24k * (22 / 24)),
-    goldRate18k:  Number(ratesData.goldRate18k) || Math.round(rate24k * (18 / 24)),
+    goldRate22k:  Number(ratesData.goldRate22k) || Math.round(rate24k * (p22 / 100)),
+    goldRate20k:  Number(ratesData.goldRate20k) || Math.round(rate24k * (p20 / 100)),
+    goldRate18k:  Number(ratesData.goldRate18k) || Math.round(rate24k * (p18 / 100)),
+    goldRate14k:  Number(ratesData.goldRate14k) || Math.round(rate24k * (p14 / 100)),
+    purityPercentages: {
+      '24k': 100.00,
+      '22k': p22,
+      '20k': p20,
+      '18k': p18,
+      '14k': p14,
+    },
     silverRate:   Number(ratesData.silverRate)   || 92000,
     platinumRate: Number(ratesData.platinumRate) || 3500,
     lastUpdated:  now,

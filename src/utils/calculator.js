@@ -13,7 +13,9 @@ export function calculateBullionCost({
   if (selectedMetal === 'gold') {
     if (selectedPurity === '24K') purityMultiplier = 1;
     else if (selectedPurity === '22K') purityMultiplier = 0.9167;
+    else if (selectedPurity === '20K') purityMultiplier = 0.8333;
     else if (selectedPurity === '18K') purityMultiplier = 0.75;
+    else if (selectedPurity === '14K') purityMultiplier = 0.5833;
   } else {
     if (selectedPurity === '999') purityMultiplier = 1;
     else if (selectedPurity === '925') purityMultiplier = 0.925;

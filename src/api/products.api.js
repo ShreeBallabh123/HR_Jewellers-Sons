@@ -67,16 +67,33 @@ export const productsApi = {
     }, onError);
   },
 
-  // Add a category
+  // Add a category (supports both custom ID and auto-ID)
   async addCategory(categoryData) {
-    const docRef = await addDoc(collection(db, 'categories'), categoryData);
-    return { id: docRef.id, ...categoryData };
+    const payload = {
+      ...categoryData,
+      createdDate: categoryData.createdDate || new Date().toISOString()
+    };
+    if (categoryData.id) {
+      const docRef = doc(db, 'categories', categoryData.id);
+      await setDoc(docRef, payload, { merge: true });
+      return { id: categoryData.id, ...payload };
+    }
+    const docRef = await addDoc(collection(db, 'categories'), payload);
+    return { id: docRef.id, ...payload };
+  },
+
+  // Alias for backward compatibility
+  async createCategory(categoryData) {
+    return this.addCategory(categoryData);
   },
 
   // Update a category
   async updateCategory(categoryId, categoryData) {
     const docRef = doc(db, 'categories', categoryId);
-    await updateDoc(docRef, categoryData);
+    await setDoc(docRef, {
+      ...categoryData,
+      lastUpdated: new Date().toISOString()
+    }, { merge: true });
     return { id: categoryId, ...categoryData };
   },
 

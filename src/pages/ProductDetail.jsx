@@ -3,6 +3,7 @@ import { useWishlist } from '../hooks/useWishlist';
 import { useCart } from '../hooks/useCart';
 import { useRates } from '../hooks/useRates';
 import { useProducts } from '../hooks/useProducts';
+import { formatDateSafe } from '../utils/format';
 import Modal from '../components/Modal';
 import BookingForm from '../forms/BookingForm';
 
@@ -500,9 +501,7 @@ export default function ProductDetail({
                 {(publishedAt || lastUpdated) && (
                   <div className="flex justify-between items-center text-[8.5px] text-zinc-400 font-bold uppercase tracking-widest">
                     <span>Last Updated</span>
-                    <span>{new Date(publishedAt || lastUpdated).toLocaleString('en-IN', {
-                      day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
-                    })}</span>
+                    <span>{formatDateSafe(publishedAt || lastUpdated)}</span>
                   </div>
                 )}
               </div>

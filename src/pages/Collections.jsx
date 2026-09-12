@@ -375,7 +375,7 @@ export default function Collections({
                 <div className="border-b border-gray-100 pb-3">
                   <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Gold Purity</span>
                   <div className="flex flex-wrap gap-1.5">
-                    {['All', '14K', '18K', '22K', '24K'].map(p => (
+                    {['All', '14K', '18K', '20K', '22K', '24K'].map(p => (
                       <button key={p} onClick={() => setPurityFilter(p === 'All' ? 'all' : p)}
                         className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer border-solid ${purityFilter === (p === 'All' ? 'all' : p) ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
                         {p}
@@ -575,7 +575,7 @@ export default function Collections({
                 <div className="border-b border-gray-100 py-1.5 sm:py-3 text-left">
                   <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-1.5 sm:mb-2.5">Gold Purity</span>
                   <div className="space-y-1 sm:space-y-2">
-                    {['All', '14K', '18K', '22K', '24K'].map(p => (
+                    {['All', '14K', '18K', '20K', '22K', '24K'].map(p => (
                       <label key={p} className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group">
                         <input type="radio" name="purity" checked={purityFilter === (p === 'All' ? 'all' : p)} onChange={() => setPurityFilter(p === 'All' ? 'all' : p)} className="accent-[#4A126D] w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 cursor-pointer" />
                         <span className={`text-[9px] sm:text-[11px] font-sans leading-none ${purityFilter === (p === 'All' ? 'all' : p) ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{p}</span>

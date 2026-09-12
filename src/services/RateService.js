@@ -1,9 +1,19 @@
 import { calculateDynamicPrice, formatINR as _formatINR } from '../utils/pricing';
 
 export const RateService = {
-  // Convert 24k gold rate to 22k rate
-  convert24kTo22k(rate24k) {
-    return Math.round(rate24k * (22 / 24));
+  // Convert 24k gold rate to 22k rate (Formula: 24K * X%)
+  convert24kTo22k(rate24k, pct = 91.67) {
+    return Math.round(rate24k * (pct / 100));
+  },
+
+  // Convert 24k gold rate to 20k rate (Formula: 24K * X%)
+  convert24kTo20k(rate24k, pct = 83.33) {
+    return Math.round(rate24k * (pct / 100));
+  },
+
+  // Convert 24k gold rate to 18k rate (Formula: 24K * X%)
+  convert24kTo18k(rate24k, pct = 75.00) {
+    return Math.round(rate24k * (pct / 100));
   },
 
   // Convert 1kg silver rate to 1g silver rate
@@ -16,16 +26,17 @@ export const RateService = {
    * If product.priceCalculationMode === 'dynamic', uses live rates from pricing.js formula.
    * Otherwise falls back to stored price (backward compatible).
    */
-  calculateProductPrice(product, rate24k = 78500, rateSilver1kg = 92000) {
+  calculateProductPrice(product, rate24k = 78500, rateSilver1kg = 92000, customRates = {}) {
     if (!product) return { baseMetalValue: 0, makingCharges: 0, gst: 0, total: 0 };
 
     const rates = {
       goldRate24k:   rate24k,
-      goldRate22k:   Math.round(rate24k * (22 / 24)),
-      goldRate18k:   Math.round(rate24k * (18 / 24)),
+      goldRate22k:   customRates.goldRate22k || Math.round(rate24k * (22 / 24)),
+      goldRate20k:   customRates.goldRate20k || Math.round(rate24k * (20 / 24)),
+      goldRate18k:   customRates.goldRate18k || Math.round(rate24k * (18 / 24)),
       silverRate:    rateSilver1kg,
       silverRate1kg: rateSilver1kg,
-      platinumRate:  3500,
+      platinumRate:  customRates.platinumRate || 3500,
     };
 
     const result = calculateDynamicPrice(product, rates);

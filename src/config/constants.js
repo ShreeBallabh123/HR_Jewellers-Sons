@@ -7,7 +7,7 @@ export const BUSINESS = Object.freeze({
   NAME: 'HR Jewellers & Sons',
   WHATSAPP_NUMBER: '919783843978',
   PHONE_PRIMARY: '+91-9783843978',
-  EMAIL: 'admin@hrjewellers.com',
+  EMAIL: 'hrjewellersbkn@gmail.com',
   ADDRESS: 'Station Road, Kote Gate, Bikaner, Rajasthan 344001',
   MAPS_URL: 'https://maps.google.com/?q=HR+Jewellers+Bikaner',
   SITE_URL: 'https://hr-soni.vercel.app',

@@ -11,7 +11,13 @@ export default function Valuation({
   triggerAudio: triggerAudioProp,
 }) {
   // Self-contained: pull rates from context
-  const { goldRate24k = 78500, silverRate1g: silverRate = 92 } = useRates();
+  const {
+    goldRate24k = 78500,
+    goldRate22k = 71958,
+    goldRate20k = 65417,
+    goldRate18k = 58875,
+    silverRate1g: silverRate = 92
+  } = useRates();
 
   // Local calculator state (previously passed as props)
   const [selectedMetal, setSelectedMetal] = useState('gold');
@@ -28,7 +34,13 @@ export default function Valuation({
   const makingPct = parseFloat(makingChargesInput) || 0;
   const wastagePct = parseFloat(wastageInput) || 0;
   const ratePerGram = selectedMetal === 'gold'
-    ? (selectedPurity === '24K' ? goldRate24k / 10 : selectedPurity === '22K' ? (goldRate24k * 0.9167) / 10 : (goldRate24k * 0.75) / 10)
+    ? (selectedPurity === '24K'
+        ? goldRate24k / 10
+        : selectedPurity === '22K'
+          ? goldRate22k / 10
+          : selectedPurity === '20K'
+            ? goldRate20k / 10
+            : goldRate18k / 10)
     : silverRate;
   const metalValue = weightNum * ratePerGram;
   const makingAmt = metalValue * (makingPct / 100);
@@ -346,9 +358,10 @@ export default function Valuation({
                   <div className="space-y-2">
                     {selectedMetal === 'gold' ? (
                       [
-                        { id: "24K", label: "24 Karat Pure", purity: "99.9% Gold" },
+                        { id: "24K", label: "24 Karat Pure", purity: "99.9% Gold (100%)" },
                         { id: "22K", label: "22 Karat Standard", purity: "91.6% BIS Hallmark" },
-                        { id: "18K", label: "18 Karat Ornaments", purity: "75.0% Gold" }
+                        { id: "20K", label: "20 Karat Traditional", purity: "83.3% Traditional Kundan" },
+                        { id: "18K", label: "18 Karat Ornaments", purity: "75.0% Diamond Jewellery" }
                       ].map((pur) => (
                         <button
                           key={pur.id}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart } from 'lucide-react';
 import { useRates } from '../hooks/useRates';
+import { formatDateSafe } from '../utils/format';
 
 export default function ProductCard({
   product,
@@ -99,9 +100,7 @@ export default function ProductCard({
             </div>
             <div className="flex justify-between items-center text-[7.5px] text-zinc-400 font-bold uppercase tracking-wider">
               <span>Updated</span>
-              <span>{new Date(publishedAt || lastUpdated || new Date()).toLocaleString('en-IN', {
-                day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
-              })}</span>
+              <span>{formatDateSafe(publishedAt || lastUpdated)}</span>
             </div>
           </div>
 

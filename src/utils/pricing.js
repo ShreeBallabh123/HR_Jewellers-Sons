@@ -8,10 +8,19 @@
 // ─── Purity multipliers relative to 24K ────────────────────────────────────
 export const PURITY_MULTIPLIERS = {
   '24K': 1.0,
-  '22K': 22 / 24,       // 0.9167
-  '18K': 18 / 24,       // 0.75
-  '14K': 14 / 24,       // 0.5833
+  '22K': 22 / 24,       // 0.9167 (91.67%)
+  '20K': 20 / 24,       // 0.8333 (83.33%)
+  '18K': 18 / 24,       // 0.75   (75.00%)
+  '14K': 14 / 24,       // 0.5833 (58.33%)
   '9K':   9 / 24,       // 0.375
+};
+
+export const DEFAULT_PURITY_PERCENTAGES = {
+  '24K': 100.00,
+  '22K': 91.67,
+  '20K': 83.33,
+  '18K': 75.00,
+  '14K': 58.33,
 };
 
 /**
@@ -27,14 +36,15 @@ export function safeParseFloat(val) {
 
 /**
  * Get the per-gram rate for a given gold purity.
- * @param {string} purity  — '24K' | '22K' | '18K' | '14K' | '9K'
+ * @param {string} purity  — '24K' | '22K' | '20K' | '18K' | '14K' | '9K'
  * @param {number} rate24k — 24K rate per 10 grams (as stored in Firestore)
  * @returns {number} per-gram rate
  */
 export function getGoldRatePerGram(purity, rate24k) {
-  const mul = PURITY_MULTIPLIERS[purity] ?? PURITY_MULTIPLIERS['22K'];
+  const normalized = (purity || '').toUpperCase().replace(/T$/, '').trim();
+  const mul = PURITY_MULTIPLIERS[normalized] ?? PURITY_MULTIPLIERS[purity] ?? PURITY_MULTIPLIERS['22K'];
   // rate24k is stored as ₹ per 10 grams  →  divide by 10 for per-gram
-  return (rate24k / 10) * mul;
+  return (safeParseFloat(rate24k) / 10) * mul;
 }
 
 /**
@@ -44,7 +54,9 @@ export function getGoldRatePerGram(purity, rate24k) {
  * @param {Object} rates   — Live rates object from RatesContext / Firestore
  *   rates.goldRate24k  {number}  — ₹ per 10g (24K)
  *   rates.goldRate22k  {number}  — ₹ per 10g (22K) [optional, derived if absent]
+ *   rates.goldRate20k  {number}  — ₹ per 10g (20K) [optional, derived if absent]
  *   rates.goldRate18k  {number}  — ₹ per 10g (18K) [optional, derived if absent]
+ *   rates.goldRate14k  {number}  — ₹ per 10g (14K) [optional, derived if absent]
  *   rates.silverRate   {number}  — ₹ per kg
  *   rates.platinumRate {number}  — ₹ per gram
  *
@@ -86,11 +98,18 @@ export function calculateDynamicPrice(product, rates = {}) {
     goldValue = ptRate * weight;
   } else {
     // Gold — resolve per-gram rate for the purity
+    const normalized = (purity || '').toUpperCase().replace(/T$/, '').trim();
     let ratePerGram;
-    if (purity === '22K' && rates.goldRate22k) {
+    if ((normalized === '24K' || normalized === '24') && rates.goldRate24k) {
+      ratePerGram = rates.goldRate24k / 10;
+    } else if ((normalized === '22K' || normalized === '22') && rates.goldRate22k) {
       ratePerGram = rates.goldRate22k / 10;
-    } else if (purity === '18K' && rates.goldRate18k) {
+    } else if ((normalized === '20K' || normalized === '20') && rates.goldRate20k) {
+      ratePerGram = rates.goldRate20k / 10;
+    } else if ((normalized === '18K' || normalized === '18') && rates.goldRate18k) {
       ratePerGram = rates.goldRate18k / 10;
+    } else if ((normalized === '14K' || normalized === '14') && rates.goldRate14k) {
+      ratePerGram = rates.goldRate14k / 10;
     } else {
       // derive from 24K
       ratePerGram = getGoldRatePerGram(purity, rates.goldRate24k || 78500);
@@ -196,22 +215,40 @@ function emptyBreakdown() {
  * @returns {string} e.g. "₹1,23,456"
  */
 export function formatINR(amount) {
-  if (!amount && amount !== 0) return '₹0';
+  const num = safeParseFloat(amount);
   return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
     maximumFractionDigits: 0,
-  }).format(amount).replace('INR', '₹').trim();
+  }).format(num);
 }
 
 /**
- * Derive 22K and 18K rates from 24K base rate.
- * Utility for admin who only enters 24K.
+ * Derive 22K, 20K, 18K and 14K rates from 24K base rate.
+ * Formula:
+ * 24K = 24K × 100%
+ * 22K = 24K × [X%] (default 91.67%)
+ * 20K = 24K × [X%] (default 83.33%)
+ * 18K = 24K × [X%] (default 75.00%)
+ * 14K = 24K × [X%] (default 58.33%)
  */
-export function deriveRates(goldRate24k) {
+export function deriveRates(goldRate24k, customPercentages = {}) {
+  const base24k = safeParseFloat(goldRate24k);
+  const p22 = safeParseFloat(customPercentages['22K'] ?? customPercentages['22k'] ?? DEFAULT_PURITY_PERCENTAGES['22K']);
+  const p20 = safeParseFloat(customPercentages['20K'] ?? customPercentages['20k'] ?? DEFAULT_PURITY_PERCENTAGES['20K']);
+  const p18 = safeParseFloat(customPercentages['18K'] ?? customPercentages['18k'] ?? DEFAULT_PURITY_PERCENTAGES['18K']);
+  const p14 = safeParseFloat(customPercentages['14K'] ?? customPercentages['14k'] ?? DEFAULT_PURITY_PERCENTAGES['14K']);
+
   return {
-    goldRate24k:  Math.round(goldRate24k),
-    goldRate22k:  Math.round(goldRate24k * (22 / 24)),
-    goldRate18k:  Math.round(goldRate24k * (18 / 24)),
+    goldRate24k: Math.round(base24k),
+    goldRate22k: Math.round(base24k * (p22 / 100)),
+    goldRate20k: Math.round(base24k * (p20 / 100)),
+    goldRate18k: Math.round(base24k * (p18 / 100)),
+    goldRate14k: Math.round(base24k * (p14 / 100)),
+    percentages: {
+      '24K': 100,
+      '22K': p22,
+      '20K': p20,
+      '18K': p18,
+      '14K': p14,
+    }
   };
 }
