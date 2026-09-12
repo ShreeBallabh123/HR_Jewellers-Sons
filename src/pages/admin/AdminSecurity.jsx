@@ -6,7 +6,6 @@ import {
   Lock, 
   Eye, 
   EyeOff, 
-  Mail, 
   CheckCircle2, 
   AlertCircle, 
   ShieldAlert, 
@@ -15,10 +14,9 @@ import {
   RefreshCw, 
   Copy, 
   Check, 
-  Send,
   Clock
 } from 'lucide-react';
-import { auth, updatePassword, reauthenticateWithCredential, EmailAuthProvider, sendPasswordResetEmail } from '../../firebase/auth';
+import { auth, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from '../../firebase/auth';
 import { db } from '../../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { StorageService } from '../../services/StorageService';
@@ -39,12 +37,6 @@ export default function AdminSecurity({
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState('');
 
-  // Email Reset State
-  const [resetEmail, setResetEmail] = useState(adminUser?.email || 'hrjewellersbkn@gmail.com');
-  const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
-  const [emailSuccess, setEmailSuccess] = useState('');
-  const [emailError, setEmailError] = useState('');
-
   // Security Metadata State
   const [lastPasswordChange, setLastPasswordChange] = useState(() => {
     return StorageService.get('hrj_admin_last_pass_change', 'Never (Default credential active)');
@@ -60,12 +52,6 @@ export default function AdminSecurity({
   const [recoveryPin, setRecoveryPin] = useState(() => {
     return StorageService.get('hrj_admin_recovery_pin', 'HR-9988-SECURE');
   });
-
-  useEffect(() => {
-    if (adminUser?.email) {
-      setResetEmail(adminUser.email);
-    }
-  }, [adminUser]);
 
   // Fetch remote security settings from Firestore if available
   useEffect(() => {
@@ -217,44 +203,6 @@ export default function AdminSecurity({
     }
   };
 
-  // Handle Firebase Reset Password Email
-  const handleSendResetEmail = async (e) => {
-    e.preventDefault();
-    setEmailError('');
-    setEmailSuccess('');
-
-    if (!resetEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail)) {
-      setEmailError('Please enter a valid administrator email address.');
-      return;
-    }
-
-    setIsSendingResetEmail(true);
-
-    try {
-      await sendPasswordResetEmail(auth, resetEmail);
-      const successMsg = `Password reset link sent to ${resetEmail}. Please check your inbox / spam folder.`;
-      setEmailSuccess(successMsg);
-      logSecurityAction(`Password reset email dispatched to ${resetEmail}`, 'success');
-
-      if (typeof setAdminNotification === 'function') {
-        setAdminNotification({
-          message: `Reset link dispatched to ${resetEmail}`,
-          type: 'success'
-        });
-      }
-    } catch (err) {
-      console.error('Email reset error:', err);
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-email') {
-        setEmailError(`No Firebase user registered with ${resetEmail}. You can update password directly using the Change Password form.`);
-      } else {
-        setEmailSuccess(`Password reset request registered for ${resetEmail}. Secure link generated.`);
-      }
-      logSecurityAction(`Password reset request for ${resetEmail}`, 'info');
-    } finally {
-      setIsSendingResetEmail(false);
-    }
-  };
-
   // Copy Recovery PIN
   const handleCopyPin = () => {
     navigator.clipboard.writeText(recoveryPin);
@@ -279,7 +227,7 @@ export default function AdminSecurity({
               </span>
             </div>
             <p className="text-xs text-zinc-500 font-medium mt-0.5">
-              Change administrator password, dispatch reset links, and configure vault access credentials.
+              Change administrator password and configure vault access credentials directly.
             </p>
           </div>
         </div>
@@ -318,43 +266,39 @@ export default function AdminSecurity({
             </div>
 
             {/* Notification Alerts */}
-            <AnimatePresence>
-              {passwordError && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2.5"
-                >
-                  <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
-                  <span>{passwordError}</span>
-                </motion.div>
-              )}
+            {passwordSuccess && (
+              <motion.div 
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-5 p-4 rounded-xl bg-emerald-50 border border-solid border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-3"
+              >
+                <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
+                <span>{passwordSuccess}</span>
+              </motion.div>
+            )}
 
-              {passwordSuccess && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="mb-5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2.5"
-                >
-                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
-                  <span>{passwordSuccess}</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {passwordError && (
+              <motion.div 
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-5 p-4 rounded-xl bg-red-50 border border-solid border-red-200 text-red-700 text-xs font-semibold flex items-center gap-3"
+              >
+                <AlertCircle className="w-5 h-5 shrink-0 text-red-600" />
+                <span>{passwordError}</span>
+              </motion.div>
+            )}
 
             <form onSubmit={handlePasswordUpdate} className="space-y-5">
               
-              {/* CURRENT PASSWORD */}
+              {/* Current Password Field */}
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-600 flex items-center justify-between">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-600 flex justify-between">
                   <span>Current Password</span>
-                  <span className="text-[10px] text-zinc-400 font-normal lowercase">(default: admin123)</span>
+                  <span className="text-[10px] text-zinc-400 font-normal lowercase">required for verification</span>
                 </label>
                 <div className="relative flex items-center bg-zinc-50 border border-solid border-zinc-200 rounded-xl overflow-hidden focus-within:border-[#D5A529] focus-within:bg-white transition-all shadow-2xs">
                   <div className="pl-3.5 text-zinc-400">
-                    <KeyRound className="w-4 h-4" />
+                    <Lock className="w-4 h-4" />
                   </div>
                   <input
                     type={showCurrentPassword ? 'text' : 'password'}
@@ -374,25 +318,23 @@ export default function AdminSecurity({
                 </div>
               </div>
 
-              {/* NEW PASSWORD */}
+              {/* New Password Field */}
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-600 flex items-center justify-between">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-600 flex justify-between">
                   <span>New Password</span>
-                  {newPassword && (
-                    <span className={`text-[10px] font-bold ${strengthInfo.color}`}>
-                      Strength: {strengthInfo.label}
-                    </span>
-                  )}
+                  <span className={`text-[10px] font-bold ${strengthInfo.color}`}>
+                    Strength: {strengthInfo.label}
+                  </span>
                 </label>
                 <div className="relative flex items-center bg-zinc-50 border border-solid border-zinc-200 rounded-xl overflow-hidden focus-within:border-[#D5A529] focus-within:bg-white transition-all shadow-2xs">
                   <div className="pl-3.5 text-zinc-400">
-                    <Lock className="w-4 h-4" />
+                    <KeyRound className="w-4 h-4" />
                   </div>
                   <input
                     type={showNewPassword ? 'text' : 'password'}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Create a strong new password"
+                    placeholder="Enter new password (min. 6 chars)"
                     className="flex-1 bg-transparent border-none outline-none px-3.5 py-3 text-sm text-zinc-900 placeholder-zinc-400 font-sans focus:ring-0"
                     required
                   />
@@ -405,45 +347,33 @@ export default function AdminSecurity({
                   </button>
                 </div>
 
-                {/* Dynamic Strength Bar */}
+                {/* Strength Meter Bar */}
                 {newPassword && (
-                  <div className="pt-1.5 space-y-2">
+                  <div className="pt-1.5 space-y-1">
                     <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden flex gap-1">
-                      {[1, 2, 3, 4, 5].map((level) => (
+                      {[1, 2, 3, 4, 5].map((lvl) => (
                         <div
-                          key={level}
+                          key={lvl}
                           className={`h-full flex-1 rounded-full transition-all duration-300 ${
-                            level <= strengthScore ? strengthInfo.bg : 'bg-zinc-200'
+                            strengthScore >= lvl ? strengthInfo.bg : 'bg-zinc-200'
                           }`}
                         />
                       ))}
                     </div>
-
-                    {/* Criteria Badges */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 pt-1 text-[10px]">
-                      <span className={`flex items-center gap-1 font-medium ${passwordCriteria.length ? 'text-emerald-600' : 'text-zinc-400'}`}>
-                        {passwordCriteria.length ? <Check className="w-3 h-3" /> : '•'} At least 8 chars
-                      </span>
-                      <span className={`flex items-center gap-1 font-medium ${passwordCriteria.hasUpper ? 'text-emerald-600' : 'text-zinc-400'}`}>
-                        {passwordCriteria.hasUpper ? <Check className="w-3 h-3" /> : '•'} Uppercase (A-Z)
-                      </span>
-                      <span className={`flex items-center gap-1 font-medium ${passwordCriteria.hasLower ? 'text-emerald-600' : 'text-zinc-400'}`}>
-                        {passwordCriteria.hasLower ? <Check className="w-3 h-3" /> : '•'} Lowercase (a-z)
-                      </span>
-                      <span className={`flex items-center gap-1 font-medium ${passwordCriteria.hasNumber ? 'text-emerald-600' : 'text-zinc-400'}`}>
-                        {passwordCriteria.hasNumber ? <Check className="w-3 h-3" /> : '•'} Number (0-9)
-                      </span>
-                      <span className={`flex items-center gap-1 font-medium ${passwordCriteria.hasSpecial ? 'text-emerald-600' : 'text-zinc-400'}`}>
-                        {passwordCriteria.hasSpecial ? <Check className="w-3 h-3" /> : '•'} Symbol (!@#$)
-                      </span>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-zinc-400 pt-1">
+                      <span className={passwordCriteria.length ? 'text-emerald-600 font-semibold' : ''}>• 8+ Chars</span>
+                      <span className={passwordCriteria.hasUpper ? 'text-emerald-600 font-semibold' : ''}>• Uppercase</span>
+                      <span className={passwordCriteria.hasLower ? 'text-emerald-600 font-semibold' : ''}>• Lowercase</span>
+                      <span className={passwordCriteria.hasNumber ? 'text-emerald-600 font-semibold' : ''}>• Number</span>
+                      <span className={passwordCriteria.hasSpecial ? 'text-emerald-600 font-semibold' : ''}>• Special Char</span>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* CONFIRM NEW PASSWORD */}
+              {/* Confirm Password Field */}
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-600 flex items-center justify-between">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-600 flex justify-between">
                   <span>Confirm New Password</span>
                   {confirmPassword && (
                     <span className={`text-[10px] font-bold ${newPassword === confirmPassword ? 'text-emerald-600' : 'text-red-500'}`}>
@@ -498,77 +428,6 @@ export default function AdminSecurity({
 
             </form>
           </div>
-
-          {/* Email Reset Link Card */}
-          <div className="bg-white border border-solid border-zinc-200 rounded-2xl p-6 sm:p-8 shadow-xs">
-            <div className="flex items-center gap-2.5 pb-4 border-b border-solid border-zinc-100 mb-5">
-              <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200/60 flex items-center justify-center text-blue-600">
-                <Mail className="w-4 h-4" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-zinc-900">Email Password Reset Link</h2>
-                <p className="text-[11px] text-zinc-500">Dispatch an encrypted Firebase recovery email to your inbox</p>
-              </div>
-            </div>
-
-            {emailSuccess && (
-              <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
-                <span>{emailSuccess}</span>
-              </div>
-            )}
-
-            {emailError && (
-              <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
-                <span>{emailError}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSendResetEmail} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-600">
-                  Target Administrator Email
-                </label>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="relative flex-1 flex items-center bg-zinc-50 border border-solid border-zinc-200 rounded-xl overflow-hidden focus-within:border-[#D5A529] focus-within:bg-white transition-all shadow-2xs">
-                    <div className="pl-3.5 text-zinc-400">
-                      <Mail className="w-4 h-4" />
-                    </div>
-                    <input
-                      type="email"
-                      value={resetEmail}
-                      onChange={(e) => setResetEmail(e.target.value)}
-                      placeholder="hrjewellersbkn@gmail.com"
-                      className="flex-1 bg-transparent border-none outline-none px-3.5 py-3 text-sm text-zinc-900 placeholder-zinc-400 font-sans focus:ring-0"
-                      required
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={isSendingResetEmail}
-                    className="py-3 px-5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border-none flex items-center justify-center gap-2 shrink-0 shadow-xs"
-                  >
-                    {isSendingResetEmail ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                        <span>Sending...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-3.5 h-3.5" />
-                        <span>Send Link</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-              <p className="text-[11px] text-zinc-400 leading-relaxed">
-                A password reset email with a secure single-use token will be sent directly from the official Firebase Authentication service.
-              </p>
-            </form>
-          </div>
-
         </div>
 
         {/* Right Column: Security Profile, Recovery PIN & Audit Logs (5 cols) */}
@@ -599,86 +458,78 @@ export default function AdminSecurity({
                   <span className="text-xs font-black text-[#F3D9A4] block mt-0.5">{adminRole}</span>
                 </div>
                 <div className="bg-zinc-800/60 rounded-xl p-3 border border-zinc-700/40">
-                  <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider block">Encryption</span>
-                  <span className="text-xs font-black text-emerald-400 block mt-0.5">TLS 1.3 Active</span>
+                  <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider block">Session State</span>
+                  <span className="text-xs font-bold text-emerald-400 block mt-0.5 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Verified
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Emergency Recovery PIN Card */}
-          <div className="bg-white border border-solid border-zinc-200 rounded-2xl p-6 shadow-xs">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-700 flex items-center gap-1.5">
-                <ShieldAlert className="w-4 h-4 text-[#A88038]" /> Emergency Recovery PIN
-              </span>
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200/60">
-                Confidential
+          <div className="bg-amber-500/5 border border-solid border-amber-300/60 rounded-2xl p-6 shadow-xs relative">
+            <div className="flex items-center justify-between pb-3 border-b border-amber-200/50">
+              <div className="flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 text-amber-700" />
+                <h3 className="text-sm font-bold text-amber-950">Emergency Recovery PIN</h3>
+              </div>
+              <span className="text-[10px] font-bold text-amber-700 uppercase bg-amber-100 px-2 py-0.5 rounded-md">
+                Permanent Key
               </span>
             </div>
-            <p className="text-xs text-zinc-500 mb-4 leading-relaxed">
-              Use this emergency PIN in case you lose access to your primary email or credentials.
+
+            <p className="text-[11px] text-zinc-600 mt-3 leading-relaxed">
+              If you ever forget your password, you can use this secure emergency recovery token to restore administrative access:
             </p>
 
-            <div className="flex items-center justify-between bg-zinc-50 border border-solid border-zinc-200 rounded-xl p-3.5">
-              <span className="font-mono text-base font-black tracking-widest text-zinc-800 select-all">
+            <div className="mt-4 flex items-center justify-between bg-white border border-solid border-amber-300/80 rounded-xl p-3 shadow-2xs">
+              <div className="font-mono text-sm font-black text-amber-950 tracking-wider">
                 {recoveryPin}
-              </span>
+              </div>
               <button
                 type="button"
                 onClick={handleCopyPin}
-                className="p-2 rounded-lg bg-white border border-zinc-200 hover:bg-zinc-100 text-zinc-600 transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-semibold"
-                title="Copy Recovery PIN"
+                className="py-1.5 px-3 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold transition-all border border-solid border-amber-300/60 cursor-pointer flex items-center gap-1.5"
               >
-                {copiedPin ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                <span>{copiedPin ? 'Copied' : 'Copy'}</span>
+                {copiedPin ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>Copy PIN</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
 
-          {/* Security Audit Log */}
+          {/* Recent Security Activity Log */}
           <div className="bg-white border border-solid border-zinc-200 rounded-2xl p-6 shadow-xs">
-            <div className="flex items-center justify-between pb-3 border-b border-solid border-zinc-100 mb-4">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-700 flex items-center gap-1.5">
-                <History className="w-4 h-4 text-zinc-400" /> Security Audit Log
-              </span>
-              <span className="text-[9px] font-bold text-zinc-400 uppercase">Recent Activity</span>
+            <div className="flex items-center gap-2 pb-3 border-b border-solid border-zinc-100 mb-4">
+              <History className="w-4 h-4 text-zinc-500" />
+              <h3 className="text-sm font-bold text-zinc-800">Security Audit Trail</h3>
             </div>
 
-            <div className="space-y-3">
-              {securityLogs.length === 0 ? (
-                <p className="text-xs text-zinc-400 text-center py-4">No recent security events</p>
-              ) : (
-                securityLogs.map((log) => {
-                  let timeFormatted = log.time;
-                  try {
-                    timeFormatted = new Date(log.time).toLocaleDateString('en-IN', {
-                      day: 'numeric',
-                      month: 'short',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    });
-                  } catch {
-                    timeFormatted = log.time;
-                  }
-
-                  return (
-                    <div key={log.id} className="flex items-start justify-between gap-3 text-left">
-                      <div className="flex items-start gap-2 min-w-0">
-                        <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
-                          log.status === 'success' ? 'bg-emerald-500' : log.status === 'error' ? 'bg-red-500' : 'bg-blue-500'
-                        }`} />
-                        <span className="text-xs font-medium text-zinc-700 leading-snug break-words">
-                          {log.action}
-                        </span>
-                      </div>
-                      <span className="text-[9px] font-mono text-zinc-400 shrink-0 mt-0.5">
-                        {timeFormatted}
-                      </span>
-                    </div>
-                  );
-                })
-              )}
+            <div className="space-y-2.5">
+              {securityLogs.slice(0, 4).map((log) => (
+                <div key={log.id} className="flex items-start justify-between text-xs p-2.5 rounded-xl bg-zinc-50 border border-zinc-100">
+                  <div className="space-y-0.5">
+                    <span className="font-semibold text-zinc-800 block">{log.action}</span>
+                    <span className="text-[10px] text-zinc-400 font-mono">
+                      {new Date(log.time).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                    log.status === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'
+                  }`}>
+                    {log.status.toUpperCase()}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
