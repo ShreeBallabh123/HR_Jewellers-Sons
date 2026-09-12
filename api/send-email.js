@@ -178,6 +178,35 @@ export default async function handler(req, res) {
         </p>
       </div>
     `;
+  } else if (type === 'password_reset') {
+    subject = `Reset Your Vault Password - HR Jewellers & Sons`;
+    html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 30px; border: 1px solid #D4AF37; background-color: #0B0605; color: #F5E6C4; border-radius: 16px;">
+        <h2 style="color: #D4AF37; font-family: serif; font-weight: normal; letter-spacing: 0.15em; text-align: center; margin: 0 0 5px 0;">HR JEWELLERS & SONS</h2>
+        <p style="text-align: center; font-size: 10px; color: #D4AF37; letter-spacing: 0.25em; margin: 0;">ESTABLISHED 1952 · BIKANER</p>
+        <hr style="border: 0; border-top: 1px solid rgba(212, 175, 85, 0.35); margin: 20px 0;" />
+        <h3 style="color: #fff; font-family: serif; font-weight: normal; font-size: 18px; margin-bottom: 10px;">Administrator Vault Password Reset</h3>
+        <p style="font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.6;">
+          A password reset request was initiated for your administrator account: <strong style="color: #D4AF37;">${data.email || recipient}</strong>.
+        </p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${data.resetLink}" style="background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%); color: #000; font-weight: bold; font-size: 14px; text-decoration: none; padding: 14px 32px; border-radius: 12px; display: inline-block; letter-spacing: 0.05em;">
+            Reset Password Now
+          </a>
+        </div>
+        <p style="font-size: 11px; color: rgba(255,255,255,0.5); line-height: 1.6;">
+          Or copy and paste this link in your browser:<br/>
+          <span style="color: #D4AF37; word-break: break-all;">${data.resetLink}</span>
+        </p>
+        <div style="background-color: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,85,0.15); padding: 12px; border-radius: 8px; margin: 20px 0; font-size: 11px; color: rgba(255,255,255,0.6);">
+          ⚠️ <strong>Security Notice:</strong> This reset link is valid for 1 hour. If you did not request this change, please ignore this email or notify your system administrator.
+        </div>
+        <hr style="border: 0; border-top: 1px solid rgba(212, 175, 85, 0.25); margin: 25px 0 15px 0;" />
+        <p style="font-size: 10px; color: rgba(255,255,255,0.4); text-align: center; letter-spacing: 0.1em;">
+          HR Jewellers & Sons · Station Road, Kote Gate, Bikaner, Rajasthan 344001
+        </p>
+      </div>
+    `;
   } else {
     subject = `New Transactional Notification - HR Jewellers & Sons`;
     html = `<h3>New Activity Recorded</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
