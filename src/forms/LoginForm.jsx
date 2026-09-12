@@ -60,10 +60,16 @@ export default function LoginForm({
       setForgotSubmitting(true);
       try {
         await sendPasswordResetEmail(auth, forgotEmail.trim());
-        setForgotSuccess(`Password reset link sent to ${forgotEmail}. Please check your inbox / spam folder.`);
+        setForgotSuccess(`Password reset link dispatched to ${forgotEmail.trim()}! Please check your Primary Inbox as well as the "Spam / Junk" folder.`);
       } catch (err) {
         console.warn('Firebase reset error:', err);
-        setForgotSuccess(`Password reset instructions dispatched for ${forgotEmail}.`);
+        if (err.code === 'auth/user-not-found') {
+          setForgotError(`User "${forgotEmail.trim()}" Firebase Authentication me registered nahi hai. Instant reset ke liye "Emergency PIN" tab use karein.`);
+        } else if (err.code === 'auth/invalid-email') {
+          setForgotError('Invalid email format. Please check and try again.');
+        } else {
+          setForgotError(`Firebase Auth Notice: ${err.message || 'Email delivery could not be verified'}. Aap "Emergency PIN" tab se instant password reset kar sakte hain.`);
+        }
       } finally {
         setForgotSubmitting(false);
       }
@@ -306,9 +312,14 @@ export default function LoginForm({
                         required
                       />
                     </div>
-                    <p className="text-[10px] text-zinc-400 pt-1">
-                      An encrypted Firebase password reset link will be sent to this email.
-                    </p>
+                    <div className="space-y-1 pt-1">
+                      <p className="text-[11px] text-zinc-500 font-medium">
+                        📩 Firebase reset link will be sent from <span className="font-mono text-zinc-700">noreply@hr-jewellery.firebaseapp.com</span>
+                      </p>
+                      <p className="text-[10px] text-amber-700 bg-amber-50 border border-amber-200/70 p-2 rounded-lg leading-relaxed">
+                        ⚠️ <strong>Gmail Note:</strong> Agar inbox me email na mile to Gmail ka <strong>"Spam / Junk"</strong> folder check karein, ya upar <strong>"Emergency PIN"</strong> tab select karke instant password reset karein.
+                      </p>
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-3">
