@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   ShieldCheck, 
   KeyRound, 
@@ -9,7 +9,6 @@ import {
   CheckCircle2, 
   AlertCircle, 
   ShieldAlert, 
-  History, 
   Fingerprint, 
   RefreshCw, 
   Copy, 
@@ -40,11 +39,6 @@ export default function AdminSecurity({
   // Security Metadata State
   const [lastPasswordChange, setLastPasswordChange] = useState(() => {
     return StorageService.get('hrj_admin_last_pass_change', 'Never (Default credential active)');
-  });
-  const [securityLogs, setSecurityLogs] = useState(() => {
-    return StorageService.get('hrj_security_audit_logs', [
-      { id: '1', action: 'Admin logged into Vault Console', time: new Date().toISOString(), status: 'success' }
-    ]);
   });
   const [copiedPin, setCopiedPin] = useState(false);
 
@@ -95,19 +89,6 @@ export default function AdminSecurity({
   };
 
   const strengthInfo = getStrengthLabel();
-
-  // Helper to record security audit logs
-  const logSecurityAction = (actionText, status = 'success') => {
-    const newLog = {
-      id: Date.now().toString(),
-      action: actionText,
-      time: new Date().toISOString(),
-      status
-    };
-    const updated = [newLog, ...securityLogs.slice(0, 9)];
-    setSecurityLogs(updated);
-    StorageService.set('hrj_security_audit_logs', updated);
-  };
 
   // Handle Direct Password Update
   const handlePasswordUpdate = async (e) => {
@@ -179,8 +160,7 @@ export default function AdminSecurity({
         console.warn('Firestore security record sync error:', dbErr);
       }
 
-      // 4. Log audit and show notification
-      logSecurityAction('Vault administrator password changed successfully', 'success');
+      // 4. Show notification
       setPasswordSuccess('Vault password updated successfully! Future logins will require this new password.');
       
       if (typeof setAdminNotification === 'function') {
@@ -197,7 +177,6 @@ export default function AdminSecurity({
     } catch (err) {
       console.error('Password update error:', err);
       setPasswordError(err.message || 'Failed to update password. Please try again.');
-      logSecurityAction('Failed password update attempt', 'error');
     } finally {
       setIsUpdatingPassword(false);
     }
@@ -430,7 +409,7 @@ export default function AdminSecurity({
           </div>
         </div>
 
-        {/* Right Column: Security Profile, Recovery PIN & Audit Logs (5 cols) */}
+        {/* Right Column: Security Profile & Recovery PIN (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
           
           {/* Security Status Card */}
@@ -480,7 +459,7 @@ export default function AdminSecurity({
             </div>
 
             <p className="text-[11px] text-zinc-600 mt-3 leading-relaxed">
-              If you ever forget your password, you can use this secure emergency recovery token to restore administrative access:
+              If you ever need emergency verification, you can use this secure recovery token to restore administrative access:
             </p>
 
             <div className="mt-4 flex items-center justify-between bg-white border border-solid border-amber-300/80 rounded-xl p-3 shadow-2xs">
@@ -504,32 +483,6 @@ export default function AdminSecurity({
                   </>
                 )}
               </button>
-            </div>
-          </div>
-
-          {/* Recent Security Activity Log */}
-          <div className="bg-white border border-solid border-zinc-200 rounded-2xl p-6 shadow-xs">
-            <div className="flex items-center gap-2 pb-3 border-b border-solid border-zinc-100 mb-4">
-              <History className="w-4 h-4 text-zinc-500" />
-              <h3 className="text-sm font-bold text-zinc-800">Security Audit Trail</h3>
-            </div>
-
-            <div className="space-y-2.5">
-              {securityLogs.slice(0, 4).map((log) => (
-                <div key={log.id} className="flex items-start justify-between text-xs p-2.5 rounded-xl bg-zinc-50 border border-zinc-100">
-                  <div className="space-y-0.5">
-                    <span className="font-semibold text-zinc-800 block">{log.action}</span>
-                    <span className="text-[10px] text-zinc-400 font-mono">
-                      {new Date(log.time).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                    log.status === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'
-                  }`}>
-                    {log.status.toUpperCase()}
-                  </span>
-                </div>
-              ))}
             </div>
           </div>
 
