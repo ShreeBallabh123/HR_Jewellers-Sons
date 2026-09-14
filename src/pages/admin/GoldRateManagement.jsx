@@ -6,9 +6,9 @@ import {
   ChevronDown, ChevronUp, Info, Percent, Sparkles
 } from 'lucide-react';
 import { goldRateService } from '../../services/goldRateService';
-import { deriveRates, formatINR, DEFAULT_PURITY_PERCENTAGES } from '../../utils/pricing';
+import { deriveRates, formatINR, DEFAULT_PURITY_PERCENTAGES, calculateSilverRatePerGram } from '../../utils/pricing';
 
-// ─── Purity Rate Card with Embedded Formula ─────────────────────────────────
+// ─── Purity Rate Card ───────────────────────────────────────────────────────
 function RateInputCard({
   id,
   label,
@@ -32,14 +32,22 @@ function RateInputCard({
     orange:   { border: 'border-orange-300 dark:border-orange-700/60', ring: 'focus:border-orange-400 focus:ring-orange-400/20', dot: 'bg-orange-500', text: 'text-orange-600 dark:text-orange-400', bgBadge: 'bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-300 dark:border-orange-700' },
     purple:   { border: 'border-purple-300 dark:border-purple-700/60', ring: 'focus:border-purple-400 focus:ring-purple-400/20', dot: 'bg-purple-500', text: 'text-purple-600 dark:text-purple-400', bgBadge: 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700' },
     blue:     { border: 'border-blue-300 dark:border-blue-700/60', ring: 'focus:border-blue-400 focus:ring-blue-400/20', dot: 'bg-blue-500', text: 'text-blue-600 dark:text-blue-400', bgBadge: 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' },
+    cyan:     { border: 'border-cyan-300 dark:border-cyan-700/60', ring: 'focus:border-cyan-400 focus:ring-cyan-400/20', dot: 'bg-cyan-500', text: 'text-cyan-600 dark:text-cyan-400', bgBadge: 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border-cyan-300 dark:border-cyan-700' },
+    slate:    { border: 'border-slate-300 dark:border-slate-700/60', ring: 'focus:border-slate-400 focus:ring-slate-400/20', dot: 'bg-slate-500', text: 'text-slate-600 dark:text-slate-400', bgBadge: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700' },
   }[accentColor] || {};
+
+  // Fundamental mathematical conversion: kg rates divide by 1000, 10g rates divide by 10, gram rates are 1:1
+  const isKg = String(unit).toLowerCase().includes('kg');
+  const isGram = String(unit).toLowerCase().includes('gram') && !isKg;
+  const divisor = isKg ? 1000 : (isGram ? 1 : 10);
+  const perGramValue = value > 0 ? (Number(value) / divisor) : 0;
 
   return (
     <div className={`bg-white dark:bg-zinc-900/70 border border-solid ${accent.border || 'border-zinc-200 dark:border-zinc-800'} rounded-2xl p-5 space-y-3.5 relative overflow-hidden transition-all shadow-xs ${isMaster ? 'ring-2 ring-amber-400/30 shadow-md' : 'hover:border-zinc-300 dark:hover:border-zinc-700'}`}>
       {/* Accent top stripe */}
       <span className={`absolute top-0 left-0 right-0 h-1 ${accent.dot}`} />
 
-      {/* Header with Title & Formula Formula Badge */}
+      {/* Header with Title */}
       <div className="flex items-start justify-between gap-2">
         <div>
           <div className="flex items-center gap-1.5">
@@ -54,18 +62,6 @@ function RateInputCard({
           </div>
           {sublabel && <p className="text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5 font-medium">{sublabel}</p>}
         </div>
-
-        {/* Formula Badge: e.g. 24K × [83.33%] */}
-        {karat && (
-          <div className="text-right">
-            <div className="inline-flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-lg border border-solid border-zinc-200 dark:border-zinc-700 font-mono text-[9px] font-bold text-zinc-700 dark:text-zinc-300">
-              <span>{isMaster ? 'Base' : '24K ×'}</span>
-              <span className={`font-black ${accent.text}`}>
-                [{percentage ?? (isMaster ? '100%' : '—')}%]
-              </span>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Main Rate Input */}
@@ -91,7 +87,7 @@ function RateInputCard({
       {!isMaster && onPercentageChange && (
         <div className="flex items-center justify-between pt-1 border-t border-solid border-zinc-100 dark:border-zinc-850 text-[10px]">
           <span className="text-zinc-400 dark:text-zinc-500 font-bold flex items-center gap-1">
-            <Percent className="w-3 h-3 text-zinc-400" /> Purity [X %]:
+            <Percent className="w-3 h-3 text-zinc-400" /> Purity Ratio:
           </span>
           <div className="flex items-center gap-1">
             <input
@@ -113,7 +109,7 @@ function RateInputCard({
         <div className="flex items-center justify-between text-[10px] font-bold">
           <span className="text-zinc-400">1 Gram Rate:</span>
           <span className={`${accent.text} font-mono font-extrabold`}>
-            ≈ {formatINR(Math.round(value / 10))} / g
+            ≈ {formatINR(Math.round(perGramValue))} / g
           </span>
         </div>
       )}
@@ -146,6 +142,8 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
     goldRate18k: '',
     goldRate14k: '',
     silverRate: '',
+    silverRate925: '',
+    silverRateNormal: '',
     platinumRate: '',
   });
 
@@ -161,7 +159,7 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
   const [publishing, setPublishing]     = useState(false);
   const [autoDerive, setAutoDerive]     = useState(true);
   const [showConfirm, setShowConfirm]   = useState(false);
-  const [showOptional, setShowOptional] = useState(false);
+  const [showOptional, setShowOptional] = useState(true);
 
   // Load current rates on mount
   useEffect(() => {
@@ -178,15 +176,18 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
 
         const rate24k = data.goldRate24k || '';
         const derived = rate24k ? deriveRates(rate24k, storedPercentages) : {};
+        const baseSilver = data.silverRate || '';
 
         setDraftRates({
-          goldRate24k: rate24k,
-          goldRate22k: data.goldRate22k || derived.goldRate22k || '',
-          goldRate20k: data.goldRate20k || derived.goldRate20k || '',
-          goldRate18k: data.goldRate18k || derived.goldRate18k || '',
-          goldRate14k: data.goldRate14k || derived.goldRate14k || '',
-          silverRate:  data.silverRate  || '',
-          platinumRate: data.platinumRate || '',
+          goldRate24k:      rate24k,
+          goldRate22k:      data.goldRate22k || derived.goldRate22k || '',
+          goldRate20k:      data.goldRate20k || derived.goldRate20k || '',
+          goldRate18k:      data.goldRate18k || derived.goldRate18k || '',
+          goldRate14k:      data.goldRate14k || derived.goldRate14k || '',
+          silverRate:       baseSilver,
+          silverRate925:    data.silverRate925 || (baseSilver ? Math.round(baseSilver * 0.925) : ''),
+          silverRateNormal: data.silverRateNormal || (baseSilver ? Math.round(baseSilver * 0.90) : ''),
+          platinumRate:     data.platinumRate || '',
         });
         setLoading(false);
       },
@@ -230,6 +231,16 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
     setDraftRates(update);
   };
 
+  // Master 999 Silver Change handler: auto-derives 925 and Normal Silver
+  const handle999SilverChange = (val) => {
+    const update = { ...draftRates, silverRate: val };
+    if (autoDerive && val > 0) {
+      update.silverRate925 = Math.round(val * 0.925);
+      update.silverRateNormal = Math.round(val * 0.90);
+    }
+    setDraftRates(update);
+  };
+
   // Percentage change handler for specific karat
   const handlePercentageChange = (karatKey, pctVal) => {
     const updatedPercentages = { ...percentages, [karatKey]: pctVal };
@@ -259,7 +270,7 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
         purityPercentages: percentages,
       };
       await goldRateService.saveRates(payload, adminUser?.email || 'admin');
-      setAdminNotification({ message: 'Gold rates saved as draft.', type: 'success' });
+      setAdminNotification({ message: 'Metal rates saved as draft.', type: 'success' });
     } catch (err) {
       console.error(err);
       setAdminNotification({ message: 'Failed to save rates.', type: 'error' });
@@ -281,7 +292,7 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
         purityPercentages: percentages,
       };
       await goldRateService.publishRates(payload, adminUser?.email || 'admin');
-      setAdminNotification({ message: '✓ Gold rates published live! 24K, 22K, 20K & 18K updated across website.', type: 'success' });
+      setAdminNotification({ message: '✓ Live rates published! Gold, Silver & Platinum updated across website.', type: 'success' });
     } catch (err) {
       console.error(err);
       setAdminNotification({ message: 'Failed to publish rates.', type: 'error' });
@@ -305,7 +316,7 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
       <div className="flex items-center justify-center py-24">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 rounded-full border-2 border-[#C8A646] border-t-transparent animate-spin" />
-          <p className="text-xs text-zinc-400 font-bold uppercase tracking-widest">Loading Gold Rate Formula Engine...</p>
+          <p className="text-xs text-zinc-400 font-bold uppercase tracking-widest">Loading Live Rates Engine...</p>
         </div>
       </div>
     );
@@ -322,11 +333,11 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
               <TrendingUp className="w-4 h-4 text-white" />
             </div>
             <h2 className="text-lg font-black tracking-wide text-zinc-900 dark:text-zinc-100 uppercase">
-              Gold Rate Management
+              Gold &amp; Precious Metal Rates
             </h2>
           </div>
           <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium pl-10">
-            Set today's live 24K bullion rate. 22K, 20K, 18K & 14K auto-calculate with real-time formula [24K × X%].
+            Set today's live 24K bullion gold rate and 999 silver rate. All purities auto-calculate dynamically.
           </p>
         </div>
 
@@ -337,37 +348,6 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
             Live — Rates Published
           </span>
         )}
-      </div>
-
-      {/* ── Formula Overview Banner (Client Specification Direct Display) ── */}
-      <div className="bg-gradient-to-r from-[#FAF6EE] to-[#F5EEDC] dark:from-[#211A10] dark:to-[#17130B] border border-solid border-[#E2D2B0] dark:border-[#524122] rounded-2xl p-5 shadow-xs">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-black text-xs uppercase tracking-wider">
-              <Sparkles className="w-4 h-4 text-amber-600" />
-              Automated Purity Calculation Formula
-            </div>
-            <p className="text-[11px] text-amber-900/80 dark:text-amber-300/80 font-medium">
-              Enter <strong>24K Rate</strong>. The system automatically derives <strong>22K</strong>, <strong>20K</strong>, and <strong>18K</strong> using formula:
-            </p>
-          </div>
-
-          {/* Visual Formula Pills matching handwritten note */}
-          <div className="flex flex-wrap items-center gap-2 text-[10px] font-mono font-black">
-            <span className="px-2.5 py-1 bg-white/80 dark:bg-black/40 border border-amber-300/60 dark:border-amber-700/60 rounded-lg text-amber-900 dark:text-amber-200">
-              24K = 24K × [100%]
-            </span>
-            <span className="px-2.5 py-1 bg-white/80 dark:bg-black/40 border border-yellow-300/60 dark:border-yellow-700/60 rounded-lg text-yellow-900 dark:text-yellow-200">
-              22K = 24K × [{percentages['22k']}%]
-            </span>
-            <span className="px-2.5 py-1 bg-white/80 dark:bg-black/40 border border-emerald-400/60 dark:border-emerald-700/60 rounded-lg text-emerald-900 dark:text-emerald-200 font-extrabold">
-              20K = 24K × [{percentages['20k']}%]
-            </span>
-            <span className="px-2.5 py-1 bg-white/80 dark:bg-black/40 border border-orange-300/60 dark:border-orange-700/60 rounded-lg text-orange-900 dark:text-orange-200">
-              18K = 24K × [{percentages['18k']}%]
-            </span>
-          </div>
-        </div>
       </div>
 
       {/* ── Main Grid ── */}
@@ -391,7 +371,7 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
               {/* Auto-derive toggle */}
               <label className="flex items-center gap-2 cursor-pointer select-none shrink-0">
                 <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">
-                  Auto-Calculate with Formula
+                  Auto-Calculate Derived Rates
                 </span>
                 <div
                   onClick={() => setAutoDerive(!autoDerive)}
@@ -406,7 +386,7 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
             <RateInputCard
               id="rate-24k"
               label="24K Pure Gold (Master Base Rate)"
-              sublabel="Enter bullion market rate — automatically computes 22K, 20K & 18K"
+              sublabel="Bullion 99.9% Pure Gold Rate per 10 grams"
               karat="24K"
               isMaster={true}
               badge="MASTER BASE"
@@ -433,7 +413,7 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
                 baseRate24k={draftRates.goldRate24k}
               />
 
-              {/* 20K Card (Client Specified Highlight) */}
+              {/* 20K Card */}
               <RateInputCard
                 id="rate-20k"
                 label="20K Gold"
@@ -466,7 +446,7 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
               />
             </div>
 
-            {/* 14K Card (Daily wear / Modern lightweight) */}
+            {/* 14K Card */}
             <div className="pt-2">
               <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
                 <RateInputCard
@@ -487,56 +467,72 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
             </div>
           </div>
 
-          {/* Optional Rates (Silver/Platinum) */}
-          <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xs overflow-hidden">
-            <button
-              type="button"
-              onClick={() => setShowOptional(!showOptional)}
-              className="w-full flex items-center justify-between px-6 py-4 text-left cursor-pointer bg-transparent border-none hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors"
-            >
+          {/* ── Other Precious Metals Section (Silver & Platinum) ── */}
+          <div className="bg-white dark:bg-[#15151A] border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+            <div className="flex items-center justify-between border-b border-solid border-zinc-100 dark:border-zinc-850 pb-4">
               <div>
                 <h3 className="text-sm font-black tracking-wider text-zinc-900 dark:text-[#E6C687] uppercase">
                   Other Precious Metals
                 </h3>
                 <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">
-                  Silver & Platinum live rates
+                  Silver &amp; Platinum live rates (1 kg = 1000g conversion)
                 </p>
               </div>
-              {showOptional ? <ChevronUp className="w-4 h-4 text-zinc-400" /> : <ChevronDown className="w-4 h-4 text-zinc-400" />}
-            </button>
+            </div>
 
-            <AnimatePresence>
-              {showOptional && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
-                >
-                  <div className="px-6 pb-6 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-solid border-zinc-100 dark:border-zinc-850 pt-6">
-                    <RateInputCard
-                      id="rate-silver"
-                      label="Fine Silver Rate"
-                      sublabel="999 / 925 Sterling Silver"
-                      value={draftRates.silverRate}
-                      onChange={(v) => setDraftRates({ ...draftRates, silverRate: v })}
-                      unit="₹ / kg"
-                      accentColor="blue"
-                    />
-                    <RateInputCard
-                      id="rate-platinum"
-                      label="Platinum Rate"
-                      sublabel="950 Pure Platinum"
-                      value={draftRates.platinumRate}
-                      onChange={(v) => setDraftRates({ ...draftRates, platinumRate: v })}
-                      unit="₹ / gram"
-                      accentColor="purple"
-                    />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* 999 Fine Silver (Base) */}
+              <RateInputCard
+                id="rate-silver-999"
+                label="999 Fine Silver"
+                sublabel="Pure Silver Bullion Rate"
+                badge="999 PURE"
+                value={draftRates.silverRate}
+                onChange={handle999SilverChange}
+                unit="₹ / kg"
+                accentColor="blue"
+              />
+
+              {/* 925 Sterling Silver */}
+              <RateInputCard
+                id="rate-silver-925"
+                label="925 Sterling Silver"
+                sublabel="Standard 92.5% Sterling Silver"
+                badge="925 STERLING"
+                value={draftRates.silverRate925}
+                onChange={(v) => setDraftRates({ ...draftRates, silverRate925: v })}
+                unit="₹ / kg"
+                accentColor="cyan"
+                disabled={autoDerive}
+              />
+
+              {/* Normal Silver */}
+              <RateInputCard
+                id="rate-silver-normal"
+                label="Normal Silver"
+                sublabel="Traditional / 90% Silver"
+                badge="NORMAL"
+                value={draftRates.silverRateNormal}
+                onChange={(v) => setDraftRates({ ...draftRates, silverRateNormal: v })}
+                unit="₹ / kg"
+                accentColor="slate"
+                disabled={autoDerive}
+              />
+            </div>
+
+            {/* Platinum Rate */}
+            <div className="pt-2">
+              <RateInputCard
+                id="rate-platinum"
+                label="Platinum Rate"
+                sublabel="950 Pure Platinum Jewellery"
+                badge="950 PLATINUM"
+                value={draftRates.platinumRate}
+                onChange={(v) => setDraftRates({ ...draftRates, platinumRate: v })}
+                unit="₹ / gram"
+                accentColor="purple"
+              />
+            </div>
           </div>
 
           {/* Action Buttons */}
@@ -575,39 +571,71 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
                   Live Rates Overview
                 </p>
                 <span className="text-[8px] font-mono px-2 py-0.5 rounded bg-[#C8A646]/20 text-[#E6C687] font-black">
-                  Per 10g & 1g
+                  Active Bullion
                 </span>
               </div>
 
-              {[
-                { label: '24K Pure Gold', formula: '100%', value: draftRates.goldRate24k, unit: '/10g', color: 'text-amber-400' },
-                { label: '22K Standard', formula: `${percentages['22k']}%`, value: draftRates.goldRate22k, unit: '/10g', color: 'text-yellow-400' },
-                { label: '20K Traditional', formula: `${percentages['20k']}%`, value: draftRates.goldRate20k, unit: '/10g', color: 'text-emerald-400' },
-                { label: '18K Ornaments', formula: `${percentages['18k']}%`, value: draftRates.goldRate18k, unit: '/10g', color: 'text-orange-400' },
-                { label: '14K Modern', formula: `${percentages['14k']}%`, value: draftRates.goldRate14k, unit: '/10g', color: 'text-purple-400' },
-              ].map(({ label, formula, value, unit, color }) => (
-                <div key={label} className="flex items-center justify-between border-b border-white/5 pb-2.5 last:border-b-0 last:pb-0">
-                  <div>
-                    <span className="text-[11px] font-bold text-[#C8A646]/90 uppercase tracking-wider block">
-                      {label}
-                    </span>
-                    <span className="text-[9px] font-mono text-zinc-400">
-                      Formula: [{formula}]
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <span className={`text-base font-black ${color}`}>
-                      {value ? `₹${Number(value).toLocaleString('en-IN')}` : '—'}
-                    </span>
-                    <span className="text-[8px] text-[#C8A646]/60 ml-1">{unit}</span>
-                    {value > 0 && (
-                      <span className="block text-[9px] font-mono text-zinc-300">
-                        (₹{Math.round(Number(value) / 10).toLocaleString('en-IN')}/g)
+              {/* Gold Rates Overview */}
+              <div className="space-y-2">
+                <span className="text-[8px] font-bold uppercase tracking-wider text-amber-500/80 block">Gold Bullion (per 10g &amp; 1g)</span>
+                {[
+                  { label: '24K Pure Gold', value: draftRates.goldRate24k, unit: '/10g', color: 'text-amber-400', divisor: 10 },
+                  { label: '22K Standard Gold', value: draftRates.goldRate22k, unit: '/10g', color: 'text-yellow-400', divisor: 10 },
+                  { label: '20K Traditional Gold', value: draftRates.goldRate20k, unit: '/10g', color: 'text-emerald-400', divisor: 10 },
+                  { label: '18K Ornament Gold', value: draftRates.goldRate18k, unit: '/10g', color: 'text-orange-400', divisor: 10 },
+                  { label: '14K Modern Gold', value: draftRates.goldRate14k, unit: '/10g', color: 'text-purple-400', divisor: 10 },
+                ].map(({ label, value, unit, color, divisor }) => (
+                  <div key={label} className="flex items-center justify-between border-b border-white/5 pb-2 last:border-b-0 last:pb-0">
+                    <div>
+                      <span className="text-[11px] font-bold text-[#C8A646]/90 uppercase tracking-wider block">
+                        {label}
                       </span>
-                    )}
+                    </div>
+                    <div className="text-right">
+                      <span className={`text-sm font-black ${color}`}>
+                        {value ? `₹${Number(value).toLocaleString('en-IN')}` : '—'}
+                      </span>
+                      <span className="text-[8px] text-[#C8A646]/60 ml-1">{unit}</span>
+                      {value > 0 && (
+                        <span className="block text-[9px] font-mono text-zinc-300">
+                          (₹{Math.round(Number(value) / divisor).toLocaleString('en-IN')}/g)
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              {/* Silver & Platinum Overview */}
+              <div className="space-y-2 pt-2 border-t border-white/10">
+                <span className="text-[8px] font-bold uppercase tracking-wider text-cyan-400/80 block">Silver &amp; Platinum (per kg &amp; 1g)</span>
+                {[
+                  { label: '999 Fine Silver', value: draftRates.silverRate, unit: '/kg', color: 'text-cyan-400', divisor: 1000 },
+                  { label: '925 Sterling Silver', value: draftRates.silverRate925, unit: '/kg', color: 'text-cyan-300', divisor: 1000 },
+                  { label: 'Normal Silver', value: draftRates.silverRateNormal, unit: '/kg', color: 'text-slate-300', divisor: 1000 },
+                  { label: '950 Platinum', value: draftRates.platinumRate, unit: '/g', color: 'text-purple-400', divisor: 1 },
+                ].map(({ label, value, unit, color, divisor }) => (
+                  <div key={label} className="flex items-center justify-between border-b border-white/5 pb-2 last:border-b-0 last:pb-0">
+                    <div>
+                      <span className="text-[11px] font-bold text-zinc-200 uppercase tracking-wider block">
+                        {label}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className={`text-sm font-black ${color}`}>
+                        {value ? `₹${Number(value).toLocaleString('en-IN')}` : '—'}
+                      </span>
+                      <span className="text-[8px] text-zinc-400 ml-1">{unit}</span>
+                      {value > 0 && divisor > 1 && (
+                        <span className="block text-[9px] font-mono text-zinc-300">
+                          (₹{Math.round(Number(value) / divisor).toLocaleString('en-IN')}/g)
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
             </div>
           </div>
 
@@ -654,7 +682,7 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
                     Publish Rate Changes?
                   </h3>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">
-                    This will push new 24K, 22K, 20K & 18K gold rates live immediately. All dynamic jewellery items will update their calculated prices in real time.
+                    This will push new Gold (24K, 22K, 20K, 18K), Silver (999, 925, Normal) &amp; Platinum rates live immediately. All dynamic jewellery items will recalculate prices in real time.
                   </p>
                 </div>
               </div>
@@ -662,15 +690,15 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
               {/* Rate summary */}
               <div className="bg-zinc-50 dark:bg-zinc-900 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl p-4 space-y-2">
                 {[
-                  { label: '24K (Pure Gold)', value: draftRates.goldRate24k },
-                  { label: `22K [${percentages['22k']}%]`, value: draftRates.goldRate22k },
-                  { label: `20K [${percentages['20k']}%]`, value: draftRates.goldRate20k },
-                  { label: `18K [${percentages['18k']}%]`, value: draftRates.goldRate18k },
-                ].map(({ label, value }) => value ? (
+                  { label: '24K Pure Gold', value: draftRates.goldRate24k, unit: '/10g' },
+                  { label: '22K Gold', value: draftRates.goldRate22k, unit: '/10g' },
+                  { label: '999 Fine Silver', value: draftRates.silverRate, unit: '/kg' },
+                  { label: '925 Sterling Silver', value: draftRates.silverRate925, unit: '/kg' },
+                ].map(({ label, value, unit }) => value ? (
                   <div key={label} className="flex justify-between text-xs">
                     <span className="text-zinc-500 font-medium">{label}</span>
                     <span className="font-black text-zinc-900 dark:text-zinc-100 font-mono">
-                      ₹{Number(value).toLocaleString('en-IN')}<span className="text-[9px] text-zinc-400 font-medium ml-1">/10g</span>
+                      ₹{Number(value).toLocaleString('en-IN')}<span className="text-[9px] text-zinc-400 font-medium ml-1">{unit}</span>
                     </span>
                   </div>
                 ) : null)}
@@ -700,3 +728,4 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
     </div>
   );
 }
+

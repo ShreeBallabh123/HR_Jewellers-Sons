@@ -55,6 +55,7 @@ export const goldRateService = {
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 function getDefaultRates() {
+  const defaultSilver = 92000;
   return {
     goldRate24k:  78500,
     goldRate22k:  71958,
@@ -68,12 +69,14 @@ function getDefaultRates() {
       '18k': 75.00,
       '14k': 58.33,
     },
-    silverRate:   92000,
-    platinumRate: 3500,
-    lastUpdated:  new Date().toISOString(),
-    publishedAt:  null,
-    updatedBy:    'system',
-    isPublished:  false,
+    silverRate:       defaultSilver,
+    silverRate925:    Math.round(defaultSilver * 0.925),
+    silverRateNormal: Math.round(defaultSilver * 0.90),
+    platinumRate:     3500,
+    lastUpdated:      new Date().toISOString(),
+    publishedAt:      null,
+    updatedBy:        'system',
+    isPublished:      false,
   };
 }
 
@@ -84,6 +87,7 @@ function buildRatePayload(ratesData, adminEmail, publish, publishedAt = null) {
   const p20 = Number(ratesData.purityPercentages?.['20k'] ?? ratesData.purityPercentages?.['20K'] ?? 83.33);
   const p18 = Number(ratesData.purityPercentages?.['18k'] ?? ratesData.purityPercentages?.['18K'] ?? 75.00);
   const p14 = Number(ratesData.purityPercentages?.['14k'] ?? ratesData.purityPercentages?.['14K'] ?? 58.33);
+  const baseSilver = Number(ratesData.silverRate) || 92000;
 
   return {
     goldRate24k:  rate24k,
@@ -98,11 +102,14 @@ function buildRatePayload(ratesData, adminEmail, publish, publishedAt = null) {
       '18k': p18,
       '14k': p14,
     },
-    silverRate:   Number(ratesData.silverRate)   || 92000,
-    platinumRate: Number(ratesData.platinumRate) || 3500,
-    lastUpdated:  now,
-    updatedBy:    adminEmail,
-    isPublished:  publish,
-    publishedAt:  publish ? (publishedAt || now) : (ratesData.publishedAt || null),
+    silverRate:       baseSilver,
+    silverRate925:    Number(ratesData.silverRate925)    || Math.round(baseSilver * 0.925),
+    silverRateNormal: Number(ratesData.silverRateNormal) || Math.round(baseSilver * 0.90),
+    platinumRate:     Number(ratesData.platinumRate) || 3500,
+    lastUpdated:      now,
+    updatedBy:        adminEmail,
+    isPublished:      publish,
+    publishedAt:      publish ? (publishedAt || now) : (ratesData.publishedAt || null),
   };
 }
+

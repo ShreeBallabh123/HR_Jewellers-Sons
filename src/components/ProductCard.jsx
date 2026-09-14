@@ -10,9 +10,23 @@ export default function ProductCard({
   onAddToCart,
   onClick
 }) {
-  const { calculatePrice, formatPrice, goldRate22k, lastUpdated, publishedAt } = useRates();
+  const { calculatePrice, formatPrice, goldRate22k, silverRate925PerGram, silverRate1kg, silverRate, lastUpdated, publishedAt } = useRates();
   const prices = calculatePrice(product);
   const displayPrice = prices.total !== undefined ? prices.total : (prices.subtotal || 0);
+
+  const isSilver = (product.metal || product.metalType || '').toLowerCase().includes('silver') ||
+    (product.categoryType || '').toLowerCase().includes('silver') ||
+    (product.category || '').toLowerCase().includes('silver') ||
+    (product.carat || product.silverPurity || product.metalPurity || '').toLowerCase().includes('925') ||
+    (product.carat || product.silverPurity || product.metalPurity || '').toLowerCase().includes('92.5') ||
+    (product.carat || product.silverPurity || product.metalPurity || '').toLowerCase().includes('999');
+
+  const rateLabel = isSilver ? 'Silver Rate (925)' : 'Gold Rate (22K)';
+  const rateValue = isSilver 
+    ? Math.round(silverRate925PerGram || ((silverRate1kg || silverRate || 92000) * 0.925 / 1000))
+    : Math.round(goldRate22k / 10);
+
+  const displayWeight = product.silverWeight ? `${product.silverWeight}g` : (product.goldWeight ? `${product.goldWeight}g` : product.weight);
 
   return (
     <div
@@ -66,7 +80,7 @@ export default function ProductCard({
       <div className="mt-4 flex-grow flex flex-col justify-between text-left">
         <div>
           <span className="text-[8px] font-sans font-bold uppercase tracking-widest text-zinc-400">
-            {product.metal?.toUpperCase() || 'GOLD'} • {product.carat || '22K'}
+            {product.metal?.toUpperCase() || (isSilver ? 'SILVER' : 'GOLD')} • {product.silverPurity || product.goldPurity || product.carat || (isSilver ? '925' : '22K')}
           </span>
           <h4 className="serif-luxury text-sm font-bold tracking-wide mt-1 line-clamp-1">
             {product.name}
@@ -85,18 +99,18 @@ export default function ProductCard({
                 {formatPrice(displayPrice)}
               </span>
             </div>
-            {product.weight && (
+            {displayWeight && (
               <span className="text-[9px] font-sans font-bold text-gold border border-solid border-gold/25 px-2 py-0.5 rounded-full bg-gold/5 shrink-0">
-                {product.weight}
+                {displayWeight}
               </span>
             )}
           </div>
 
-          {/* Today's Gold Rate & Last Updated */}
+          {/* Today's Metal Rate & Last Updated */}
           <div className="mt-2.5 bg-[#FAF8F6] border border-solid border-[#E7DED2]/40 rounded-xl p-2.5 space-y-1 text-[8.5px] text-zinc-500 font-medium select-none text-left">
             <div className="flex justify-between items-center font-bold text-[#8A6623]">
-              <span>Gold Rate (22K)</span>
-              <span>₹{Math.round(goldRate22k / 10).toLocaleString('en-IN')}/g</span>
+              <span>{rateLabel}</span>
+              <span>₹{rateValue.toLocaleString('en-IN')}/g</span>
             </div>
             <div className="flex justify-between items-center text-[7.5px] text-zinc-400 font-bold uppercase tracking-wider">
               <span>Updated</span>

@@ -77,7 +77,12 @@ export default function ProductDetail({
   const {
     goldRate24k = 78500,
     goldRate22k = 71958,
-    silverRate1kg: silverRate = 92000,
+    goldRate20k = 65417,
+    goldRate18k = 58875,
+    goldRate14k = 45788,
+    silverRate = 92000,
+    silverRate1kg = 92000,
+    platinumRate = 3500,
     lastUpdated,
     publishedAt,
     calculatePrice
@@ -123,20 +128,96 @@ export default function ProductDetail({
   const isSilver = !!detailProduct && (
     (detailProduct.categoryType || '').toLowerCase().includes('silver') ||
     (detailProduct.category || '').toLowerCase().includes('silver') ||
-    (detailProduct.metalPurity || detailProduct.carat || '').toLowerCase().includes('92.5') ||
-    (detailProduct.metalPurity || detailProduct.carat || '').toLowerCase().includes('925')
+    (detailProduct.metal || detailProduct.metalType || '').toLowerCase().includes('silver') ||
+    (detailProduct.metalPurity || detailProduct.carat || detailProduct.silverPurity || '').toLowerCase().includes('92.5') ||
+    (detailProduct.metalPurity || detailProduct.carat || detailProduct.silverPurity || '').toLowerCase().includes('925') ||
+    (detailProduct.metalPurity || detailProduct.carat || detailProduct.silverPurity || '').toLowerCase().includes('999')
   );
 
+  const isPlatinum = !isSilver && !!detailProduct && (
+    (detailProduct.categoryType || '').toLowerCase().includes('platinum') ||
+    (detailProduct.category || '').toLowerCase().includes('platinum') ||
+    (detailProduct.metal || detailProduct.metalType || '').toLowerCase().includes('platinum')
+  );
+
+  // Resolve current active purity & rate per gram dynamically
+  let activePurity = '22K';
+  if (isSilver) {
+    const rawSilverPurity = pdpSelectedMetal || detailProduct?.silverPurity || detailProduct?.categoryType || detailProduct?.metalPurity || detailProduct?.carat || '925 Sterling Silver';
+    if (rawSilverPurity.toLowerCase().includes('999')) activePurity = '999 Silver';
+    else if (rawSilverPurity.toLowerCase().includes('normal')) activePurity = 'Normal Silver';
+    else activePurity = '925 Sterling Silver';
+  } else if (isPlatinum) {
+    activePurity = '950 Platinum';
+  } else {
+    const selectedPurityClean = (pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : '').replace(/KT$/i, 'K').toUpperCase();
+    const productPurityClean = (detailProduct?.goldPurity || detailProduct?.carat || detailProduct?.metalPurity || '18K').replace(/KT$/i, 'K').toUpperCase();
+    activePurity = selectedPurityClean || productPurityClean || '18K';
+  }
+
+  let activeRateLabel = `Today's Gold Rate (${activePurity})`;
+  let activeRatePerGram = Math.round(goldRate22k / 10);
+
+  if (isSilver) {
+    if (activePurity.includes('999')) {
+      activeRateLabel = `Today's Silver Rate (999 Fine Silver)`;
+      activeRatePerGram = Math.round(silverRate1g || ((silverRate1kg || silverRate || 92000) / 1000));
+    } else if (activePurity.includes('925') || activePurity.includes('92.5') || activePurity.includes('Sterling')) {
+      activeRateLabel = `Today's Silver Rate (925 Sterling Silver)`;
+      activeRatePerGram = Math.round(silverRate925PerGram || ((silverRate925 || (silverRate1kg || silverRate || 92000) * 0.925) / 1000));
+    } else {
+      activeRateLabel = `Today's Silver Rate (Normal Silver)`;
+      activeRatePerGram = Math.round(silverRateNormalPerGram || ((silverRateNormal || (silverRate1kg || silverRate || 92000) * 0.90) / 1000));
+    }
+  } else if (isPlatinum) {
+    activeRateLabel = "Today's Platinum Rate";
+    activeRatePerGram = Math.round(platinumRate || 3500);
+  } else {
+    if (activePurity.includes('24')) {
+      activeRateLabel = "Today's Gold Rate (24K)";
+      activeRatePerGram = Math.round(goldRate24k / 10);
+    } else if (activePurity.includes('22')) {
+      activeRateLabel = "Today's Gold Rate (22K)";
+      activeRatePerGram = Math.round(goldRate22k / 10);
+    } else if (activePurity.includes('20')) {
+      activeRateLabel = "Today's Gold Rate (20K)";
+      activeRatePerGram = Math.round(goldRate20k / 10);
+    } else if (activePurity.includes('18')) {
+      activeRateLabel = "Today's Gold Rate (18K)";
+      activeRatePerGram = Math.round(goldRate18k / 10);
+    } else if (activePurity.includes('14')) {
+      activeRateLabel = "Today's Gold Rate (14K)";
+      activeRatePerGram = Math.round(goldRate14k / 10);
+    } else if (activePurity.includes('9')) {
+      activeRateLabel = "Today's Gold Rate (9K)";
+      activeRatePerGram = Math.round((goldRate24k / 10) * (9 / 24));
+    }
+  }
+
   // Calculate live dynamic product price, taking into account user's custom metal/karat selection
-  const computedProductPrice = detailProduct && typeof calculatePrice === 'function'
-    ? (() => {
-        const prices = calculatePrice({
-          ...detailProduct,
-          carat: isSilver ? '92.5' : (pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : detailProduct.carat)
-        });
-        return prices.total !== undefined ? prices.total : (prices.subtotal || 0);
-      })()
+  const computedPrices = detailProduct && typeof calculatePrice === 'function'
+    ? calculatePrice({
+        ...detailProduct,
+        metal: isSilver ? 'Silver' : isPlatinum ? 'Platinum' : (detailProduct.metal || 'Gold'),
+        carat: activePurity,
+        goldPurity: !isSilver && !isPlatinum ? activePurity : undefined,
+        silverPurity: isSilver ? activePurity : undefined,
+      })
+    : null;
+
+  const computedProductPrice = computedPrices
+    ? (computedPrices.total !== undefined ? computedPrices.total : (computedPrices.subtotal || 0))
     : (detailProduct ? Math.round(Number(detailProduct.price || 0) * 1.03) : 0);
+
+  const productDiscountPercent = computedPrices?.discountPercent !== undefined && computedPrices?.discountPercent !== null
+    ? computedPrices.discountPercent
+    : (Number(detailProduct?.discountPercent) || 0);
+
+  const hasDiscount = productDiscountPercent > 0;
+
+  const originalProductPrice = computedPrices?.originalTotal && hasDiscount
+    ? computedPrices.originalTotal
+    : (hasDiscount && computedProductPrice ? Math.round(computedProductPrice / (1 - productDiscountPercent / 100)) : computedProductPrice);
 
   // Scroll listener for sticky buy bar
   useEffect(() => {
@@ -145,19 +226,28 @@ export default function ProductDetail({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-
-
-  // Sync image when detailProduct changes
+  // Sync image & default metal selection when detailProduct changes
   useEffect(() => {
     if (detailProduct) {
       setDetailActiveImg(detailProduct.img);
       if (isSilver) {
-        setPdpSelectedMetal('92.5 Sterling Silver');
+        const defaultSilverPurity = detailProduct.silverPurity || detailProduct.metalPurity || detailProduct.carat || detailProduct.categoryType || '925 Sterling Silver';
+        if (defaultSilverPurity.toLowerCase().includes('999')) {
+          setPdpSelectedMetal('999 Silver');
+        } else if (defaultSilverPurity.toLowerCase().includes('normal')) {
+          setPdpSelectedMetal('Normal Silver');
+        } else {
+          setPdpSelectedMetal('925 Sterling Silver');
+        }
+      } else if (isPlatinum) {
+        setPdpSelectedMetal('950 Platinum');
       } else {
-        setPdpSelectedMetal(detailProduct.metalPurity ? `${detailProduct.metalPurity} Yellow Gold` : '18KT Yellow Gold');
+        const rawPurity = (detailProduct.goldPurity || detailProduct.metalPurity || detailProduct.carat || '18K').toUpperCase().replace(/KT$/i, '').replace(/K$/i, '');
+        const color = detailProduct.customMetalColor || detailProduct.metalColor || 'Yellow Gold';
+        setPdpSelectedMetal(`${rawPurity}KT ${color}`);
       }
     }
-  }, [detailProduct, isSilver]);
+  }, [detailProduct?.id, isSilver, isPlatinum]);
 
   // Autoplay process timeline steps
   useEffect(() => {
@@ -477,13 +567,13 @@ export default function ProductDetail({
                   ₹{formatPrice(computedProductPrice)}
                 </span>
                 {/* Original Price & Badge (Only if discount is active) */}
-                {(detailProduct.discountPercent === undefined || detailProduct.discountPercent === null || detailProduct.discountPercent === '' || Number(detailProduct.discountPercent) > 0) && (
+                {hasDiscount && (
                   <>
                     <span className="text-base text-[#888888] line-through font-light">
-                      ₹{formatPrice(Math.round(computedProductPrice / (1 - (Number(detailProduct.discountPercent) || 20) / 100)))}
+                      ₹{formatPrice(originalProductPrice)}
                     </span>
                     <span className="text-[10px] font-semibold text-[#B8893C] tracking-[0.15em] uppercase">
-                      {Number(detailProduct.discountPercent) || 20}% OFF
+                      {productDiscountPercent}% OFF
                     </span>
                   </>
                 )}
@@ -492,11 +582,11 @@ export default function ProductDetail({
               {/* Tax Info */}
               <p className="text-[10px] text-[#888888] tracking-wider font-light uppercase">MRP inclusive of all taxes &amp; delivery insurance</p>
 
-              {/* Today's Gold Rate Notice */}
+              {/* Today's Metal Rate Notice */}
               <div className="bg-[#FAF8F6] border border-solid border-[#E7DED2]/60 rounded-xl p-3.5 space-y-1.5 max-w-sm text-left">
                 <div className="flex justify-between items-center text-[10px] font-extrabold uppercase tracking-wider text-[#8A6623]">
-                  <span>Today's Gold Rate (22K)</span>
-                  <span className="text-[#C8A646]">₹{Math.round(goldRate22k / 10).toLocaleString('en-IN')} / g</span>
+                  <span>{activeRateLabel}</span>
+                  <span className="text-[#C8A646]">₹{activeRatePerGram.toLocaleString('en-IN')} / g</span>
                 </div>
                 {(publishedAt || lastUpdated) && (
                   <div className="flex justify-between items-center text-[8.5px] text-zinc-400 font-bold uppercase tracking-widest">
@@ -548,14 +638,25 @@ export default function ProductDetail({
                     <span className="text-[#888888] font-medium uppercase tracking-[0.15em] text-[9px] block">Select Metal Option:</span>
                     <div className="flex flex-wrap gap-4">
                       {isSilver ? (
-                        <button
-                          className="text-[11px] font-semibold tracking-wider uppercase pb-1 border-b text-[#181818] border-[#181818] bg-transparent pointer-events-none"
-                        >
-                          92.5 Sterling Silver
-                        </button>
+                        ['925 Sterling Silver', 'Normal Silver', '999 Silver'].map(metal => {
+                          const active = activePurity.toLowerCase().includes(metal.toLowerCase().replace(' sterling', '').replace(' silver', '')) ||
+                            (pdpSelectedMetal || '').toLowerCase() === metal.toLowerCase();
+                          return (
+                            <button
+                              key={metal}
+                              onClick={() => {
+                                triggerAudio('click');
+                                setPdpSelectedMetal(metal);
+                              }}
+                              className={`text-[11px] font-semibold tracking-wider uppercase pb-1 transition-all cursor-pointer border-none bg-transparent border-b ${active ? 'text-[#181818] border-[#181818]' : 'text-[#888888] border-transparent hover:text-[#5E5E5E]'}`}
+                            >
+                              {metal}
+                            </button>
+                          );
+                        })
                       ) : (
-                        ['18KT Yellow Gold', '14KT Yellow Gold', '22KT Yellow Gold', '18KT Rose Gold', '18KT White Gold'].map(metal => {
-                          const active = pdpSelectedMetal === metal;
+                        ['18KT Yellow Gold', '14KT Yellow Gold', '22KT Yellow Gold', '24KT Yellow Gold', '18KT Rose Gold', '18KT White Gold'].map(metal => {
+                          const active = (pdpSelectedMetal || '').toUpperCase().replace(/\s+/g, '') === metal.toUpperCase().replace(/\s+/g, '');
                           return (
                             <button
                               key={metal}
@@ -757,15 +858,15 @@ export default function ProductDetail({
                       <div className="space-y-3 text-xs text-gray-600 font-light">
                         <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
                           <span className="text-gray-400">Purity</span>
-                          <span className="font-semibold text-gray-900">{pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : (detailProduct.metalPurity || detailProduct.carat || '22KT')}</span>
+                          <span className="font-semibold text-gray-900">{isSilver ? activePurity : (pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : (detailProduct.metalPurity || detailProduct.carat || '22KT'))}</span>
                         </div>
                         <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
-                          <span className="text-gray-400">Color</span>
-                          <span className="font-semibold text-gray-900">{detailProduct.metalColor || 'Yellow Gold'}</span>
+                          <span className="text-gray-400">Color / Finish</span>
+                          <span className="font-semibold text-gray-900">{detailProduct.customMetalColor || detailProduct.metalColor || (isSilver ? 'Silver' : 'Yellow Gold')}</span>
                         </div>
                         <div className="flex justify-between items-center py-0.5">
-                          <span className="text-gray-400">Net Wt</span>
-                          <span className="font-semibold text-gray-900">{detailProduct.netWeight || detailProduct.weight || 'N/A'}</span>
+                          <span className="text-gray-400">{isSilver ? 'Silver Net Wt' : 'Net Wt'}</span>
+                          <span className="font-semibold text-gray-900">{detailProduct.silverWeight ? `${detailProduct.silverWeight}g` : (detailProduct.goldWeight ? `${detailProduct.goldWeight}g` : (detailProduct.netWeight || detailProduct.weight || 'N/A'))}</span>
                         </div>
                       </div>
                     </div>
@@ -778,7 +879,7 @@ export default function ProductDetail({
                       <div className="space-y-3 text-xs text-gray-600 font-light text-left">
                         <div className="flex justify-between items-center py-0.5">
                           <span className="text-gray-400">Gross Wt</span>
-                          <span className="font-semibold text-gray-900">{detailProduct.grossWeight || detailProduct.netWeight || detailProduct.weight || 'N/A'}</span>
+                          <span className="font-semibold text-gray-900">{detailProduct.grossWeight || (detailProduct.silverWeight ? `${detailProduct.silverWeight}g` : (detailProduct.goldWeight ? `${detailProduct.goldWeight}g` : (detailProduct.netWeight || detailProduct.weight || 'N/A')))}</span>
                         </div>
                       </div>
                     </div>
@@ -870,8 +971,17 @@ export default function ProductDetail({
 
                   <div className="mt-4 pt-4 border-t border-[#E7DED2]/50 flex flex-col gap-4 text-xs text-gray-600 font-light">
                     <div>
-                      <span className="text-gray-400 block mb-0.5">Hallmark Stamp</span>
-                      <span className="font-semibold text-gray-900">{detailProduct.hallmark || 'BIS 916 Government Certified'}</span>
+                      <span className="text-gray-400 block mb-0.5">Certificates &amp; Hallmark</span>
+                      <span className="font-semibold text-gray-900">
+                        {Array.isArray(detailProduct.certificates) && detailProduct.certificates.length > 0
+                          ? detailProduct.certificates.map(c => {
+                              if (c === 'bis_hallmark') return 'BIS Hallmark Certificate';
+                              if (c === 'igi_diamond') return 'IGI Diamond Certificate';
+                              if (c === 'uncertified') return 'Uncertified / Custom';
+                              return c;
+                            }).join(', ')
+                          : (detailProduct.hallmark || 'BIS Hallmark Certificate')}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -896,71 +1006,58 @@ export default function ProductDetail({
 
             {/* Price & Savings Details Section */}
             {(() => {
-              const prices = detailProduct && typeof calculatePrice === 'function'
-                ? calculatePrice({
-                    ...detailProduct,
-                    carat: isSilver ? '92.5' : (pdpSelectedMetal ? pdpSelectedMetal.split(' ')[0] : detailProduct.carat)
-                  })
-                : null;
-              if (!prices) return null;
+              if (!computedPrices || !detailProduct) return null;
 
-              const finalPrice = prices.subtotal;
-              const discountedSubtotal = prices.subtotal;
-              const discountedGst = prices.gst;
+              const finalPrice = computedPrices.subtotal;
+              const discountedGst = computedPrices.gst;
+              const productGstRate = (Number(detailProduct.gstPercent) || Number(detailProduct.gstPercentage) || 3) / 100;
 
-              // Product-level constants from DB
-              const productGstRate = (Number(detailProduct.gstPercent) || 3) / 100;
-              const carat = detailProduct.carat || detailProduct.metalPurity || '22K';
-              const displayCarat = carat;
-              const netWeight = parseFloat(detailProduct.netWeight || detailProduct.weight) || 0;
+              const displayCarat = activePurity;
+              const netWeight = parseFloat(detailProduct.silverWeight || detailProduct.goldWeight || detailProduct.netWeight || detailProduct.weight) || 0;
 
-              // ── Step 2: Calculate metal value at current live rate ─────────
-              let metalRatePerGram = 0;
-              if (isSilver) {
-                metalRatePerGram = Math.round(((silverRate || 92000) / 1000) * 0.925);
-              } else {
-                const rate24kPerGram = (goldRate24k || 78500) / 10;
-                let purityMultiplier = 0.9167;
-                const caratStr = carat.toUpperCase();
-                if (caratStr.includes('24') || caratStr.includes('999')) purityMultiplier = 1.0;
-                else if (caratStr.includes('22')) purityMultiplier = 0.9167;
-                else if (caratStr.includes('20')) purityMultiplier = 0.8333;
-                else if (caratStr.includes('18')) purityMultiplier = 0.75;
-                else if (caratStr.includes('14')) purityMultiplier = 0.5833;
-                else if (caratStr.includes('9')) purityMultiplier = 0.375;
-                metalRatePerGram = Math.round(rate24kPerGram * purityMultiplier);
+              // Metal Rate per gram
+              const metalRatePerGram = activeRatePerGram;
+              const metalValue = netWeight > 0 ? (computedPrices.baseMetalValue || computedPrices.metalValue || Math.round(metalRatePerGram * netWeight)) : 0;
+
+              // Separate Diamond, Polki, Stone, Making
+              const diamondVal = Number(detailProduct.diamondValue) || 0;
+              const polkiVal = Number(detailProduct.polkiValue) || 0;
+              const stoneVal = Number(detailProduct.pearlsValue) || Number(detailProduct.stonePrice) || Number(detailProduct.otherCharges) || 0;
+
+              let makingChargesVal = computedPrices.makingCharges !== undefined && computedPrices.makingCharges > 0 
+                ? computedPrices.makingCharges 
+                : (computedPrices.makingCharge !== undefined ? computedPrices.makingCharge : 0);
+
+              if (!makingChargesVal && (detailProduct.makingChargeValue || detailProduct.makingCharges)) {
+                const rawMaking = Number(detailProduct.makingChargeValue || detailProduct.makingCharges || 0);
+                if (detailProduct.makingChargeType === 'percentage') {
+                  makingChargesVal = Math.round(metalValue * (rawMaking / 100));
+                } else {
+                  makingChargesVal = Math.round(rawMaking);
+                }
               }
-              const metalValue = netWeight > 0 ? Math.round(metalRatePerGram * netWeight) : 0;
 
-              // ── Step 3: Diamond / stone values from DB ────────────────────
-              const hasDiamond = !!(detailProduct.diamondValue || detailProduct.diamondWeight || detailProduct.diamondCarat || detailProduct.polkiValue);
-              const diamondValue = Math.round(
-                (Number(detailProduct.diamondValue) || 0) +
-                (Number(detailProduct.polkiValue) || 0)
-              );
-
-              // ── Step 4: Making charges = remainder after metal + diamond ──
-              const makingCharges = Math.max(0, discountedSubtotal - metalValue - diamondValue);
-
-              // ── Step 5: Savings display ────────────────────────────────────
               const discountOffMaking = Number(detailProduct.discountOffMaking) || 0;
               const discountOffDiamond = Number(detailProduct.discountOffDiamond) || 0;
-              // Reconstruct "original" (without discount) price for savings display
-              const baseMakingCharges = discountOffMaking > 0
-                ? Math.round(makingCharges / (1 - discountOffMaking / 100))
-                : makingCharges;
+              const itemDiscountPct = computedPrices.discountPercent !== undefined ? computedPrices.discountPercent : (Number(detailProduct.discountPercent) || 0);
+              const itemDiscountAmt = computedPrices.discountAmount !== undefined ? computedPrices.discountAmount : (itemDiscountPct > 0 ? Math.round((metalValue + makingChargesVal + diamondVal + polkiVal + stoneVal) * (itemDiscountPct / 100)) : 0);
+
               const baseDiamondValue = discountOffDiamond > 0
-                ? Math.round(diamondValue / (1 - discountOffDiamond / 100))
-                : diamondValue;
-              const originalSubtotal = metalValue + baseMakingCharges + baseDiamondValue;
+                ? Math.round(diamondVal / (1 - discountOffDiamond / 100))
+                : diamondVal;
+              const baseMakingCharges = discountOffMaking > 0
+                ? Math.round(makingChargesVal / (1 - discountOffMaking / 100))
+                : makingChargesVal;
+
+              const totalDisplay = computedPrices.total !== undefined 
+                ? computedPrices.total 
+                : (finalPrice + discountedGst);
+
+              const originalSubtotal = metalValue + baseMakingCharges + baseDiamondValue + polkiVal + stoneVal;
               const originalGst = Math.round(originalSubtotal * productGstRate);
-              const originalTotal = originalSubtotal + originalGst;
-              const saveAmount = Math.max(0, originalTotal - (finalPrice + discountedGst));
-
-              // Diamond comparison value (mined vs lab-grown)
-              const minedDiamondPrice = diamondValue > 0 ? Math.round(diamondValue * 3.5627) : 0;
-              const diamondSaving = Math.max(0, minedDiamondPrice - diamondValue);
-
+              const originalTotal = computedPrices.originalTotal || (originalSubtotal + originalGst);
+              const saveAmount = Math.max(0, originalTotal - totalDisplay);
+              const taxableAmountDisplay = computedPrices.taxableAmount !== undefined ? computedPrices.taxableAmount : Math.max(0, originalSubtotal - itemDiscountAmt);
 
               return (
                 <div className="pt-6 space-y-4 select-none text-left">
@@ -974,7 +1071,7 @@ export default function ProductDetail({
                       {netWeight > 0 && (
                         <div className="flex justify-between items-center py-1">
                           <span>
-                            {displayCarat} {isSilver ? 'Silver' : 'Gold'}{netWeight > 0 ? ` (${netWeight}g @ ₹${metalRatePerGram.toLocaleString('en-IN')}/g)` : ''}
+                            {displayCarat} {isSilver ? 'Silver' : isPlatinum ? 'Platinum' : 'Gold'}{netWeight > 0 ? ` (${netWeight}g @ ₹${metalRatePerGram.toLocaleString('en-IN')}/g)` : ''}
                           </span>
                           <span className="font-semibold font-mono text-gray-900">
                             ₹{metalValue.toLocaleString('en-IN')}
@@ -983,11 +1080,11 @@ export default function ProductDetail({
                       )}
 
                       {/* Diamond Row */}
-                      {hasDiamond && diamondValue > 0 && (
+                      {diamondVal > 0 && (
                         <div className="flex justify-between items-center py-1">
                           <div className="flex items-center gap-2">
                             <span>
-                              Diamond ({detailProduct.diamondQuantity || '1 pcs'}{detailProduct.diamondCarat || detailProduct.diamondWeight ? `, ${detailProduct.diamondCarat || detailProduct.diamondWeight}ct` : ''})
+                              Diamond ({detailProduct.diamondQuantity ? `${detailProduct.diamondQuantity} pcs` : '1 pcs'}{detailProduct.diamondCarat || detailProduct.diamondWeight ? `, ${detailProduct.diamondCarat || detailProduct.diamondWeight}ct` : ''})
                             </span>
                             {discountOffDiamond > 0 && (
                               <span className="bg-[#E8F5E9] text-[#006361] text-[9px] font-bold px-1.5 py-0.5 rounded font-sans">
@@ -1002,14 +1099,40 @@ export default function ProductDetail({
                               </span>
                             )}
                             <span className="font-semibold text-gray-900">
-                              ₹{diamondValue.toLocaleString('en-IN')}
+                              ₹{diamondVal.toLocaleString('en-IN')}
                             </span>
                           </div>
                         </div>
                       )}
 
+                      {/* Polki Row */}
+                      {polkiVal > 0 && (
+                        <div className="flex justify-between items-center py-1">
+                          <div className="flex items-center gap-2">
+                            <span>
+                              Polki {detailProduct.polki ? `(${detailProduct.polki}${String(detailProduct.polki).toLowerCase().includes('ct') || String(detailProduct.polki).toLowerCase().includes('g') ? '' : 'ct'})` : ''}
+                            </span>
+                          </div>
+                          <div className="font-mono font-semibold text-gray-900">
+                            ₹{polkiVal.toLocaleString('en-IN')}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Gemstones / Pearls / Other Stones Row */}
+                      {stoneVal > 0 && (
+                        <div className="flex justify-between items-center py-1">
+                          <span>
+                            Gemstones / Pearls {detailProduct.gemstoneCarat || detailProduct.stoneCarat ? `(${detailProduct.gemstoneCarat || detailProduct.stoneCarat}ct)` : ''}
+                          </span>
+                          <span className="font-mono font-semibold text-gray-900">
+                            ₹{stoneVal.toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                      )}
+
                       {/* Making Charges Row */}
-                      {makingCharges > 0 && (
+                      {makingChargesVal > 0 && (
                         <div className="flex justify-between items-center py-1">
                           <div className="flex items-center gap-2">
                             <span>Making Charges</span>
@@ -1026,11 +1149,34 @@ export default function ProductDetail({
                               </span>
                             )}
                             <span className="font-semibold text-gray-900">
-                              ₹{makingCharges.toLocaleString('en-IN')}
+                              ₹{makingChargesVal.toLocaleString('en-IN')}
                             </span>
                           </div>
                         </div>
                       )}
+
+                      {/* Item Discount Row */}
+                      {itemDiscountAmt > 0 && (
+                        <div className="flex justify-between items-center py-1 text-[#006361]">
+                          <span className="flex items-center gap-1.5">
+                            <span>Discount</span>
+                            <span className="bg-[#E8F5E9] text-[#006361] text-[9px] font-bold px-1.5 py-0.5 rounded font-sans">
+                              {itemDiscountPct}% OFF
+                            </span>
+                          </span>
+                          <span className="font-semibold font-mono text-[#006361]">
+                            -₹{itemDiscountAmt.toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Taxable Amount Row */}
+                      <div className="flex justify-between items-center py-1 text-gray-500">
+                        <span>Taxable Amount</span>
+                        <span className="font-semibold font-mono text-gray-700">
+                          ₹{taxableAmountDisplay.toLocaleString('en-IN')}
+                        </span>
+                      </div>
 
                       {/* GST Row */}
                       <div className="flex justify-between items-center py-1">
@@ -1044,9 +1190,9 @@ export default function ProductDetail({
 
                       {/* Total Row */}
                       <div className="flex justify-between items-center text-sm font-bold text-gray-900">
-                        <span>Total</span>
+                        <span>Final Price (incl. GST)</span>
                         <span className="font-mono text-base font-bold">
-                          ₹{(finalPrice + discountedGst).toLocaleString('en-IN')}
+                          ₹{totalDisplay.toLocaleString('en-IN')}
                         </span>
                       </div>
 
@@ -1573,10 +1719,10 @@ export default function ProductDetail({
                 <h4 className="font-sans text-xs font-semibold text-[#181818] tracking-tight">{detailProduct.name}</h4>
                 <div className="flex items-center gap-2.5 mt-0.5 font-sans">
                   <span className="text-[#181818] font-bold text-sm">₹{formatPrice(computedProductPrice)}</span>
-                  {(detailProduct.discountPercent === undefined || detailProduct.discountPercent === null || detailProduct.discountPercent === '' || Number(detailProduct.discountPercent) > 0) && (
+                  {hasDiscount && (
                     <>
-                      <span className="text-xs text-[#888888] line-through font-light">₹{formatPrice(Math.round(computedProductPrice / (1 - (Number(detailProduct.discountPercent) || 20) / 100)))}</span>
-                      <span className="text-[10px] text-[#B8893C] font-semibold">{Number(detailProduct.discountPercent) || 20}% OFF</span>
+                      <span className="text-xs text-[#888888] line-through font-light">₹{formatPrice(originalProductPrice)}</span>
+                      <span className="text-[10px] text-[#B8893C] font-semibold">{productDiscountPercent}% OFF</span>
                     </>
                   )}
                 </div>

@@ -1,8 +1,8 @@
 /**
  * pricing.js — Core Jewellery Price Calculation Engine
  * Pure functions only — no React, no Firestore.
- * Supports: Gold (24K/22K/18K/14K), Silver, Platinum
- * Future-ready: Diamond, Regional, Multi-branch
+ * Supports: Gold (24K/22K/20K/18K/14K/9K), Silver (925 Sterling Silver/Normal Silver/999 Silver), Platinum
+ * Single Source of Truth for all jewellery price computations.
  */
 
 // ─── Purity multipliers relative to 24K ────────────────────────────────────
@@ -23,16 +23,54 @@ export const DEFAULT_PURITY_PERCENTAGES = {
   '14K': 58.33,
 };
 
+// ─── Silver Purity Multipliers relative to 999 Fine Silver ──────────────────
+export const SILVER_PURITY_MULTIPLIERS = {
+  '999 Silver': 1.0,
+  '999 Fine Silver': 1.0,
+  '999': 1.0,
+  '925 Sterling Silver': 0.925,
+  '925 Silver': 0.925,
+  '92.5': 0.925,
+  '925': 0.925,
+  'Normal Silver': 0.90,
+  'Normal': 0.90,
+};
+
 /**
  * Parse floats safely by stripping any currency symbols, commas, or spaces.
  */
 export function safeParseFloat(val) {
   if (val === undefined || val === null || val === '') return 0;
-  if (typeof val === 'number') return val;
+  if (typeof val === 'number') return isNaN(val) ? 0 : val;
   const cleaned = String(val).replace(/[^\d.-]/g, '');
   const parsed = parseFloat(cleaned);
   return isNaN(parsed) ? 0 : parsed;
 }
+
+/**
+ * Centralized silver rate per gram converter.
+ * 1 kg = 1000 grams.
+ * e.g. ₹236,000 / kg → ₹236 / g
+ *
+ * @param {number|string} ratePerKg - Silver rate in ₹ / kg
+ * @param {string} purity - '999 Silver' | '925 Sterling Silver' | 'Normal Silver' | etc.
+ * @returns {number} Silver rate per gram
+ */
+export function calculateSilverRatePerGram(ratePerKg, purity = '999') {
+  const baseKg = safeParseFloat(ratePerKg) || 92000;
+  const base1g = baseKg / 1000; // Fundamental rule: ratePerKg / 1000 = ratePerGram
+
+  const p = String(purity || '').toLowerCase().trim();
+  if (p.includes('925') || p.includes('92.5') || p.includes('sterling')) {
+    return base1g * 0.925;
+  }
+  if (p.includes('normal')) {
+    return base1g * 0.90;
+  }
+  return base1g;
+}
+
+export const getSilverRatePerGram = calculateSilverRatePerGram;
 
 /**
  * Get the per-gram rate for a given gold purity.
@@ -52,15 +90,17 @@ export function getGoldRatePerGram(purity, rate24k) {
  *
  * @param {Object} product — Product document from Firestore
  * @param {Object} rates   — Live rates object from RatesContext / Firestore
- *   rates.goldRate24k  {number}  — ₹ per 10g (24K)
- *   rates.goldRate22k  {number}  — ₹ per 10g (22K) [optional, derived if absent]
- *   rates.goldRate20k  {number}  — ₹ per 10g (20K) [optional, derived if absent]
- *   rates.goldRate18k  {number}  — ₹ per 10g (18K) [optional, derived if absent]
- *   rates.goldRate14k  {number}  — ₹ per 10g (14K) [optional, derived if absent]
- *   rates.silverRate   {number}  — ₹ per kg
- *   rates.platinumRate {number}  — ₹ per gram
+ *   rates.goldRate24k    {number}  — ₹ per 10g (24K)
+ *   rates.goldRate22k    {number}  — ₹ per 10g (22K) [optional, derived if absent]
+ *   rates.goldRate20k    {number}  — ₹ per 10g (20K) [optional, derived if absent]
+ *   rates.goldRate18k    {number}  — ₹ per 10g (18K) [optional, derived if absent]
+ *   rates.goldRate14k    {number}  — ₹ per 10g (14K) [optional, derived if absent]
+ *   rates.silverRate     {number}  — ₹ per kg (999 Fine Silver)
+ *   rates.silverRate925  {number}  — ₹ per kg (925 Sterling Silver) [optional]
+ *   rates.silverRateNormal {number}— ₹ per kg (Normal Silver) [optional]
+ *   rates.platinumRate   {number}  — ₹ per gram
  *
- * @returns {{ goldValue, makingCharge, stonePrice, otherCharges, subtotal, gst, total, metalType, isLive }}
+ * @returns {Object} Complete pricing breakdown
  */
 export function calculateDynamicPrice(product, rates = {}) {
   if (!product) {
@@ -68,38 +108,63 @@ export function calculateDynamicPrice(product, rates = {}) {
   }
 
   // ── 1. Determine calculation mode ────────────────────────────────────────
-  const mode = product.priceCalculationMode || 'manual';
+  const mode = product.priceCalculationMode || 
+    (product.silverWeight || product.goldWeight || product.netWeight || (!product.price && product.weight) ? 'dynamic' : (product.price ? 'manual' : 'dynamic'));
 
-  if (mode !== 'dynamic') {
-    // Legacy / manual mode: use stored price
+  if (mode !== 'dynamic' && product.price) {
+    // Legacy / manual mode with fixed stored price: use stored price with discount & GST handling
     return calculateManualBreakdown(product);
   }
 
-  // ── 2. Read product pricing inputs ───────────────────────────────────────
-  const purity           = product.goldPurity || product.carat || '22K';
-  const weight           = safeParseFloat(product.goldWeight || product.netWeight || product.weight || 0);
-  const makingType       = product.makingChargeType || 'percentage';   // 'fixed' | 'percentage'
-  const makingValue      = safeParseFloat(product.makingChargeValue || product.makingCharges || 0);
-  const stonePriceVal    = safeParseFloat(product.stonePrice || product.diamondValue || 0);
-  const otherChargesVal  = safeParseFloat(product.otherCharges || 0);
-  const gstPct           = safeParseFloat(product.gstPercentage || product.gstPercent || 3);
-
-  // ── 3. Detect metal type ──────────────────────────────────────────────────
+  // ── 2. Detect metal type ──────────────────────────────────────────────────
   const metalType = detectMetalType(product);
 
-  // ── 4. Calculate base metal value ────────────────────────────────────────
-  let goldValue = 0;
+  // ── 3. Read product pricing inputs ───────────────────────────────────────
+  let purity = '22K';
+  let weight = 0;
 
   if (metalType === 'silver') {
-    const silverRate1g = (rates.silverRate || rates.silverRate1kg || 92000) / 1000;
-    goldValue = silverRate1g * weight;
+    purity = product.silverPurity || product.metalPurity || product.carat || product.categoryType || '925 Sterling Silver';
+    weight = safeParseFloat(product.silverWeight || product.netWeight || product.goldWeight || product.weight || 0);
   } else if (metalType === 'platinum') {
-    const ptRate = rates.platinumRate || 3500;
-    goldValue = ptRate * weight;
+    purity = product.platinumPurity || product.metalPurity || product.carat || '950 Platinum';
+    weight = safeParseFloat(product.platinumWeight || product.netWeight || product.goldWeight || product.weight || 0);
+  } else {
+    // Gold
+    purity = product.goldPurity || product.carat || product.metalPurity || '22K';
+    weight = safeParseFloat(product.goldWeight || product.netWeight || product.weight || 0);
+  }
+
+  const makingType       = product.makingChargeType || 'percentage';   // 'fixed' | 'percentage'
+  const makingValue      = safeParseFloat(product.makingChargeValue || product.makingCharges || 0);
+  const diamondVal       = safeParseFloat(product.diamondValue || 0);
+  const polkiVal         = safeParseFloat(product.polkiValue || 0);
+  const otherVal         = safeParseFloat(product.pearlsValue || product.stonePrice || 0);
+  const stonePriceVal    = diamondVal + polkiVal + otherVal;
+  const otherChargesVal  = safeParseFloat(product.otherCharges || 0);
+  const gstPct           = safeParseFloat(product.gstPercentage || product.gstPercent || 3);
+  const discountPercent  = safeParseFloat(product.discountPercent ?? product.discountOffItem ?? 0);
+
+  // ── 4. Calculate base metal value ────────────────────────────────────────
+  let metalValue = 0;
+  let ratePerGram = 0;
+
+  if (metalType === 'silver') {
+    const pLower = String(purity).toLowerCase();
+    if (rates.silverRate925 && (pLower.includes('925') || pLower.includes('92.5'))) {
+      ratePerGram = safeParseFloat(rates.silverRate925) / 1000;
+    } else if (rates.silverRateNormal && pLower.includes('normal')) {
+      ratePerGram = safeParseFloat(rates.silverRateNormal) / 1000;
+    } else {
+      ratePerGram = calculateSilverRatePerGram(rates.silverRate || rates.silverRate1kg || 92000, purity);
+    }
+    metalValue = ratePerGram * weight;
+  } else if (metalType === 'platinum') {
+    ratePerGram = safeParseFloat(rates.platinumRate || 3500);
+    metalValue = ratePerGram * weight;
   } else {
     // Gold — resolve per-gram rate for the purity
     const normalized = (purity || '').toUpperCase().replace(/T$/, '').trim();
-    let ratePerGram;
     if ((normalized === '24K' || normalized === '24') && rates.goldRate24k) {
       ratePerGram = rates.goldRate24k / 10;
     } else if ((normalized === '22K' || normalized === '22') && rates.goldRate22k) {
@@ -114,7 +179,7 @@ export function calculateDynamicPrice(product, rates = {}) {
       // derive from 24K
       ratePerGram = getGoldRatePerGram(purity, rates.goldRate24k || 78500);
     }
-    goldValue = ratePerGram * weight;
+    metalValue = ratePerGram * weight;
   }
 
   // ── 5. Making charges ────────────────────────────────────────────────────
@@ -122,25 +187,42 @@ export function calculateDynamicPrice(product, rates = {}) {
   if (makingType === 'fixed') {
     makingCharge = makingValue;
   } else {
-    // percentage of gold value
-    makingCharge = goldValue * (makingValue / 100);
+    // percentage of metal value
+    makingCharge = metalValue * (makingValue / 100);
   }
 
-  // ── 6. Subtotal & GST ────────────────────────────────────────────────────
-  const subtotal = goldValue + makingCharge + stonePriceVal + otherChargesVal;
-  const gst      = subtotal * (gstPct / 100);
-  const total    = subtotal + gst;
+  // ── 6. Subtotal, Discount, Taxable Amount & GST ──────────────────────────
+  const subtotal = metalValue + makingCharge + stonePriceVal + otherChargesVal;
+  
+  // Apply discount if configured
+  const discountAmount = discountPercent > 0 ? subtotal * (discountPercent / 100) : 0;
+  const taxableAmount  = Math.max(0, subtotal - discountAmount);
+  
+  const gst   = taxableAmount * (gstPct / 100);
+  const total = taxableAmount + gst;
+
+  // Undiscounted total (for display of crossed-out original MRP)
+  const originalGst   = subtotal * (gstPct / 100);
+  const originalTotal = subtotal + originalGst;
 
   return {
-    goldValue:    Math.round(goldValue),
-    makingCharge: Math.round(makingCharge),
-    stonePrice:   Math.round(stonePriceVal),
-    otherCharges: Math.round(otherChargesVal),
-    subtotal:     Math.round(subtotal),
-    gst:          Math.round(gst),
-    total:        Math.round(total),
+    goldValue:       Math.round(metalValue), // Backward-compatible alias
+    metalValue:      Math.round(metalValue),
+    ratePerGram:     Math.round(ratePerGram * 100) / 100,
+    makingCharge:    Math.round(makingCharge),
+    diamondValue:    Math.round(diamondVal),
+    polkiValue:      Math.round(polkiVal),
+    stonePrice:      Math.round(otherVal),
+    otherCharges:    Math.round(otherChargesVal),
+    subtotal:        Math.round(subtotal),
+    discountPercent,
+    discountAmount:  Math.round(discountAmount),
+    taxableAmount:   Math.round(taxableAmount),
+    gst:             Math.round(gst),
+    total:           Math.round(total),
+    originalTotal:   Math.round(originalTotal),
     metalType,
-    isLive:       true,
+    isLive:          true,
     purity,
     weight,
     makingType,
@@ -150,50 +232,78 @@ export function calculateDynamicPrice(product, rates = {}) {
 
 /**
  * Backward-compatible manual/legacy breakdown.
- * Reverse-engineers GST from stored price.
+ * Evaluates stored price and optional discount.
  */
 export function calculateManualBreakdown(product) {
-  const dbPrice = safeParseFloat(product.price);
-  if (!dbPrice) return emptyBreakdown();
+  const rawPrice = safeParseFloat(product.price);
+  if (!rawPrice) return emptyBreakdown();
 
-  const gstPct  = safeParseFloat(product.gstPercent || product.gstPercentage || 3);
-  const gstRate = gstPct / 100;
-  const gst     = Math.round(dbPrice * gstRate);
-  const subtotal= dbPrice;
+  const discountPercent = safeParseFloat(product.discountPercent ?? product.discountOffItem ?? 0);
+  const gstPct          = safeParseFloat(product.gstPercent || product.gstPercentage || 3);
+  const gstRate         = gstPct / 100;
+
+  const diamondVal      = safeParseFloat(product.diamondValue || 0);
+  const polkiVal        = safeParseFloat(product.polkiValue || 0);
+  const otherVal        = safeParseFloat(product.pearlsValue || product.stonePrice || 0);
+  const makingChargeVal = safeParseFloat(product.makingChargeValue || product.makingCharges || 0);
+  const otherChargesVal = safeParseFloat(product.otherCharges || 0);
+
+  const subtotal        = rawPrice;
+  const discountAmount  = discountPercent > 0 ? subtotal * (discountPercent / 100) : 0;
+  const taxableAmount   = Math.max(0, subtotal - discountAmount);
+  const gst             = Math.round(taxableAmount * gstRate);
+  const total           = Math.round(taxableAmount + gst);
+
+  const originalGst     = Math.round(subtotal * gstRate);
+  const originalTotal   = Math.round(subtotal + originalGst);
+
+  const goldVal = Math.max(0, subtotal - diamondVal - polkiVal - otherVal - makingChargeVal - otherChargesVal);
 
   return {
-    goldValue:    subtotal,
-    makingCharge: 0,
-    stonePrice:   0,
-    otherCharges: 0,
-    subtotal,
+    goldValue:       Math.round(goldVal),
+    metalValue:      Math.round(goldVal),
+    ratePerGram:     0,
+    makingCharge:    Math.round(makingChargeVal),
+    diamondValue:    Math.round(diamondVal),
+    polkiValue:      Math.round(polkiVal),
+    stonePrice:      Math.round(otherVal),
+    otherCharges:    Math.round(otherChargesVal),
+    subtotal:        Math.round(subtotal),
+    discountPercent,
+    discountAmount:  Math.round(discountAmount),
+    taxableAmount:   Math.round(taxableAmount),
     gst,
-    total: dbPrice + gst,
-    metalType: detectMetalType(product),
-    isLive: false,
-    purity: product.carat || product.goldPurity || '22K',
-    weight: safeParseFloat(product.netWeight || product.weight || 0),
-    makingType: 'fixed',
+    total,
+    originalTotal,
+    metalType:       detectMetalType(product),
+    isLive:          false,
+    purity:          product.carat || product.goldPurity || product.silverPurity || '22K',
+    weight:          safeParseFloat(product.silverWeight || product.netWeight || product.weight || 0),
+    makingType:      product.makingChargeType || 'fixed',
     gstPct,
   };
 }
 
 /** Detects metal type from product fields */
 export function detectMetalType(product) {
+  if (!product) return 'gold';
   const metal   = (product.metal || product.metalType || '').toLowerCase();
-  const purity  = (product.metalPurity || product.carat || product.goldPurity || '').toLowerCase();
+  const purity  = (product.metalPurity || product.carat || product.goldPurity || product.silverPurity || '').toLowerCase();
   const name    = (product.name || '').toLowerCase();
   const cat     = (product.category || '').toLowerCase();
   const catType = (product.categoryType || '').toLowerCase();
 
-  if (metal === 'silver' || purity.includes('92.5') || purity.includes('925') ||
-      name.includes('silver') || cat.includes('silver') || catType.includes('silver')) {
+  if (
+    metal === 'silver' || metal.includes('silver') ||
+    purity.includes('92.5') || purity.includes('925') || purity.includes('999') || purity.includes('silver') ||
+    name.includes('silver') || cat.includes('silver') || catType.includes('silver')
+  ) {
     return 'silver';
   }
-  if (metal === 'platinum' || name.includes('platinum') || cat.includes('platinum')) {
+  if (metal === 'platinum' || name.includes('platinum') || cat.includes('platinum') || catType.includes('platinum')) {
     return 'platinum';
   }
-  if (metal === 'diamond' || name.includes('diamond') || cat.includes('diamond')) {
+  if (metal === 'diamond' || name.includes('diamond') || cat.includes('diamond') || catType.includes('diamond')) {
     return 'diamond';
   }
   return 'gold';
@@ -202,8 +312,9 @@ export function detectMetalType(product) {
 /** Returns zero-value breakdown */
 function emptyBreakdown() {
   return {
-    goldValue: 0, makingCharge: 0, stonePrice: 0,
-    otherCharges: 0, subtotal: 0, gst: 0, total: 0,
+    goldValue: 0, metalValue: 0, ratePerGram: 0, makingCharge: 0, stonePrice: 0,
+    diamondValue: 0, polkiValue: 0, otherCharges: 0, subtotal: 0, discountPercent: 0,
+    discountAmount: 0, taxableAmount: 0, gst: 0, total: 0, originalTotal: 0,
     metalType: 'gold', isLive: false, purity: '22K', weight: 0,
     makingType: 'percentage', gstPct: 3,
   };
@@ -223,12 +334,6 @@ export function formatINR(amount) {
 
 /**
  * Derive 22K, 20K, 18K and 14K rates from 24K base rate.
- * Formula:
- * 24K = 24K × 100%
- * 22K = 24K × [X%] (default 91.67%)
- * 20K = 24K × [X%] (default 83.33%)
- * 18K = 24K × [X%] (default 75.00%)
- * 14K = 24K × [X%] (default 58.33%)
  */
 export function deriveRates(goldRate24k, customPercentages = {}) {
   const base24k = safeParseFloat(goldRate24k);
@@ -252,3 +357,4 @@ export function deriveRates(goldRate24k, customPercentages = {}) {
     }
   };
 }
+

@@ -77,6 +77,30 @@ export default function Collections({
   // Safe audio helper
   const triggerAudio = (type) => { try { triggerAudioProp?.(type); } catch { /* noop */ } };
 
+  const metalTypeOptions = [
+    { id: 'gold', label: 'GOLD', icon: '🥇', bg: 'linear-gradient(135deg, #FFF8E7, #FFF0B3)', border: '#C8960C', text: '#A07820' },
+    { id: '925 silver', label: '925 SILVER', icon: '🥈', bg: 'linear-gradient(135deg, #F0F4F8, #D9E2EC)', border: '#627D98', text: '#334E68' },
+    { id: 'normal silver', label: 'NORMAL SILVER', icon: '🪙', bg: 'linear-gradient(135deg, #F7FAFC, #E2E8F0)', border: '#718096', text: '#4A5568' },
+    { id: '999 silver', label: '999 SILVER', icon: '🌟', bg: 'linear-gradient(135deg, #F0FFF4, #C6F6D5)', border: '#38A169', text: '#22543D' },
+    { id: 'silver', label: 'ALL SILVER', icon: '🥈', bg: 'linear-gradient(135deg, #F8FAFC, #E2E8F0)', border: '#94A3B8', text: '#475569' },
+    { id: 'rose gold', label: 'ROSE GOLD', icon: '🌸', bg: 'linear-gradient(135deg, #FFF5F5, #FED7D7)', border: '#E53E3E', text: '#9B2C2C' },
+    { id: 'white gold', label: 'WHITE GOLD', icon: '⚪', bg: 'linear-gradient(135deg, #F7FAFC, #EDF2F7)', border: '#A0AEC0', text: '#4A5568' },
+    { id: 'platinum', label: 'PLATINUM', icon: '💎', bg: 'linear-gradient(135deg, #FAF5FF, #E9D8FD)', border: '#805AD5', text: '#553C9A' },
+  ];
+
+  const metalRadioList = [
+    'All',
+    'Gold',
+    'Silver',
+    '925 Sterling Silver',
+    'Normal Silver',
+    '999 Silver',
+    'Rose Gold',
+    'White Gold',
+    'Platinum',
+    'Plain Gold'
+  ];
+
   // All filter state (self-contained)
   const [activeCategoryTab, setActiveCategoryTab] = useState(initialCategoryTab);
   const [metalFilter, setMetalFilter] = useState(externalMetalFilter || 'all');
@@ -117,18 +141,78 @@ export default function Collections({
   const filteredJewellery = useMemo(() => {
     let result = [...(products || [])].filter(p => p.name && p.name.trim() !== '');
     if (activeCategoryTab && activeCategoryTab !== 'Collections') {
-      const tab = activeCategoryTab.toLowerCase();
+      const tab = activeCategoryTab.toLowerCase().trim();
       result = result.filter(p => {
         const cat = String(p.category || '').toLowerCase();
         const subCat = String(p.subCategory || '').toLowerCase();
         const name = String(p.name || '').toLowerCase();
+        const catType = String(p.categoryType || '').toLowerCase();
+        const metal = String(p.metal || '').toLowerCase();
+        const metalType = String(p.metalType || '').toLowerCase();
+        const carat = String(p.carat || p.metalPurity || p.goldPurity || '').toLowerCase();
+
+        if (tab === 'silver') {
+          return cat.includes('silver') || subCat.includes('silver') || name.includes('silver') || 
+                 catType.includes('silver') || metal.includes('silver') || metalType.includes('silver') ||
+                 carat.includes('925') || carat.includes('92.5') || carat.includes('999');
+        }
         return cat.includes(tab) || subCat.includes(tab) || name.includes(tab);
       });
     }
-    if (metalFilter !== 'all') result = result.filter(p => String(p.metal || p.metalType || '').toLowerCase().includes(metalFilter));
-    if (purityFilter !== 'all') result = result.filter(p => String(p.carat || p.purity || '').toLowerCase().includes(purityFilter.toLowerCase()));
+
+    if (metalFilter !== 'all') {
+      const mf = metalFilter.toLowerCase().trim();
+      result = result.filter(p => {
+        const catType = String(p.categoryType || '').toLowerCase();
+        const metal = String(p.metal || '').toLowerCase();
+        const metalType = String(p.metalType || '').toLowerCase();
+        const metalColor = String(p.metalColor || '').toLowerCase();
+        const carat = String(p.carat || p.goldPurity || p.metalPurity || '').toLowerCase();
+        const cat = String(p.category || '').toLowerCase();
+        const name = String(p.name || '').toLowerCase();
+
+        const isProductSilver = catType.includes('silver') || metal.includes('silver') || metalType.includes('silver') || 
+                                metalColor.includes('silver') || carat.includes('925') || carat.includes('92.5') || 
+                                carat.includes('999') || cat.includes('silver') || name.includes('silver');
+
+        if (mf === 'silver' || mf === 'all silver' || mf === 'silver (all)') {
+          return isProductSilver;
+        }
+        if (mf === '925 silver' || mf === '925 sterling silver' || mf === '925' || mf === '92.5') {
+          return catType.includes('925') || carat.includes('925') || carat.includes('92.5') || name.includes('925') || metal.includes('925') || metalType.includes('925');
+        }
+        if (mf === '999 silver' || mf === '999') {
+          return catType.includes('999') || carat.includes('999') || name.includes('999') || metal.includes('999') || metalType.includes('999');
+        }
+        if (mf === 'normal silver') {
+          return catType.includes('normal silver') || (isProductSilver && !catType.includes('925') && !carat.includes('925') && !carat.includes('92.5') && !catType.includes('999') && !carat.includes('999'));
+        }
+        if (mf === 'gold' || mf === 'plain gold') {
+          return !isProductSilver && (catType === 'gold' || metal.includes('gold') || metalColor.includes('gold') || carat.includes('k') || carat.includes('kt') || (!catType && !metal && !metalType));
+        }
+        if (mf === 'rose gold') {
+          return metalColor.includes('rose') || metal.includes('rose') || name.includes('rose');
+        }
+        if (mf === 'white gold') {
+          return metalColor.includes('white') || metal.includes('white') || name.includes('white');
+        }
+        if (mf === 'platinum') {
+          return metalColor.includes('platinum') || metal.includes('platinum') || name.includes('platinum');
+        }
+        return catType.includes(mf) || metal.includes(mf) || metalType.includes(mf) || metalColor.includes(mf) || name.includes(mf);
+      });
+    }
+
+    if (purityFilter !== 'all') {
+      const pf = purityFilter.toLowerCase().replace(/kt$/i, 'k').replace(/k$/i, '');
+      result = result.filter(p => {
+        const carat = String(p.carat || p.goldPurity || p.purity || p.metalPurity || '').toLowerCase().replace(/kt$/i, 'k').replace(/k$/i, '');
+        return carat.includes(pf);
+      });
+    }
+
     if (maxPriceFilter < 100000000) result = result.filter(p => calculatePrice(p).total <= maxPriceFilter);
-    if (stoneFilter !== 'all') result = result.filter(p => String(p.stone || p.gemstone || '').toLowerCase().includes(stoneFilter.toLowerCase()));
+    if (stoneFilter !== 'all') result = result.filter(p => String(p.stone || p.gemstone || p.diamondShape || '').toLowerCase().includes(stoneFilter.toLowerCase()));
     if (genderFilter !== 'all') result = result.filter(p => String(p.gender || '').toLowerCase().includes(genderFilter.toLowerCase()));
     if (occasionFilter !== 'all') result = result.filter(p => String(p.occasion || '').toLowerCase().includes(occasionFilter.toLowerCase()));
     switch (sortFilter) {
@@ -300,24 +384,30 @@ export default function Collections({
                 <div className="border-b border-gray-100 pb-3">
                   <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Metal Type</span>
                   <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => setMetalFilter(prev => prev === 'gold' ? 'all' : 'gold')}
-                      className={`relative flex flex-col items-center justify-center gap-1 py-3 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${metalFilter === 'gold' ? 'border-[#C8960C] shadow-[0_4px_12px_rgba(200,150,12,0.25)]' : 'border-gray-200 bg-white'}`}
-                      style={{ background: metalFilter === 'gold' ? 'linear-gradient(135deg, #FFF8E7, #FFF0B3)' : 'white' }}
-                    >
-                      <span className="text-2xl">🥇</span>
-                      <span className={`text-[10px] font-extrabold tracking-wide font-sans ${metalFilter === 'gold' ? 'text-[#A07820]' : 'text-gray-500'}`}>GOLD</span>
-                      {metalFilter === 'gold' && <span className="absolute top-1 right-1 w-4 h-4 bg-[#C8960C] rounded-full flex items-center justify-center"><svg viewBox="0 0 10 10" className="w-2.5 h-2.5" fill="white"><path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg></span>}
-                    </button>
-                    <button
-                      onClick={() => setMetalFilter(prev => prev === 'silver' ? 'all' : 'silver')}
-                      className={`relative flex flex-col items-center justify-center gap-1 py-3 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${metalFilter === 'silver' ? 'border-[#718096] shadow-[0_4px_12px_rgba(113,128,150,0.20)]' : 'border-gray-200 bg-white'}`}
-                      style={{ background: metalFilter === 'silver' ? 'linear-gradient(135deg, #F7FAFC, #E2E8F0)' : 'white' }}
-                    >
-                      <span className="text-2xl">🥈</span>
-                      <span className={`text-[10px] font-extrabold tracking-wide font-sans ${metalFilter === 'silver' ? 'text-[#4A5568]' : 'text-gray-500'}`}>SILVER</span>
-                      {metalFilter === 'silver' && <span className="absolute top-1 right-1 w-4 h-4 bg-[#718096] rounded-full flex items-center justify-center"><svg viewBox="0 0 10 10" className="w-2.5 h-2.5" fill="white"><path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg></span>}
-                    </button>
+                    {metalTypeOptions.map((opt) => {
+                      const isActive = metalFilter === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          onClick={() => setMetalFilter(prev => prev === opt.id ? 'all' : opt.id)}
+                          className={`relative flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${isActive ? 'shadow-[0_4px_12px_rgba(0,0,0,0.12)]' : 'border-gray-200 bg-white'}`}
+                          style={{
+                            borderColor: isActive ? opt.border : '#E5E7EB',
+                            background: isActive ? opt.bg : 'white'
+                          }}
+                        >
+                          <span className="text-xl">{opt.icon}</span>
+                          <span className="text-[9px] font-extrabold tracking-wide font-sans text-center" style={{ color: isActive ? opt.text : '#6B7280' }}>
+                            {opt.label}
+                          </span>
+                          {isActive && (
+                            <span className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center" style={{ background: opt.border }}>
+                              <svg viewBox="0 0 10 10" className="w-2 h-2" fill="white"><path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -362,7 +452,7 @@ export default function Collections({
                 <div className="border-b border-gray-100 pb-3">
                   <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Metal</span>
                   <div className="flex flex-wrap gap-1.5">
-                    {['All', 'Gold', 'Silver', 'Rose Gold', 'White Gold', 'Platinum', 'Plain Gold'].map(m => (
+                    {metalRadioList.map(m => (
                       <button key={m} onClick={() => setMetalFilter(m.toLowerCase())}
                         className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer border-solid ${metalFilter === m.toLowerCase() ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
                         {m}
@@ -485,39 +575,34 @@ export default function Collections({
 
               <div className="px-3 sm:px-5 py-2 sm:py-4 space-y-0 lg:max-h-[calc(100vh-180px)] lg:overflow-y-auto text-left" style={{ scrollbarWidth: 'thin', scrollbarColor: '#DDA0DD transparent' }}>
 
-                {/* METAL TYPE — Quick Select (Gold / Silver) */}
+                {/* METAL TYPE — Quick Select */}
                 <div className="border-b border-gray-100 py-2 sm:py-3 text-left">
                   <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2 sm:mb-3">Metal Type</span>
                   <div className="grid grid-cols-2 gap-2">
-                    {/* Gold */}
-                    <button
-                      onClick={() => setMetalFilter(prev => prev === 'gold' ? 'all' : 'gold')}
-                      className={`relative flex flex-col items-center justify-center gap-1 py-2.5 sm:py-3 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${metalFilter === 'gold' ? 'border-[#C8960C] shadow-[0_4px_14px_rgba(200,150,12,0.30)]' : 'border-gray-200 hover:border-[#C8960C]/50'}`}
-                      style={{ background: metalFilter === 'gold' ? 'linear-gradient(135deg, #FFF8E7 0%, #FFF0B3 100%)' : 'white' }}
-                    >
-                      <span className="text-xl">🥇</span>
-                      <span className={`text-[9px] sm:text-[11px] font-extrabold tracking-wide font-sans ${metalFilter === 'gold' ? 'text-[#A07820]' : 'text-gray-500'}`}>GOLD</span>
-                      {metalFilter === 'gold' && (
-                        <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-[#C8960C] rounded-full flex items-center justify-center">
-                          <svg viewBox="0 0 10 10" className="w-2 h-2" fill="white"><path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                        </span>
-                      )}
-                    </button>
-
-                    {/* Silver */}
-                    <button
-                      onClick={() => setMetalFilter(prev => prev === 'silver' ? 'all' : 'silver')}
-                      className={`relative flex flex-col items-center justify-center gap-1 py-2.5 sm:py-3 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${metalFilter === 'silver' ? 'border-[#718096] shadow-[0_4px_14px_rgba(113,128,150,0.25)]' : 'border-gray-200 hover:border-gray-450'}`}
-                      style={{ background: metalFilter === 'silver' ? 'linear-gradient(135deg, #F7FAFC 0%, #E2E8F0 100%)' : 'white' }}
-                    >
-                      <span className="text-xl">🥈</span>
-                      <span className={`text-[9px] sm:text-[11px] font-extrabold tracking-wide font-sans ${metalFilter === 'silver' ? 'text-[#4A5568]' : 'text-gray-500'}`}>SILVER</span>
-                      {metalFilter === 'silver' && (
-                        <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-[#718096] rounded-full flex items-center justify-center">
-                          <svg viewBox="0 0 10 10" className="w-2 h-2" fill="white"><path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                        </span>
-                      )}
-                    </button>
+                    {metalTypeOptions.map((opt) => {
+                      const isActive = metalFilter === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          onClick={() => setMetalFilter(prev => prev === opt.id ? 'all' : opt.id)}
+                          className={`relative flex flex-col items-center justify-center gap-1 py-2 sm:py-2.5 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${isActive ? 'shadow-[0_4px_14px_rgba(0,0,0,0.12)]' : 'border-gray-200 hover:border-gray-300'}`}
+                          style={{
+                            borderColor: isActive ? opt.border : '#E5E7EB',
+                            background: isActive ? opt.bg : 'white'
+                          }}
+                        >
+                          <span className="text-lg">{opt.icon}</span>
+                          <span className="text-[8px] sm:text-[10px] font-extrabold tracking-wide font-sans text-center" style={{ color: isActive ? opt.text : '#6B7280' }}>
+                            {opt.label}
+                          </span>
+                          {isActive && (
+                            <span className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center" style={{ background: opt.border }}>
+                              <svg viewBox="0 0 10 10" className="w-2 h-2" fill="white"><path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -562,7 +647,7 @@ export default function Collections({
                 <div className="border-b border-gray-100 py-1.5 sm:py-3 text-left">
                   <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-1.5 sm:mb-2.5">Metal</span>
                   <div className="space-y-1 sm:space-y-2">
-                    {['All', 'Gold', 'Silver', 'Rose Gold', 'White Gold', 'Platinum', 'Plain Gold'].map(m => (
+                    {metalRadioList.map(m => (
                       <label key={m} className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group">
                         <input type="radio" name="metal" checked={metalFilter === m.toLowerCase()} onChange={() => setMetalFilter(m.toLowerCase())} className="accent-[#4A126D] w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 cursor-pointer" />
                         <span className={`text-[9px] sm:text-[11px] font-sans leading-none ${metalFilter === m.toLowerCase() ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{m}</span>

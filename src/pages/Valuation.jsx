@@ -16,7 +16,13 @@ export default function Valuation({
     goldRate22k = 71958,
     goldRate20k = 65417,
     goldRate18k = 58875,
-    silverRate1g: silverRate = 92
+    goldRate24kPerGram = 7850,
+    goldRate22kPerGram = 7196,
+    goldRate20kPerGram = 6542,
+    goldRate18kPerGram = 5888,
+    silverRate1g = 92,
+    silverRate925PerGram = 85.1,
+    silverRateNormalPerGram = 82.8,
   } = useRates();
 
   // Local calculator state (previously passed as props)
@@ -35,13 +41,17 @@ export default function Valuation({
   const wastagePct = parseFloat(wastageInput) || 0;
   const ratePerGram = selectedMetal === 'gold'
     ? (selectedPurity === '24K'
-        ? goldRate24k / 10
+        ? (goldRate24kPerGram || goldRate24k / 10)
         : selectedPurity === '22K'
-          ? goldRate22k / 10
+          ? (goldRate22kPerGram || goldRate22k / 10)
           : selectedPurity === '20K'
-            ? goldRate20k / 10
-            : goldRate18k / 10)
-    : silverRate;
+            ? (goldRate20kPerGram || goldRate20k / 10)
+            : (goldRate18kPerGram || goldRate18k / 10))
+    : (selectedPurity.includes('925') || selectedPurity.includes('92.5')
+        ? (silverRate925PerGram || silverRate1g * 0.925)
+        : selectedPurity.includes('normal') || selectedPurity.includes('Normal')
+          ? (silverRateNormalPerGram || silverRate1g * 0.90)
+          : (silverRate1g || 92));
   const metalValue = weightNum * ratePerGram;
   const makingAmt = metalValue * (makingPct / 100);
   const wastageAmt = metalValue * (wastagePct / 100);
@@ -157,7 +167,7 @@ export default function Valuation({
                     <span className="text-[8px] text-[#DDA0DD]/80 font-medium uppercase font-sans">999 Purity</span>
                   </div>
                   <div className="flex flex-col text-left">
-                    <span className="text-sm font-bold text-[#DDA0DD] font-sans">₹{(goldRate24k || 7788).toLocaleString('en-IN')} <span className="text-[9px] font-normal text-white/60">/g</span></span>
+                    <span className="text-sm font-bold text-[#DDA0DD] font-sans">₹{Math.round(goldRate24kPerGram || goldRate24k / 10).toLocaleString('en-IN')} <span className="text-[9px] font-normal text-white/60">/g</span></span>
                     <span className="text-[8px] text-[#00E676] font-semibold font-mono flex items-center gap-0.5 mt-0.5">
                       +0.35% (24h)
                     </span>
@@ -174,7 +184,7 @@ export default function Valuation({
                     <span className="text-[8px] text-[#DDA0DD]/80 font-medium uppercase font-sans">916 Purity</span>
                   </div>
                   <div className="flex flex-col text-left">
-                    <span className="text-sm font-bold text-[#DDA0DD] font-sans">₹{Math.round(goldRate24k * 0.9167).toLocaleString('en-IN')} <span className="text-[9px] font-normal text-white/60">/g</span></span>
+                    <span className="text-sm font-bold text-[#DDA0DD] font-sans">₹{Math.round(goldRate22kPerGram || goldRate22k / 10).toLocaleString('en-IN')} <span className="text-[9px] font-normal text-white/60">/g</span></span>
                     <span className="text-[8px] text-[#00E676] font-semibold font-mono flex items-center gap-0.5 mt-0.5">
                       +0.32% (24h)
                     </span>
@@ -190,7 +200,7 @@ export default function Valuation({
                     <span className="text-xs font-bold text-white font-sans uppercase">SILVER 999</span>
                   </div>
                   <div className="flex flex-col text-left">
-                    <span className="text-sm font-bold text-[#DDA0DD] font-sans">₹{(silverRate || 95).toLocaleString('en-IN')} <span className="text-[9px] font-normal text-white/60">/g</span></span>
+                    <span className="text-sm font-bold text-[#DDA0DD] font-sans">₹{Math.round(silverRate1g || 92).toLocaleString('en-IN')} <span className="text-[9px] font-normal text-white/60">/g</span></span>
                     <span className="text-[8px] text-[#FF4D4D] font-semibold font-mono flex items-center gap-0.5 mt-0.5">
                       -0.15% (24h)
                     </span>
@@ -207,8 +217,6 @@ export default function Valuation({
                   const el = document.getElementById('interactive-calculator');
                   if (el) {
                     el.scrollIntoView({ behavior: 'smooth' });
-                  } else {
-                    setCalculatorModalOpen(true);
                   }
                 }}
                 className="w-full py-4 rounded-xl bg-gradient-to-r from-[#DDA0DD] via-[#F4D38A] to-[#DDA0DD] hover:opacity-90 text-[#2c1a3a] font-bold text-xs uppercase tracking-widest transition-all duration-300 shadow-[0_4px_15px_rgba(212,175,55,0.2)] flex items-center justify-center gap-2 cursor-pointer border-none"
@@ -255,9 +263,10 @@ export default function Valuation({
                 <button
                   onClick={() => {
                     if (triggerAudio) triggerAudio('click');
-                    if (setCalculatorModalOpen) setCalculatorModalOpen(true);
                     setSelectedMetal('silver');
                     setSelectedPurity('999');
+                    const el = document.getElementById('interactive-calculator');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
                   }}
                   className="text-[9px] font-bold text-[#2C1A3A] hover:text-[#DDA0DD] flex items-center gap-0.5 pt-2 cursor-pointer bg-transparent border-none text-left w-fit focus:outline-none"
                 >
@@ -278,7 +287,7 @@ export default function Valuation({
                 <button
                   onClick={() => {
                     if (triggerAudio) triggerAudio('click');
-                    handleCategoryNav('all');
+                    navigateTo('collections');
                   }}
                   className="text-[9px] font-bold text-[#DDA0DD] hover:text-[#E6C687] flex items-center gap-0.5 pt-2 cursor-pointer bg-transparent border-none text-left w-fit focus:outline-none"
                 >
@@ -358,10 +367,10 @@ export default function Valuation({
                   <div className="space-y-2">
                     {selectedMetal === 'gold' ? (
                       [
-                        { id: "24K", label: "24 Karat Pure", purity: "99.9% Gold (100%)" },
-                        { id: "22K", label: "22 Karat Standard", purity: "91.6% BIS Hallmark" },
-                        { id: "20K", label: "20 Karat Traditional", purity: "83.3% Traditional Kundan" },
-                        { id: "18K", label: "18 Karat Ornaments", purity: "75.0% Diamond Jewellery" }
+                        { id: "24K", label: "24 Karat Pure", purity: "99.9% Gold (100%)", rate: Math.round(goldRate24kPerGram || goldRate24k / 10) },
+                        { id: "22K", label: "22 Karat Standard", purity: "91.6% BIS Hallmark", rate: Math.round(goldRate22kPerGram || goldRate22k / 10) },
+                        { id: "20K", label: "20 Karat Traditional", purity: "83.3% Traditional Kundan", rate: Math.round(goldRate20kPerGram || goldRate20k / 10) },
+                        { id: "18K", label: "18 Karat Ornaments", purity: "75.0% Diamond Jewellery", rate: Math.round(goldRate18kPerGram || goldRate18k / 10) }
                       ].map((pur) => (
                         <button
                           key={pur.id}
@@ -376,7 +385,7 @@ export default function Valuation({
                         >
                           <div>
                             <span className="text-xs font-bold block">{pur.label}</span>
-                            <span className="text-[9px] opacity-70 font-semibold block uppercase">{pur.purity}</span>
+                            <span className="text-[9px] opacity-70 font-semibold block uppercase">{pur.purity} • ₹{pur.rate}/g</span>
                           </div>
                           <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center text-[9px] font-black ${selectedPurity === pur.id ? 'border-[#DDA0DD] text-[#DDA0DD]' : 'border-gray-300 text-transparent'
                             }`}>
@@ -386,8 +395,9 @@ export default function Valuation({
                       ))
                     ) : (
                       [
-                        { id: "999", label: "999 Fine Silver", purity: "99.9% Pure Silver" },
-                        { id: "925", label: "925 Sterling Silver", purity: "92.5% Hallmark Standard" }
+                        { id: "999", label: "999 Fine Silver", purity: "99.9% Pure Silver", rate: Math.round(silverRate1g || 92) },
+                        { id: "925", label: "925 Sterling Silver", purity: "92.5% Hallmark Standard", rate: Math.round(silverRate925PerGram || (silverRate1g * 0.925)) },
+                        { id: "normal", label: "Normal Silver", purity: "90.0% Standard Silver", rate: Math.round(silverRateNormalPerGram || (silverRate1g * 0.90)) }
                       ].map((pur) => (
                         <button
                           key={pur.id}
@@ -402,7 +412,7 @@ export default function Valuation({
                         >
                           <div>
                             <span className="text-xs font-bold block">{pur.label}</span>
-                            <span className="text-[9px] opacity-70 font-semibold block uppercase">{pur.purity}</span>
+                            <span className="text-[9px] opacity-70 font-semibold block uppercase">{pur.purity} • ₹{pur.rate}/g</span>
                           </div>
                           <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center text-[9px] font-black ${selectedPurity === pur.id ? 'border-[#DDA0DD] text-[#DDA0DD]' : 'border-gray-300 text-transparent'
                             }`}>
@@ -420,47 +430,26 @@ export default function Valuation({
                     <span className="text-[10px] font-bold text-[#4B136A] tracking-wider uppercase font-sans block border-b border-gray-100 pb-2">
                       02. Live Spot Rate (per 1g)
                     </span>
-                    <div className="flex items-center justify-between">
-                      <button
-                        onClick={() => {
-                          if (triggerAudio) triggerAudio('click');
-                          if (selectedMetal === 'gold') setGoldRate24k(prev => Math.max(5000, prev - 10));
-                          else setSilverRate(prev => Math.max(50, +(prev - 0.2).toFixed(2)));
-                        }}
-                        className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center font-bold text-xs hover:bg-[#DDA0DD] hover:text-[#4B136A] transition-all cursor-pointer select-none focus:outline-none"
-                      >
-                        -
-                      </button>
-
-                      <div className="text-center flex items-center gap-1.5 justify-center">
-                        <span className="serif-luxury text-xl font-bold text-[#DDA0DD]">₹</span>
-                        <input
-                          type="number"
-                          value={selectedMetal === 'gold' ? goldRate24k : silverRate}
-                          onChange={(e) => {
-                            const val = Math.max(1, +e.target.value);
-                            if (triggerAudio) triggerAudio('click');
-                            if (selectedMetal === 'gold') setGoldRate24k(val);
-                            else setSilverRate(val);
-                          }}
-                          className="serif-luxury text-xl font-black text-center text-[#DDA0DD] w-28 bg-transparent border-b-2 border-dashed border-[#DDA0DD]/35 focus:border-[#DDA0DD] focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        />
+                    <div className="flex items-center justify-center py-2 bg-[#FAF8F6] rounded-2xl border border-[#DDA0DD]/15">
+                      <div className="text-center flex flex-col items-center justify-center">
+                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                          {selectedMetal === 'gold' ? `Gold (${selectedPurity})` : `Silver (${selectedPurity})`}
+                        </span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="serif-luxury text-3xl font-black text-[#8A6623]">
+                            ₹{Math.round(ratePerGram).toLocaleString('en-IN')}
+                          </span>
+                          <span className="text-xs font-bold text-gray-400">/ gram</span>
+                        </div>
+                        <span className="mt-1.5 inline-flex items-center gap-1 text-[8px] font-extrabold uppercase tracking-wider text-green-700 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                          Live Admin Linked Rate
+                        </span>
                       </div>
-
-                      <button
-                        onClick={() => {
-                          if (triggerAudio) triggerAudio('click');
-                          if (selectedMetal === 'gold') setGoldRate24k(prev => prev + 10);
-                          else setSilverRate(prev => +(prev + 0.2).toFixed(2));
-                        }}
-                        className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center font-bold text-xs hover:bg-[#DDA0DD] hover:text-[#4B136A] transition-all cursor-pointer select-none focus:outline-none"
-                      >
-                        +
-                      </button>
                     </div>
                   </div>
                   <div>
-                    <span className="text-[8px] text-gray-405 leading-normal block text-center mt-2 font-sans">Adjust live spot rates to preview custom jewelry estimates.</span>
+                    <span className="text-[8px] text-gray-405 leading-normal block text-center mt-2 font-sans">Rates are synced in real-time with HR Jewellers admin panel.</span>
                   </div>
                 </div>
               </div>
@@ -479,23 +468,24 @@ export default function Valuation({
                       <input
                         type="number"
                         value={weightInput}
-                        onChange={(e) => setWeightInput(Math.max(1, Math.min(1000, +e.target.value)))}
+                        onChange={(e) => setWeightInput(e.target.value === '' ? '' : Math.max(1, Math.min(1000, +e.target.value)))}
+                        placeholder="10"
                         className="w-12 text-center bg-transparent border-b border-[#DDA0DD]/45 text-[#DDA0DD] font-black focus:outline-none"
                       />
                       <span>Grams</span>
                     </span>
                   </div>
                   <div className="flex items-center space-x-4">
-                    <button onClick={() => setWeightInput(prev => Math.max(1, prev - 1))} className="w-8 h-8 border border-gray-200 hover:bg-gray-100 rounded-full cursor-pointer select-none focus:outline-none">-</button>
+                    <button onClick={() => setWeightInput(prev => Math.max(1, (parseFloat(prev) || 0) - 1))} className="w-8 h-8 border border-gray-200 hover:bg-gray-100 rounded-full cursor-pointer select-none focus:outline-none">-</button>
                     <input
                       type="range"
                       min="1"
                       max="250"
-                      value={weightInput}
+                      value={parseFloat(weightInput) || 1}
                       onChange={(e) => setWeightInput(+e.target.value)}
                       className="flex-1 accent-[#4B136A] cursor-pointer"
                     />
-                    <button onClick={() => setWeightInput(prev => Math.min(250, prev + 1))} className="w-8 h-8 border border-gray-200 hover:bg-gray-100 rounded-full cursor-pointer select-none focus:outline-none">+</button>
+                    <button onClick={() => setWeightInput(prev => Math.min(250, (parseFloat(prev) || 0) + 1))} className="w-8 h-8 border border-gray-200 hover:bg-gray-100 rounded-full cursor-pointer select-none focus:outline-none">+</button>
                   </div>
                 </div>
 
@@ -508,16 +498,16 @@ export default function Valuation({
                       <span className="text-[#DDA0DD] font-bold">{makingChargesInput}%</span>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <button onClick={() => setMakingChargesInput(prev => Math.max(0, prev - 1))} className="w-6 h-6 border border-gray-200 hover:bg-gray-100 rounded-full cursor-pointer select-none focus:outline-none">-</button>
+                      <button onClick={() => setMakingChargesInput(prev => Math.max(0, (parseFloat(prev) || 0) - 1))} className="w-6 h-6 border border-gray-200 hover:bg-gray-100 rounded-full cursor-pointer select-none focus:outline-none">-</button>
                       <input
                         type="range"
                         min="0"
                         max="25"
-                        value={makingChargesInput}
+                        value={parseFloat(makingChargesInput) || 0}
                         onChange={(e) => setMakingChargesInput(+e.target.value)}
                         className="flex-1 accent-[#4B136A] cursor-pointer"
                       />
-                      <button onClick={() => setMakingChargesInput(prev => Math.min(25, prev + 1))} className="w-6 h-6 border border-gray-200 hover:bg-gray-100 rounded-full cursor-pointer select-none focus:outline-none">+</button>
+                      <button onClick={() => setMakingChargesInput(prev => Math.min(25, (parseFloat(prev) || 0) + 1))} className="w-6 h-6 border border-gray-200 hover:bg-gray-100 rounded-full cursor-pointer select-none focus:outline-none">+</button>
                     </div>
                   </div>
 
@@ -528,16 +518,16 @@ export default function Valuation({
                       <span className="text-[#DDA0DD] font-bold">{wastageInput}%</span>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <button onClick={() => setWastageInput(prev => Math.max(0, prev - 0.5))} className="w-6 h-6 border border-gray-200 hover:bg-gray-100 rounded-full cursor-pointer select-none focus:outline-none">-</button>
+                      <button onClick={() => setWastageInput(prev => Math.max(0, (parseFloat(prev) || 0) - 0.5))} className="w-6 h-6 border border-gray-200 hover:bg-gray-100 rounded-full cursor-pointer select-none focus:outline-none">-</button>
                       <input
                         type="range"
                         min="0"
                         max="15"
-                        value={wastageInput}
+                        value={parseFloat(wastageInput) || 0}
                         onChange={(e) => setWastageInput(+e.target.value)}
                         className="flex-1 accent-[#4B136A] cursor-pointer"
                       />
-                      <button onClick={() => setWastageInput(prev => Math.min(15, prev + 0.5))} className="w-6 h-6 border border-gray-200 hover:bg-gray-100 rounded-full cursor-pointer select-none focus:outline-none">+</button>
+                      <button onClick={() => setWastageInput(prev => Math.min(15, (parseFloat(prev) || 0) + 0.5))} className="w-6 h-6 border border-gray-200 hover:bg-gray-100 rounded-full cursor-pointer select-none focus:outline-none">+</button>
                     </div>
                   </div>
                 </div>
@@ -562,58 +552,30 @@ export default function Valuation({
                 <div className="space-y-3.5 text-[11px] font-mono text-white/80">
                   <div className="flex justify-between">
                     <span>Pure Metal Weight:</span>
-                    <span className="font-semibold text-white">{weightInput} g</span>
+                    <span className="font-semibold text-white">{weightNum} g</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Bullion Value:</span>
                     <span className="font-semibold text-white">
-                      ₹{Math.round(
-                        (selectedMetal === 'gold' ? goldRate24k : silverRate) *
-                        weightInput *
-                        (selectedMetal === 'gold'
-                          ? (selectedPurity === '24K' ? 1 : selectedPurity === '22K' ? 0.9167 : 0.75)
-                          : (selectedPurity === '999' ? 1 : 0.925))
-                      ).toLocaleString('en-IN')}
+                      ₹{Math.round(metalValue).toLocaleString('en-IN')}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Making Charges ({makingChargesInput}%):</span>
+                    <span>Making Charges ({makingPct}%):</span>
                     <span className="font-semibold text-white">
-                      ₹{Math.round(
-                        (selectedMetal === 'gold' ? goldRate24k : silverRate) *
-                        weightInput *
-                        (selectedMetal === 'gold'
-                          ? (selectedPurity === '24K' ? 1 : selectedPurity === '22K' ? 0.9167 : 0.75)
-                          : (selectedPurity === '999' ? 1 : 0.925)) *
-                        (makingChargesInput / 100)
-                      ).toLocaleString('en-IN')}
+                      ₹{Math.round(makingAmt).toLocaleString('en-IN')}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Wastage/Loss ({wastageInput}%):</span>
+                    <span>Wastage/Loss ({wastagePct}%):</span>
                     <span className="font-semibold text-white">
-                      ₹{Math.round(
-                        (selectedMetal === 'gold' ? goldRate24k : silverRate) *
-                        weightInput *
-                        (selectedMetal === 'gold'
-                          ? (selectedPurity === '24K' ? 1 : selectedPurity === '22K' ? 0.9167 : 0.75)
-                          : (selectedPurity === '999' ? 1 : 0.925)) *
-                        (wastageInput / 100)
-                      ).toLocaleString('en-IN')}
+                      ₹{Math.round(wastageAmt).toLocaleString('en-IN')}
                     </span>
                   </div>
                   <div className="flex justify-between border-t border-white/10 pt-3 text-[#E7C86E]">
                     <span>GST (3% standard):</span>
                     <span className="font-semibold">
-                      ₹{Math.round(
-                        (selectedMetal === 'gold' ? goldRate24k : silverRate) *
-                        weightInput *
-                        (selectedMetal === 'gold'
-                          ? (selectedPurity === '24K' ? 1 : selectedPurity === '22K' ? 0.9167 : 0.75)
-                          : (selectedPurity === '999' ? 1 : 0.925)) *
-                        (1 + (makingChargesInput / 100) + (wastageInput / 100)) *
-                        0.03
-                      ).toLocaleString('en-IN')}
+                      ₹{Math.round((metalValue + makingAmt + wastageAmt) * 0.03).toLocaleString('en-IN')}
                     </span>
                   </div>
                 </div>
@@ -621,7 +583,7 @@ export default function Valuation({
                 <div className="bg-white/5 border border-white/10 rounded-2xl py-4 text-center space-y-1">
                   <span className="text-[8px] text-white/60 tracking-[0.2em] font-bold block uppercase">Estimated Final Value</span>
                   <span className="text-[#DDA0DD] font-black text-3xl block tracking-wide">
-                    ₹{calculatedBullionCost.toLocaleString('en-IN')}
+                    ₹{Math.round((metalValue + makingAmt + wastageAmt) * 1.03).toLocaleString('en-IN')}
                   </span>
                   <span className="text-[8px] text-white/40 font-mono block">ALL ESTIMATES INC. TAXES</span>
                 </div>
@@ -639,7 +601,8 @@ export default function Valuation({
                   <button
                     onClick={() => {
                       if (triggerAudio) triggerAudio('click');
-                      const text = `Hello H.R. Jewellers, I simulated a dynamic estimation quote via your Jewellery Bullion Calculator:\n\n*Metal Configuration:* ${selectedMetal.toUpperCase()} (${selectedPurity})\n*Gross Weight:* ${weightInput} grams\n*Making Charge:* ${makingChargesInput}%\n*Wastage Factor:* ${wastageInput}%\n*Calculated Value:* Rs. ${calculatedBullionCost.toLocaleString('en-IN')}\n\nPlease lock this index for a bridal trousseau booking!`;
+                      const finalTotal = Math.round((metalValue + makingAmt + wastageAmt) * 1.03);
+                      const text = `Hello H.R. Jewellers, I simulated a dynamic estimation quote via your Jewellery Bullion Calculator:\n\n*Metal Configuration:* ${selectedMetal.toUpperCase()} (${selectedPurity})\n*Gross Weight:* ${weightNum} grams\n*Rate/g:* Rs. ${Math.round(ratePerGram).toLocaleString('en-IN')}\n*Making Charge:* ${makingPct}%\n*Wastage Factor:* ${wastagePct}%\n*Calculated Value:* Rs. ${finalTotal.toLocaleString('en-IN')}\n\nPlease lock this index for a bridal trousseau booking!`;
                       window.open(`https://wa.me/919783843978?text=${encodeURIComponent(text)}`, '_blank');
                     }}
                     className="w-full py-3.5 rounded-[16px] border border-white/20 hover:border-white/50 text-white hover:bg-white/5 font-extrabold text-[10px] uppercase tracking-[0.2em] transition-all duration-300 cursor-pointer focus:outline-none"

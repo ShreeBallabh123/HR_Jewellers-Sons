@@ -16,13 +16,15 @@ const DEFAULTS = {
     '18k': 75.00,
     '14k': 58.33,
   },
-  silverRate:   92000,
-  silverRate1kg: 92000,
-  platinumRate: 3500,
-  lastUpdated:  null,
-  publishedAt:  null,
-  updatedBy:    null,
-  isPublished:  false,
+  silverRate:       92000,
+  silverRate1kg:    92000,
+  silverRate925:    85100,
+  silverRateNormal: 82800,
+  platinumRate:     3500,
+  lastUpdated:      null,
+  publishedAt:      null,
+  updatedBy:        null,
+  isPublished:      false,
 };
 
 export function RatesProvider({ children }) {
@@ -32,11 +34,14 @@ export function RatesProvider({ children }) {
   useEffect(() => {
     const unsubscribe = ratesApi.subscribeToRates(
       (data) => {
+        const baseSilver = data.silverRate || data.silverRate1kg || DEFAULTS.silverRate1kg;
         setRates({
           ...DEFAULTS,
           ...data,
-          // Backwards-compat alias: expose silverRate1kg alongside silverRate
-          silverRate1kg: data.silverRate || data.silverRate1kg || DEFAULTS.silverRate1kg,
+          silverRate:       baseSilver,
+          silverRate1kg:    baseSilver,
+          silverRate925:    data.silverRate925 || Math.round(baseSilver * 0.925),
+          silverRateNormal: data.silverRateNormal || Math.round(baseSilver * 0.90),
         });
         setLoading(false);
       },
@@ -48,6 +53,7 @@ export function RatesProvider({ children }) {
 
     return unsubscribe;
   }, []);
+
 
   return (
     <RatesContext.Provider value={{ rates, loading }}>

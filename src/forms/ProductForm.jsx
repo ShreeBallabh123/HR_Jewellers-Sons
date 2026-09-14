@@ -192,7 +192,10 @@ export default function ProductForm({
     goldRate20k = 65417, 
     goldRate18k = 58875, 
     goldRate14k = 45788, 
-    silverRate = 92000, 
+    silverRate = 92000,
+    silverRate1kg = 92000,
+    silverRate925 = 85100,
+    silverRateNormal = 82800,
     platinumRate = 3500 
   } = useRates();
 
@@ -219,6 +222,12 @@ export default function ProductForm({
     }
   };
 
+  // Metal detection for context-aware fields
+  const currentMetalChoice = (getVal('categoryType') || getVal('metal') || getVal('metalType') || '').toLowerCase();
+  const isSilverProduct = currentMetalChoice.includes('silver') || currentMetalChoice.includes('925') || currentMetalChoice.includes('999');
+  const isPlatinumProduct = currentMetalChoice.includes('platinum');
+  const isGoldProduct = !isSilverProduct && !isPlatinumProduct;
+
   // Compute live dynamic price breakdown when dynamic mode is selected
   const isDynamicMode = getVal('priceCalculationMode', 'manual') === 'dynamic';
   const targetProductObj = editingProduct || newProduct;
@@ -232,9 +241,31 @@ export default function ProductForm({
       goldRate18k,
       goldRate14k,
       silverRate,
+      silverRate1kg,
+      silverRate925,
+      silverRateNormal,
       platinumRate
     });
-  }, [targetProductObj, isDynamicMode, goldRate24k, goldRate22k, goldRate20k, goldRate18k, goldRate14k, silverRate, platinumRate]);
+  }, [targetProductObj, isDynamicMode, goldRate24k, goldRate22k, goldRate20k, goldRate18k, goldRate14k, silverRate, silverRate1kg, silverRate925, silverRateNormal, platinumRate]);
+
+  // Certificate multi-select state helper
+  const rawCertificates = getVal('certificates', []);
+  const activeCertificates = Array.isArray(rawCertificates) && rawCertificates.length > 0
+    ? rawCertificates
+    : (getVal('hallmark') ? String(getVal('hallmark')).split(',').map(s => s.trim()).filter(Boolean) : ['BIS Hallmark Certificate']);
+
+  const toggleCertificate = (certName) => {
+    let updated;
+    if (activeCertificates.includes(certName)) {
+      updated = activeCertificates.filter(c => c !== certName);
+    } else {
+      updated = [...activeCertificates, certName];
+    }
+    updateFields({
+      certificates: updated,
+      hallmark: updated.join(', ')
+    });
+  };
 
   const contextValue = {
     getVal,
@@ -314,21 +345,55 @@ export default function ProductForm({
               label="Metal Type"
               field="categoryType"
               required
+              onChange={(e) => {
+                const val = e.target.value;
+                const isSilv = val.toLowerCase().includes('silver') || val.includes('925') || val.includes('999');
+                const isPlat = val.toLowerCase().includes('platinum');
+                
+                let defaultPurity = '22K';
+                if (isSilv) {
+                  if (val.includes('999')) defaultPurity = '999 Silver';
+                  else if (val.includes('Normal')) defaultPurity = 'Normal Silver';
+                  else defaultPurity = '925 Sterling Silver';
+                } else if (isPlat) {
+                  defaultPurity = '950 Platinum';
+                }
+
+                updateFields({
+                  categoryType: val,
+                  metal: isSilv ? 'Silver' : (isPlat ? 'Platinum' : 'Gold'),
+                  metalType: isSilv ? 'Silver' : (isPlat ? 'Platinum' : 'Gold'),
+                  carat: defaultPurity,
+                  metalPurity: defaultPurity,
+                  goldPurity: isSilv || isPlat ? '' : defaultPurity,
+                  silverPurity: isSilv ? defaultPurity : '',
+                });
+              }}
             >
               <option value="">Select Metal Type</option>
               <option value="Gold">Gold</option>
               <option value="925 Sterling Silver">925 Sterling Silver</option>
               <option value="Normal Silver">Normal Silver</option>
               <option value="999 Silver">999 Silver</option>
+              <option value="Platinum">Platinum</option>
             </FloatingSelect>
-            {/* Silver Weight — show only when 999 Silver is selected */}
+
+            {/* Silver Weight Preset — for Bullion 999 Silver coins/bars */}
             {getVal('categoryType') === '999 Silver' && (
               <FloatingSelect
-                id="prod-silverWeight-form"
-                label="Silver Weight"
-                field="silverWeight"
+                id="prod-silverWeight-preset-form"
+                label="Quick Silver Coin/Bar Weight"
+                field="silverWeightPreset"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === '500 gm') {
+                    updateFields({ silverWeight: 500, netWeight: 500, weight: 500 });
+                  } else if (val === '1 Kg') {
+                    updateFields({ silverWeight: 1000, netWeight: 1000, weight: 1000 });
+                  }
+                }}
               >
-                <option value="">Select Silver Weight</option>
+                <option value="">Select Weight Preset</option>
                 <option value="500 gm">500 gm</option>
                 <option value="1 Kg">1 Kg</option>
               </FloatingSelect>
@@ -379,50 +444,124 @@ export default function ProductForm({
         <div className="space-y-4 pt-4 border-t border-solid border-zinc-100 dark:border-zinc-850 text-left">
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-[#E6C687]"></span>
-            <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Metal Specifications</h4>
+            <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">
+              {isSilverProduct ? 'Silver Specifications' : (isPlatinumProduct ? 'Platinum Specifications' : 'Gold Specifications')}
+            </h4>
           </div>
+          
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <FloatingSelect
-              id="prod-carat-form"
-              label="Carat & Purity"
-              field="carat"
-              onChange={(e) => {
-                const val = e.target.value;
-                if (editingProduct) {
-                  setEditingProduct({ ...editingProduct, carat: val, metalPurity: val });
-                } else {
-                  setNewProduct({ ...newProduct, carat: val, metalPurity: val });
-                }
-              }}
-            >
-              <option value="">Select Carat & Purity</option>
-              <option value="9K">9K</option>
-              <option value="14K">14K</option>
-              <option value="18K">18K</option>
-              <option value="20K">20K</option>
-              <option value="22K">22K</option>
-              <option value="24K">24K (Pure Gold)</option>
-              <option value="92.5">92.5 (Silver)</option>
-            </FloatingSelect>
+            {/* Dynamic Purity Dropdown based on selected metal */}
+            {isSilverProduct ? (
+              <FloatingSelect
+                id="prod-silver-purity-form"
+                label="Silver Purity"
+                field="silverPurity"
+                value={getVal('silverPurity') || getVal('carat') || '925 Sterling Silver'}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  updateFields({ silverPurity: val, carat: val, metalPurity: val });
+                }}
+              >
+                <option value="925 Sterling Silver">925 Sterling Silver</option>
+                <option value="Normal Silver">Normal Silver</option>
+                <option value="999 Silver">999 Silver</option>
+              </FloatingSelect>
+            ) : isPlatinumProduct ? (
+              <FloatingSelect
+                id="prod-platinum-purity-form"
+                label="Platinum Purity"
+                field="platinumPurity"
+                value={getVal('platinumPurity') || getVal('carat') || '950 Platinum'}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  updateFields({ platinumPurity: val, carat: val, metalPurity: val });
+                }}
+              >
+                <option value="950 Platinum">950 Pure Platinum</option>
+              </FloatingSelect>
+            ) : (
+              <FloatingSelect
+                id="prod-gold-purity-form"
+                label="Carat & Purity"
+                field="carat"
+                value={getVal('goldPurity') || getVal('carat') || '22K'}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  updateFields({ carat: val, goldPurity: val, metalPurity: val });
+                }}
+              >
+                <option value="">Select Carat & Purity</option>
+                <option value="9K">9K</option>
+                <option value="14K">14K</option>
+                <option value="18K">18K</option>
+                <option value="20K">20K</option>
+                <option value="22K">22K</option>
+                <option value="24K">24K (Pure Gold)</option>
+              </FloatingSelect>
+            )}
 
-            <FloatingInput
-              id="prod-netWeight-form"
-              label="Net Weight"
-              field="netWeight"
-            />
+            {/* Dynamic Net Weight Input */}
+            {isSilverProduct ? (
+              <FloatingInput
+                id="prod-silver-weight-form"
+                label="Silver Net Weight (grams)"
+                placeholder="Enter Silver Net Weight (grams)"
+                field="silverWeight"
+                type="number"
+                step="0.001"
+                min="0"
+                required={isDynamicMode}
+                value={getVal('silverWeight') !== '' ? getVal('silverWeight') : getVal('netWeight')}
+                onChange={(e) => {
+                  const val = e.target.value === '' ? '' : Number(e.target.value);
+                  updateFields({ silverWeight: val, netWeight: val, weight: val });
+                }}
+              />
+            ) : isPlatinumProduct ? (
+              <FloatingInput
+                id="prod-platinum-weight-form"
+                label="Platinum Net Weight (grams)"
+                placeholder="Enter Platinum Net Weight (grams)"
+                field="platinumWeight"
+                type="number"
+                step="0.001"
+                min="0"
+                required={isDynamicMode}
+                value={getVal('platinumWeight') !== '' ? getVal('platinumWeight') : getVal('netWeight')}
+                onChange={(e) => {
+                  const val = e.target.value === '' ? '' : Number(e.target.value);
+                  updateFields({ platinumWeight: val, netWeight: val, weight: val });
+                }}
+              />
+            ) : (
+              <FloatingInput
+                id="prod-gold-weight-spec-form"
+                label="Gold Net Weight (grams)"
+                placeholder="Enter Gold Net Weight (grams)"
+                field="goldWeight"
+                type="number"
+                step="0.001"
+                min="0"
+                required={isDynamicMode}
+                value={getVal('goldWeight') !== '' ? getVal('goldWeight') : getVal('netWeight')}
+                onChange={(e) => {
+                  const val = e.target.value === '' ? '' : Number(e.target.value);
+                  updateFields({ goldWeight: val, netWeight: val, weight: val });
+                }}
+              />
+            )}
 
             <div className="relative">
               <FloatingInput
                 id="prod-grossWeight-form"
                 label="Gross Weight"
                 field="grossWeight"
+                type="number"
+                step="0.001"
+                min="0"
                 onChange={(e) => {
-                  const val = e.target.value;
-                  if (editingProduct) {
-                    setEditingProduct({ ...editingProduct, grossWeight: val, weight: val });
-                  } else {
-                    setNewProduct({ ...newProduct, grossWeight: val, weight: val });
-                  }
+                  const val = e.target.value === '' ? '' : Number(e.target.value);
+                  updateFields({ grossWeight: val, weight: val });
                 }}
               />
               {/* Standard Coin Weights Selectors */}
@@ -431,18 +570,15 @@ export default function ProductForm({
                   <span className="text-[8px] uppercase tracking-wider text-zinc-400 font-bold block px-1">Quick Select Coin Weight:</span>
                   <div className="flex flex-wrap gap-1.5">
                     {['0.5', '1', '2', '5', '8', '10', '20', '50'].map((w) => {
-                      const activeWeight = getVal('grossWeight');
+                      const activeWeight = String(getVal('grossWeight'));
                       const isActive = activeWeight === w;
                       return (
                         <button
                           key={w}
                           type="button"
                           onClick={() => {
-                            if (editingProduct) {
-                              setEditingProduct({ ...editingProduct, grossWeight: w, netWeight: w, weight: w });
-                            } else {
-                              setNewProduct({ ...newProduct, grossWeight: w, netWeight: w, weight: w });
-                            }
+                            const numW = Number(w);
+                            updateFields({ grossWeight: numW, netWeight: numW, weight: numW, goldWeight: numW, silverWeight: numW });
                           }}
                           className={`px-2.5 py-1 text-[10px] font-bold rounded-lg border border-solid transition-all cursor-pointer ${
                             isActive
@@ -469,7 +605,7 @@ export default function ProductForm({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FloatingSelect
               id="prod-metalColor-form"
-              label="Metal Color/Finishing"
+              label="Metal Color / Finishing"
               field="metalColor"
             >
               <option value="">Select Metal Color/Finishing</option>
@@ -479,7 +615,19 @@ export default function ProductForm({
               <option value="Platinum Plated Silver">Platinum Plated Silver</option>
               <option value="Rose Gold Plated Silver">Rose Gold Plated Silver</option>
               <option value="Gold Plated Silver">Gold Plated Silver</option>
+              <option value="Custom">Custom</option>
             </FloatingSelect>
+
+            {/* Custom Metal Color/Finish Text Input */}
+            {getVal('metalColor') === 'Custom' && (
+              <FloatingInput
+                id="prod-custom-metal-color-form"
+                label="Custom Metal Color / Finish"
+                placeholder="Enter custom color or finish (e.g. Oxidised, Antique Finish, Matte Finish, Black Rhodium)"
+                field="customMetalColor"
+                required={getVal('metalColor') === 'Custom'}
+              />
+            )}
           </div>
         </div>
 
@@ -661,7 +809,8 @@ export default function ProductForm({
                 updateFields({
                   priceCalculationMode: mode,
                   goldPurity: getVal('goldPurity') || getVal('carat') || '22K',
-                  carat: getVal('carat') || '22K',
+                  silverPurity: getVal('silverPurity') || '925 Sterling Silver',
+                  carat: getVal('carat') || (isSilverProduct ? '925 Sterling Silver' : '22K'),
                   makingChargeType: getVal('makingChargeType') || 'percentage',
                   gstPercent: getVal('gstPercent', 3)
                 });
@@ -681,52 +830,137 @@ export default function ProductForm({
               />
             ) : (
               <>
-                <FloatingSelect
-                  id="prod-purity-form"
-                  label="Gold Purity (Karat)"
-                  field="goldPurity"
-                  onChange={(e) => {
-                    const p = e.target.value;
-                    updateFields({ goldPurity: p, carat: p });
-                  }}
-                >
-                  <option value="24K">24K (Pure Gold - 100%)</option>
-                  <option value="22K">22K (Standard Hallmark - 91.6%)</option>
-                  <option value="20K">20K (Traditional Kundan - 83.3%)</option>
-                  <option value="18K">18K (Diamond/Ornaments - 75.0%)</option>
-                  <option value="14K">14K (Modern Daily - 58.3%)</option>
-                </FloatingSelect>
+                {/* Context-aware Purity Selection */}
+                {isSilverProduct ? (
+                  <FloatingSelect
+                    id="prod-silver-purity-dyn-form"
+                    label="Silver Purity"
+                    field="silverPurity"
+                    value={getVal('silverPurity') || getVal('carat') || '925 Sterling Silver'}
+                    onChange={(e) => {
+                      const p = e.target.value;
+                      updateFields({ silverPurity: p, carat: p, metalPurity: p });
+                    }}
+                  >
+                    <option value="925 Sterling Silver">925 Sterling Silver</option>
+                    <option value="Normal Silver">Normal Silver</option>
+                    <option value="999 Silver">999 Silver</option>
+                  </FloatingSelect>
+                ) : isPlatinumProduct ? (
+                  <FloatingSelect
+                    id="prod-plat-purity-dyn-form"
+                    label="Platinum Purity"
+                    field="platinumPurity"
+                    value={getVal('platinumPurity') || '950 Platinum'}
+                    onChange={(e) => {
+                      const p = e.target.value;
+                      updateFields({ platinumPurity: p, carat: p, metalPurity: p });
+                    }}
+                  >
+                    <option value="950 Platinum">950 Pure Platinum</option>
+                  </FloatingSelect>
+                ) : (
+                  <FloatingSelect
+                    id="prod-purity-form"
+                    label="Gold Purity (Karat)"
+                    field="goldPurity"
+                    value={getVal('goldPurity') || getVal('carat') || '22K'}
+                    onChange={(e) => {
+                      const p = e.target.value;
+                      updateFields({ goldPurity: p, carat: p, metalPurity: p });
+                    }}
+                  >
+                    <option value="24K">24K (Pure Gold)</option>
+                    <option value="22K">22K (Standard Hallmark)</option>
+                    <option value="20K">20K (Traditional Kundan)</option>
+                    <option value="18K">18K (Diamond/Ornaments)</option>
+                    <option value="14K">14K (Modern Daily)</option>
+                    <option value="9K">9K</option>
+                  </FloatingSelect>
+                )}
 
-                <FloatingInput
-                  id="prod-gold-weight-form"
-                  label="Gold Net Weight (grams)"
-                  field="goldWeight"
-                  type="number"
-                  step="0.001"
-                  min="0"
-                  onChange={(e) => {
-                    const w = e.target.value === '' ? '' : Number(e.target.value);
-                    updateFields({ 
-                      goldWeight: w, 
-                      netWeight: w, 
-                      weight: w 
-                    });
-                  }}
-                  required={getVal('priceCalculationMode', 'manual') === 'dynamic'}
-                />
+                {/* Context-aware Net Weight Input */}
+                {isSilverProduct ? (
+                  <FloatingInput
+                    id="prod-silver-net-weight-dyn-form"
+                    label="Silver Net Weight (grams)"
+                    placeholder="Enter Silver Net Weight (grams)"
+                    field="silverWeight"
+                    type="number"
+                    step="0.001"
+                    min="0"
+                    value={getVal('silverWeight') !== '' ? getVal('silverWeight') : getVal('netWeight')}
+                    onChange={(e) => {
+                      const w = e.target.value === '' ? '' : Number(e.target.value);
+                      updateFields({ silverWeight: w, netWeight: w, weight: w });
+                    }}
+                    required={getVal('priceCalculationMode', 'manual') === 'dynamic'}
+                  />
+                ) : isPlatinumProduct ? (
+                  <FloatingInput
+                    id="prod-plat-net-weight-dyn-form"
+                    label="Platinum Net Weight (grams)"
+                    placeholder="Enter Platinum Net Weight (grams)"
+                    field="platinumWeight"
+                    type="number"
+                    step="0.001"
+                    min="0"
+                    value={getVal('platinumWeight') !== '' ? getVal('platinumWeight') : getVal('netWeight')}
+                    onChange={(e) => {
+                      const w = e.target.value === '' ? '' : Number(e.target.value);
+                      updateFields({ platinumWeight: w, netWeight: w, weight: w });
+                    }}
+                    required={getVal('priceCalculationMode', 'manual') === 'dynamic'}
+                  />
+                ) : (
+                  <FloatingInput
+                    id="prod-gold-weight-form"
+                    label="Gold Net Weight (grams)"
+                    placeholder="Enter Gold Net Weight (grams)"
+                    field="goldWeight"
+                    type="number"
+                    step="0.001"
+                    min="0"
+                    value={getVal('goldWeight') !== '' ? getVal('goldWeight') : getVal('netWeight')}
+                    onChange={(e) => {
+                      const w = e.target.value === '' ? '' : Number(e.target.value);
+                      updateFields({ goldWeight: w, netWeight: w, weight: w });
+                    }}
+                    required={getVal('priceCalculationMode', 'manual') === 'dynamic'}
+                  />
+                )}
               </>
             )}
 
-            <FloatingSelect
-              id="prod-hallmark-form"
-              label="Hallmark Stamp"
-              field="hallmark"
-            >
-              <option value="BIS 916 Government Certified">BIS 916 Government Certified</option>
-              <option value="IGI Diamond Certificate">IGI Diamond Certificate</option>
-              <option value="BIS Hallmark 750 (18K)">BIS Hallmark 750 (18K)</option>
-              <option value="Uncertified / Custom">Uncertified / Custom</option>
-            </FloatingSelect>
+            {/* Hallmark / Certificate Multi-Select Checkboxes */}
+            <div className="space-y-1.5 text-left col-span-1 sm:col-span-1">
+              <label className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase block">
+                Certificate / Hallmark
+              </label>
+              <div className="bg-zinc-50 dark:bg-zinc-900 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl p-2.5 space-y-2">
+                {[
+                  'BIS Hallmark Certificate',
+                  'IGI Diamond Certificate',
+                  'Uncertified / Custom'
+                ].map((cert) => {
+                  const isChecked = activeCertificates.includes(cert);
+                  return (
+                    <label
+                      key={cert}
+                      className="flex items-center gap-2 text-xs font-semibold text-zinc-800 dark:text-zinc-200 cursor-pointer select-none"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => toggleCertificate(cert)}
+                        className="w-4 h-4 rounded border-zinc-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                      />
+                      <span className="text-[11px]">{cert}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           {getVal('priceCalculationMode', 'manual') === 'dynamic' && (
@@ -737,7 +971,7 @@ export default function ProductForm({
                 field="makingChargeType"
                 onChange={(e) => updateField('makingChargeType', e.target.value)}
               >
-                <option value="percentage">Percentage (%) of Gold Value</option>
+                <option value="percentage">Percentage (%) of Metal Value</option>
                 <option value="fixed">Fixed Amount (₹)</option>
               </FloatingSelect>
 
@@ -882,10 +1116,10 @@ export default function ProductForm({
                   </div>
                   <div>
                     <h5 className="text-xs font-black uppercase tracking-wider text-zinc-900 dark:text-[#E6C687]">
-                      Live Auto-Calculated Price Breakdown
+                      Live Auto-Calculated Price Breakdown ({isSilverProduct ? 'Silver' : (isPlatinumProduct ? 'Platinum' : 'Gold')})
                     </h5>
                     <p className="text-[10px] text-zinc-500 dark:text-zinc-400">
-                      Based on today's live rate: 24K @ ₹{goldRate24k?.toLocaleString('en-IN')}/10g ({liveBreakdown.purity} rate: ₹{Math.round((liveBreakdown.goldValue / (liveBreakdown.weight || 1)) || 0).toLocaleString('en-IN')}/g)
+                      Live rate for {liveBreakdown.purity}: ₹{Math.round(liveBreakdown.ratePerGram || (liveBreakdown.metalValue / (liveBreakdown.weight || 1)) || 0).toLocaleString('en-IN')}/g
                     </p>
                   </div>
                 </div>
@@ -899,11 +1133,11 @@ export default function ProductForm({
               </div>
 
               {/* Grid Breakdown */}
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 text-xs">
                 <div className="bg-white/80 dark:bg-zinc-800/60 p-2.5 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60">
-                  <span className="text-[9px] text-zinc-400 font-bold uppercase block">Gold Metal ({liveBreakdown.weight}g)</span>
+                  <span className="text-[9px] text-zinc-400 font-bold uppercase block">{isSilverProduct ? 'Silver' : (isPlatinumProduct ? 'Platinum' : 'Gold')} ({liveBreakdown.weight}g)</span>
                   <span className="font-extrabold text-zinc-900 dark:text-zinc-100 font-mono">
-                    ₹{liveBreakdown.goldValue?.toLocaleString('en-IN')}
+                    ₹{liveBreakdown.metalValue?.toLocaleString('en-IN')}
                   </span>
                 </div>
 
@@ -922,6 +1156,13 @@ export default function ProductForm({
                 </div>
 
                 <div className="bg-white/80 dark:bg-zinc-800/60 p-2.5 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60">
+                  <span className="text-[9px] text-zinc-400 font-bold uppercase block">Discount ({liveBreakdown.discountPercent}%)</span>
+                  <span className="font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
+                    -₹{liveBreakdown.discountAmount?.toLocaleString('en-IN')}
+                  </span>
+                </div>
+
+                <div className="bg-white/80 dark:bg-zinc-800/60 p-2.5 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60">
                   <span className="text-[9px] text-zinc-400 font-bold uppercase block">GST ({liveBreakdown.gstPct}%)</span>
                   <span className="font-extrabold text-amber-700 dark:text-amber-400 font-mono">
                     ₹{liveBreakdown.gst?.toLocaleString('en-IN')}
@@ -929,7 +1170,7 @@ export default function ProductForm({
                 </div>
 
                 <div className="bg-[#D5A529]/15 p-2.5 rounded-xl border border-[#D5A529]/40 col-span-2 sm:col-span-1">
-                  <span className="text-[9px] text-[#A88038] font-black uppercase block">Final Total Price</span>
+                  <span className="text-[9px] text-[#A88038] font-black uppercase block">Final Total</span>
                   <span className="font-black text-[#A88038] dark:text-[#F3D9A4] font-mono text-sm">
                     ₹{liveBreakdown.total?.toLocaleString('en-IN')}
                   </span>
@@ -938,6 +1179,7 @@ export default function ProductForm({
             </div>
           )}
         </div>
+
 
         {/* Section: Size Customization Selector */}
         {(() => {
