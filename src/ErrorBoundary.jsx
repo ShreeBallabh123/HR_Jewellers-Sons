@@ -12,6 +12,21 @@ export class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error("Showroom Error Boundary caught an exception:", error, errorInfo);
+    
+    // Check if error is chunk load / stale deployment error
+    const isChunkLoadError = 
+      error?.message?.includes('Failed to fetch dynamically imported module') ||
+      error?.message?.includes('Importing a module script failed') ||
+      error?.name === 'ChunkLoadError' ||
+      String(error).includes('dynamically imported module');
+
+    if (isChunkLoadError) {
+      const reloaded = sessionStorage.getItem('hrj_eb_chunk_reload');
+      if (!reloaded) {
+        sessionStorage.setItem('hrj_eb_chunk_reload', '1');
+        window.location.reload();
+      }
+    }
   }
 
   handleReset = () => {
@@ -26,8 +41,23 @@ export class ErrorBoundary extends React.Component {
     window.location.href = '/';
   };
 
+  handleReload = () => {
+    try {
+      sessionStorage.clear();
+    } catch {
+      // ignore
+    }
+    window.location.reload();
+  };
+
   render() {
     if (this.state.hasError) {
+      const isChunkError =
+        this.state.error?.message?.includes('Failed to fetch dynamically imported module') ||
+        this.state.error?.message?.includes('Importing a module script failed') ||
+        this.state.error?.name === 'ChunkLoadError' ||
+        String(this.state.error).includes('dynamically imported module');
+
       return (
         <div className="min-h-screen bg-[#13071C] flex flex-col items-center justify-center p-6 text-center select-none text-white">
           <div className="absolute w-[400px] h-[400px] rounded-full bg-[#DDA0DD]/5 blur-[120px] pointer-events-none" />
@@ -35,12 +65,15 @@ export class ErrorBoundary extends React.Component {
             <span className="text-5xl block animate-bounce">💎</span>
           </div>
           <h1 className="serif-luxury text-2xl sm:text-3xl font-extrabold tracking-wider gold-metallic-text uppercase mb-3">
-            Maison Care Required
+            {isChunkError ? 'New Storefront Update Available' : 'Maison Care Required'}
           </h1>
           <p className="text-xs tracking-widest text-[#DDA0DD]/80 max-w-md mx-auto leading-relaxed mb-4 font-sans normal-case">
-            A boutique runtime exception has occurred. Our master artisans are already notified.
+            {isChunkError 
+              ? 'A fresh update has been deployed to HR Jewellers & Sons. Please refresh to load the latest collection and features.'
+              : 'A boutique runtime exception has occurred. Our master artisans are already notified.'}
           </p>
-          {this.state.error && (
+
+          {this.state.error && !isChunkError && (
             <div className="bg-black/50 border border-pink-500/30 rounded-xl p-3 max-w-lg mx-auto mb-6 text-left overflow-auto max-h-40">
               <p className="text-pink-400 font-mono text-[11px] font-bold">{this.state.error?.toString()}</p>
               {this.state.error?.stack && (
@@ -48,18 +81,19 @@ export class ErrorBoundary extends React.Component {
               )}
             </div>
           )}
+
           <div className="flex flex-wrap items-center justify-center gap-4">
             <button
-              onClick={() => { this.setState({ hasError: false, error: null }); window.location.href = '/'; }}
-              className="px-6 py-2.5 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 border bg-[#DDA0DD] text-white hover:bg-white hover:text-black border-transparent cursor-pointer shadow-md"
+              onClick={this.handleReload}
+              className="px-6 py-2.5 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 border bg-[#DDA0DD] text-white hover:bg-white hover:text-black border-transparent cursor-pointer shadow-md font-bold"
             >
-              Return to Storefront
+              Update &amp; Refresh Now
             </button>
             <button
-              onClick={this.handleReset}
+              onClick={() => { this.setState({ hasError: false, error: null }); window.location.href = '/'; }}
               className="px-6 py-2.5 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 border border-white/30 text-white hover:bg-white/10 cursor-pointer shadow-md bg-transparent"
             >
-              Reset &amp; Reload
+              Return to Storefront
             </button>
           </div>
         </div>

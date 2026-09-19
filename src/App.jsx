@@ -11,7 +11,33 @@ import ErrorBoundary from './ErrorBoundary';
 import MainLayout from './layouts/MainLayout';
 import Loader from './components/Loader';
 
-const Admin = React.lazy(() => import('./Admin'));
+// Robust dynamic import with automatic single-retry/auto-refresh on stale deployment chunk errors
+const lazyWithRetry = (importFn, name = 'Component') =>
+  React.lazy(async () => {
+    const isRetry = sessionStorage.getItem(`hrj_chunk_retry_${name}`);
+    try {
+      const module = await importFn();
+      sessionStorage.removeItem(`hrj_chunk_retry_${name}`);
+      return module;
+    } catch (error) {
+      console.warn(`Dynamic chunk import failed for ${name}:`, error);
+      const isChunkError =
+        error?.message?.includes('Failed to fetch dynamically imported module') ||
+        error?.message?.includes('Importing a module script failed') ||
+        error?.name === 'ChunkLoadError' ||
+        String(error).includes('dynamically imported module');
+
+      if (isChunkError && !isRetry) {
+        sessionStorage.setItem(`hrj_chunk_retry_${name}`, '1');
+        // Auto-refresh the window to fetch the latest deployed manifest
+        window.location.reload();
+        return new Promise(() => {}); // prevent further error execution while page reloads
+      }
+      throw error;
+    }
+  });
+
+const Admin = lazyWithRetry(() => import('./Admin'), 'Admin');
 
 // Web Audio API dynamic Sound Synth
 class LuxurySynth {
@@ -70,21 +96,21 @@ class LuxurySynth {
   }
 }
 
-const Home = React.lazy(() => import('./pages/Home'));
-const Collections = React.lazy(() => import('./pages/Collections'));
-const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
-const GoldReserve = React.lazy(() => import('./pages/GoldReserve'));
-const Offers = React.lazy(() => import('./pages/Offers'));
-const GoldCoins = React.lazy(() => import('./pages/GoldCoins'));
-const Heritage = React.lazy(() => import('./pages/Heritage'));
-const Valuation = React.lazy(() => import('./pages/Valuation'));
-const Savings = React.lazy(() => import('./pages/Savings'));
-const SavingsEnroll = React.lazy(() => import('./pages/SavingsEnroll'));
-const Checkout = React.lazy(() => import('./pages/Checkout'));
-const Showrooms = React.lazy(() => import('./pages/Showrooms'));
-const TermsAndConditions = React.lazy(() => import('./pages/TermsAndConditions'));
-const PrivacyPolicy = React.lazy(() => import('./pages/PrivacyPolicy'));
-const AboutUs = React.lazy(() => import('./pages/AboutUs'));
+const Home = lazyWithRetry(() => import('./pages/Home'), 'Home');
+const Collections = lazyWithRetry(() => import('./pages/Collections'), 'Collections');
+const ProductDetail = lazyWithRetry(() => import('./pages/ProductDetail'), 'ProductDetail');
+const GoldReserve = lazyWithRetry(() => import('./pages/GoldReserve'), 'GoldReserve');
+const Offers = lazyWithRetry(() => import('./pages/Offers'), 'Offers');
+const GoldCoins = lazyWithRetry(() => import('./pages/GoldCoins'), 'GoldCoins');
+const Heritage = lazyWithRetry(() => import('./pages/Heritage'), 'Heritage');
+const Valuation = lazyWithRetry(() => import('./pages/Valuation'), 'Valuation');
+const Savings = lazyWithRetry(() => import('./pages/Savings'), 'Savings');
+const SavingsEnroll = lazyWithRetry(() => import('./pages/SavingsEnroll'), 'SavingsEnroll');
+const Checkout = lazyWithRetry(() => import('./pages/Checkout'), 'Checkout');
+const Showrooms = lazyWithRetry(() => import('./pages/Showrooms'), 'Showrooms');
+const TermsAndConditions = lazyWithRetry(() => import('./pages/TermsAndConditions'), 'TermsAndConditions');
+const PrivacyPolicy = lazyWithRetry(() => import('./pages/PrivacyPolicy'), 'PrivacyPolicy');
+const AboutUs = lazyWithRetry(() => import('./pages/AboutUs'), 'AboutUs');
 
 import { StorageService } from './services/StorageService';
 
