@@ -1817,8 +1817,9 @@ export default function ProductDetail({
       )}
       {/* Gold Mine 11 + 1 Plan Popup Modal (HR Jewellers Royal Gold Luxury Theme) */}
       {planModalOpen && (() => {
-        const planRawPrice = Number(computedProductPrice || detailProduct?.price || 50000);
-        const planRecommendedMonthly = Math.max(2000, Math.ceil((planRawPrice / 11) / 100) * 100);
+        const planRawPrice = Math.max(0, Number(computedProductPrice || detailProduct?.price || 0));
+        // Calculate recommended monthly amount by dividing product value by 11 months
+        const planRecommendedMonthly = planRawPrice > 0 ? Math.round(planRawPrice / 11) : 2000;
         const planTotalPayment = planRecommendedMonthly * 11;
         const planFree12thBonus = planRecommendedMonthly;
         const planTotalMaturity = planRecommendedMonthly * 12;
@@ -1826,10 +1827,10 @@ export default function ProductDetail({
 
         return (
           <div className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-sm select-none">
-            <div className="relative w-full max-w-[560px] bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(184,137,60,0.3)] overflow-hidden border border-[#E7DED2] text-left my-auto flex flex-col max-h-[92vh] animate-scale-up">
+            <div className="relative w-full max-w-[560px] bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(184,137,60,0.3)] overflow-hidden border border-[#E7DED2] text-left my-auto flex flex-col max-h-[94vh] animate-scale-up">
               
               {/* Modal Header */}
-              <div className="flex items-center justify-between px-6 py-4.5 border-b border-[#E7DED2] bg-[#FAF8F5] shrink-0">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[#E7DED2] bg-[#FAF8F5] shrink-0">
                 <div className="flex items-center gap-3.5">
                   <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#B8893C] to-[#8C6226] flex items-center justify-center text-white text-lg shadow-sm">
                     💎
@@ -1853,53 +1854,53 @@ export default function ProductDetail({
               </div>
 
               {/* Modal Scrollable Body */}
-              <div className="p-6 sm:p-7 overflow-y-auto space-y-6 flex-1">
+              <div className="p-5 sm:p-6 overflow-y-auto space-y-4 flex-1">
                 
                 {/* 3-Step Milestone Stepper */}
-                <div className="flex items-center justify-between px-2 pt-1">
+                <div className="flex items-center justify-between px-2 pt-0.5">
                   {/* Step 1 */}
                   <div className="flex flex-col items-center text-center w-28 shrink-0">
-                    <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#B8893C] via-[#C8A646] to-[#8C6226] text-white flex items-center justify-center shadow-md ring-4 ring-[#FAF6F0]">
+                    <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-[#B8893C] via-[#C8A646] to-[#8C6226] text-white flex items-center justify-center shadow-md ring-4 ring-[#FAF6F0]">
                       <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-[#181818] text-[#E6C687] text-[10px] font-extrabold flex items-center justify-center border border-[#E6C687] shadow-xs">1</span>
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" />
                       </svg>
                     </div>
-                    <span className="text-[12px] font-bold text-[#181818] mt-2.5 leading-tight font-serif">Pay<br/>Monthly</span>
+                    <span className="text-[11px] sm:text-[12px] font-bold text-[#181818] mt-2 leading-tight font-serif">Pay<br/>Monthly</span>
                   </div>
 
                   {/* Dotted Connector 1 */}
-                  <div className="flex-1 h-0 border-t-2 border-dashed border-[#DFC9A5] mx-2 -mt-7"></div>
+                  <div className="flex-1 h-0 border-t-2 border-dashed border-[#DFC9A5] mx-2 -mt-6"></div>
 
                   {/* Step 2 */}
                   <div className="flex flex-col items-center text-center w-28 shrink-0">
-                    <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#B8893C] via-[#C8A646] to-[#8C6226] text-white flex items-center justify-center shadow-md ring-4 ring-[#FAF6F0]">
+                    <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-[#B8893C] via-[#C8A646] to-[#8C6226] text-white flex items-center justify-center shadow-md ring-4 ring-[#FAF6F0]">
                       <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-[#181818] text-[#E6C687] text-[10px] font-extrabold flex items-center justify-center border border-[#E6C687] shadow-xs">2</span>
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.386l4.41-2.585c.827-.486 1.054-1.567.355-2.266L11.16 3.659A2.25 2.25 0 009.568 3z" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
                       </svg>
                     </div>
-                    <span className="text-[12px] font-bold text-[#181818] mt-2.5 leading-tight font-serif">Get Special<br/>Discounts</span>
+                    <span className="text-[11px] sm:text-[12px] font-bold text-[#181818] mt-2 leading-tight font-serif">Get Special<br/>Discounts</span>
                   </div>
 
                   {/* Dotted Connector 2 */}
-                  <div className="flex-1 h-0 border-t-2 border-dashed border-[#DFC9A5] mx-2 -mt-7"></div>
+                  <div className="flex-1 h-0 border-t-2 border-dashed border-[#DFC9A5] mx-2 -mt-6"></div>
 
                   {/* Step 3 */}
                   <div className="flex flex-col items-center text-center w-28 shrink-0">
-                    <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#B8893C] via-[#C8A646] to-[#8C6226] text-white flex items-center justify-center shadow-md ring-4 ring-[#FAF6F0]">
+                    <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-[#B8893C] via-[#C8A646] to-[#8C6226] text-white flex items-center justify-center shadow-md ring-4 ring-[#FAF6F0]">
                       <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-[#181818] text-[#E6C687] text-[10px] font-extrabold flex items-center justify-center border border-[#E6C687] shadow-xs">3</span>
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                       </svg>
                     </div>
-                    <span className="text-[12px] font-bold text-[#181818] mt-2.5 leading-tight font-serif">Redeem &amp;<br/>Purchase</span>
+                    <span className="text-[11px] sm:text-[12px] font-bold text-[#181818] mt-2 leading-tight font-serif">Redeem &amp;<br/>Purchase</span>
                   </div>
                 </div>
 
                 {/* Values Breakdown Box */}
-                <div className="bg-[#FAF8F5] border border-[#E7DED2] rounded-3xl p-5 sm:p-6 space-y-4.5 shadow-xs">
+                <div className="bg-[#FAF8F5] border border-[#E7DED2] rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-xs">
                   
                   {/* Product Value Row */}
                   <div className="flex justify-between items-center text-sm sm:text-base">
@@ -1908,53 +1909,53 @@ export default function ProductDetail({
                   </div>
 
                   {/* Recommended Monthly Amount Banner */}
-                  <div className="bg-gradient-to-r from-[#FBF7F0] via-[#FFFDF9] to-[#FBF7F0] border-2 border-solid border-[#DFC9A5] rounded-2xl px-5 py-3.5 flex justify-between items-center shadow-xs">
+                  <div className="bg-gradient-to-r from-[#FBF7F0] via-[#FFFDF9] to-[#FBF7F0] border-2 border-solid border-[#DFC9A5] rounded-xl px-4 py-3 flex justify-between items-center shadow-xs">
                     <span className="text-xs sm:text-sm font-bold text-[#6B4E1B] uppercase tracking-wide">Recommended Monthly Amount:</span>
                     <span className="text-lg sm:text-xl font-black text-[#181818] font-sans">₹ {Number(planRecommendedMonthly).toLocaleString('en-IN')}</span>
                   </div>
 
                   {/* Your total payment */}
-                  <div className="pt-2.5 border-t border-[#E7DED2]">
-                    <div className="flex justify-between items-center text-sm sm:text-base">
+                  <div className="pt-2 border-t border-[#E7DED2]">
+                    <div className="flex justify-between items-center text-sm">
                       <span className="text-[#181818] font-semibold">Your total payment</span>
                       <span className="text-[#181818] font-extrabold font-sans">₹ {Number(planTotalPayment).toLocaleString('en-IN')}</span>
                     </div>
-                    <div className="flex justify-between items-center text-xs text-[#888888] font-medium mt-1">
+                    <div className="flex justify-between items-center text-xs text-[#888888] font-medium mt-0.5">
                       <span>Period of 11 months</span>
                       <span>₹ {Number(planRecommendedMonthly).toLocaleString('en-IN')} x 11</span>
                     </div>
                   </div>
 
                   {/* 100% Discount on 12th installment */}
-                  <div className="pt-2.5 border-t border-[#E7DED2]">
-                    <div className="flex justify-between items-center text-sm sm:text-base">
+                  <div className="pt-2 border-t border-[#E7DED2]">
+                    <div className="flex justify-between items-center text-sm">
                       <span className="text-[#B8893C] font-bold">100% Free Discount on 12th installment</span>
                       <span className="text-[#B8893C] font-black font-sans text-base">+ ₹ {Number(planFree12thBonus).toLocaleString('en-IN')}</span>
                     </div>
-                    <div className="text-xs text-[#888888] font-medium mt-1">
+                    <div className="text-xs text-[#888888] font-medium mt-0.5">
                       100% bonus month paid by HR Jewellers &amp; Sons
                     </div>
                   </div>
 
                   {/* Buy any jewellery worth */}
-                  <div className="pt-2.5 border-t border-[#E7DED2]">
-                    <div className="flex justify-between items-center text-sm sm:text-base">
+                  <div className="pt-2 border-t border-[#E7DED2]">
+                    <div className="flex justify-between items-center text-sm">
                       <span className="text-[#181818] font-semibold">Buy any jewellery worth</span>
                       <span className="text-[#181818] font-black font-sans text-base">₹ {Number(planTotalMaturity).toLocaleString('en-IN')}</span>
                     </div>
-                    <div className="text-xs text-[#888888] font-medium mt-1">
+                    <div className="text-xs text-[#888888] font-medium mt-0.5">
                       After 12th month at any showroom / online
                     </div>
                   </div>
 
                   {/* You effectively pay */}
-                  <div className="pt-2.5 border-t border-[#E7DED2]">
+                  <div className="pt-2 border-t border-[#E7DED2]">
                     <div className="flex justify-between items-center text-sm sm:text-base">
                       <span className="text-[#181818] font-bold">You effectively pay</span>
                       <span className="text-[#181818] font-black font-sans text-lg">₹ {Number(planEffectivePay).toLocaleString('en-IN')}</span>
                     </div>
-                    <div className="mt-2 flex items-center">
-                      <span className="bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] text-xs font-black px-3 py-1 rounded-lg uppercase tracking-wider">
+                    <div className="mt-1.5 flex items-center">
+                      <span className="bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] text-xs font-black px-3 py-0.5 rounded-lg uppercase tracking-wider">
                         8.33% INSTANT DISCOUNT!
                       </span>
                     </div>
@@ -1970,7 +1971,7 @@ export default function ProductDetail({
               </div>
 
               {/* Modal Bottom CTA */}
-              <div className="p-5 sm:p-6 bg-white border-t border-[#E7DED2] shrink-0">
+              <div className="p-4 sm:p-5 bg-white border-t border-[#E7DED2] shrink-0">
                 <button
                   onClick={() => {
                     triggerAudio?.('shimmer');
@@ -1982,7 +1983,7 @@ export default function ProductDetail({
                     setPlanModalOpen(false);
                     navigateTo('savings-enroll');
                   }}
-                  className="w-full h-14 bg-gradient-to-r from-[#B8893C] via-[#D5A75C] to-[#B8893C] hover:brightness-110 active:scale-[0.99] text-white font-bold text-xs sm:text-sm uppercase tracking-[0.2em] rounded-2xl flex items-center justify-center transition-all cursor-pointer shadow-[0_8px_25px_rgba(184,137,60,0.35)] border-none font-sans"
+                  className="w-full h-13 sm:h-14 bg-gradient-to-r from-[#B8893C] via-[#D5A75C] to-[#B8893C] hover:brightness-110 active:scale-[0.99] text-white font-bold text-xs sm:text-sm uppercase tracking-[0.2em] rounded-2xl flex items-center justify-center transition-all cursor-pointer shadow-[0_8px_25px_rgba(184,137,60,0.35)] border-none font-sans"
                 >
                   START GOLD MINE PLAN
                 </button>
