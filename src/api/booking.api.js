@@ -56,12 +56,16 @@ export const bookingApi = {
 
   // Create new customer order
   async createOrder(orderData) {
-    const docRef = await addDoc(collection(db, 'orders'), {
+    const invoiceNo = orderData.invoiceNo || orderData.customInvoiceNo || `HRJ/${new Date().getFullYear()}/${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    const payload = {
       ...orderData,
-      createdDate: new Date().toISOString(),
-      orderStatus: 'pending'
-    });
-    return { id: docRef.id, ...orderData };
+      invoiceNo,
+      invoiceEmailSent: false,
+      createdDate: orderData.createdDate || new Date().toISOString(),
+      orderStatus: orderData.orderStatus || 'pending'
+    };
+    const docRef = await addDoc(collection(db, 'orders'), payload);
+    return { id: docRef.id, ...payload };
   },
 
   // Subscribe to live orders
@@ -78,6 +82,118 @@ export const bookingApi = {
     const docRef = doc(db, 'orders', orderId);
     await updateDoc(docRef, { orderStatus });
     return { id: orderId, orderStatus };
+  },
+
+  // Update order email sent status
+  async updateOrderEmailStatus(orderId, emailData = {}) {
+    try {
+      const docRef = doc(db, 'orders', orderId);
+      await updateDoc(docRef, {
+        invoiceEmailSent: emailData.invoiceEmailSent ?? true,
+        emailSentAt: emailData.emailSentAt || new Date().toISOString(),
+        invoiceEmailRecipient: emailData.invoiceEmailRecipient || '',
+        invoiceEmailError: emailData.invoiceEmailError || null
+      });
+      return { id: orderId, ...emailData };
+    } catch (err) {
+      console.error('Failed to update order email status in Firestore:', err);
+      throw err;
+    }
+  },
+
+  // Send or resend order confirmation email with attached PDF invoice
+  async sendOrderConfirmationEmail(orderData) {
+    const orderId = orderData.orderId || orderData.id;
+    const recipient = orderData.email || orderData.customerEmail || 'hrjewellerssons@gmail.com';
+    const invoiceNo = orderData.invoiceNo || orderData.customInvoiceNo || `HRJ/${new Date().getFullYear()}/${(orderId || '').slice(0, 8).toUpperCase()}`;
+
+    const res = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'new_order',
+        recipient,
+        data: {
+          orderId,
+          invoiceNo,
+          name: orderData.recipientName || orderData.name || 'Valued Patron',
+          phone: orderData.mobile || orderData.phone || 'N/A',
+          email: recipient,
+          deliveryType: orderData.deliveryType || 'home',
+          storeBranch: orderData.storeBranch || 'Tilak Nagar Showroom, Bikaner',
+          address: orderData.address || (orderData.deliveryType === 'store' ? `Store Pickup: ${orderData.storeBranch || 'Showroom'}` : 'Showroom Collection'),
+          paymentMethod: orderData.paymentMethod === 'cod' ? 'Cash on Showroom Delivery' : (orderData.paymentMethod || 'Razorpay Online Payment'),
+          paymentStatus: orderData.paymentStatus || (orderData.paymentMethod === 'cod' ? 'PAYMENT ON DELIVERY' : 'PAID'),
+          items: orderData.items || [],
+          subtotal: orderData.subtotal || Math.round((orderData.total || 0) / 1.03),
+          gst: orderData.gst || Math.round((orderData.total || 0) - (orderData.total || 0) / 1.03),
+          total: orderData.total || orderData.totalAmount || 0,
+          discount: orderData.discount || 0,
+          createdDate: orderData.createdDate || new Date().toISOString()
+        }
+      })
+    });
+
+    if (!res.ok) {
+      const errJson = await res.json().catch(() => ({}));
+      throw new Error(errJson.error || `Email service error: HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  },
+
+  // Resend order invoice email and persist status
+  async resendOrderInvoiceEmail(order) {
+    const orderId = order.id;
+    const recipient = order.email || order.customerEmail || 'hrjewellerssons@gmail.com';
+    const emailResult = await this.sendOrderConfirmationEmail(order);
+    await this.updateOrderEmailStatus(orderId, {
+      invoiceEmailSent: true,
+      emailSentAt: new Date().toISOString(),
+      invoiceEmailRecipient: recipient
+    });
+    return emailResult;
+  },
+
+  // 1-Click Client Download Invoice PDF
+  async downloadInvoicePdf(orderData) {
+    const orderId = orderData.orderId || orderData.id || 'Order';
+    const invoiceNo = orderData.invoiceNo || orderData.customInvoiceNo || `HRJ/${new Date().getFullYear()}/${orderId.slice(0, 8).toUpperCase()}`;
+
+    const response = await fetch('/api/download-invoice', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...orderData,
+        orderId,
+        invoiceNo,
+        recipientName: orderData.recipientName || orderData.name || 'Valued Patron',
+        phone: orderData.mobile || orderData.phone || 'N/A',
+        email: orderData.email || orderData.customerEmail || '',
+        address: orderData.address || (orderData.deliveryType === 'store' ? `Store Pickup: ${orderData.storeBranch || 'Showroom'}` : 'Showroom Collection'),
+        items: orderData.items || [],
+        subtotal: orderData.subtotal || Math.round((orderData.total || 0) / 1.03),
+        gst: orderData.gst || Math.round((orderData.total || 0) - (orderData.total || 0) / 1.03),
+        total: orderData.total || orderData.totalAmount || 0,
+        discount: orderData.discount || 0
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to download invoice PDF: ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = `Invoice_HRJ_${orderId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
   },
 
   // Delete order

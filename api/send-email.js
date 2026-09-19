@@ -1,6 +1,8 @@
-/* global process */
-// Node.js Vercel Serverless Function to securely dispatch transactional email notifications.
+﻿/* global process */
+// Node.js Vercel Serverless Function to securely dispatch transactional email notifications with attached invoice PDF.
 // Uses a zero-dependency fetch call to the Resend API to protect credentials from the client side.
+
+import { generateInvoicePdf } from './utils/generate-invoice-pdf.js';
 
 export default async function handler(req, res) {
   // CORS Headers
@@ -20,68 +22,132 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { type, recipient, data } = req.body;
+  const { type, recipient, data = {} } = req.body || {};
   const apiKey = process.env.RESEND_API_KEY;
 
-  if (!apiKey) {
-    console.warn("RESEND_API_KEY is not defined in environment variables. Email mock triggered.");
-    return res.status(200).json({
-      success: true,
-      mock: true,
-      message: "Resend key missing; simulated dispatch completed successfully."
-    });
-  }
+  const targetEmail = recipient || data.email || data.customerEmail || 'hrjewellerssons@gmail.com';
 
   let subject;
   let html;
+  let attachments = [];
 
   if (type === 'new_order') {
-    subject = `Official Tax Invoice & Order Confirmation #${data.orderId} - HR Jewellers & Sons`;
-    const subtotal = data.subtotal || Math.round(data.total / 1.03);
-    const gstAmount = data.gst || Math.round(data.total - subtotal);
-    const itemsList = Array.isArray(data.items) ? data.items : [];
+    const orderId = String(data.orderId || data.id || 'N/A');
+    const invoiceNo = data.invoiceNo || data.customInvoiceNo || `HRJ/${new Date().getFullYear()}/${orderId.slice(0, 8).toUpperCase()}`;
+    const dateStr = data.createdDate || data.date
+      ? new Date(data.createdDate || data.date).toLocaleDateString('en-IN', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      : new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
+    subject = `Order Confirmed — Order #${orderId} | HR Jewellers & Sons`;
+    const total = Number(data.total || data.totalAmount || 0);
+    const subtotal = Number(data.subtotal || Math.round(total / 1.03));
+    const gstAmount = Number(data.gst || Math.round(total - subtotal));
+    const discount = Number(data.discount || 0);
+    const itemsList = Array.isArray(data.items) ? data.items : [];
+    const customerName = data.name || data.recipientName || 'Valued Patron';
+    const customerPhone = data.phone || data.mobile || data.recipientMobile || 'N/A';
+    const deliveryAddress = data.address || (data.deliveryType === 'store' ? `Showroom Pickup (${data.storeBranch || 'Bikaner Branch'})` : 'Showroom Collection');
+    const paymentMethod = String(data.paymentMethod || 'Online / Verified').toUpperCase();
+    const paymentStatus = String(data.paymentStatus || 'PAID / CONFIRMED').toUpperCase();
+
+    // 1. Generate Invoice PDF Buffer
+    try {
+      const pdfBuffer = await generateInvoicePdf({
+        ...data,
+        orderId,
+        invoiceNo,
+        recipientName: customerName,
+        phone: customerPhone,
+        email: targetEmail,
+        address: deliveryAddress,
+        total,
+        subtotal,
+        gst: gstAmount,
+        discount
+      });
+
+      if (pdfBuffer && pdfBuffer.length > 0) {
+        attachments.push({
+          filename: `Invoice_HRJ_${orderId}.pdf`,
+          content: pdfBuffer.toString('base64')
+        });
+      }
+    } catch (pdfErr) {
+      console.error('Invoice PDF generation failed in email handler:', pdfErr);
+    }
+
+    // 2. Build Luxury Responsive HTML Email
     html = `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 650px; margin: auto; padding: 30px; border: 1px solid #D4AF37; background-color: #0A0A0A; color: #F5E6C4; border-radius: 16px;">
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 650px; margin: auto; padding: 25px sm:35px; border: 1px solid #D4AF37; background-color: #0A0A0A; color: #F5E6C4; border-radius: 16px;">
         <!-- Header -->
         <div style="text-align: center; border-bottom: 2px solid #D4AF37; padding-bottom: 20px;">
-          <h1 style="color: #D4AF37; font-family: 'Playfair Display', Georgia, serif; font-size: 26px; font-weight: bold; letter-spacing: 0.15em; margin: 0;">HR JEWELLERS & SONS</h1>
+          <h1 style="color: #D4AF37; font-family: 'Playfair Display', Georgia, serif; font-size: 26px; font-weight: bold; letter-spacing: 0.15em; margin: 0;">HR JEWELLERS &amp; SONS</h1>
           <p style="font-size: 10px; color: #E6C687; letter-spacing: 0.3em; margin: 6px 0 0 0; text-transform: uppercase;">Tradition of Trust Since 1996 · Bikaner, Rajasthan</p>
           <p style="font-size: 11px; color: rgba(255,255,255,0.7); margin: 6px 0 0 0;">
             GSTIN: <strong style="color: #D4AF37;">08AASFH1262R1ZM</strong> | State: 08-Rajasthan | Email: hrjewellerssons@gmail.com
           </p>
         </div>
 
+        <!-- Greeting & Confirmation Headline -->
+        <div style="margin: 25px 0 15px 0; text-align: left;">
+          <h2 style="color: #FFFFFF; font-size: 18px; margin: 0 0 8px 0; font-family: 'Playfair Display', Georgia, serif;">Hello ${customerName},</h2>
+          <p style="font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.6; margin: 0;">
+            Thank you for shopping with <strong style="color: #D4AF37;">HR Jewellers &amp; Sons</strong>. Your jewellery order has been successfully confirmed and registered in our atelier.
+          </p>
+        </div>
+
         <!-- Order Summary Box -->
-        <div style="background-color: rgba(212,175,55,0.05); border: 1px solid rgba(212,175,55,0.25); border-radius: 12px; padding: 20px; margin: 25px 0;">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-            <span style="font-size: 12px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.1em;">TAX INVOICE / ORDER ID:</span>
-            <strong style="color: #D4AF37; font-family: monospace; font-size: 15px; letter-spacing: 0.05em;">#${data.orderId}</strong>
-          </div>
-          <div style="border-top: 1px solid rgba(212,175,55,0.15); padding-top: 12px; font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.9);">
-            <p style="margin: 3px 0;"><strong>Customer Name:</strong> ${data.name || 'Valued Patron'}</p>
-            <p style="margin: 3px 0;"><strong>Mobile:</strong> ${data.phone || 'N/A'}</p>
-            <p style="margin: 3px 0;"><strong>Delivery / Pickup Destination:</strong> ${data.address || 'Showroom Collection'}</p>
-            <p style="margin: 3px 0;"><strong>Payment Mode:</strong> <span style="color: #10B981; font-weight: bold;">${(data.paymentMethod || 'Online / Verified').toUpperCase()}</span></p>
-          </div>
+        <div style="background-color: rgba(212,175,55,0.06); border: 1px solid rgba(212,175,55,0.25); border-radius: 12px; padding: 18px; margin: 20px 0;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px; color: rgba(255,255,255,0.9);">
+            <tr>
+              <td style="padding: 4px 0; color: rgba(255,255,255,0.6); text-transform: uppercase;">ORDER ID:</td>
+              <td style="padding: 4px 0; text-align: right; color: #D4AF37; font-weight: bold; font-family: monospace; font-size: 14px;">#${orderId}</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: rgba(255,255,255,0.6); text-transform: uppercase;">TAX INVOICE NO:</td>
+              <td style="padding: 4px 0; text-align: right; color: #E6C687; font-family: monospace;">${invoiceNo}</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: rgba(255,255,255,0.6); text-transform: uppercase;">ORDER DATE:</td>
+              <td style="padding: 4px 0; text-align: right;">${dateStr}</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: rgba(255,255,255,0.6); text-transform: uppercase;">PAYMENT STATUS:</td>
+              <td style="padding: 4px 0; text-align: right; color: #10B981; font-weight: bold;">${paymentStatus} (${paymentMethod})</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: rgba(255,255,255,0.6); text-transform: uppercase;">CONTACT MOBILE:</td>
+              <td style="padding: 4px 0; text-align: right;">${customerPhone}</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: rgba(255,255,255,0.6); text-transform: uppercase;">DELIVERY ADDRESS:</td>
+              <td style="padding: 4px 0; text-align: right; max-width: 280px; word-break: break-word;">${deliveryAddress}</td>
+            </tr>
+          </table>
         </div>
 
         <!-- 1-Click Track Button -->
         <div style="text-align: center; margin: 25px 0;">
-          <a href="https://hrjewellers.in/?track=${data.orderId}" style="background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%); color: #000; font-weight: 800; font-size: 13px; text-decoration: none; padding: 14px 28px; border-radius: 10px; display: inline-block; letter-spacing: 0.15em; text-transform: uppercase; box-shadow: 0 4px 15px rgba(212,175,55,0.3);">
+          <a href="https://hrjewellers.in/?track=${orderId}" style="background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%); color: #000000; font-weight: 800; font-size: 13px; text-decoration: none; padding: 14px 28px; border-radius: 10px; display: inline-block; letter-spacing: 0.15em; text-transform: uppercase; box-shadow: 0 4px 15px rgba(212,175,55,0.3);">
             🚚 Track Live Order Status
           </a>
         </div>
 
         <!-- Items Table -->
-        <h3 style="color: #D4AF37; font-family: 'Playfair Display', Georgia, serif; font-size: 16px; margin: 25px 0 10px 0; border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 8px;">
+        <h3 style="color: #D4AF37; font-family: 'Playfair Display', Georgia, serif; font-size: 15px; margin: 25px 0 10px 0; border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 8px;">
           Purchased Jewellery Items
         </h3>
         <table style="width: 100%; border-collapse: collapse; font-size: 12px; color: rgba(255,255,255,0.9);">
           <thead>
             <tr style="border-bottom: 1px solid #D4AF37; text-align: left; color: #E6C687; font-size: 11px; text-transform: uppercase;">
               <th style="padding: 8px 4px;">Item Description</th>
-              <th style="padding: 8px 4px;">Purity / Weight</th>
+              <th style="padding: 8px 4px; text-align: center;">Purity / Spec</th>
               <th style="padding: 8px 4px; text-align: center;">Qty</th>
               <th style="padding: 8px 4px; text-align: right;">Amount (INR)</th>
             </tr>
@@ -89,8 +155,13 @@ export default async function handler(req, res) {
           <tbody>
             ${itemsList.map(item => `
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
-                <td style="padding: 10px 4px; font-weight: 600;">${item.name}</td>
-                <td style="padding: 10px 4px; color: rgba(255,255,255,0.6);">${item.carat || item.weight || 'BIS 916 Hallmarked'}</td>
+                <td style="padding: 10px 4px; font-weight: 600;">
+                  ${item.name}
+                  ${item.desc ? `<div style="font-size: 10px; color: rgba(255,255,255,0.5); font-weight: normal;">${item.desc}</div>` : ''}
+                </td>
+                <td style="padding: 10px 4px; text-align: center; color: rgba(255,255,255,0.6); font-size: 11px;">
+                  ${item.carat || item.weight ? `${item.carat || ''} ${item.weight ? `(${item.weight}g)` : ''}` : 'BIS 916 Hallmarked'}
+                </td>
                 <td style="padding: 10px 4px; text-align: center;">${item.quantity || 1}</td>
                 <td style="padding: 10px 4px; text-align: right; color: #D4AF37; font-weight: bold;">₹${((item.price || 0) * (item.quantity || 1)).toLocaleString('en-IN')}</td>
               </tr>
@@ -104,21 +175,36 @@ export default async function handler(req, res) {
             <span>Taxable Subtotal:</span>
             <span>₹${Number(subtotal).toLocaleString('en-IN')}</span>
           </div>
+          ${discount > 0 ? `
+            <div style="display: flex; justify-content: space-between; color: #10B981;">
+              <span>Special Scheme Discount:</span>
+              <span>- ₹${Number(discount).toLocaleString('en-IN')}</span>
+            </div>
+          ` : ''}
           <div style="display: flex; justify-content: space-between; color: rgba(255,255,255,0.7);">
-            <span>GST (3% Jewelry Tax):</span>
+            <span>GST (3% Jewellery Tax):</span>
             <span>₹${Number(gstAmount).toLocaleString('en-IN')}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; color: #10B981;">
+            <span>Fully Insured Shipping:</span>
+            <span>FREE (₹0)</span>
           </div>
           <div style="display: flex; justify-content: space-between; color: #D4AF37; font-size: 17px; font-weight: bold; margin-top: 8px; border-top: 2px solid #D4AF37; padding-top: 8px;">
             <span>Grand Total:</span>
-            <span>₹${Number(data.total).toLocaleString('en-IN')}</span>
+            <span>₹${Number(total).toLocaleString('en-IN')}</span>
           </div>
         </div>
 
+        <!-- Attachment Notice Box -->
+        <div style="background-color: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; margin: 25px 0 15px 0; text-align: center; font-size: 12px; color: #A7F3D0;">
+          📄 <strong>Official Tax Invoice Attached:</strong> Your GST tax invoice (<code>Invoice_HRJ_${orderId}.pdf</code>) is attached to this email for your accounting and insurance records.
+        </div>
+
         <!-- Footer Notice -->
-        <hr style="border: 0; border-top: 1px solid rgba(212, 175, 85, 0.25); margin: 30px 0 15px 0;" />
+        <hr style="border: 0; border-top: 1px solid rgba(212, 175, 85, 0.25); margin: 25px 0 15px 0;" />
         <p style="font-size: 11px; color: rgba(255,255,255,0.5); text-align: center; line-height: 1.6; margin: 0;">
-          All jewellery certified by Bureau of Indian Standards (BIS Hallmarked).<br/>
-          For customer support or custom modifications, call/WhatsApp: <strong style="color: #D4AF37;">+91 97838 43978</strong>
+          All jewellery certified by Bureau of Indian Standards (BIS Hallmarked with unique laser HUID).<br/>
+          For customer concierge or modifications, call/WhatsApp: <strong style="color: #D4AF37;">+91 97838 43978</strong>
         </p>
       </div>
     `;
@@ -226,7 +312,7 @@ export default async function handler(req, res) {
         <hr style="border: 0; border-top: 1px solid rgba(212, 175, 85, 0.35); margin: 20px 0;" />
         <h3 style="color: #fff; font-family: serif; font-weight: normal; font-size: 18px; margin-bottom: 10px;">Administrator Vault Password Reset</h3>
         <p style="font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.6;">
-          A password reset request was initiated for your administrator account: <strong style="color: #D4AF37;">${data.email || recipient}</strong>.
+          A password reset request was initiated for your administrator account: <strong style="color: #D4AF37;">${data.email || targetEmail}</strong>.
         </p>
         <div style="text-align: center; margin: 30px 0;">
           <a href="${data.resetLink}" style="background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%); color: #000; font-weight: bold; font-size: 14px; text-decoration: none; padding: 14px 32px; border-radius: 12px; display: inline-block; letter-spacing: 0.05em;">
@@ -251,24 +337,47 @@ export default async function handler(req, res) {
     html = `<h3>New Activity Recorded</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
   }
 
+  if (!apiKey) {
+    console.warn("RESEND_API_KEY is not defined in environment variables. Simulated email dispatch completed with invoice attachment.");
+    return res.status(200).json({
+      success: true,
+      mock: true,
+      recipient: targetEmail,
+      subject,
+      attachmentsCount: attachments.length,
+      message: "Resend key missing; simulated dispatch completed with invoice PDF attachment."
+    });
+  }
+
   try {
+    const payload = {
+      from: 'HR Jewellers <notifications@resend.dev>',
+      to: [targetEmail],
+      subject: subject,
+      html: html
+    };
+
+    if (attachments.length > 0) {
+      payload.attachments = attachments;
+    }
+
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`
       },
-      body: JSON.stringify({
-        from: 'HR Jewellers <notifications@resend.dev>',
-        to: [recipient || 'hrjewellerssons@gmail.com'],
-        subject: subject,
-        html: html
-      })
+      body: JSON.stringify(payload)
     });
 
     const resData = await response.json();
-    return res.status(200).json({ success: true, data: resData });
+    if (!response.ok) {
+      throw new Error(resData.message || resData.error || 'Resend API error');
+    }
+
+    return res.status(200).json({ success: true, data: resData, recipient: targetEmail });
   } catch (error) {
+    console.error('Email sending failed in /api/send-email:', error);
     return res.status(500).json({ error: error.message });
   }
 }

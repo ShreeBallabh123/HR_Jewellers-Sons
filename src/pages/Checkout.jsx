@@ -33,6 +33,8 @@ export default function Checkout({ navigateTo, triggerAudio }) {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedOrderId, setPlacedOrderId] = useState('');
   const [placedOrderTotal, setPlacedOrderTotal] = useState(0);
+  const [placedOrderFull, setPlacedOrderFull] = useState(null);
+  const [downloadingInvoice, setDownloadingInvoice] = useState(false);
   const [submittingOrder, setSubmittingOrder] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
 
@@ -57,6 +59,36 @@ export default function Checkout({ navigateTo, triggerAudio }) {
   const handleTrackLive = () => {
     triggerAudio?.('click');
     window.dispatchEvent(new CustomEvent('hrj-open-account', { detail: { tab: 'track', orderId: placedOrderId } }));
+  };
+
+  const handleDownloadPlacedInvoice = async () => {
+    if (!placedOrderFull && !placedOrderId) return;
+    setDownloadingInvoice(true);
+    triggerAudio?.('click');
+    try {
+      const orderToDownload = placedOrderFull || {
+        id: placedOrderId,
+        orderId: placedOrderId,
+        recipientName: deliveryForm.recipientName,
+        phone: deliveryForm.mobile,
+        email: deliveryForm.email,
+        address: deliveryType === 'home'
+          ? `${deliveryForm.apartment}, ${deliveryForm.street}, ${deliveryForm.locality}, PIN: ${deliveryForm.pincode}`
+          : `Showroom Pickup: ${deliveryForm.storeBranch}`,
+        deliveryType,
+        storeBranch: deliveryForm.storeBranch,
+        paymentMethod: checkoutForm.method === 'cod' ? 'Cash on Showroom Delivery' : 'Razorpay Online Payment',
+        total: placedOrderTotal,
+        subtotal: Math.round(placedOrderTotal / 1.03),
+        gst: Math.round(placedOrderTotal - placedOrderTotal / 1.03)
+      };
+      await bookingApi.downloadInvoicePdf(orderToDownload);
+    } catch (err) {
+      console.error("Invoice download error:", err);
+      alert("Failed to download invoice PDF. You can also view or print it anytime in Customer Lounge.");
+    } finally {
+      setDownloadingInvoice(false);
+    }
   };
 
   const handleRazorpayPayment = async () => {
@@ -149,6 +181,8 @@ export default function Checkout({ navigateTo, triggerAudio }) {
 
               setPlacedOrderTotal(orderPayload.total);
               const result = await bookingApi.createOrder(orderPayload);
+              const completeSavedOrder = { id: result.id, ...orderPayload, invoiceNo: result.invoiceNo };
+              setPlacedOrderFull(completeSavedOrder);
               requestAndSaveToken(deliveryForm.mobile).catch(err => console.error("Error registering notification token:", err));
 
               // Persist order ID and customer profile locally
@@ -169,27 +203,24 @@ export default function Checkout({ navigateTo, triggerAudio }) {
                 console.warn("Storage save error:", saveErr);
               }
 
-              // Dispatch official GST invoice email to customer & store admin
-              fetch('/api/send-email', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  type: 'new_order',
-                  recipient: deliveryForm.email || 'hrjewellerssons@gmail.com',
-                  data: {
-                    orderId: result.id,
-                    name: deliveryForm.recipientName,
-                    phone: deliveryForm.mobile,
-                    email: deliveryForm.email,
-                    address: orderPayload.address || (deliveryType === 'store' ? `Store Pickup: ${deliveryForm.storeBranch}` : 'Showroom Collection'),
-                    paymentMethod: 'Razorpay Online Payment',
-                    items: orderPayload.items,
-                    subtotal: orderPayload.subtotal,
-                    gst: orderPayload.gst,
-                    total: orderPayload.total
-                  }
-                })
-              }).catch(emailErr => console.warn("Email dispatch error:", emailErr));
+              // Dispatch official GST invoice email with attached PDF to customer
+              bookingApi.sendOrderConfirmationEmail({
+                ...orderPayload,
+                orderId: result.id,
+                invoiceNo: result.invoiceNo
+              }).then(() => {
+                bookingApi.updateOrderEmailStatus(result.id, {
+                  invoiceEmailSent: true,
+                  emailSentAt: new Date().toISOString(),
+                  invoiceEmailRecipient: deliveryForm.email || 'hrjewellerssons@gmail.com'
+                }).catch(e => console.warn("Email status update warning:", e));
+              }).catch(emailErr => {
+                console.warn("Email dispatch error (order remains safely confirmed):", emailErr);
+                bookingApi.updateOrderEmailStatus(result.id, {
+                  invoiceEmailSent: false,
+                  invoiceEmailError: emailErr.message || 'Dispatch error'
+                }).catch(() => {});
+              });
 
               setPlacedOrderId(result.id);
               setOrderPlaced(true);
@@ -276,6 +307,8 @@ export default function Checkout({ navigateTo, triggerAudio }) {
 
       setPlacedOrderTotal(orderPayload.total);
       const result = await bookingApi.createOrder(orderPayload);
+      const completeSavedOrder = { id: result.id, ...orderPayload, invoiceNo: result.invoiceNo };
+      setPlacedOrderFull(completeSavedOrder);
       requestAndSaveToken(deliveryForm.mobile).catch(err => console.error("Error registering notification token:", err));
 
       // Persist order ID and customer profile locally
@@ -296,27 +329,24 @@ export default function Checkout({ navigateTo, triggerAudio }) {
         console.warn("Storage save error:", saveErr);
       }
 
-      // Dispatch official GST invoice email to customer & store admin
-      fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'new_order',
-          recipient: deliveryForm.email || 'hrjewellerssons@gmail.com',
-          data: {
-            orderId: result.id,
-            name: deliveryForm.recipientName,
-            phone: deliveryForm.mobile,
-            email: deliveryForm.email,
-            address: orderPayload.address || (deliveryType === 'store' ? `Store Pickup: ${deliveryForm.storeBranch}` : 'Showroom Collection'),
-            paymentMethod: checkoutForm.method === 'cod' ? 'Cash on Delivery / Showroom' : checkoutForm.method,
-            items: orderPayload.items,
-            subtotal: orderPayload.subtotal,
-            gst: orderPayload.gst,
-            total: orderPayload.total
-          }
-        })
-      }).catch(emailErr => console.warn("Email dispatch error:", emailErr));
+      // Dispatch official GST invoice email with attached PDF to customer
+      bookingApi.sendOrderConfirmationEmail({
+        ...orderPayload,
+        orderId: result.id,
+        invoiceNo: result.invoiceNo
+      }).then(() => {
+        bookingApi.updateOrderEmailStatus(result.id, {
+          invoiceEmailSent: true,
+          emailSentAt: new Date().toISOString(),
+          invoiceEmailRecipient: deliveryForm.email || 'hrjewellerssons@gmail.com'
+        }).catch(e => console.warn("Email status update warning:", e));
+      }).catch(emailErr => {
+        console.warn("Email dispatch error (order remains safely confirmed):", emailErr);
+        bookingApi.updateOrderEmailStatus(result.id, {
+          invoiceEmailSent: false,
+          invoiceEmailError: emailErr.message || 'Dispatch error'
+        }).catch(() => {});
+      });
 
       setPlacedOrderId(result.id);
       setOrderPlaced(true);
@@ -375,8 +405,8 @@ export default function Checkout({ navigateTo, triggerAudio }) {
           <div className="bg-emerald-50 border border-emerald-200/80 rounded-xl p-3.5 text-left flex items-start gap-2.5">
             <span className="text-base">✉️</span>
             <div className="text-[11px] text-emerald-900 leading-relaxed font-medium">
-              <strong>Official Tax Invoice &amp; Live Tracking Link</strong> have been sent to{' '}
-              <span className="font-bold underline text-emerald-950">{deliveryForm.email || 'your email'}</span>.
+              <strong>Official GST Tax Invoice &amp; Live Tracking Link</strong> have been dispatched to{' '}
+              <span className="font-bold underline text-emerald-950">{deliveryForm.email || 'your registered email'}</span>.
             </div>
           </div>
 
@@ -402,18 +432,35 @@ export default function Checkout({ navigateTo, triggerAudio }) {
             </div>
           </div>
 
-          {/* Action Buttons: Track & Continue */}
+          {/* Action Buttons: Download PDF Invoice, Track & Back */}
           <div className="space-y-2.5 pt-2">
             <button
+              onClick={handleDownloadPlacedInvoice}
+              disabled={downloadingInvoice}
+              className="w-full py-3.5 bg-gradient-to-r from-[#B8893C] to-[#E6C687] hover:brightness-110 text-white text-xs uppercase font-black tracking-widest rounded-xl transition-all shadow-md cursor-pointer border-none flex items-center justify-center gap-2 disabled:opacity-60"
+            >
+              {downloadingInvoice ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  <span>Generating Tax Invoice PDF...</span>
+                </>
+              ) : (
+                <>
+                  <span>📄</span> Download Tax Invoice (PDF)
+                </>
+              )}
+            </button>
+
+            <button
               onClick={handleTrackLive}
-              className="w-full py-3.5 bg-gradient-to-r from-[#B8893C] to-[#E6C687] hover:brightness-110 text-white text-xs uppercase font-black tracking-widest rounded-xl transition-all shadow-md cursor-pointer border-none flex items-center justify-center gap-2"
+              className="w-full py-3 bg-[#031838] hover:bg-[#031838]/90 text-white text-xs uppercase font-bold tracking-wider rounded-xl transition-all shadow-sm cursor-pointer border-none flex items-center justify-center gap-2"
             >
               <span>🚚</span> Track Live Order Status
             </button>
 
             <button
               onClick={() => navigateTo('home')}
-              className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-[#031838] text-xs uppercase font-bold tracking-wider rounded-xl transition-all cursor-pointer border-none"
+              className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-[#031838] text-xs uppercase font-bold tracking-wider rounded-xl transition-all cursor-pointer border-none"
             >
               ← Back to Showroom
             </button>

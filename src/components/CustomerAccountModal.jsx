@@ -41,6 +41,21 @@ export default function CustomerAccountModal({
   const [trackError, setTrackError] = useState('');
   const [copiedOrderId, setCopiedOrderId] = useState('');
   const [copiedLink, setCopiedLink] = useState(false);
+  const [downloadingOrderId, setDownloadingOrderId] = useState(null);
+
+  const handleDownloadOrderInvoice = async (order) => {
+    if (!order) return;
+    setDownloadingOrderId(order.id);
+    triggerAudio?.('click');
+    try {
+      await bookingApi.downloadInvoicePdf(order);
+    } catch (err) {
+      console.error("Failed to download invoice:", err);
+      alert("Failed to download invoice PDF. Please try again.");
+    } finally {
+      setDownloadingOrderId(null);
+    }
+  };
 
   // Subscribe to live orders
   useEffect(() => {
@@ -408,7 +423,22 @@ export default function CustomerAccountModal({
                             {order.deliveryType === 'store' ? '🏬 Showroom Pickup' : `📍 Deliver to ${order.pincode || 'Address'}`}
                           </span>
 
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            {/* Download Tax Invoice PDF Button */}
+                            <button
+                              onClick={() => handleDownloadOrderInvoice(order)}
+                              disabled={downloadingOrderId === order.id}
+                              className="px-3 py-1.5 rounded-xl border border-solid border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[11px] font-bold uppercase tracking-wider cursor-pointer transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                              title="Download GST Tax Invoice (PDF)"
+                            >
+                              {downloadingOrderId === order.id ? (
+                                <span className="w-3 h-3 border-2 border-amber-600 border-t-transparent rounded-full animate-spin inline-block"></span>
+                              ) : (
+                                <span>📄</span>
+                              )}
+                              <span>Invoice</span>
+                            </button>
+
                             {/* Track Order Button */}
                             <button
                               onClick={() => {
@@ -578,11 +608,32 @@ export default function CustomerAccountModal({
                         <span className="text-zinc-400 font-medium">Delivery Type:</span>
                         <span className="font-bold text-zinc-800 dark:text-zinc-200 capitalize">{selectedTrackOrder.deliveryType || 'Home Delivery'}</span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between border-b border-solid border-zinc-100 dark:border-white/5 pb-2">
                         <span className="text-zinc-400 font-medium">Order Total:</span>
                         <span className="font-mono font-extrabold text-[#C8A646]">
                           ₹{Number(selectedTrackOrder.total || selectedTrackOrder.totalAmount || 0).toLocaleString('en-IN')}
                         </span>
+                      </div>
+                      
+                      {/* 1-Click Invoice Download Action Button inside Tracking view */}
+                      <div className="pt-1 flex items-center justify-end">
+                        <button
+                          onClick={() => handleDownloadOrderInvoice(selectedTrackOrder)}
+                          disabled={downloadingOrderId === selectedTrackOrder.id}
+                          className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#C8A646] to-[#E6C687] text-white text-xs font-extrabold uppercase tracking-wider shadow-sm hover:brightness-105 cursor-pointer border-none flex items-center justify-center gap-2 disabled:opacity-60"
+                        >
+                          {downloadingOrderId === selectedTrackOrder.id ? (
+                            <>
+                              <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                              <span>Generating Tax Invoice PDF...</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>📄</span>
+                              <span>Download Official Tax Invoice (PDF)</span>
+                            </>
+                          )}
+                        </button>
                       </div>
                     </div>
                   </div>

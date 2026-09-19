@@ -9,7 +9,11 @@ import {
   ShoppingBag, 
   BadgeIndianRupee,
   Gem,
-  Download
+  Download,
+  Mail,
+  Send,
+  CheckCircle2,
+  Printer
 } from 'lucide-react';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 
@@ -65,6 +69,45 @@ export default function AdminOrders({
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
   const [invoiceModalOrder, setInvoiceModalOrder] = useState(null);
   const [manualInvoiceNo, setManualInvoiceNo] = useState('');
+  const [resendingEmailOrderId, setResendingEmailOrderId] = useState(null);
+  const [downloadingOrderId, setDownloadingOrderId] = useState(null);
+
+  const handleResendInvoiceEmail = async (order) => {
+    setResendingEmailOrderId(order.id);
+    try {
+      await bookingApi.resendOrderInvoiceEmail(order);
+      const targetEmail = order.email || order.customerEmail || 'customer email';
+      setAdminNotification?.({ 
+        message: `✓ Official Tax Invoice & Order confirmation email sent to ${targetEmail}`, 
+        type: 'success' 
+      });
+    } catch (err) {
+      console.error("Resend email error:", err);
+      setAdminNotification?.({ 
+        message: `Failed to dispatch email: ${err.message}`, 
+        type: 'error' 
+      });
+    } finally {
+      setResendingEmailOrderId(null);
+    }
+  };
+
+  const handleDirectDownloadPdf = async (order) => {
+    setDownloadingOrderId(order.id);
+    try {
+      await bookingApi.downloadInvoicePdf(order);
+      setAdminNotification?.({
+        message: `✓ Tax Invoice PDF downloaded for Order #${(order.id || '').slice(0, 8).toUpperCase()}`,
+        type: 'success'
+      });
+    } catch (err) {
+      console.error("PDF download error:", err);
+      // Fallback to direct print window
+      handleDownloadInvoice(order);
+    } finally {
+      setDownloadingOrderId(null);
+    }
+  };
 
   const handleOpenInvoiceModal = (order) => {
     setInvoiceModalOrder(order);
@@ -518,84 +561,135 @@ export default function AdminOrders({
             {filteredOrders.length === 0 ? (
               <p className="py-10 text-center text-zinc-450 uppercase tracking-wider font-bold text-xs">No registered orders found</p>
             ) : (
-              filteredOrders.map(order => (
-                <div key={order.id} className="bg-zinc-50 dark:bg-zinc-900/50 border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 space-y-3">
-                  {/* Top row: name + status badge */}
-                  <div className="flex justify-between items-start gap-2">
-                    <div className="min-w-0">
-                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block text-sm truncate">{order.recipientName || 'Anonymous Buyer'}</span>
-                      <span className="text-[10px] text-zinc-450 font-mono block">{order.mobile}</span>
-                    </div>
-                    <select
-                      value={order.orderStatus || 'pending'}
-                      onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
-                      className={`shrink-0 bg-white dark:bg-zinc-900 border border-solid border-zinc-200 dark:border-zinc-800 rounded-lg px-2 py-1 text-[9px] font-extrabold uppercase tracking-wider cursor-pointer focus:outline-none ${
-                        order.orderStatus === 'delivered'
-                          ? 'text-emerald-600'
-                          : order.orderStatus === 'pending'
-                          ? 'text-amber-500'
-                          : 'text-zinc-500'
-                      }`}
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="processing">Processing</option>
-                      <option value="shipped">Shipped</option>
-                      <option value="delivered">Delivered</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
-                  </div>
+              filteredOrders.map(order => {
+                const invoiceNumber = order.invoiceNo || order.customInvoiceNo || `HRJ/${new Date().getFullYear()}/${(order.id || '').slice(0, 6).toUpperCase()}`;
+                const isEmailSent = Boolean(order.invoiceEmailSent);
 
-                  {/* Meta row */}
-                  <div className="grid grid-cols-2 gap-2 text-[10px]">
-                    <div>
-                      <span className="text-zinc-400 font-bold uppercase tracking-wider block">Amount</span>
-                      <span className="font-bold text-zinc-850 dark:text-zinc-200 font-sans">₹{(order.total || order.totalAmount || 0).toLocaleString('en-IN')}</span>
+                return (
+                  <div key={order.id} className="bg-zinc-50 dark:bg-zinc-900/50 border border-solid border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 space-y-3">
+                    {/* Top row: name + status badge */}
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="min-w-0">
+                        <span className="font-bold text-zinc-900 dark:text-zinc-100 block text-sm truncate">{order.recipientName || 'Anonymous Buyer'}</span>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[10px] text-zinc-450 font-mono">{order.mobile}</span>
+                          {order.email && <span className="text-[9px] text-zinc-400 truncate max-w-[120px]">({order.email})</span>}
+                        </div>
+                      </div>
+                      <select
+                        value={order.orderStatus || 'pending'}
+                        onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
+                        className={`shrink-0 bg-white dark:bg-zinc-900 border border-solid border-zinc-200 dark:border-zinc-800 rounded-lg px-2 py-1 text-[9px] font-extrabold uppercase tracking-wider cursor-pointer focus:outline-none ${
+                          order.orderStatus === 'delivered'
+                            ? 'text-emerald-600'
+                            : order.orderStatus === 'pending'
+                            ? 'text-amber-500'
+                            : 'text-zinc-500'
+                        }`}
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
                     </div>
-                    <div>
-                      <span className="text-zinc-400 font-bold uppercase tracking-wider block">Delivery</span>
-                      <span className="font-semibold capitalize text-zinc-600 dark:text-zinc-400">{order.deliveryType || 'Home'}</span>
+
+                    {/* Invoice & Email Badges Row */}
+                    <div className="flex flex-wrap items-center justify-between gap-1.5 bg-white dark:bg-zinc-950 p-2 rounded-xl border border-zinc-200/60 dark:border-zinc-800 text-[10px]">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-zinc-400 font-bold uppercase tracking-wider text-[9px]">Inv:</span>
+                        <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">{invoiceNumber}</span>
+                      </div>
+                      <div>
+                        {isEmailSent ? (
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[9px] flex items-center gap-1">
+                            <span>✓</span> Email Sent
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-[9px] flex items-center gap-1">
+                            <span>⚠️</span> Email Pending
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-zinc-400 font-bold uppercase tracking-wider block">Order ID</span>
-                      <span className="font-mono text-zinc-400">{order.id?.slice(0, 10)}…</span>
+
+                    {/* Meta row */}
+                    <div className="grid grid-cols-2 gap-2 text-[10px]">
+                      <div>
+                        <span className="text-zinc-400 font-bold uppercase tracking-wider block">Amount</span>
+                        <span className="font-bold text-zinc-850 dark:text-zinc-200 font-sans">₹{(order.total || order.totalAmount || 0).toLocaleString('en-IN')}</span>
+                      </div>
+                      <div>
+                        <span className="text-zinc-400 font-bold uppercase tracking-wider block">Delivery</span>
+                        <span className="font-semibold capitalize text-zinc-600 dark:text-zinc-400">{order.deliveryType || 'Home'}</span>
+                      </div>
+                      <div>
+                        <span className="text-zinc-400 font-bold uppercase tracking-wider block">Order ID</span>
+                        <span className="font-mono text-zinc-400">#{order.id?.slice(0, 10)}…</span>
+                      </div>
+                      <div className="min-w-0 overflow-hidden">
+                        <span className="text-zinc-400 font-bold uppercase tracking-wider block">Date</span>
+                        <span className="text-zinc-500 block truncate">{safeFormatDateTime(order.createdDate || order.date)}</span>
+                      </div>
                     </div>
-                    <div className="min-w-0 overflow-hidden">
-                      <span className="text-zinc-400 font-bold uppercase tracking-wider block">Date</span>
-                      <span className="text-zinc-500 block truncate">{safeFormatDateTime(order.createdDate || order.date)}</span>
+
+                    {/* Items */}
+                    {order.items?.length > 0 && (
+                      <div className="text-[10px] text-zinc-500 truncate border-t border-solid border-zinc-100 dark:border-zinc-800 pt-2">
+                        {order.items.map(i => `${i.name} ×${i.quantity}`).join(', ')}
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <button
+                        onClick={() => handleDirectDownloadPdf(order)}
+                        disabled={downloadingOrderId === order.id}
+                        className="flex-1 min-w-[100px] flex items-center justify-center gap-1.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 cursor-pointer border-none text-[10px] font-bold uppercase tracking-wider disabled:opacity-50"
+                        title="Download Vector PDF Invoice"
+                      >
+                        {downloadingOrderId === order.id ? (
+                          <span className="w-3 h-3 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"></span>
+                        ) : (
+                          <Download className="w-3.5 h-3.5" />
+                        )}
+                        <span>PDF Invoice</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleResendInvoiceEmail(order)}
+                        disabled={resendingEmailOrderId === order.id}
+                        className="flex-1 min-w-[100px] flex items-center justify-center gap-1.5 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 cursor-pointer border-none text-[10px] font-bold uppercase tracking-wider disabled:opacity-50"
+                        title="Dispatch / Resend Invoice Email"
+                      >
+                        {resendingEmailOrderId === order.id ? (
+                          <span className="w-3 h-3 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></span>
+                        ) : (
+                          <Mail className="w-3.5 h-3.5" />
+                        )}
+                        <span>Resend Email</span>
+                      </button>
+
+                      <button
+                        onClick={() => setSelectedOrderDetails(order)}
+                        className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-650 dark:text-zinc-350 cursor-pointer border-none text-[10px] font-bold uppercase tracking-wider"
+                        title="View Details"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                      </button>
+
+                      <button
+                        onClick={() => handleDeleteOrder(order.id)}
+                        className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 cursor-pointer border-none text-[10px] font-bold uppercase tracking-wider"
+                        title="Delete Order"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
-
-                  {/* Items */}
-                  {order.items?.length > 0 && (
-                    <div className="text-[10px] text-zinc-500 truncate border-t border-solid border-zinc-100 dark:border-zinc-800 pt-2">
-                      {order.items.map(i => `${i.name} ×${i.quantity}`).join(', ')}
-                    </div>
-                  )}
-
-                  {/* Actions */}
-                  <div className="flex gap-2 pt-1">
-                    <button
-                      onClick={() => handleDownloadInvoice(order)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 cursor-pointer border-none text-[10px] font-bold uppercase tracking-wider"
-                      title="Download Invoice"
-                    >
-                      <Download className="w-3.5 h-3.5" /> Invoice
-                    </button>
-                    <button
-                      onClick={() => setSelectedOrderDetails(order)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-650 dark:text-zinc-350 cursor-pointer border-none text-[10px] font-bold uppercase tracking-wider"
-                    >
-                      <Eye className="w-3.5 h-3.5" /> Details
-                    </button>
-                    <button
-                      onClick={() => handleDeleteOrder(order.id)}
-                      className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 cursor-pointer border-none text-[10px] font-bold uppercase tracking-wider"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 
@@ -605,11 +699,11 @@ export default function AdminOrders({
               <thead>
                 <tr className="border-b border-solid border-zinc-100 dark:border-zinc-800 text-[10px] uppercase font-bold tracking-wider text-zinc-400">
                   <th className="py-2.5">Date</th>
-                  <th className="py-2.5">Order ID</th>
-                  <th className="py-2.5">Recipient Details</th>
+                  <th className="py-2.5">Order &amp; Invoice No</th>
+                  <th className="py-2.5">Customer &amp; Email Status</th>
                   <th className="py-2.5">Items</th>
                   <th className="py-2.5">Total Amount</th>
-                  <th className="py-2.5">Delivery Mode</th>
+                  <th className="py-2.5">Delivery</th>
                   <th className="py-2.5 text-center">Status</th>
                   <th className="py-2.5 text-right">Actions</th>
                 </tr>
@@ -620,71 +714,131 @@ export default function AdminOrders({
                     <td colSpan="8" className="py-12 text-center text-zinc-450 uppercase tracking-wider font-bold">No registered orders found</td>
                   </tr>
                 ) : (
-                  filteredOrders.map(order => (
-                    <tr key={order.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30">
-                      <td className="py-3.5 whitespace-nowrap text-zinc-400 font-mono text-[10px]">
-                        {safeFormatDateTime(order.createdDate || order.date)}
-                      </td>
-                      <td className="py-3.5 font-mono text-[10px] text-zinc-400">
-                        {order.id?.slice(0, 8)}...
-                      </td>
-                      <td className="py-3.5">
-                        <span className="font-bold text-zinc-900 dark:text-zinc-100 block">{order.recipientName || 'Anonymous Buyer'}</span>
-                        <span className="text-[10px] text-zinc-450 block">{order.mobile}</span>
-                      </td>
-                      <td className="py-3.5 text-zinc-500 max-w-[150px] truncate" title={order.items?.map(i => `${i.name} x${i.quantity}`).join(', ')}>
-                        {order.items?.map(i => `${i.name} x${i.quantity}`).join(', ')}
-                      </td>
-                      <td className="py-3.5 font-bold font-sans text-zinc-850 dark:text-zinc-200">
-                        ₹{(order.total || order.totalAmount || 0).toLocaleString('en-IN')}
-                      </td>
-                      <td className="py-3.5 capitalize font-semibold">
-                        {order.deliveryType || 'home'}
-                      </td>
-                      <td className="py-3.5 text-center">
-                        <select
-                          value={order.orderStatus || 'pending'}
-                          onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
-                          className={`bg-white dark:bg-zinc-900 border border-solid border-zinc-200 dark:border-zinc-800 rounded px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-wider cursor-pointer focus:outline-none ${
-                            order.orderStatus === 'delivered'
-                              ? 'text-emerald-600'
-                              : order.orderStatus === 'pending'
-                              ? 'text-amber-500'
-                              : 'text-zinc-500'
-                          }`}
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="processing">Processing</option>
-                          <option value="shipped">Shipped</option>
-                          <option value="delivered">Delivered</option>
-                          <option value="cancelled">Cancelled</option>
-                        </select>
-                      </td>
-                      <td className="py-3.5 text-right space-x-2">
-                        <button
-                          onClick={() => handleOpenInvoiceModal(order)}
-                          className="p-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 cursor-pointer border-none"
-                          title="Generate / Download Invoice"
-                        >
-                          <Download className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => setSelectedOrderDetails(order)}
-                          className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-650 dark:text-zinc-350 cursor-pointer border-none"
-                          title="View order address details"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteOrder(order.id)}
-                          className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-650 dark:text-red-400 cursor-pointer border-none"
-                          title="Delete order"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                  filteredOrders.map(order => {
+                    const invoiceNumber = order.invoiceNo || order.customInvoiceNo || `HRJ/${new Date().getFullYear()}/${(order.id || '').slice(0, 6).toUpperCase()}`;
+                    const isEmailSent = Boolean(order.invoiceEmailSent);
+
+                    return (
+                      <tr key={order.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30">
+                        <td className="py-3.5 whitespace-nowrap text-zinc-400 font-mono text-[10px]">
+                          {safeFormatDateTime(order.createdDate || order.date)}
+                        </td>
+                        <td className="py-3.5">
+                          <span className="font-mono text-[11px] font-bold text-zinc-900 dark:text-zinc-100 block">
+                            #{order.id?.slice(0, 8).toUpperCase()}
+                          </span>
+                          <span className="font-mono text-[9px] text-[#C8A646] font-semibold block mt-0.5">
+                            {invoiceNumber}
+                          </span>
+                        </td>
+                        <td className="py-3.5 max-w-[200px]">
+                          <span className="font-bold text-zinc-900 dark:text-zinc-100 block truncate">{order.recipientName || 'Anonymous Buyer'}</span>
+                          <span className="text-[10px] text-zinc-450 block font-mono">{order.mobile}</span>
+                          <div className="mt-1 flex items-center gap-1.5">
+                            {isEmailSent ? (
+                              <span
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-extrabold"
+                                title={`Dispatched to ${order.invoiceEmailRecipient || order.email || 'customer'} at ${order.emailSentAt ? safeFormatDateTime(order.emailSentAt) : 'confirmation'}`}
+                              >
+                                <span>✓</span> Email Sent
+                              </span>
+                            ) : (
+                              <span
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[9px] font-extrabold"
+                                title={order.invoiceEmailError || "Email has not been dispatched yet"}
+                              >
+                                <span>⚠️</span> Not Sent
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-3.5 text-zinc-500 max-w-[140px] truncate" title={order.items?.map(i => `${i.name} x${i.quantity}`).join(', ')}>
+                          {order.items?.map(i => `${i.name} x${i.quantity}`).join(', ')}
+                        </td>
+                        <td className="py-3.5 font-bold font-sans text-zinc-850 dark:text-zinc-200 whitespace-nowrap">
+                          ₹{(order.total || order.totalAmount || 0).toLocaleString('en-IN')}
+                        </td>
+                        <td className="py-3.5 capitalize font-semibold text-[11px]">
+                          {order.deliveryType || 'home'}
+                        </td>
+                        <td className="py-3.5 text-center">
+                          <select
+                            value={order.orderStatus || 'pending'}
+                            onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
+                            className={`bg-white dark:bg-zinc-900 border border-solid border-zinc-200 dark:border-zinc-800 rounded px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-wider cursor-pointer focus:outline-none ${
+                              order.orderStatus === 'delivered'
+                                ? 'text-emerald-600'
+                                : order.orderStatus === 'pending'
+                                ? 'text-amber-500'
+                                : 'text-zinc-500'
+                            }`}
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                        </td>
+                        <td className="py-3.5 text-right whitespace-nowrap space-x-1.5">
+                          {/* Resend Email Button */}
+                          <button
+                            onClick={() => handleResendInvoiceEmail(order)}
+                            disabled={resendingEmailOrderId === order.id}
+                            className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 cursor-pointer border-none disabled:opacity-50"
+                            title="Resend Tax Invoice & Order Email"
+                          >
+                            {resendingEmailOrderId === order.id ? (
+                              <span className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin inline-block"></span>
+                            ) : (
+                              <Mail className="w-4 h-4" />
+                            )}
+                          </button>
+
+                          {/* 1-Click PDF Download Button */}
+                          <button
+                            onClick={() => handleDirectDownloadPdf(order)}
+                            disabled={downloadingOrderId === order.id}
+                            className="p-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 cursor-pointer border-none disabled:opacity-50"
+                            title="Download Vector PDF Invoice"
+                          >
+                            {downloadingOrderId === order.id ? (
+                              <span className="w-4 h-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin inline-block"></span>
+                            ) : (
+                              <Download className="w-4 h-4" />
+                            )}
+                          </button>
+
+                          {/* Print / Custom Invoice Modal Button */}
+                          <button
+                            onClick={() => handleOpenInvoiceModal(order)}
+                            className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-650 dark:text-zinc-350 cursor-pointer border-none"
+                            title="Customize & Print Invoice"
+                          >
+                            <Printer className="w-4 h-4" />
+                          </button>
+
+                          {/* View Details Button */}
+                          <button
+                            onClick={() => setSelectedOrderDetails(order)}
+                            className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-650 dark:text-zinc-350 cursor-pointer border-none"
+                            title="View order address details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+
+                          {/* Delete Button */}
+                          <button
+                            onClick={() => handleDeleteOrder(order.id)}
+                            className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-650 dark:text-red-400 cursor-pointer border-none"
+                            title="Delete order"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
