@@ -329,7 +329,7 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
   }
 
   return (
-    <div className="space-y-8 text-[#1A1A1A] dark:text-zinc-100 font-sans text-left">
+    <div className="space-y-8 pb-24 text-[#1A1A1A] dark:text-zinc-100 font-sans text-left">
 
       {/* ── Page Header ── */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

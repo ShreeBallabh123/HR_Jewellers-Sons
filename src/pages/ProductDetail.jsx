@@ -239,7 +239,7 @@ export default function ProductDetail({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Sync image & default metal selection when detailProduct changes
+  // Sync image, default metal, & size selection when detailProduct changes
   useEffect(() => {
     if (detailProduct) {
       setDetailActiveImg(detailProduct.img);
@@ -258,6 +258,42 @@ export default function ProductDetail({
         const rawPurity = (detailProduct.goldPurity || detailProduct.metalPurity || detailProduct.carat || '18K').toUpperCase().replace(/KT$/i, '').replace(/K$/i, '');
         const color = detailProduct.customMetalColor || detailProduct.metalColor || 'Yellow Gold';
         setPdpSelectedMetal(`${rawPurity}KT ${color}`);
+      }
+
+      // Initialize ring size if product has ring sizes
+      const ringList = Array.isArray(detailProduct.ringSizes) && detailProduct.ringSizes.length > 0
+        ? detailProduct.ringSizes
+        : typeof detailProduct.ringSizes === 'string' && detailProduct.ringSizes.trim()
+        ? detailProduct.ringSizes.split(',').map(s => s.trim()).filter(Boolean)
+        : null;
+      if (ringList && ringList.length > 0) {
+        setSelectedRingSize(ringList[0]);
+      } else {
+        setSelectedRingSize('12');
+      }
+
+      // Initialize bangle size if product has bangle sizes
+      const bangleList = Array.isArray(detailProduct.bangleSizes) && detailProduct.bangleSizes.length > 0
+        ? detailProduct.bangleSizes
+        : typeof detailProduct.bangleSizes === 'string' && detailProduct.bangleSizes.trim()
+        ? detailProduct.bangleSizes.split(',').map(s => s.trim()).filter(Boolean)
+        : null;
+      if (bangleList && bangleList.length > 0) {
+        setSelectedBangleSize(bangleList[0]);
+      } else {
+        setSelectedBangleSize('2-4');
+      }
+
+      // Initialize chain size if product has chain sizes
+      const chainList = Array.isArray(detailProduct.chainSizes) && detailProduct.chainSizes.length > 0
+        ? detailProduct.chainSizes
+        : typeof detailProduct.chainSizes === 'string' && detailProduct.chainSizes.trim()
+        ? detailProduct.chainSizes.split(',').map(s => s.trim()).filter(Boolean)
+        : null;
+      if (chainList && chainList.length > 0) {
+        setSelectedChainSize(chainList[0]);
+      } else {
+        setSelectedChainSize('18"');
       }
     }
   }, [detailProduct?.id, isSilver, isPlatinum]);
@@ -321,11 +357,44 @@ export default function ProductDetail({
     );
   }
 
-  // Size Category Checkers
+  // Size Category Checkers with explicit sizeType support
+  const configuredSizeType = detailProduct?.sizeType;
+  const rawRings = detailProduct?.ringSizes;
+  const hasRingList = (Array.isArray(rawRings) && rawRings.length > 0) || (typeof rawRings === 'string' && rawRings.trim().length > 0);
+  const rawBangles = detailProduct?.bangleSizes;
+  const hasBangleList = (Array.isArray(rawBangles) && rawBangles.length > 0) || (typeof rawBangles === 'string' && rawBangles.trim().length > 0);
+  const rawChains = detailProduct?.chainSizes;
+  const hasChainList = (Array.isArray(rawChains) && rawChains.length > 0) || (typeof rawChains === 'string' && rawChains.trim().length > 0);
 
-  const isRing = ((detailProduct.categoryType || '').toLowerCase() === 'ring' || (detailProduct.category || '').toLowerCase().includes('ring')) && !((detailProduct.category || '').toLowerCase().includes('earring')) && !((detailProduct.categoryType || '').toLowerCase().includes('earring'));
-  const isBangle = (detailProduct.categoryType || '').toLowerCase() === 'bangle' || (detailProduct.category || '').toLowerCase().includes('bangle') || (detailProduct.categoryType || '').toLowerCase() === 'bracelet' || (detailProduct.category || '').toLowerCase().includes('bracelet');
-  const isChain = (detailProduct.categoryType || '').toLowerCase() === 'chain' || (detailProduct.category || '').toLowerCase().includes('chain') || (detailProduct.categoryType || '').toLowerCase() === 'necklace' || (detailProduct.category || '').toLowerCase().includes('necklace');
+  let isRing = false;
+  let isBangle = false;
+  let isChain = false;
+
+  if (configuredSizeType === 'rings') {
+    isRing = true;
+  } else if (configuredSizeType === 'bangles') {
+    isBangle = true;
+  } else if (configuredSizeType === 'chains') {
+    isChain = true;
+  } else if (configuredSizeType === 'none') {
+    isRing = false;
+    isBangle = false;
+    isChain = false;
+  } else {
+    // Legacy fallback based on arrays or category keywords
+    if (hasRingList) {
+      isRing = true;
+    } else if (hasBangleList) {
+      isBangle = true;
+    } else if (hasChainList) {
+      isChain = true;
+    } else {
+      isRing = ((detailProduct.categoryType || '').toLowerCase() === 'ring' || (detailProduct.category || '').toLowerCase().includes('ring')) && !((detailProduct.category || '').toLowerCase().includes('earring')) && !((detailProduct.categoryType || '').toLowerCase().includes('earring'));
+      isBangle = (detailProduct.categoryType || '').toLowerCase() === 'bangle' || (detailProduct.category || '').toLowerCase().includes('bangle') || (detailProduct.categoryType || '').toLowerCase() === 'bracelet' || (detailProduct.category || '').toLowerCase().includes('bracelet');
+      isChain = (detailProduct.categoryType || '').toLowerCase() === 'chain' || (detailProduct.category || '').toLowerCase().includes('chain') || (detailProduct.categoryType || '').toLowerCase() === 'necklace' || (detailProduct.category || '').toLowerCase().includes('necklace');
+    }
+  }
+
   const hasSizes = isRing || isBangle || isChain;
   const selectedSize = isChain ? selectedChainSize : isBangle ? selectedBangleSize : selectedRingSize;
 
@@ -794,7 +863,7 @@ export default function ProductDetail({
                     handleAddToCart({
                       ...detailProduct,
                       price: computedProductPrice,
-                      carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedSize}`,
+                      carat: `${pdpSelectedMetal || "22K Yellow Gold"}${hasSizes && selectedSize ? ` / Size ${selectedSize}` : ''}`,
                       desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc
                     });
                     setTimeout(() => setCartOpen(true), 200);
@@ -1735,7 +1804,7 @@ export default function ProductDetail({
               handleAddToCart({
                 ...detailProduct,
                 price: computedProductPrice,
-                carat: `${pdpSelectedMetal || "22K Yellow Gold"} / Size ${selectedSize}`,
+                carat: `${pdpSelectedMetal || "22K Yellow Gold"}${hasSizes && selectedSize ? ` / Size ${selectedSize}` : ''}`,
                 desc: customEngraving ? `Engraved: "${customEngraving}"` : detailProduct.desc
               });
               setTimeout(() => setCartOpen(true), 200);

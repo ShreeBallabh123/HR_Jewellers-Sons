@@ -70,7 +70,7 @@ export default function AdminLayout({
           setCrmSearch={setCrmSearch}
         />
 
-        <main className="flex-1 p-3 sm:p-6 md:p-8 pb-24 md:pb-8 flex flex-col justify-between w-full overflow-x-hidden min-w-0">
+        <main className="flex-1 p-3 sm:p-6 md:p-8 pb-40 md:pb-32 w-full overflow-x-hidden min-w-0">
           {children}
         </main>
 

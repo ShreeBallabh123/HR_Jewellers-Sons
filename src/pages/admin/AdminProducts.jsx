@@ -61,6 +61,7 @@ export default function AdminProducts({
     stockStatus: 'In Stock',
     img: '',
     subImages: [],
+    sizeType: 'none',
     ringSizes: [],
     bangleSizes: [],
     chainSizes: []
@@ -257,6 +258,7 @@ export default function AdminProducts({
           stockStatus: 'In Stock',
           img: '',
           subImages: [],
+          sizeType: 'none',
           ringSizes: [],
           bangleSizes: [],
           chainSizes: []
@@ -337,7 +339,7 @@ export default function AdminProducts({
     .filter(p => p.name?.toLowerCase().includes(productSearch.toLowerCase()) || p.sku?.toLowerCase().includes(productSearch.toLowerCase()));
 
   return (
-    <div className="space-y-6 text-[#1A1A1A] dark:text-zinc-100 font-sans text-left w-full overflow-x-hidden">
+    <div className="space-y-6 pb-24 text-[#1A1A1A] dark:text-zinc-100 font-sans text-left w-full overflow-x-hidden">
       
       {/* Form Area container */}
       <ProductForm
