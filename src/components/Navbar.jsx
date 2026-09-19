@@ -255,18 +255,23 @@ export default function Navbar({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                   </svg>
                 </button>
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.08)] border border-solid border-[#ECECEC] rounded-2xl py-2 px-1 min-w-[200px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-[12px] normal-case font-sans select-none font-semibold">
+                <div className="absolute top-full left-0 mt-3 bg-white text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.12)] border border-solid border-[#ECECEC] rounded-2xl p-2 min-w-[210px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-[12px] normal-case font-sans select-none font-semibold flex flex-col gap-1">
                   <button
                     onClick={() => { triggerAudio('click'); navigateTo('savings'); }}
-                    className="w-full text-left px-5 py-2.5 font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer border-none bg-transparent"
+                    className="w-full text-left px-4 py-2.5 font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer border-none bg-transparent flex items-center justify-between"
                   >
-                    Gold Mine
+                    <span className="flex items-center gap-2">
+                      <span className="text-[#C8A646]">💰</span>
+                      <span>Gold Mine (11+1)</span>
+                    </span>
+                    <span className="text-[8px] font-bold text-[#C8A646] bg-[#C8A646]/10 px-1.5 py-0.5 rounded-full">POPULAR</span>
                   </button>
                   <button
                     onClick={() => { triggerAudio('click'); navigateTo('gold-reserve'); }}
-                    className="w-full text-left px-5 py-2.5 font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer border-none bg-transparent"
+                    className="w-full text-left px-4 py-2.5 font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer border-none bg-transparent flex items-center gap-2"
                   >
-                    Gold Reserve
+                    <span className="text-[#C8A646]">✨</span>
+                    <span>Gold Reserve</span>
                   </button>
                 </div>
               </div>
