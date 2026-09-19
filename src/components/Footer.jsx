@@ -357,6 +357,13 @@ export default function Footer({
           >
             Privacy Policy
           </button>
+          <button 
+            onClick={() => { triggerAudio('click'); navigateTo('admin'); }} 
+            className="hover:text-[#E6C687] text-[#E6C687]/70 transition-colors cursor-pointer border-none bg-transparent flex items-center gap-1 font-semibold"
+            title="HR Jewellers Staff & Admin Vault"
+          >
+            <span>🔒</span> Staff Portal
+          </button>
         </div>
 
         <p className="text-center sm:text-right text-white/50 text-[10px]">
