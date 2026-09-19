@@ -1804,7 +1804,7 @@ export default function ProductDetail({
           </div>
         </div>
       )}
-      {/* Gold Mine 11 + 1 Plan Popup Modal (Screenshot 1) */}
+      {/* Gold Mine 11 + 1 Plan Popup Modal (Screenshot 1 - Enhanced Spacing & Width) */}
       {planModalOpen && (() => {
         const planRawPrice = Number(computedProductPrice || detailProduct?.price || 50000);
         const planRecommendedMonthly = Math.max(2000, Math.ceil((planRawPrice / 11) / 100) * 100);
@@ -1814,137 +1814,137 @@ export default function ProductDetail({
         const planEffectivePay = planTotalPayment;
 
         return (
-          <div className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-xs select-none">
-            <div className="relative w-full max-w-[420px] bg-white rounded-3xl shadow-2xl overflow-hidden border border-zinc-200 text-left my-auto flex flex-col max-h-[92vh]">
+          <div className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-xs select-none">
+            <div className="relative w-full max-w-[540px] bg-white rounded-3xl shadow-2xl overflow-hidden border border-zinc-200 text-left my-auto flex flex-col max-h-[94vh]">
               
               {/* Modal Header */}
-              <div className="flex items-center justify-between px-5 py-3.5 border-b border-zinc-100 bg-white shrink-0">
-                <div className="flex items-center gap-2.5">
+              <div className="flex items-center justify-between px-6 py-4.5 border-b border-zinc-100 bg-white shrink-0">
+                <div className="flex items-center gap-3">
                   <button
                     onClick={() => { triggerAudio?.('click'); setPlanModalOpen(false); }}
-                    className="p-1 hover:bg-zinc-100 rounded-full text-zinc-600 transition-colors border-none bg-transparent cursor-pointer flex items-center justify-center"
+                    className="p-1.5 hover:bg-zinc-100 rounded-full text-zinc-700 transition-colors border-none bg-transparent cursor-pointer flex items-center justify-center"
                     title="Back / Close"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                     </svg>
                   </button>
-                  <h3 className="text-[17px] font-bold text-zinc-900 font-serif tracking-tight">
+                  <h3 className="text-xl font-bold text-zinc-900 font-serif tracking-tight">
                     Gold Mine 11 + 1 Plan
                   </h3>
                 </div>
                 <button
                   onClick={() => { triggerAudio?.('click'); setPlanModalOpen(false); }}
-                  className="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 border-none cursor-pointer transition-colors text-xs"
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 border-none cursor-pointer transition-colors text-sm font-bold"
                 >
                   ✕
                 </button>
               </div>
 
               {/* Modal Scrollable Body */}
-              <div className="p-5 overflow-y-auto space-y-4.5 flex-1">
+              <div className="p-6 sm:p-7 overflow-y-auto space-y-6 flex-1">
                 
                 {/* 3-Step Milestone Stepper */}
                 <div className="flex items-center justify-between px-2 pt-1">
                   {/* Step 1 */}
-                  <div className="flex flex-col items-center text-center w-24">
-                    <div className="relative w-11 h-11 rounded-full bg-[#3B66A3] text-white flex items-center justify-center shadow-sm">
-                      <span className="absolute -top-1 -left-1 w-4 h-4 rounded-full bg-[#1F4578] text-[9px] font-bold flex items-center justify-center">1</span>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <div className="flex flex-col items-center text-center w-28 shrink-0">
+                    <div className="relative w-13 h-13 rounded-full bg-[#305996] text-white flex items-center justify-center shadow-md">
+                      <span className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-[#18396D] text-[10px] font-extrabold flex items-center justify-center border border-white">1</span>
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" />
                       </svg>
                     </div>
-                    <span className="text-[11px] font-medium text-zinc-700 mt-2 leading-tight">Pay<br/>Monthly</span>
+                    <span className="text-[12px] font-bold text-zinc-800 mt-2.5 leading-tight">Pay<br/>Monthly</span>
                   </div>
 
                   {/* Dotted Connector 1 */}
-                  <div className="flex-1 h-0 border-t-2 border-dotted border-zinc-300 mx-1 -mt-6"></div>
+                  <div className="flex-1 h-0 border-t-2 border-dotted border-zinc-300 mx-2 -mt-7"></div>
 
                   {/* Step 2 */}
-                  <div className="flex flex-col items-center text-center w-24">
-                    <div className="relative w-11 h-11 rounded-full bg-[#3B66A3] text-white flex items-center justify-center shadow-sm">
-                      <span className="absolute -top-1 -left-1 w-4 h-4 rounded-full bg-[#1F4578] text-[9px] font-bold flex items-center justify-center">2</span>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <div className="flex flex-col items-center text-center w-28 shrink-0">
+                    <div className="relative w-13 h-13 rounded-full bg-[#305996] text-white flex items-center justify-center shadow-md">
+                      <span className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-[#18396D] text-[10px] font-extrabold flex items-center justify-center border border-white">2</span>
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.386l4.41-2.585c.827-.486 1.054-1.567.355-2.266L11.16 3.659A2.25 2.25 0 009.568 3z" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
                       </svg>
                     </div>
-                    <span className="text-[11px] font-medium text-zinc-700 mt-2 leading-tight">Get Special<br/>Discounts</span>
+                    <span className="text-[12px] font-bold text-zinc-800 mt-2.5 leading-tight">Get Special<br/>Discounts</span>
                   </div>
 
                   {/* Dotted Connector 2 */}
-                  <div className="flex-1 h-0 border-t-2 border-dotted border-zinc-300 mx-1 -mt-6"></div>
+                  <div className="flex-1 h-0 border-t-2 border-dotted border-zinc-300 mx-2 -mt-7"></div>
 
                   {/* Step 3 */}
-                  <div className="flex flex-col items-center text-center w-24">
-                    <div className="relative w-11 h-11 rounded-full bg-[#3B66A3] text-white flex items-center justify-center shadow-sm">
-                      <span className="absolute -top-1 -left-1 w-4 h-4 rounded-full bg-[#1F4578] text-[9px] font-bold flex items-center justify-center">3</span>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <div className="flex flex-col items-center text-center w-28 shrink-0">
+                    <div className="relative w-13 h-13 rounded-full bg-[#305996] text-white flex items-center justify-center shadow-md">
+                      <span className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-[#18396D] text-[10px] font-extrabold flex items-center justify-center border border-white">3</span>
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                       </svg>
                     </div>
-                    <span className="text-[11px] font-medium text-zinc-700 mt-2 leading-tight">Redeem &amp;<br/>Purchase</span>
+                    <span className="text-[12px] font-bold text-zinc-800 mt-2.5 leading-tight">Redeem &amp;<br/>Purchase</span>
                   </div>
                 </div>
 
                 {/* Values Breakdown Box */}
-                <div className="bg-white border border-zinc-200 rounded-2xl p-4 space-y-3 shadow-xs">
+                <div className="bg-[#FAF9F6] border border-[#EADBCC] rounded-3xl p-5 sm:p-6 space-y-4 shadow-sm">
                   
                   {/* Product Value Row */}
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-zinc-700 font-medium">Product Value</span>
-                    <span className="text-zinc-900 font-bold font-sans">₹ {Number(planRawPrice).toLocaleString('en-IN')}</span>
+                  <div className="flex justify-between items-center text-sm sm:text-base">
+                    <span className="text-zinc-700 font-semibold">Product Value</span>
+                    <span className="text-zinc-900 font-extrabold font-sans text-base sm:text-lg">₹ {Number(planRawPrice).toLocaleString('en-IN')}</span>
                   </div>
 
                   {/* Recommended Monthly Amount Banner */}
-                  <div className="bg-[#FFF4F2] border border-[#FFE0DA] rounded-xl p-3 flex justify-between items-center">
-                    <span className="text-xs font-semibold text-zinc-800">Recommended Monthly Amount:</span>
-                    <span className="text-base font-extrabold text-zinc-900 font-sans">₹ {Number(planRecommendedMonthly).toLocaleString('en-IN')}</span>
+                  <div className="bg-gradient-to-r from-[#FFF5F2] to-[#FFF0EC] border-2 border-solid border-[#FFD5CC] rounded-2xl px-5 py-3.5 flex justify-between items-center shadow-xs">
+                    <span className="text-xs sm:text-sm font-bold text-zinc-900">Recommended Monthly Amount:</span>
+                    <span className="text-lg sm:text-xl font-black text-zinc-900 font-sans">₹ {Number(planRecommendedMonthly).toLocaleString('en-IN')}</span>
                   </div>
 
                   {/* Your total payment */}
-                  <div className="pt-1.5 border-t border-zinc-100">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-zinc-800 font-medium">Your total payment</span>
-                      <span className="text-zinc-900 font-bold font-sans">₹ {Number(planTotalPayment).toLocaleString('en-IN')}</span>
+                  <div className="pt-2 border-t border-zinc-200/80">
+                    <div className="flex justify-between items-center text-sm sm:text-base">
+                      <span className="text-zinc-800 font-semibold">Your total payment</span>
+                      <span className="text-zinc-900 font-extrabold font-sans">₹ {Number(planTotalPayment).toLocaleString('en-IN')}</span>
                     </div>
-                    <div className="flex justify-between items-center text-[11px] text-zinc-400 font-medium mt-0.5">
+                    <div className="flex justify-between items-center text-xs text-zinc-500 font-medium mt-1">
                       <span>Period of 11 months</span>
                       <span>₹ {Number(planRecommendedMonthly).toLocaleString('en-IN')} x 11</span>
                     </div>
                   </div>
 
                   {/* 100% Discount on 12th installment */}
-                  <div className="pt-2 border-t border-zinc-100">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-[#E55B49] font-semibold">100% Discount on 12th installment</span>
-                      <span className="text-[#E55B49] font-extrabold font-sans">₹ {Number(planFree12thBonus).toLocaleString('en-IN')}</span>
+                  <div className="pt-2.5 border-t border-zinc-200/80">
+                    <div className="flex justify-between items-center text-sm sm:text-base">
+                      <span className="text-[#E55B49] font-bold">100% Discount on 12th installment</span>
+                      <span className="text-[#E55B49] font-black font-sans text-base">₹ {Number(planFree12thBonus).toLocaleString('en-IN')}</span>
                     </div>
-                    <div className="text-[11px] text-zinc-400 font-medium mt-0.5">
+                    <div className="text-xs text-zinc-500 font-medium mt-1">
                       100% of 1 month installment value
                     </div>
                   </div>
 
                   {/* Buy any jewellery worth */}
-                  <div className="pt-2 border-t border-zinc-100">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-zinc-800 font-medium">Buy any jewellery worth</span>
-                      <span className="text-zinc-900 font-extrabold font-sans">₹ {Number(planTotalMaturity).toLocaleString('en-IN')}</span>
+                  <div className="pt-2.5 border-t border-zinc-200/80">
+                    <div className="flex justify-between items-center text-sm sm:text-base">
+                      <span className="text-zinc-800 font-semibold">Buy any jewellery worth</span>
+                      <span className="text-zinc-900 font-black font-sans text-base">₹ {Number(planTotalMaturity).toLocaleString('en-IN')}</span>
                     </div>
-                    <div className="text-[11px] text-zinc-400 font-medium mt-0.5">
+                    <div className="text-xs text-zinc-500 font-medium mt-1">
                       After 12th month
                     </div>
                   </div>
 
                   {/* You effectively pay */}
-                  <div className="pt-2 border-t border-zinc-100">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-[#E55B49] font-medium">You effectively pay</span>
-                      <span className="text-[#E55B49] font-extrabold font-sans text-base">₹ {Number(planEffectivePay).toLocaleString('en-IN')}</span>
+                  <div className="pt-2.5 border-t border-zinc-200/80">
+                    <div className="flex justify-between items-center text-sm sm:text-base">
+                      <span className="text-[#E55B49] font-bold">You effectively pay</span>
+                      <span className="text-[#E55B49] font-black font-sans text-lg">₹ {Number(planEffectivePay).toLocaleString('en-IN')}</span>
                     </div>
-                    <div className="mt-1 flex items-center">
-                      <span className="bg-[#E8F8EE] text-[#1E824C] text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
-                        8.33% discount!
+                    <div className="mt-1.5 flex items-center">
+                      <span className="bg-[#E8F8EE] text-[#1E824C] border border-[#C2E8CE] text-xs font-black px-2.5 py-0.5 rounded-lg uppercase tracking-wider">
+                        8.33% DISCOUNT!
                       </span>
                     </div>
                   </div>
@@ -1952,14 +1952,14 @@ export default function ProductDetail({
                 </div>
 
                 {/* Note */}
-                <p className="text-[11px] text-center text-zinc-500 leading-normal px-2">
-                  <span className="text-[#E55B49] font-bold">Note:</span> You can purchase any jewellery using the accumulated amount after 12 months* <button onClick={() => { setPlanModalOpen(false); navigateTo('terms-and-conditions'); }} className="text-zinc-700 underline font-semibold bg-transparent border-none cursor-pointer">T&amp;C</button>
+                <p className="text-xs text-center text-zinc-500 leading-normal px-2">
+                  <span className="text-[#E55B49] font-bold">Note:</span> You can purchase any jewellery using the accumulated amount after 12 months* <button onClick={() => { setPlanModalOpen(false); navigateTo('terms-and-conditions'); }} className="text-zinc-800 underline font-bold bg-transparent border-none cursor-pointer">T&amp;C</button>
                 </p>
 
               </div>
 
               {/* Modal Bottom CTA */}
-              <div className="p-4 bg-white border-t border-zinc-100 shrink-0">
+              <div className="p-5 sm:p-6 bg-white border-t border-zinc-100 shrink-0">
                 <button
                   onClick={() => {
                     triggerAudio?.('shimmer');
@@ -1971,7 +1971,7 @@ export default function ProductDetail({
                     setPlanModalOpen(false);
                     navigateTo('savings-enroll');
                   }}
-                  className="w-full h-12 bg-[#EB5A46] hover:bg-[#D94936] active:scale-[0.99] text-white font-extrabold text-xs uppercase tracking-[0.15em] rounded-xl flex items-center justify-center transition-all cursor-pointer shadow-md border-none font-sans"
+                  className="w-full h-14 bg-gradient-to-r from-[#EB5A46] to-[#DE4430] hover:brightness-105 active:scale-[0.99] text-white font-black text-sm uppercase tracking-[0.2em] rounded-2xl flex items-center justify-center transition-all cursor-pointer shadow-lg border-none font-sans"
                 >
                   START GOLD MINE PLAN
                 </button>
