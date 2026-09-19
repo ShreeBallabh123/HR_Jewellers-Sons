@@ -61,36 +61,42 @@ const processStepsData = [
     title: "Design Consultation",
     desc: "Our design experts translate your vision into initial concepts, sketches, and detailed engineering requirements.",
     img: productSketch,
+    fallback: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=1200&auto=format&fit=crop"
   },
   {
     num: "02",
     title: "Modeling & Casting",
     desc: "We bring designs to life with precise 3D CAD modeling and cast the raw form in precious 22K/18K gold bullion.",
     img: processCasting,
+    fallback: "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=1200&auto=format&fit=crop"
   },
   {
     num: "03",
     title: "Stone Setting",
     desc: "Master setters delicately select and embed each certified diamond, polki, or gemstone with flawless precision.",
     img: processSetting,
+    fallback: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=1200&auto=format&fit=crop"
   },
   {
     num: "04",
     title: "Filing & Polishing",
     desc: "Raw cast parts are meticulously hand-filed and polished to bring out the metal's high-shine royal luster.",
     img: processPolishing,
+    fallback: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=1200&auto=format&fit=crop"
   },
   {
     num: "05",
     title: "Quality Inspection",
     desc: "Every ornament undergoes rigorous laser testing and micro-inspections to guarantee absolute structural integrity.",
     img: processQuality,
+    fallback: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=1200&auto=format&fit=crop"
   },
   {
     num: "06",
     title: "Final Delivery",
     desc: "Packaged in premium, signature velvet jewelry caskets, ready for safe transit or physical showroom pick-up.",
     img: processPackaging,
+    fallback: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=1200&auto=format&fit=crop"
   }
 ];
 
@@ -1137,12 +1143,17 @@ export default function Home({
                 <div className="absolute inset-0 w-full h-full overflow-hidden">
                   <img
                     key={activeProcessStep}
-                    src={processStepsData[activeProcessStep].img}
-                    alt={processStepsData[activeProcessStep].title}
-                    className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out"
-                    style={{
-                      animation: 'zoomIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                    src={processStepsData[activeProcessStep]?.img || processStepsData[activeProcessStep]?.fallback}
+                    alt={processStepsData[activeProcessStep]?.title || "Our Process"}
+                    onError={(e) => {
+                      const fallback = processStepsData[activeProcessStep]?.fallback;
+                      if (fallback && e.currentTarget.src !== fallback) {
+                        e.currentTarget.src = fallback;
+                      }
                     }}
+                    loading="eager"
+                    decoding="async"
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-105"
                   />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black/10 via-transparent to-transparent pointer-events-none" />
