@@ -265,8 +265,11 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
     }
     setSaving(true);
     try {
+      const baseSilver = draftRates.silverRate ? Number(draftRates.silverRate) : 0;
       const payload = {
         ...draftRates,
+        silverRate925: baseSilver > 0 ? Math.round(baseSilver * 0.925) : '',
+        silverRateNormal: baseSilver > 0 ? Math.round(baseSilver * 0.90) : '',
         purityPercentages: percentages,
       };
       await goldRateService.saveRates(payload, adminUser?.email || 'admin');
@@ -287,8 +290,11 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
     }
     setPublishing(true);
     try {
+      const baseSilver = draftRates.silverRate ? Number(draftRates.silverRate) : 0;
       const payload = {
         ...draftRates,
+        silverRate925: baseSilver > 0 ? Math.round(baseSilver * 0.925) : '',
+        silverRateNormal: baseSilver > 0 ? Math.round(baseSilver * 0.90) : '',
         purityPercentages: percentages,
       };
       await goldRateService.publishRates(payload, adminUser?.email || 'admin');
@@ -480,58 +486,61 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* 999 Fine Silver (Base) */}
-              <RateInputCard
-                id="rate-silver-999"
-                label="999 Fine Silver"
-                sublabel="Pure Silver Bullion Rate"
-                badge="999 PURE"
-                value={draftRates.silverRate}
-                onChange={handle999SilverChange}
-                unit="₹ / kg"
-                accentColor="blue"
-              />
+              <div className="space-y-3">
+                <RateInputCard
+                  id="rate-silver-999"
+                  label="999 Fine Silver (Master Base Rate)"
+                  sublabel="Pure Silver Bullion Rate per 1 kg"
+                  badge="MASTER 999"
+                  isMaster={true}
+                  value={draftRates.silverRate}
+                  onChange={handle999SilverChange}
+                  unit="₹ / kg"
+                  accentColor="blue"
+                />
 
-              {/* 925 Sterling Silver */}
-              <RateInputCard
-                id="rate-silver-925"
-                label="925 Sterling Silver"
-                sublabel="Standard 92.5% Sterling Silver"
-                badge="925 STERLING"
-                value={draftRates.silverRate925}
-                onChange={(v) => setDraftRates({ ...draftRates, silverRate925: v })}
-                unit="₹ / kg"
-                accentColor="cyan"
-                disabled={autoDerive}
-              />
+                {/* Auto-Formula Card for 925 & Normal Silver */}
+                <div className="bg-slate-50 dark:bg-zinc-900 border border-solid border-slate-200 dark:border-zinc-800 rounded-xl p-3.5 text-[11px] space-y-2 select-none shadow-xs">
+                  <div className="text-[9px] font-extrabold uppercase tracking-wider text-zinc-400 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-[#C8A646]" />
+                    Auto-Calculated Silver Purities (Formula Driven)
+                  </div>
+                  <div className="flex items-center justify-between border-t border-solid border-slate-200/60 dark:border-zinc-800 pt-2">
+                    <span className="font-bold text-zinc-600 dark:text-zinc-300 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-cyan-500" />
+                      925 Sterling Silver (92.5%):
+                    </span>
+                    <span className="font-mono font-extrabold text-cyan-600 dark:text-cyan-400 text-xs">
+                      {draftRates.silverRate ? `₹${formatINR(Math.round(draftRates.silverRate * 0.925))} / kg (≈ ₹${formatINR(Math.round(draftRates.silverRate * 0.925 / 1000))} / g)` : '—'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between border-t border-solid border-slate-200/60 dark:border-zinc-800 pt-2">
+                    <span className="font-bold text-zinc-600 dark:text-zinc-300 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-slate-500" />
+                      Normal Silver (90.0%):
+                    </span>
+                    <span className="font-mono font-extrabold text-slate-600 dark:text-slate-400 text-xs">
+                      {draftRates.silverRate ? `₹${formatINR(Math.round(draftRates.silverRate * 0.90))} / kg (≈ ₹${formatINR(Math.round(draftRates.silverRate * 0.90 / 1000))} / g)` : '—'}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-              {/* Normal Silver */}
-              <RateInputCard
-                id="rate-silver-normal"
-                label="Normal Silver"
-                sublabel="Traditional / 90% Silver"
-                badge="NORMAL"
-                value={draftRates.silverRateNormal}
-                onChange={(v) => setDraftRates({ ...draftRates, silverRateNormal: v })}
-                unit="₹ / kg"
-                accentColor="slate"
-                disabled={autoDerive}
-              />
-            </div>
-
-            {/* Platinum Rate */}
-            <div className="pt-2">
-              <RateInputCard
-                id="rate-platinum"
-                label="Platinum Rate"
-                sublabel="950 Pure Platinum Jewellery"
-                badge="950 PLATINUM"
-                value={draftRates.platinumRate}
-                onChange={(v) => setDraftRates({ ...draftRates, platinumRate: v })}
-                unit="₹ / gram"
-                accentColor="purple"
-              />
+              {/* Platinum Rate */}
+              <div>
+                <RateInputCard
+                  id="rate-platinum"
+                  label="Platinum Rate"
+                  sublabel="950 Pure Platinum Jewellery Rate"
+                  badge="950 PLATINUM"
+                  value={draftRates.platinumRate}
+                  onChange={(v) => setDraftRates({ ...draftRates, platinumRate: v })}
+                  unit="₹ / gram"
+                  accentColor="purple"
+                />
+              </div>
             </div>
           </div>
 

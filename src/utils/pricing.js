@@ -186,6 +186,9 @@ export function calculateDynamicPrice(product, rates = {}) {
   let makingCharge = 0;
   if (makingType === 'fixed') {
     makingCharge = makingValue;
+  } else if (makingType === 'per_gram' || makingType === 'weight' || makingType === 'perGram') {
+    // Making on metal weight (₹ per gram)
+    makingCharge = weight * makingValue;
   } else {
     // percentage of metal value
     makingCharge = metalValue * (makingValue / 100);

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useProducts } from '../hooks/useProducts';
 import { useWishlist } from '../hooks/useWishlist';
 import { useCart } from '../hooks/useCart';
@@ -8,10 +8,17 @@ import { useRates } from '../hooks/useRates';
 import laxmiGoldCoin from '../assets/laxmi_gold_coin.png';
 import goldBullionCoin from '../assets/gold_bullion_coin.png';
 
-const calculateCoinPrice = (coin, rate24k) => {
-  const baseRatePerGm = rate24k / 10;
-  const purityMultiplier = coin.purity === '24K' ? 1.0 : 0.9167;
-  const baseMetalValue = baseRatePerGm * coin.weightGm * purityMultiplier;
+const calculateCoinPrice = (coin, rate24k, silverRate1g = 92) => {
+  let baseMetalValue = 0;
+  const isSilver = String(coin.purity || '').toLowerCase().includes('silver') || String(coin.metal || '').toLowerCase().includes('silver');
+  if (isSilver) {
+    const silverPerGram = silverRate1g || 92;
+    baseMetalValue = silverPerGram * coin.weightGm;
+  } else {
+    const baseRatePerGm = rate24k / 10;
+    const purityMultiplier = coin.purity === '24K' ? 1.0 : 0.9167;
+    baseMetalValue = baseRatePerGm * coin.weightGm * purityMultiplier;
+  }
   const makingCharges = baseMetalValue * (coin.makingChargePercent / 100);
   const subtotal = baseMetalValue + makingCharges;
   const gst = subtotal * 0.03;
@@ -37,28 +44,52 @@ export default function GoldCoins({
   const { products = [], loading } = useProducts();
   const { wishlistItems = [], toggleWishlist } = useWishlist();
   const { handleAddToCart } = useCart();
-  const { goldRate24k = 78500 } = useRates();
+  const { goldRate24k = 78500, silverRate1g = 92 } = useRates();
 
   const triggerAudio = (type) => { try { triggerAudioProp?.(type); } catch { /* noop */ } };
   // Page local states
-  const [coinPurityTab, setCoinPurityTab] = useState('all');
-  const [coinWeightFilter, setCoinWeightFilter] = useState('all');
+  const [coinPurityTab, setCoinPurityTab] = useState(initialPurityTab || 'all');
+  const [coinWeightFilter, setCoinWeightFilter] = useState(initialWeightFilter || 'all');
   const [coinDetailOpen, setCoinDetailOpen] = useState(null);
   const [coinDetailImg, setCoinDetailImg] = useState(0);
 
+  // Sync external filter props
+  useEffect(() => {
+    if (initialPurityTab !== undefined) setCoinPurityTab(initialPurityTab);
+  }, [initialPurityTab]);
+
+  useEffect(() => {
+    if (initialWeightFilter !== undefined) setCoinWeightFilter(initialWeightFilter);
+  }, [initialWeightFilter]);
+
   const isCatalogDark = false;
 
-  // Memoized gold coins calculated from products list
+  // Memoized gold & silver coins calculated from products list
   const GOLD_COINS_DATA = useMemo(() => {
     return products
       .filter(p => {
         const catLower = (p.category || '').toLowerCase();
         const nameLower = (p.name || '').toLowerCase();
-        return catLower === 'gold-coins' || catLower.includes('coin') || nameLower.includes('gold coin');
+        const subLower = (p.subCategory || '').toLowerCase();
+        return catLower === 'gold-coins' || catLower.includes('coin') || catLower.includes('bar') ||
+               nameLower.includes('coin') || nameLower.includes('bullion') || nameLower.includes('bar') ||
+               subLower.includes('coin');
       })
       .map(p => {
-        const weightGm = parseFloat(p.weight) || parseFloat(p.weightGm) || 0;
-        const purity = (p.carat || p.metalPurity || '24K').toUpperCase().includes('22') ? '22K' : '24K';
+        const weightGm = parseFloat(p.weight) || parseFloat(p.weightGm) || parseFloat(p.silverWeight) || parseFloat(p.goldWeight) || 0;
+        const isSilver = (p.metal || '').toLowerCase().includes('silver') ||
+                         (p.category || '').toLowerCase().includes('silver') ||
+                         (p.subCategory || '').toLowerCase().includes('silver') ||
+                         (p.name || '').toLowerCase().includes('silver') ||
+                         (p.carat || p.metalPurity || p.silverPurity || '').toLowerCase().includes('999');
+        
+        let purity = '24K';
+        if (isSilver) {
+          purity = '999 Silver';
+        } else if ((p.carat || p.metalPurity || '').toUpperCase().includes('22')) {
+          purity = '22K';
+        }
+
         const makingChargePercent = parseFloat(p.makingCharges) || parseFloat(p.makingChargePercent) || 3.5;
         
         let displayImg = p.img;
@@ -73,20 +104,26 @@ export default function GoldCoins({
           name: p.name,
           purity,
           weightGm,
+          metal: isSilver ? 'Silver' : 'Gold',
           img: displayImg,
           makingChargePercent,
           description: p.desc || p.description || '',
-          certification: p.certification || p.hallmark || p.certificate || 'BIS Hallmarked & NABL Accredited',
+          certification: p.certification || p.hallmark || p.certificate || (isSilver ? '999 Fine Silver BIS Certified' : 'BIS Hallmarked & NABL Accredited'),
           available: p.available !== false,
-          category: p.subCategory || p.category || 'Gold Coin'
+          category: p.subCategory || p.category || (isSilver ? 'Silver Coin' : 'Gold Coin')
         };
       });
   }, [products]);
 
   const filteredCoins = useMemo(() => {
     return GOLD_COINS_DATA.filter((coin) => {
-      const matchPurity = coinPurityTab === 'all' || coin.purity === coinPurityTab;
-      const matchWeight = coinWeightFilter === 'all' || coin.weightGm.toString() === coinWeightFilter;
+      const matchPurity = coinPurityTab === 'all' || 
+        (coinPurityTab === '999 Silver' ? (coin.purity.includes('999') || coin.purity.includes('Silver')) : coin.purity === coinPurityTab);
+      
+      const matchWeight = coinWeightFilter === 'all' || 
+        coin.weightGm.toString() === coinWeightFilter ||
+        (coinWeightFilter === '1000' && (coin.weightGm === 1000 || String(coin.weightGm).toLowerCase().includes('1kg')));
+
       return matchPurity && matchWeight;
     });
   }, [GOLD_COINS_DATA, coinPurityTab, coinWeightFilter]);
@@ -230,7 +267,8 @@ export default function GoldCoins({
             {[
               { key: 'all', label: 'All Purity' },
               { key: '24K', label: '24K (999.9 Purity)' },
-              { key: '22K', label: '22K (916 Purity)' }
+              { key: '22K', label: '22K (916 Purity)' },
+              { key: '999 Silver', label: '999 Silver (Pure Silver)' }
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -256,12 +294,16 @@ export default function GoldCoins({
               { key: '8', label: '8g' },
               { key: '10', label: '10g' },
               { key: '20', label: '20g' },
-              { key: '50', label: '50g' }
+              { key: '50', label: '50g' },
+              { key: '100', label: '100g (100grm)' },
+              { key: '200', label: '200g (200grm)' },
+              { key: '500', label: '500g (500grm)' },
+              { key: '1000', label: '1000g (1KG)' }
             ].map((filter) => (
               <button
                 key={filter.key}
                 onClick={() => { triggerAudio('click'); setCoinWeightFilter(filter.key); }}
-                className={`px-3 py-1.5 text-[10px] font-bold rounded-lg border border-solid transition-all duration-305 cursor-pointer ${coinWeightFilter === filter.key
+                className={`px-3 py-1.5 text-[10px] font-bold rounded-lg border border-solid transition-all duration-305 cursor-pointer whitespace-nowrap ${coinWeightFilter === filter.key
                   ? 'bg-gold border-gold text-[#4A126D] shadow-md'
                   : 'border-gray-200 hover:border-gold/30 text-gray-600 hover:text-navy bg-white'
                   }`}
@@ -295,7 +337,7 @@ export default function GoldCoins({
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredCoins.map((coin) => {
-              const prices = calculateCoinPrice(coin, goldRate24k);
+              const prices = calculateCoinPrice(coin, goldRate24k, silverRate1g);
               const isWishlisted = wishlistItems.some((w) => w.id === coin.id);
 
               return (
@@ -407,7 +449,7 @@ export default function GoldCoins({
       {/* 4. PRODUCT DETAIL MODAL */}
       {coinDetailOpen && (() => {
         const coin = coinDetailOpen;
-        const prices = calculateCoinPrice(coin, goldRate24k);
+        const prices = calculateCoinPrice(coin, goldRate24k, silverRate1g);
         const isWishlisted = wishlistItems.some((w) => w.id === coin.id);
 
         return (

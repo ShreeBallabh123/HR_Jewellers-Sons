@@ -428,7 +428,7 @@ export default function AdminSecurity({
             <div className="pt-4 space-y-3.5">
               <div>
                 <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider block">Administrator Email</span>
-                <span className="text-sm font-bold text-white font-mono">{adminUser?.email || 'hrjewellersbkn@gmail.com'}</span>
+                <span className="text-sm font-bold text-white font-mono">{adminUser?.email || 'hrjewellerssons@gmail.com'}</span>
               </div>
 
               <div className="grid grid-cols-2 gap-3 pt-1">

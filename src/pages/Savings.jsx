@@ -50,7 +50,7 @@ export default function Savings({
                   type="number"
                   placeholder="2000"
                   value={monthlySavingsInput}
-                  onChange={(e) => setMonthlySavingsInput(+e.target.value || 2000)}
+                  onChange={(e) => setMonthlySavingsInput(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
                   className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#E54E38] transition-all bg-[#FCFAFF]"
                 />
               </div>
@@ -239,7 +239,7 @@ export default function Savings({
                     <input
                       type="number"
                       value={monthlySavingsInput}
-                      onChange={(e) => setMonthlySavingsInput(+e.target.value)}
+                      onChange={(e) => setMonthlySavingsInput(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
                       className="w-24 focus:outline-none bg-transparent border-none outline-none ring-0 font-bold"
                     />
                   </div>
@@ -261,11 +261,11 @@ export default function Savings({
                 min="1000"
                 max="50000"
                 step="1000"
-                value={monthlySavingsInput}
-                onChange={(e) => setMonthlySavingsInput(+e.target.value)}
+                value={Number(monthlySavingsInput) || 1000}
+                onChange={(e) => setMonthlySavingsInput(Number(e.target.value))}
                 className="w-full cursor-pointer accent-[#0B2341]"
                 style={{
-                  background: `linear-gradient(to right, #E8BEC5 0%, #E8BEC5 ${((monthlySavingsInput - 1000) / 49000) * 100}%, #E5E5E5 ${((monthlySavingsInput - 1000) / 49000) * 100}%, #E5E5E5 100%)`
+                  background: `linear-gradient(to right, #E8BEC5 0%, #E8BEC5 ${(((Number(monthlySavingsInput) || 1000) - 1000) / 49000) * 100}%, #E5E5E5 ${(((Number(monthlySavingsInput) || 1000) - 1000) / 49000) * 100}%, #E5E5E5 100%)`
                 }}
               />
 
@@ -277,10 +277,10 @@ export default function Savings({
 
                   <text x="155" y="46" textAnchor="middle" fontFamily="sans-serif" fontSize="8" fontWeight="700" fill="white">100%</text>
                   <text x="153" y="56" textAnchor="middle" fontFamily="sans-serif" fontSize="8" fontWeight="700" fill="white">Discount*</text>
-                  <text x="148" y="67" textAnchor="middle" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="white">₹{monthlySavingsInput.toLocaleString('en-IN')}</text>
+                  <text x="148" y="67" textAnchor="middle" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="white">₹{(Number(monthlySavingsInput) || 0).toLocaleString('en-IN')}</text>
 
                   <text x="130" y="190" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fill="#6F727A">You Pay</text>
-                  <text x="130" y="210" textAnchor="middle" fontFamily="Georgia, serif" fontSize="18" fontWeight="700" fill="#0B2341">₹{(monthlySavingsInput * 11).toLocaleString('en-IN')}</text>
+                  <text x="130" y="210" textAnchor="middle" fontFamily="Georgia, serif" fontSize="18" fontWeight="700" fill="#0B2341">₹{((Number(monthlySavingsInput) || 0) * 11).toLocaleString('en-IN')}</text>
                 </svg>
               </div>
 
@@ -294,7 +294,7 @@ export default function Savings({
                       <span className="text-[10px] text-gray-400">(Period of 11 months)</span>
                     </div>
                   </div>
-                  <span className="font-bold text-[#0B2341]">₹ {(monthlySavingsInput * 11).toLocaleString('en-IN')}</span>
+                  <span className="font-bold text-[#0B2341]">₹ {((Number(monthlySavingsInput) || 0) * 11).toLocaleString('en-IN')}</span>
                 </div>
 
                 <div className="flex justify-between items-center text-xs">
@@ -305,7 +305,7 @@ export default function Savings({
                       <span className="text-[10px] text-gray-400">(100% of 1 month installment value)</span>
                     </div>
                   </div>
-                  <span className="font-bold text-[#0B2341]">₹ {monthlySavingsInput.toLocaleString('en-IN')}</span>
+                  <span className="font-bold text-[#0B2341]">₹ {(Number(monthlySavingsInput) || 0).toLocaleString('en-IN')}</span>
                 </div>
 
                 <div className="h-[1px] bg-gray-200" />
@@ -315,7 +315,7 @@ export default function Savings({
                     <span className="text-xs font-semibold text-[#0B2341] block">Buy any jewellery worth:</span>
                     <span className="text-[9.5px] text-gray-400">(after 12th month)</span>
                   </div>
-                  <span className="text-xl font-black text-[#E54E38] font-sans">₹ {(monthlySavingsInput * 12).toLocaleString('en-IN')}</span>
+                  <span className="text-xl font-black text-[#E54E38] font-sans">₹ {((Number(monthlySavingsInput) || 0) * 12).toLocaleString('en-IN')}</span>
                 </div>
 
                 <div className="flex justify-between items-center text-xs">
@@ -323,7 +323,7 @@ export default function Savings({
                     <span className="font-semibold text-[#0B2341]">You effectively pay</span>
                     <span className="bg-[#38A52B] text-white rounded-xs px-2 py-0.5 text-[9.5px] font-bold">8.33% discount!</span>
                   </div>
-                  <span className="font-bold text-[#0B2341]">₹ {(monthlySavingsInput * 11).toLocaleString('en-IN')}</span>
+                  <span className="font-bold text-[#0B2341]">₹ {((Number(monthlySavingsInput) || 0) * 11).toLocaleString('en-IN')}</span>
                 </div>
 
                 <div className="h-[1px] bg-gray-200" />
@@ -335,13 +335,13 @@ export default function Savings({
                   <div className="grid grid-cols-2 gap-3">
                     <div className="border border-gray-200 rounded-lg p-3 bg-white text-left space-y-1 relative shadow-xs">
                       <span className="text-[9px] text-[#2F6FB6] font-bold block font-sans">6th Month</span>
-                      <span className="text-sm font-bold text-[#F26544] block font-sans">₹ {Math.round(monthlySavingsInput * 5.25).toLocaleString('en-IN')}</span>
+                      <span className="text-sm font-bold text-[#F26544] block font-sans">₹ {Math.round((Number(monthlySavingsInput) || 0) * 5.25).toLocaleString('en-IN')}</span>
                       <span className="text-[8px] text-gray-400 font-sans block leading-normal">Buy worth after 6th mo (Pay 5m + 25% disc)</span>
                     </div>
 
                     <div className="border border-gray-200 rounded-lg p-3 bg-white text-left space-y-1 relative shadow-xs">
                       <span className="text-[9px] text-[#2F6FB6] font-bold block font-sans">8th Month</span>
-                      <span className="text-sm font-bold text-[#F26544] block font-sans">₹ {Math.round(monthlySavingsInput * 7.5).toLocaleString('en-IN')}</span>
+                      <span className="text-sm font-bold text-[#F26544] block font-sans">₹ {Math.round((Number(monthlySavingsInput) || 0) * 7.5).toLocaleString('en-IN')}</span>
                       <span className="text-[8px] text-gray-400 font-sans block leading-normal">Buy worth after 8th mo (Pay 7m + 50% disc)</span>
                     </div>
                   </div>
@@ -350,7 +350,7 @@ export default function Savings({
                 <div className="h-[1px] bg-gray-200" />
 
                 <p className="text-[10px] text-gray-400 text-center leading-normal font-sans pt-1">
-                  If jewellery is more than ₹ {(monthlySavingsInput * 12).toLocaleString('en-IN')}, you just need to pay the difference amount at the time of purchase.
+                  If jewellery is more than ₹ {((Number(monthlySavingsInput) || 0) * 12).toLocaleString('en-IN')}, you just need to pay the difference amount at the time of purchase.
                 </p>
               </div>
             </div>
@@ -441,7 +441,7 @@ export default function Savings({
                   type="number"
                   placeholder="2000"
                   value={monthlySavingsInput}
-                  onChange={(e) => setMonthlySavingsInput(+e.target.value || 2000)}
+                  onChange={(e) => setMonthlySavingsInput(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
                   className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#E54E38] transition-all bg-[#FCFAFF]"
                 />
               </div>
@@ -663,7 +663,7 @@ export default function Savings({
                   <div style={{ padding: '10px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                     <div style={{ fontSize: '10px', color: '#888', marginBottom: '3px', fontFamily: 'sans-serif' }}>Monthly Amount</div>
                     <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#0B2341', fontFamily: 'sans-serif', lineHeight: 1.1 }}>
-                      ₹ {monthlySavingsInput.toLocaleString('en-IN')}
+                      ₹ {(Number(monthlySavingsInput) || 0).toLocaleString('en-IN')}
                     </div>
                   </div>
                   <button
@@ -679,11 +679,11 @@ export default function Savings({
 
                 <input
                   type="range" min="1000" max="50000" step="1000"
-                  value={monthlySavingsInput}
-                  onChange={(e) => setMonthlySavingsInput(+e.target.value)}
+                  value={Number(monthlySavingsInput) || 1000}
+                  onChange={(e) => setMonthlySavingsInput(Number(e.target.value))}
                   className="w-full cursor-pointer accent-[#0B2341]"
                   style={{
-                    background: `linear-gradient(to right, #E8BEC5 0%, #E8BEC5 ${((monthlySavingsInput - 1000) / 49000) * 100}%, #E5E5E5 ${((monthlySavingsInput - 1000) / 49000) * 100}%, #E5E5E5 100%)`
+                    background: `linear-gradient(to right, #E8BEC5 0%, #E8BEC5 ${(((Number(monthlySavingsInput) || 1000) - 1000) / 49000) * 100}%, #E5E5E5 ${(((Number(monthlySavingsInput) || 1000) - 1000) / 49000) * 100}%, #E5E5E5 100%)`
                   }}
                 />
 
@@ -694,10 +694,10 @@ export default function Savings({
 
                     <text x="155" y="46" textAnchor="middle" fontFamily="sans-serif" fontSize="8" fontWeight="700" fill="white">100%</text>
                     <text x="153" y="56" textAnchor="middle" fontFamily="sans-serif" fontSize="8" fontWeight="700" fill="white">Discount*</text>
-                    <text x="148" y="67" textAnchor="middle" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="white">₹{monthlySavingsInput.toLocaleString('en-IN')}</text>
+                    <text x="148" y="67" textAnchor="middle" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="white">₹{(Number(monthlySavingsInput) || 0).toLocaleString('en-IN')}</text>
 
                     <text x="130" y="190" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fill="#6F727A">You Pay</text>
-                    <text x="130" y="210" textAnchor="middle" fontFamily="Georgia, serif" fontSize="18" fontWeight="700" fill="#0B2341">₹{(monthlySavingsInput * 11).toLocaleString('en-IN')}</text>
+                    <text x="130" y="210" textAnchor="middle" fontFamily="Georgia, serif" fontSize="18" fontWeight="700" fill="#0B2341">₹{((Number(monthlySavingsInput) || 0) * 11).toLocaleString('en-IN')}</text>
                   </svg>
                 </div>
               </div>
@@ -713,7 +713,7 @@ export default function Savings({
                     </div>
                   </div>
                   <div style={{ fontSize: '15px', fontWeight: '700', color: '#0B2341', fontFamily: 'sans-serif', whiteSpace: 'nowrap' }}>
-                    ₹ {(monthlySavingsInput * 11).toLocaleString('en-IN')}
+                    ₹ {((Number(monthlySavingsInput) || 0) * 11).toLocaleString('en-IN')}
                   </div>
                 </div>
 
@@ -726,7 +726,7 @@ export default function Savings({
                     </div>
                   </div>
                   <div style={{ fontSize: '15px', fontWeight: '700', color: '#0B2341', fontFamily: 'sans-serif', whiteSpace: 'nowrap' }}>
-                    ₹ {monthlySavingsInput.toLocaleString('en-IN')}
+                    ₹ {(Number(monthlySavingsInput) || 0).toLocaleString('en-IN')}
                   </div>
                 </div>
 
@@ -738,7 +738,7 @@ export default function Savings({
                     <div style={{ fontSize: '11px', color: '#888', marginTop: '2px' }}>(after 12th month)</div>
                   </div>
                   <div style={{ fontSize: '26px', fontWeight: '800', color: '#E54E38', fontFamily: 'sans-serif', whiteSpace: 'nowrap' }}>
-                    ₹ {(monthlySavingsInput * 12).toLocaleString('en-IN')}
+                    ₹ {((Number(monthlySavingsInput) || 0) * 12).toLocaleString('en-IN')}
                   </div>
                 </div>
 
@@ -748,7 +748,7 @@ export default function Savings({
                     <span style={{ background: '#38A52B', color: '#fff', borderRadius: '3px', padding: '2px 8px', fontSize: '11px', fontWeight: '700' }}>8.33% discount!</span>
                   </div>
                   <div style={{ fontSize: '16px', fontWeight: '700', color: '#0B2341', fontFamily: 'sans-serif', whiteSpace: 'nowrap' }}>
-                    ₹ {(monthlySavingsInput * 11).toLocaleString('en-IN')}
+                    ₹ {((Number(monthlySavingsInput) || 0) * 11).toLocaleString('en-IN')}
                   </div>
                 </div>
 
@@ -762,7 +762,7 @@ export default function Savings({
                       <div style={{ fontFamily: 'sans-serif' }}>
                         <div style={{ fontSize: '11px', color: '#2F6FB6', fontWeight: '600', marginBottom: '4px' }}>6th Month</div>
                         <div style={{ fontSize: '16px', fontWeight: '700', color: '#F26544' }}>
-                          ₹ {Math.round(monthlySavingsInput * 5.25).toLocaleString('en-IN')}
+                          ₹ {Math.round((Number(monthlySavingsInput) || 0) * 5.25).toLocaleString('en-IN')}
                         </div>
                       </div>
                       <button onClick={() => setErdTooltip(erdTooltip === '6th' ? null : '6th')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', outline: 'none' }}>
@@ -781,7 +781,7 @@ export default function Savings({
                             <div style={{ fontSize: '12.5px', color: '#333' }}>Your total payment</div>
                             <div style={{ fontSize: '11px', color: '#aaa' }}>(5 installments)</div>
                           </div>
-                          <div style={{ fontSize: '13px', fontWeight: '600', color: '#333', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {(monthlySavingsInput * 5).toLocaleString('en-IN')}</div>
+                          <div style={{ fontSize: '13px', fontWeight: '600', color: '#333', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {((Number(monthlySavingsInput) || 0) * 5).toLocaleString('en-IN')}</div>
                         </div>
                         <div style={{ height: '1px', background: '#f0f0f0', margin: '10px 0' }} />
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
@@ -789,7 +789,7 @@ export default function Savings({
                             <div style={{ fontSize: '12.5px', color: '#333' }}>Special Discount</div>
                             <div style={{ fontSize: '11px', color: '#aaa' }}>(25% of one installment value)</div>
                           </div>
-                          <div style={{ fontSize: '13px', fontWeight: '600', color: '#333', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {Math.round(monthlySavingsInput * 0.25).toLocaleString('en-IN')}</div>
+                          <div style={{ fontSize: '13px', fontWeight: '600', color: '#333', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {Math.round((Number(monthlySavingsInput) || 0) * 0.25).toLocaleString('en-IN')}</div>
                         </div>
                         <div style={{ height: '1px', background: '#f0f0f0', margin: '10px 0' }} />
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -797,7 +797,7 @@ export default function Savings({
                             <div style={{ fontSize: '12.5px', color: '#333' }}>You can buy jewellery worth:</div>
                             <div style={{ fontSize: '11px', color: '#aaa' }}>(after 6th month)</div>
                           </div>
-                          <div style={{ fontSize: '14px', fontWeight: '700', color: '#F26544', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {Math.round(monthlySavingsInput * 5.25).toLocaleString('en-IN')}</div>
+                          <div style={{ fontSize: '14px', fontWeight: '700', color: '#F26544', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {Math.round((Number(monthlySavingsInput) || 0) * 5.25).toLocaleString('en-IN')}</div>
                         </div>
                       </div>
                     )}
@@ -808,7 +808,7 @@ export default function Savings({
                       <div style={{ fontFamily: 'sans-serif' }}>
                         <div style={{ fontSize: '11px', color: '#2F6FB6', fontWeight: '600', marginBottom: '4px' }}>8th Month</div>
                         <div style={{ fontSize: '16px', fontWeight: '700', color: '#F26544' }}>
-                          ₹ {Math.round(monthlySavingsInput * 7.5).toLocaleString('en-IN')}
+                          ₹ {Math.round((Number(monthlySavingsInput) || 0) * 7.5).toLocaleString('en-IN')}
                         </div>
                       </div>
                       <button onClick={() => setErdTooltip(erdTooltip === '8th' ? null : '8th')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', outline: 'none' }}>
@@ -827,7 +827,7 @@ export default function Savings({
                             <div style={{ fontSize: '12.5px', color: '#333' }}>Your total payment</div>
                             <div style={{ fontSize: '11px', color: '#aaa' }}>(7 installments)</div>
                           </div>
-                          <div style={{ fontSize: '13px', fontWeight: '600', color: '#333', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {(monthlySavingsInput * 7).toLocaleString('en-IN')}</div>
+                          <div style={{ fontSize: '13px', fontWeight: '600', color: '#333', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {((Number(monthlySavingsInput) || 0) * 7).toLocaleString('en-IN')}</div>
                         </div>
                         <div style={{ height: '1px', background: '#f0f0f0', margin: '10px 0' }} />
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
@@ -835,7 +835,7 @@ export default function Savings({
                             <div style={{ fontSize: '12.5px', color: '#333' }}>Special Discount</div>
                             <div style={{ fontSize: '11px', color: '#aaa' }}>(50% of one installment value)</div>
                           </div>
-                          <div style={{ fontSize: '13px', fontWeight: '600', color: '#333', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {Math.round(monthlySavingsInput * 0.5).toLocaleString('en-IN')}</div>
+                          <div style={{ fontSize: '13px', fontWeight: '600', color: '#333', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {Math.round((Number(monthlySavingsInput) || 0) * 0.5).toLocaleString('en-IN')}</div>
                         </div>
                         <div style={{ height: '1px', background: '#f0f0f0', margin: '10px 0' }} />
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -843,7 +843,7 @@ export default function Savings({
                             <div style={{ fontSize: '12.5px', color: '#333' }}>You can buy jewellery worth:</div>
                             <div style={{ fontSize: '11px', color: '#aaa' }}>(after 8th month)</div>
                           </div>
-                          <div style={{ fontSize: '14px', fontWeight: '700', color: '#F26544', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {Math.round(monthlySavingsInput * 7.5).toLocaleString('en-IN')}</div>
+                          <div style={{ fontSize: '14px', fontWeight: '700', color: '#F26544', whiteSpace: 'nowrap', marginLeft: '16px' }}>₹ {Math.round((Number(monthlySavingsInput) || 0) * 7.5).toLocaleString('en-IN')}</div>
                         </div>
                       </div>
                     )}
@@ -854,7 +854,7 @@ export default function Savings({
 
             <div style={{ height: '1.2px', background: '#E6B7BE', opacity: 0.6, width: '100%', margin: '24px 0 12px 0' }} />
             <p style={{ fontSize: '11.5px', color: '#8A94A6', textAlign: 'center', lineHeight: '1.5', margin: 0, fontFamily: 'sans-serif', fontWeight: '400' }}>
-              If jewellery is more than ₹ {(monthlySavingsInput * 12).toLocaleString('en-IN')}, you just need to pay the difference amount at the time of purchase
+              If jewellery is more than ₹ {((Number(monthlySavingsInput) || 0) * 12).toLocaleString('en-IN')}, you just need to pay the difference amount at the time of purchase
             </p>
           </div>
         </section>

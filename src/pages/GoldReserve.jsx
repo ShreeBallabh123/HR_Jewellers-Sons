@@ -51,7 +51,7 @@ export default function GoldReserve({
                   type="number"
                   placeholder="2000"
                   value={monthlySavingsInput}
-                  onChange={(e) => setMonthlySavingsInput(+e.target.value || 2000)}
+                  onChange={(e) => setMonthlySavingsInput(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
                   className="w-full border border-solid border-gray-200 rounded-lg px-3.5 py-2.5 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#c0392b] transition-all bg-[#FCFAFF]"
                 />
               </div>
@@ -238,7 +238,7 @@ export default function GoldReserve({
                     <input
                       type="number"
                       value={monthlySavingsInput}
-                      onChange={(e) => setMonthlySavingsInput(+e.target.value)}
+                      onChange={(e) => setMonthlySavingsInput(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
                       className="w-24 focus:outline-none bg-transparent border-none"
                     />
                   </div>
@@ -257,11 +257,11 @@ export default function GoldReserve({
                   min="1000"
                   max="50000"
                   step="1000"
-                  value={monthlySavingsInput}
-                  onChange={(e) => setMonthlySavingsInput(+e.target.value)}
+                  value={Number(monthlySavingsInput) || 1000}
+                  onChange={(e) => setMonthlySavingsInput(Number(e.target.value))}
                   className="w-full cursor-pointer accent-[#c0392b]"
                   style={{
-                    background: `linear-gradient(to right, #c0392b 0%, #c0392b ${((monthlySavingsInput - 1000) / 49000) * 100}%, #E5E5E5 ${((monthlySavingsInput - 1000) / 49000) * 100}%, #E5E5E5 100%)`
+                    background: `linear-gradient(to right, #c0392b 0%, #c0392b ${(((Number(monthlySavingsInput) || 1000) - 1000) / 49000) * 100}%, #E5E5E5 ${(((Number(monthlySavingsInput) || 1000) - 1000) / 49000) * 100}%, #E5E5E5 100%)`
                   }}
                 />
                 <div className="flex justify-between text-[9.5px] text-gray-400 font-bold font-sans">
@@ -280,7 +280,7 @@ export default function GoldReserve({
                       <span className="text-[10px] text-gray-400">(1 installment)</span>
                     </div>
                   </div>
-                  <span className="font-bold text-[#0B2341]">₹ {monthlySavingsInput.toLocaleString('en-IN')}</span>
+                  <span className="font-bold text-[#0B2341]">₹ {(Number(monthlySavingsInput) || 0).toLocaleString('en-IN')}</span>
                 </div>
 
                 <div className="flex justify-between items-center text-xs">
@@ -291,7 +291,7 @@ export default function GoldReserve({
                       <span className="text-[10px] text-gray-400">(in units)</span>
                     </div>
                   </div>
-                  <span className="font-bold text-[#0B2341]">{(monthlySavingsInput / goldRate24k).toFixed(4)} g</span>
+                  <span className="font-bold text-[#0B2341]">{((Number(monthlySavingsInput) || 0) / (goldRate24k || 1)).toFixed(4)} g</span>
                 </div>
 
                 <div className="h-[1px] bg-gray-200" />
@@ -309,7 +309,7 @@ export default function GoldReserve({
                 <div className="h-[1px] bg-gray-200" />
 
                 <p className="text-[10px] text-gray-400 text-center leading-normal font-sans pt-1">
-                  If jewellery is more than ₹ {(monthlySavingsInput * 11).toLocaleString('en-IN')}, you just need to pay the difference amount at the time of purchase.
+                  If jewellery is more than ₹ {((Number(monthlySavingsInput) || 0) * 11).toLocaleString('en-IN')}, you just need to pay the difference amount at the time of purchase.
                 </p>
               </div>
             </div>
@@ -401,7 +401,7 @@ export default function GoldReserve({
                   type="number"
                   placeholder="2000"
                   value={monthlySavingsInput}
-                  onChange={(e) => setMonthlySavingsInput(+e.target.value || 2000)}
+                  onChange={(e) => setMonthlySavingsInput(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
                   className="w-full border border-solid border-gray-200 rounded-lg px-4 py-3 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#c0392b] transition-all bg-white"
                 />
               </div>
@@ -855,7 +855,7 @@ export default function GoldReserve({
                 }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span style={{ fontSize: '10px', color: '#888', textTransform: 'uppercase', fontWeight: '600', fontFamily: 'sans-serif' }}>Monthly Amount</span>
-                    <span style={{ fontSize: '18px', fontWeight: '700', color: '#0C223F', fontFamily: 'sans-serif', marginTop: '2px' }}>₹ {monthlySavingsInput}</span>
+                    <span style={{ fontSize: '18px', fontWeight: '700', color: '#0C223F', fontFamily: 'sans-serif', marginTop: '2px' }}>₹ {(Number(monthlySavingsInput) || 0).toLocaleString('en-IN')}</span>
                   </div>
                   <button
                     onClick={() => { triggerAudio('shimmer'); navigateTo('savings-enroll'); }}
@@ -882,11 +882,11 @@ export default function GoldReserve({
                     min="1000"
                     max="50000"
                     step="1000"
-                    value={monthlySavingsInput}
-                    onChange={(e) => setMonthlySavingsInput(+e.target.value)}
+                    value={Number(monthlySavingsInput) || 1000}
+                    onChange={(e) => setMonthlySavingsInput(Number(e.target.value))}
                     className="gmc-slider"
                     style={{
-                      background: `linear-gradient(to right, #c0392b 0%, #c0392b ${((monthlySavingsInput - 1000) / 49000) * 100}%, #E5E7EB ${((monthlySavingsInput - 1000) / 49000) * 100}%, #E5E7EB 100%)`
+                      background: `linear-gradient(to right, #c0392b 0%, #c0392b ${(((Number(monthlySavingsInput) || 1000) - 1000) / 49000) * 100}%, #E5E7EB ${(((Number(monthlySavingsInput) || 1000) - 1000) / 49000) * 100}%, #E5E7EB 100%)`
                     }}
                   />
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#999', marginTop: '8px', fontFamily: 'sans-serif', fontWeight: '600' }}>
@@ -908,7 +908,7 @@ export default function GoldReserve({
                     </div>
                   </div>
                   <div style={{ fontSize: '15px', fontWeight: '700', color: '#0B2341', fontFamily: 'sans-serif', whiteSpace: 'nowrap' }}>
-                    ₹ {monthlySavingsInput.toLocaleString('en-IN')}
+                    ₹ {(Number(monthlySavingsInput) || 0).toLocaleString('en-IN')}
                   </div>
                 </div>
 
@@ -921,7 +921,7 @@ export default function GoldReserve({
                     </div>
                   </div>
                   <div style={{ fontSize: '15px', fontWeight: '700', color: '#0B2341', fontFamily: 'sans-serif', whiteSpace: 'nowrap' }}>
-                    {(monthlySavingsInput / goldRate24k).toFixed(4)}
+                    {((Number(monthlySavingsInput) || 0) / (goldRate24k || 1)).toFixed(4)}
                   </div>
                 </div>
 

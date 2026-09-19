@@ -30,7 +30,7 @@ export default function PrivacyPolicy({ navigateTo, triggerAudio }) {
     {
       num: '06',
       title: 'Your Rights',
-      content: 'You have the right to access, update, or delete your personal information held by us. To exercise these rights, contact us at hrjewellersbkn@gmail.com or call +91 97838 43978. We will respond to all requests within 7 business days.',
+      content: 'You have the right to access, update, or delete your personal information held by us. To exercise these rights, contact us at hrjewellerssons@gmail.com or call +91 97838 43978. We will respond to all requests within 7 business days.',
     },
     {
       num: '07',

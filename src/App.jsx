@@ -7,10 +7,11 @@ import { useProducts } from './hooks/useProducts';
 import { useCart } from './hooks/useCart';
 import { useWishlist } from './hooks/useWishlist';
 
-import Admin from './Admin';
 import ErrorBoundary from './ErrorBoundary';
 import MainLayout from './layouts/MainLayout';
 import Loader from './components/Loader';
+
+const Admin = React.lazy(() => import('./Admin'));
 
 // Web Audio API dynamic Sound Synth
 class LuxurySynth {
@@ -120,6 +121,7 @@ function AppContent() {
   const [coinPurityTab, setCoinPurityTab] = useState('24K');
   const [coinWeightFilter, setCoinWeightFilter] = useState('all');
   const [genderFilter, setGenderFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { products, loading: productsLoading } = useProducts();
   const { rates, loading: ratesLoading } = useRates();
@@ -173,7 +175,7 @@ function AppContent() {
         const validPages = [
           'admin', 'savings', 'gold-reserve', 'offers', 'gold-coins', 'heritage', 
           'valuation', 'collections', 'showrooms', 'terms-and-conditions', 
-          'privacy-policy', 'product-detail', 'savings-enroll', 'checkout'
+          'privacy-policy', 'product-detail', 'savings-enroll', 'checkout', 'about-us'
         ];
         if (validPages.includes(path)) {
           setCurrentPage(path);
@@ -207,7 +209,7 @@ function AppContent() {
         break;
       case 'heritage':
         title = 'Legacy and Royal Showroom — HR Jewellers';
-        desc = 'Discover the legacy and certified royal lineage of our master goldsmiths working in Bikaner since 1924.';
+        desc = 'Discover the legacy and certified royal lineage of our master goldsmiths working in Bikaner since 1996.';
         break;
       case 'valuation':
         title = 'Live Daily Bullion Rates Estimator — HR Jewellers & Sons';
@@ -258,7 +260,9 @@ function AppContent() {
   if (currentPage === 'admin') {
     return (
       <ErrorBoundary>
-        <Admin />
+        <React.Suspense fallback={<Loader />}>
+          <Admin />
+        </React.Suspense>
       </ErrorBoundary>
     );
   }
@@ -283,6 +287,8 @@ function AppContent() {
         navigateToPDP={navigateToPDP}
         genderFilter={genderFilter}
         setGenderFilter={setGenderFilter}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
       >
         {/* Suspense Wrapper for Page Components Lazy Loading */}
         <React.Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center font-bold text-xs uppercase tracking-widest text-[#4A126D]">Loading Boutique Workspace...</div>}>
@@ -293,6 +299,9 @@ function AppContent() {
               navigateToPDP={navigateToPDP}
               changeCategoryTab={setActiveCategoryTab}
               triggerAudio={triggerAudio}
+              setMaxPriceFilter={setMaxPriceFilter}
+              setGenderFilter={setGenderFilter}
+              setMetalFilter={setMetalFilter}
             />
           )}
 
@@ -310,6 +319,8 @@ function AppContent() {
               setGenderFilter={setGenderFilter}
               navigateToPDP={navigateToPDP}
               triggerAudio={triggerAudio}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
             />
           )}
 

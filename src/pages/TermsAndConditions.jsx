@@ -220,8 +220,8 @@ const TERMS_DATA = [
     contactInfo: {
       brand: "HR Jeweller & Sons",
       address: "4-D-37, Near Murti Circle, J.N.V. Colony, Bikaner, Rajasthan (334001)",
-      email: "support@hrjewellerandsons.com",
-      backupEmail: "notifications@hrjewellers.com",
+      email: "hrjewellerssons@gmail.com",
+      backupEmail: "hrjewellerssons@gmail.com",
       phone: "+91 97838 43978",
       hours: "Monday to Saturday, 10:00 AM – 7:00 PM"
     },

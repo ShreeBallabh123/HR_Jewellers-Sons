@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
@@ -30,33 +30,48 @@ export default function Navbar({
   setCoinWeightFilter,
   setMetalFilter,
   setMaxPriceFilter,
-  navigateToPDP,
   genderFilter,
-  setGenderFilter
+  setGenderFilter,
+  searchQuery,
+  setSearchQuery,
+  openCustomerAccount
 }) {
   const { cartItems, setCartOpen, cartItemCount } = useCart();
   const { wishlistItems, setWishlistOpen } = useWishlist();
   const { products } = useProducts();
   const { formatPrice, calculatePrice } = useRates();
 
-  const [searchVal, setSearchVal] = useState('');
+  const [searchVal, setSearchVal] = useState(searchQuery || '');
   const [searchFocused, setSearchFocused] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileOurCollectionsOpen, setMobileOurCollectionsOpen] = useState(true);
+
+  // Sync external searchQuery state if updated
+  useEffect(() => {
+    if (searchQuery !== undefined && searchQuery !== searchVal) {
+      setSearchVal(searchQuery);
+    }
+  }, [searchQuery]);
 
   // Suggestions search logic
   const searchSuggestions = searchVal.trim()
     ? products
         .filter((p) =>
-          p.name.toLowerCase().includes(searchVal.toLowerCase()) ||
-          p.category.toLowerCase().includes(searchVal.toLowerCase())
+          (p.name || '').toLowerCase().includes(searchVal.toLowerCase()) ||
+          (p.category || '').toLowerCase().includes(searchVal.toLowerCase()) ||
+          (p.subCategory || '').toLowerCase().includes(searchVal.toLowerCase()) ||
+          (p.metal || '').toLowerCase().includes(searchVal.toLowerCase())
         )
-        .slice(0, 5)
+        .slice(0, 6)
     : [];
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchVal.trim()) {
       triggerAudio('click');
+      if (typeof setSearchQuery === 'function') {
+        setSearchQuery(searchVal.trim());
+      }
       changeCategoryTab('Collections');
       navigateTo('collections');
       setSearchFocused(false);
@@ -170,6 +185,19 @@ export default function Navbar({
                 </svg>
               </div>
             </a>
+
+            {/* Customer Account & Orders */}
+            <button
+              onClick={() => { triggerAudio?.('click'); openCustomerAccount?.('orders'); }}
+              className="group relative flex flex-col items-center justify-center w-12 h-12 rounded-full hover:bg-[#FAF9F7] transition-all duration-300 cursor-pointer focus:outline-none border-none bg-transparent"
+              title="My Account & Order Tracking"
+            >
+              <div className="text-[#C8A646] relative transition-transform duration-300 group-hover:scale-110 active:scale-95">
+                <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+              </div>
+            </button>
 
             {/* Wishlist */}
             <button
@@ -354,7 +382,8 @@ export default function Navbar({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                   </svg>
                 </button>
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white text-gray-800 shadow-[0_12px_40px_rgba(0,0,0,0.08)] border border-solid border-[#ECECEC] rounded-2xl py-6 px-7 min-w-[320px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 grid grid-cols-2 gap-x-8 gap-y-4 text-[12px] normal-case font-sans select-none text-left font-semibold">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white text-gray-800 shadow-[0_12px_40px_rgba(0,0,0,0.08)] border border-solid border-[#ECECEC] rounded-2xl py-6 px-7 min-w-[480px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 grid grid-cols-3 gap-x-6 gap-y-4 text-[12px] normal-case font-sans select-none text-left font-semibold">
+                  {/* 24K Gold */}
                   <div className="flex flex-col space-y-2.5">
                     <button
                       onClick={() => {
@@ -365,10 +394,10 @@ export default function Navbar({
                       }}
                       className="font-bold text-[13px] text-gray-900 border-b border-solid border-gray-100 pb-1.5 text-left hover:text-[#C8A646] focus:outline-none border-none bg-transparent"
                     >
-                      24 Kt (995)
+                      24 Kt (999.9)
                     </button>
-                    <div className="flex flex-col space-y-2 text-[12px] text-gray-605 font-medium">
-                      {['0.5', '1', '2', '5', '10', '20', '50'].map((w) => (
+                    <div className="flex flex-col space-y-1.5 text-[11.5px] text-gray-600 font-medium">
+                      {['0.5', '1', '2', '5', '8', '10', '20', '50', '100'].map((w) => (
                         <button
                           key={`dropdown-24k-${w}`}
                           onClick={() => {
@@ -379,12 +408,13 @@ export default function Navbar({
                           }}
                           className="text-left hover:text-[#C8A646] hover:translate-x-1 transition-all py-0.5 cursor-pointer focus:outline-none border-none bg-transparent"
                         >
-                          {w} gram
+                          {w}g Gold
                         </button>
                       ))}
                     </div>
                   </div>
 
+                  {/* 22K Gold */}
                   <div className="flex flex-col space-y-2.5">
                     <button
                       onClick={() => {
@@ -397,8 +427,8 @@ export default function Navbar({
                     >
                       22 Kt (916)
                     </button>
-                    <div className="flex flex-col space-y-2 text-[12px] text-gray-605 font-medium">
-                      {['1', '2', '5', '10', '20', '50'].map((w) => (
+                    <div className="flex flex-col space-y-1.5 text-[11.5px] text-gray-600 font-medium">
+                      {['1', '2', '5', '8', '10', '20', '50'].map((w) => (
                         <button
                           key={`dropdown-22k-${w}`}
                           onClick={() => {
@@ -409,7 +439,46 @@ export default function Navbar({
                           }}
                           className="text-left hover:text-[#C8A646] hover:translate-x-1 transition-all py-0.5 cursor-pointer focus:outline-none border-none bg-transparent"
                         >
-                          {w} gram
+                          {w}g Gold
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 999 Pure Silver */}
+                  <div className="flex flex-col space-y-2.5">
+                    <button
+                      onClick={() => {
+                        triggerAudio('click');
+                        navigateTo('gold-coins');
+                        setCoinPurityTab('999 Silver');
+                        setCoinWeightFilter('all');
+                      }}
+                      className="font-bold text-[13px] text-gray-900 border-b border-solid border-gray-100 pb-1.5 text-left hover:text-[#C8A646] focus:outline-none border-none bg-transparent"
+                    >
+                      999 Silver
+                    </button>
+                    <div className="flex flex-col space-y-1.5 text-[11.5px] text-gray-600 font-medium">
+                      {[
+                        { key: '10', label: '10g Silver' },
+                        { key: '20', label: '20g Silver' },
+                        { key: '50', label: '50g Silver' },
+                        { key: '100', label: '100g (100grm)' },
+                        { key: '200', label: '200g (200grm)' },
+                        { key: '500', label: '500g (500grm)' },
+                        { key: '1000', label: '1000g (1KG)' }
+                      ].map((item) => (
+                        <button
+                          key={`dropdown-silver-${item.key}`}
+                          onClick={() => {
+                            triggerAudio('click');
+                            navigateTo('gold-coins');
+                            setCoinPurityTab('999 Silver');
+                            setCoinWeightFilter(item.key);
+                          }}
+                          className="text-left hover:text-[#C8A646] hover:translate-x-1 transition-all py-0.5 cursor-pointer focus:outline-none border-none bg-transparent"
+                        >
+                          {item.label}
                         </button>
                       ))}
                     </div>
@@ -483,8 +552,19 @@ export default function Navbar({
           </button>
 
           {/* Mobile Action Controls */}
-          <div className="flex items-center space-x-2.5 text-[#1A1A1A]">
+          <div className="flex items-center space-x-2 text-[#1A1A1A]">
             
+            {/* Customer Account Mobile */}
+            <button
+              onClick={() => { triggerAudio?.('click'); openCustomerAccount?.('orders'); }}
+              className="p-1.5 hover:bg-slate-50 rounded-full relative focus:outline-none border-none bg-transparent"
+              title="My Account & Orders"
+            >
+              <svg className="w-5.5 h-5.5 text-[#C8A646]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
+            </button>
+
             {/* Wishlist Mobile */}
             <button
               onClick={() => { triggerAudio('click'); setWishlistOpen(true); }}
@@ -603,6 +683,38 @@ export default function Navbar({
 
             {/* Nav Items */}
             <nav className="flex flex-col px-5 py-4 space-y-1 flex-1">
+              {/* Customer Account & Order Tracking Card */}
+              <div className="bg-gradient-to-br from-[#12071B] to-[#2B0E3D] p-3.5 rounded-2xl text-white mb-2.5 shadow-sm border border-solid border-[#C8A646]/30">
+                <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                  <div className="flex items-center gap-2">
+                    <span className="w-7 h-7 rounded-lg bg-[#C8A646] flex items-center justify-center text-xs text-white">👤</span>
+                    <span className="text-[12px] font-bold tracking-wider uppercase text-amber-200">Customer Account</span>
+                  </div>
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); openCustomerAccount?.('profile'); }}
+                    className="text-[10px] text-zinc-300 hover:text-white bg-transparent border-none cursor-pointer underline font-medium"
+                  >
+                    Profile
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-2 mt-2.5">
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); openCustomerAccount?.('orders'); }}
+                    className="flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white text-[11px] font-bold border border-white/10 transition-all cursor-pointer"
+                  >
+                    <span>📦</span>
+                    <span>My Orders</span>
+                  </button>
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); openCustomerAccount?.('track'); }}
+                    className="flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl bg-[#C8A646]/20 hover:bg-[#C8A646]/30 active:scale-95 text-[#E6C687] text-[11px] font-bold border border-[#C8A646]/30 transition-all cursor-pointer"
+                  >
+                    <span>🚚</span>
+                    <span>Track Order</span>
+                  </button>
+                </div>
+              </div>
+
               {/* 11+1 Savings — highlighted */}
               <button
                 onClick={() => { setMobileMenuOpen(false); navigateTo('savings'); }}
@@ -621,39 +733,98 @@ export default function Navbar({
 
               <div className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 px-2 pt-3 pb-2">Collections</div>
 
+              {/* Gender Quick Nav: For Men, For Women, For Kids */}
               {[
-                { label: 'For Men', gender: 'men' },
-                { label: 'For Women', gender: 'women' },
-                { label: 'For Kids', gender: 'kids' },
-                { label: 'Rings', tab: 'Rings' },
-                { label: 'Earrings', tab: 'Earrings' },
-                { label: 'Necklaces', tab: 'Necklace' },
-                { label: 'Bangles', tab: 'Bangles' },
-                { label: 'Bracelets', tab: 'Bracelets' },
-                { label: 'Mangalsutras', tab: 'Mangalsutras' },
+                { label: 'For Men', gender: 'men', icon: '👔' },
+                { label: 'For Women', gender: 'women', icon: '✨' },
+                { label: 'For Kids', gender: 'kids', icon: '🧸' },
               ].map(item => (
                 <button
                   key={item.label}
                   onClick={() => {
                     triggerAudio('click');
                     setMobileMenuOpen(false);
-                    if (item.gender) {
-                      setMetalFilter('all');
-                      setGenderFilter(item.gender);
-                      changeCategoryTab('Collections');
-                    } else {
-                      changeCategoryTab(item.tab);
-                    }
+                    setMetalFilter('all');
+                    setGenderFilter(item.gender);
+                    changeCategoryTab('Collections');
                     navigateTo('collections');
                   }}
-                  className="flex items-center w-full text-left px-4 py-3.5 rounded-xl active:bg-zinc-50 border-none cursor-pointer transition-colors"
+                  className="flex items-center w-full text-left px-4 py-3 rounded-xl active:bg-zinc-50 hover:bg-[#C8A646]/5 border-none cursor-pointer transition-colors"
                 >
-                  <span className="text-[14px] font-semibold text-zinc-800">{item.label}</span>
+                  <span className="text-base mr-3">{item.icon}</span>
+                  <span className="text-[14px] font-bold text-zinc-800">{item.label}</span>
                   <svg className="w-4 h-4 text-zinc-300 ml-auto" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
               ))}
+
+              {/* Collapsible Accordion: Our Collection [▼] */}
+              <div className="pt-2">
+                <button
+                  onClick={() => {
+                    triggerAudio('click');
+                    setMobileOurCollectionsOpen(!mobileOurCollectionsOpen);
+                  }}
+                  className="flex items-center justify-between w-full text-left px-4 py-3.5 rounded-xl bg-gradient-to-r from-amber-500/10 to-[#C8A646]/10 border border-solid border-[#C8A646]/30 cursor-pointer transition-all shadow-xs"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">💎</span>
+                    <span className="text-[14px] font-black uppercase tracking-wider text-[#1A1A1A]">Our Collection</span>
+                  </div>
+                  <svg
+                    className={`w-4 h-4 text-[#C8A646] transition-transform duration-300 ${mobileOurCollectionsOpen ? 'rotate-180' : 'rotate-0'}`}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {/* Sub-Category items inside Our Collection */}
+                {mobileOurCollectionsOpen && (
+                  <div className="pl-3 pr-1 py-2 space-y-1 mt-1 bg-zinc-50/70 rounded-xl border border-solid border-zinc-100">
+                    {[
+                      { label: 'Rings', tab: 'Rings', icon: '💍' },
+                      { label: 'Earrings', tab: 'Earrings', icon: '✨' },
+                      { label: 'Necklaces', tab: 'Necklace', icon: '📿' },
+                      { label: 'Pendants', tab: 'Pendants', icon: '💎' },
+                      { label: 'Bangles', tab: 'Bangles', icon: '💫' },
+                      { label: 'Bracelets', tab: 'Bracelets', icon: '🌟' },
+                      { label: 'Mangalsutras', tab: 'Mangalsutras', icon: '❤️' },
+                      { label: 'Anklets', tab: 'Anklets', icon: '🔔' },
+                      { label: 'Nose Pins', tab: 'Nose Pins', icon: '✦' },
+                      { label: 'Solitaires', tab: 'Solitaires', icon: '💎' },
+                      { label: 'Silver Jewellery', tab: 'Silver', icon: '🥈' },
+                    ].map(item => (
+                      <button
+                        key={item.label}
+                        onClick={() => {
+                          triggerAudio('click');
+                          setMobileMenuOpen(false);
+                          setGenderFilter('all');
+                          if (item.tab === 'Silver') {
+                            setMetalFilter('silver');
+                            changeCategoryTab('Collections');
+                          } else {
+                            changeCategoryTab(item.tab);
+                          }
+                          navigateTo('collections');
+                        }}
+                        className="flex items-center w-full text-left px-3.5 py-2.5 rounded-lg active:bg-zinc-200 hover:bg-white border-none cursor-pointer transition-colors"
+                      >
+                        <span className="text-xs mr-2.5 opacity-80">{item.icon}</span>
+                        <span className="text-[13px] font-medium text-zinc-700">{item.label}</span>
+                        <svg className="w-3.5 h-3.5 text-zinc-300 ml-auto" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               <div className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 px-2 pt-3 pb-2">More &amp; About</div>
 
@@ -665,7 +836,7 @@ export default function Navbar({
                   <span className="w-6 h-6 rounded-full bg-[#C8A646] text-white flex items-center justify-center text-xs font-bold shadow-xs">✦</span>
                   <span className="text-[14px] font-bold text-[#1A1A1A]">About Us</span>
                 </div>
-                <span className="text-[9px] font-extrabold text-[#C8A646] uppercase tracking-wider ml-auto bg-white px-2 py-0.5 rounded-full shadow-xs">1924</span>
+                <span className="text-[9px] font-extrabold text-[#C8A646] uppercase tracking-wider ml-auto bg-white px-2 py-0.5 rounded-full shadow-xs">1996</span>
               </button>
 
               <button

@@ -64,10 +64,10 @@ export default function AboutUs({ navigateTo, triggerAudio: triggerAudioProp }) 
   return (
     <div className="min-h-screen bg-[#FCFAF6] text-[#1A1A1A] font-sans selection:bg-[#C8A646]/20 selection:text-[#1A1A1A]">
       <Helmet>
-        <title>About Us | HR Jewellers & Sons - 100-Year Royal Goldsmith Legacy</title>
+        <title>About Us | HR Jewellers & Sons - Royal Goldsmith Legacy</title>
         <meta 
           name="description" 
-          content="Learn about HR Jewellers & Sons, Rajasthan's trusted maison of BIS 916 Hallmarked Gold, Certified Syndicate Diamonds, and royal Bikaneri Jadau jewellery since 1924." 
+          content="Learn about HR Jewellers & Sons, Rajasthan's trusted maison of BIS 916 Hallmarked Gold, Certified Syndicate Diamonds, and royal Bikaneri Jadau jewellery since 1996." 
         />
       </Helmet>
 
@@ -90,7 +90,7 @@ export default function AboutUs({ navigateTo, triggerAudio: triggerAudioProp }) 
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-solid border-[#E6C687]/30 backdrop-blur-md">
             <Crown className="w-3.5 h-3.5 text-[#E6C687]" />
             <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.25em] uppercase text-[#E6C687]">
-              ESTABLISHED 1924 • A CENTURY OF TRUST
+              ESTABLISHED 1996 • DECADES OF TRUST
             </span>
           </div>
 
@@ -179,7 +179,7 @@ export default function AboutUs({ navigateTo, triggerAudio: triggerAudioProp }) 
             {/* Decorative Gold Accent Badge */}
             <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-tr from-[#C8A646] to-[#F3D9A4] rounded-full flex flex-col items-center justify-center text-[#12071B] shadow-xl font-sans text-center p-2 border-2 border-white">
               <span className="text-[8px] font-extrabold uppercase tracking-widest leading-tight">SINCE</span>
-              <span className="serif-luxury font-black text-base leading-none">1924</span>
+              <span className="serif-luxury font-black text-base leading-none">1996</span>
               <span className="text-[7px] font-bold uppercase tracking-wider">BIKANER</span>
             </div>
           </div>
@@ -406,7 +406,7 @@ export default function AboutUs({ navigateTo, triggerAudio: triggerAudioProp }) 
                 <Mail className="w-5 h-5 text-[#E6C687] shrink-0" />
                 <div>
                   <strong className="text-white block text-sm">Official Email</strong>
-                  <a href="mailto:hrjewellersbkn@gmail.com" className="hover:text-[#E6C687] transition-colors">hrjewellersbkn@gmail.com</a>
+                  <a href="mailto:hrjewellerssons@gmail.com" className="hover:text-[#E6C687] transition-colors">hrjewellerssons@gmail.com</a>
                 </div>
               </div>
 

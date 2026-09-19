@@ -98,8 +98,8 @@ const promoBanners = [
   {
     id: 1,
     img: bannerGold20,
-    alt: "20% OFF on Making Charges on Plain Gold Jewellery",
-    link: "collections",
+    alt: "Up to 20% OFF on Making Charges on Plain Gold Jewellery",
+    link: "offers",
     tab: "Collections"
   },
   {
@@ -117,8 +117,8 @@ const promoBanners = [
   {
     id: 4,
     img: bannerDiamond50,
-    alt: "50% OFF on Making Charges on Diamond Jewellery",
-    link: "collections",
+    alt: "Up to 50% OFF on Making Charges on Diamond Jewellery",
+    link: "offers",
     tab: "Diamond"
   }
 ];
@@ -149,6 +149,9 @@ export default function Home({
   navigateToPDP,
   changeCategoryTab,
   triggerAudio: triggerAudioProp,
+  setMaxPriceFilter,
+  setGenderFilter,
+  setMetalFilter,
 }) {
   // Self-contained data from context
   const { products = [], categories = [], loading } = useProducts();
@@ -516,7 +519,7 @@ export default function Home({
             onMouseEnter={() => setPromoIsPaused(true)}
             onMouseLeave={() => setPromoIsPaused(false)}
           >
-            <div className="absolute inset-0 w-full h-full overflow-hidden">
+            <div className="absolute inset-0 w-full h-full overflow-hidden cursor-pointer">
               <AnimatePresence initial={false}>
                 <motion.div
                   key={currentPromoSlide}
@@ -527,7 +530,15 @@ export default function Home({
                     opacity: { duration: 0.8, ease: "easeInOut" },
                     scale: { duration: 5.8, ease: "linear" }
                   }}
-                  className="absolute inset-0 w-full h-full text-left"
+                  onClick={() => {
+                    triggerAudio('click');
+                    const banner = promoBanners[currentPromoSlide];
+                    if (banner.tab) {
+                      changeCategoryTab(banner.tab);
+                    }
+                    navigateTo(banner.link);
+                  }}
+                  className="absolute inset-0 w-full h-full text-left group cursor-pointer"
                 >
                   <img
                     src={promoBanners[currentPromoSlide].img}
@@ -537,17 +548,9 @@ export default function Home({
                   />
 
                   {/* Call-to-action button overlay */}
-                  <div className="absolute bottom-4 left-4 sm:bottom-8 sm:left-8 lg:bottom-12 lg:left-12 z-30">
+                  <div className="absolute bottom-4 left-4 sm:bottom-8 sm:left-8 lg:bottom-12 lg:left-12 z-30 pointer-events-none">
                     <button
-                      onClick={() => {
-                        triggerAudio('click');
-                        const banner = promoBanners[currentPromoSlide];
-                        if (banner.tab) {
-                          changeCategoryTab(banner.tab);
-                        }
-                        navigateTo(banner.link);
-                      }}
-                      className="px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-3.5 bg-[#C9A14A] hover:bg-[#b08836] text-white font-sans text-[10px] sm:text-xs lg:text-sm font-extrabold uppercase tracking-widest rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg active:scale-95 border-none font-bold"
+                      className="px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-3.5 bg-[#C9A14A] hover:bg-[#b08836] text-white font-sans text-[10px] sm:text-xs lg:text-sm font-extrabold uppercase tracking-widest rounded-full transition-all duration-300 transform group-hover:scale-105 shadow-lg border-none font-bold"
                     >
                       View Offer
                     </button>
@@ -612,7 +615,8 @@ export default function Home({
               <div
                 onClick={() => {
                   triggerAudio('click');
-                  changeCategoryTab('Collections');
+                  if (setGenderFilter) setGenderFilter('women');
+                  if (changeCategoryTab) changeCategoryTab('Rings');
                   navigateTo('collections');
                 }}
                 className="relative group overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 cursor-pointer aspect-[4/3] text-center"
@@ -629,7 +633,8 @@ export default function Home({
               <div
                 onClick={() => {
                   triggerAudio('click');
-                  changeCategoryTab('Collections');
+                  if (setMetalFilter) setMetalFilter('gold');
+                  if (changeCategoryTab) changeCategoryTab('Necklace');
                   navigateTo('collections');
                 }}
                 className="relative group overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 cursor-pointer aspect-[4/3] transform md:-translate-y-6 text-center"
@@ -646,7 +651,7 @@ export default function Home({
               <div
                 onClick={() => {
                   triggerAudio('click');
-                  changeCategoryTab('Collections');
+                  if (changeCategoryTab) changeCategoryTab('Pendants');
                   navigateTo('collections');
                 }}
                 className="relative group overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 cursor-pointer aspect-[4/3] text-center"
@@ -750,7 +755,14 @@ export default function Home({
               >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full text-center">
                   {/* Card 1 */}
-                  <div className="bg-[#FFF0F2] rounded-3xl p-5 flex flex-col justify-between shadow-sm border border-solid border-pink-100/30 hover:-translate-y-1.5 transition-all duration-300 group text-left">
+                  <div
+                    onClick={() => {
+                      triggerAudio('click');
+                      if (changeCategoryTab) changeCategoryTab('Necklaces');
+                      navigateTo('collections');
+                    }}
+                    className="bg-[#FFF0F2] rounded-3xl p-5 flex flex-col justify-between shadow-sm border border-solid border-pink-100/30 hover:-translate-y-1.5 hover:shadow-md transition-all duration-300 group text-left cursor-pointer select-none"
+                  >
                     <div className="bg-white rounded-2xl aspect-square flex items-center justify-center p-4 shadow-[0_4px_12px_rgba(0,0,0,0.02)] relative overflow-hidden text-center">
                       <img
                         src={giftingLayeredNecklaces}
@@ -769,7 +781,14 @@ export default function Home({
                   </div>
 
                   {/* Card 2 */}
-                  <div className="bg-[#FFF0F2] rounded-3xl p-5 flex flex-col justify-between shadow-sm border border-solid border-pink-100/30 hover:-translate-y-1.5 transition-all duration-300 group text-left">
+                  <div
+                    onClick={() => {
+                      triggerAudio('click');
+                      if (changeCategoryTab) changeCategoryTab('All');
+                      navigateTo('collections');
+                    }}
+                    className="bg-[#FFF0F2] rounded-3xl p-5 flex flex-col justify-between shadow-sm border border-solid border-pink-100/30 hover:-translate-y-1.5 hover:shadow-md transition-all duration-300 group text-left cursor-pointer select-none"
+                  >
                     <div className="bg-white rounded-2xl aspect-square flex items-center justify-center p-4 shadow-[0_4px_12px_rgba(0,0,0,0.02)] relative overflow-hidden text-center">
                       <img
                         src={giftingCovetedStyles}
@@ -788,7 +807,15 @@ export default function Home({
                   </div>
 
                   {/* Card 3 */}
-                  <div className="bg-[#FFF0F2] rounded-3xl p-5 flex flex-col justify-between shadow-sm border border-solid border-pink-100/30 hover:-translate-y-1.5 transition-all duration-300 group text-left">
+                  <div
+                    onClick={() => {
+                      triggerAudio('click');
+                      if (setGenderFilter) setGenderFilter('Men');
+                      if (changeCategoryTab) changeCategoryTab('Men');
+                      navigateTo('collections');
+                    }}
+                    className="bg-[#FFF0F2] rounded-3xl p-5 flex flex-col justify-between shadow-sm border border-solid border-pink-100/30 hover:-translate-y-1.5 hover:shadow-md transition-all duration-300 group text-left cursor-pointer select-none"
+                  >
                     <div className="bg-white rounded-2xl aspect-square flex items-center justify-center p-4 shadow-[0_4px_12px_rgba(0,0,0,0.02)] relative overflow-hidden text-center">
                       <img
                         src={giftingHrMan}
@@ -854,8 +881,7 @@ export default function Home({
                     <button
                       onClick={() => {
                         triggerAudio('shimmer');
-                        setPriceFilter('Below Rs. 10,000');
-                        setMaxPriceFilter(10000);
+                        if (setMaxPriceFilter) setMaxPriceFilter(10000);
                         navigateTo('collections');
                       }}
                       className="bg-white rounded-b-xl rounded-t-sm pt-6 pb-4 flex flex-col items-center justify-center relative shadow-lg hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group cursor-pointer border border-solid border-[#9D7895]/10"
@@ -873,8 +899,7 @@ export default function Home({
                     <button
                       onClick={() => {
                         triggerAudio('shimmer');
-                        setPriceFilter('Rs. 20,000 – Rs. 30,000');
-                        setMaxPriceFilter(30000);
+                        if (setMaxPriceFilter) setMaxPriceFilter(30000);
                         navigateTo('collections');
                       }}
                       className="bg-white rounded-b-xl rounded-t-sm pt-6 pb-4 flex flex-col items-center justify-center relative shadow-lg hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group cursor-pointer border border-solid border-[#9D7895]/10"
@@ -892,8 +917,7 @@ export default function Home({
                     <button
                       onClick={() => {
                         triggerAudio('shimmer');
-                        setPriceFilter('Rs. 40,000 – Rs. 50,000');
-                        setMaxPriceFilter(50000);
+                        if (setMaxPriceFilter) setMaxPriceFilter(50000);
                         navigateTo('collections');
                       }}
                       className="bg-white rounded-b-xl rounded-t-sm pt-6 pb-4 flex flex-col items-center justify-center relative shadow-lg hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group cursor-pointer border border-solid border-[#9D7895]/10"

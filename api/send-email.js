@@ -79,7 +79,7 @@ export default async function handler(req, res) {
         
         <hr style="border: 0; border-top: 1px solid rgba(212, 175, 85, 0.25); margin: 30px 0 15px 0;" />
         <p style="font-size: 10px; color: rgba(255,255,255,0.4); text-align: center; letter-spacing: 0.1em; line-height: 1.5;">
-          Om Shanti · HR Jewellers & Sons, Tilak Nagar, Bikaner (Raj.) · Since 1924
+          Om Shanti · HR Jewellers & Sons, Tilak Nagar, Bikaner (Raj.) · Since 1996
         </p>
       </div>
     `;
@@ -109,7 +109,7 @@ export default async function handler(req, res) {
 
         <hr style="border: 0; border-top: 1px solid rgba(212, 175, 85, 0.25); margin: 30px 0 15px 0;" />
         <p style="font-size: 10px; color: rgba(255,255,255,0.4); text-align: center; letter-spacing: 0.1em; line-height: 1.5;">
-          Om Shanti · HR Jewellers & Sons, Tilak Nagar, Bikaner (Raj.) · Since 1924
+          Om Shanti · HR Jewellers & Sons, Tilak Nagar, Bikaner (Raj.) · Since 1996
         </p>
       </div>
     `;
@@ -138,7 +138,7 @@ export default async function handler(req, res) {
 
         <hr style="border: 0; border-top: 1px solid rgba(212, 175, 85, 0.25); margin: 30px 0 15px 0;" />
         <p style="font-size: 10px; color: rgba(255,255,255,0.4); text-align: center; letter-spacing: 0.1em; line-height: 1.5;">
-          Om Shanti · HR Jewellers & Sons, Tilak Nagar, Bikaner (Raj.) · Since 1924
+          Om Shanti · HR Jewellers & Sons, Tilak Nagar, Bikaner (Raj.) · Since 1996
         </p>
       </div>
     `;
@@ -174,7 +174,7 @@ export default async function handler(req, res) {
 
         <hr style="border: 0; border-top: 1px solid rgba(212, 175, 85, 0.25); margin: 30px 0 15px 0;" />
         <p style="font-size: 10px; color: rgba(255,255,255,0.4); text-align: center; letter-spacing: 0.1em; line-height: 1.5;">
-          Om Shanti · HR Jewellers & Sons, Tilak Nagar, Bikaner (Raj.) · Since 1924
+          Om Shanti · HR Jewellers & Sons, Tilak Nagar, Bikaner (Raj.) · Since 1996
         </p>
       </div>
     `;
@@ -221,7 +221,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         from: 'HR Jewellers <notifications@resend.dev>',
-        to: [recipient || 'notifications@hrjewellers.com'],
+        to: [recipient || 'hrjewellerssons@gmail.com'],
         subject: subject,
         html: html
       })

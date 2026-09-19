@@ -331,6 +331,8 @@ export default function SavingsEnroll({
                         onChange={(e) => setSavingsEnrollForm({ ...savingsEnrollForm, nomineeRelationship: e.target.value })}
                         className="w-full bg-transparent border-none outline-none text-xs text-gray-800 font-semibold mt-0.5 focus:ring-0 cursor-pointer select-none"
                       >
+                        <option value="Wife">Wife</option>
+                        <option value="Husband">Husband</option>
                         <option value="Spouse">Spouse</option>
                         <option value="Mother">Mother</option>
                         <option value="Father">Father</option>
@@ -553,12 +555,12 @@ export default function SavingsEnroll({
               <div className="border border-red-200 bg-red-50/20 rounded-2xl p-5 space-y-3">
                 <div className="flex justify-between items-center text-xs font-semibold text-gray-600">
                   <span>Subscription Amount (Monthly)</span>
-                  <span className="text-[#031838] font-bold">₹ {monthlySavingsInput.toLocaleString('en-IN')}</span>
+                  <span className="text-[#031838] font-bold">₹ {(Number(monthlySavingsInput) || 0).toLocaleString('en-IN')}</span>
                 </div>
                 <div className="h-[1px] bg-red-100" />
                 <div className="flex justify-between items-center text-sm font-bold text-[#031838]">
                   <span>You Pay</span>
-                  <span className="text-[#c0392b] text-base font-sans font-bold">₹ {monthlySavingsInput.toLocaleString('en-IN')}</span>
+                  <span className="text-[#c0392b] text-base font-sans font-bold">₹ {(Number(monthlySavingsInput) || 0).toLocaleString('en-IN')}</span>
                 </div>
               </div>
 

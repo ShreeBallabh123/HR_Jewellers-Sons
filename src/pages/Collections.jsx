@@ -66,6 +66,8 @@ export default function Collections({
   setMaxPriceFilter: setExternalMaxPrice,
   genderFilter: externalGenderFilter,
   setGenderFilter: setExternalGenderFilter,
+  searchQuery,
+  setSearchQuery,
   navigateToPDP,
   triggerAudio: triggerAudioProp,
 }) {
@@ -123,6 +125,7 @@ export default function Collections({
   useEffect(() => { if (externalMetalFilter !== undefined) setMetalFilter(externalMetalFilter); }, [externalMetalFilter]);
   useEffect(() => { if (externalPurityFilter !== undefined) setPurityFilter(externalPurityFilter); }, [externalPurityFilter]);
   useEffect(() => { if (externalMaxPrice !== undefined) setMaxPriceFilter(externalMaxPrice); }, [externalMaxPrice]);
+  useEffect(() => { if (externalGenderFilter !== undefined) setGenderFilter(externalGenderFilter); }, [externalGenderFilter]);
   useEffect(() => { setActiveCategoryTab(initialCategoryTab); }, [initialCategoryTab]);
 
   const changeCategoryTab = (tab) => {
@@ -140,6 +143,23 @@ export default function Collections({
 
   const filteredJewellery = useMemo(() => {
     let result = [...(products || [])].filter(p => p.name && p.name.trim() !== '');
+
+    // 1. Search Query Filter (from Navbar or input)
+    if (searchQuery && searchQuery.trim() !== '') {
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter(p => {
+        const name = String(p.name || '').toLowerCase();
+        const cat = String(p.category || '').toLowerCase();
+        const subCat = String(p.subCategory || '').toLowerCase();
+        const desc = String(p.desc || p.description || '').toLowerCase();
+        const metal = String(p.metal || p.metalType || '').toLowerCase();
+        const purity = String(p.carat || p.metalPurity || p.goldPurity || p.silverPurity || '').toLowerCase();
+        const sku = String(p.sku || '').toLowerCase();
+        return name.includes(q) || cat.includes(q) || subCat.includes(q) || desc.includes(q) || metal.includes(q) || purity.includes(q) || sku.includes(q);
+      });
+    }
+
+    // 2. Active Category Tab Filter
     if (activeCategoryTab && activeCategoryTab !== 'Collections') {
       const tab = activeCategoryTab.toLowerCase().trim();
       result = result.filter(p => {
@@ -149,14 +169,42 @@ export default function Collections({
         const catType = String(p.categoryType || '').toLowerCase();
         const metal = String(p.metal || '').toLowerCase();
         const metalType = String(p.metalType || '').toLowerCase();
-        const carat = String(p.carat || p.metalPurity || p.goldPurity || '').toLowerCase();
+        const carat = String(p.carat || p.metalPurity || p.goldPurity || p.silverPurity || '').toLowerCase();
+
+        const isSilverProd = catType.includes('silver') || metal.includes('silver') || metalType.includes('silver') ||
+                             carat.includes('925') || carat.includes('92.5') || carat.includes('999') ||
+                             cat.includes('silver') || subCat.includes('silver') || name.includes('silver');
 
         if (tab === 'silver') {
-          return cat.includes('silver') || subCat.includes('silver') || name.includes('silver') || 
-                 catType.includes('silver') || metal.includes('silver') || metalType.includes('silver') ||
-                 carat.includes('925') || carat.includes('92.5') || carat.includes('999');
+          return isSilverProd;
         }
-        return cat.includes(tab) || subCat.includes(tab) || name.includes(tab);
+
+        if (tab === 'silver-earrings' || tab === 'silver earrings') {
+          const isEarring = cat.includes('earring') || subCat.includes('earring') || name.includes('earring') || 
+                            catType.includes('earring') || /jhumk/i.test(name) || /stud/i.test(name) || 
+                            /bali/i.test(name) || /drop/i.test(name) || /hoop/i.test(name) || /jhumk/i.test(subCat);
+          return isEarring && isSilverProd;
+        }
+
+        if (tab === 'earrings' || tab === 'earring') {
+          return cat.includes('earring') || subCat.includes('earring') || name.includes('earring') || 
+                 catType.includes('earring') || /jhumk/i.test(name) || /stud/i.test(name) || 
+                 /bali/i.test(name) || /drop/i.test(name) || /hoop/i.test(name) || /jhumk/i.test(subCat);
+        }
+
+        if (tab === 'necklace' || tab === 'necklaces') {
+          return cat.includes('necklace') || subCat.includes('necklace') || name.includes('necklace') || catType.includes('necklace') || /chain/i.test(name) || /choker/i.test(name) || /haar/i.test(name);
+        }
+
+        if (tab === 'bracelets' || tab === 'bracelet') {
+          return cat.includes('bracelet') || subCat.includes('bracelet') || name.includes('bracelet') || catType.includes('bracelet');
+        }
+
+        if (tab === 'bangles' || tab === 'bangle') {
+          return cat.includes('bangle') || subCat.includes('bangle') || name.includes('bangle') || catType.includes('bangle') || /kada/i.test(name);
+        }
+
+        return cat.includes(tab) || subCat.includes(tab) || name.includes(tab) || catType.includes(tab);
       });
     }
 
@@ -167,7 +215,7 @@ export default function Collections({
         const metal = String(p.metal || '').toLowerCase();
         const metalType = String(p.metalType || '').toLowerCase();
         const metalColor = String(p.metalColor || '').toLowerCase();
-        const carat = String(p.carat || p.goldPurity || p.metalPurity || '').toLowerCase();
+        const carat = String(p.carat || p.goldPurity || p.metalPurity || p.silverPurity || '').toLowerCase();
         const cat = String(p.category || '').toLowerCase();
         const name = String(p.name || '').toLowerCase();
 
@@ -206,7 +254,7 @@ export default function Collections({
     if (purityFilter !== 'all') {
       const pf = purityFilter.toLowerCase().replace(/kt$/i, 'k').replace(/k$/i, '');
       result = result.filter(p => {
-        const carat = String(p.carat || p.goldPurity || p.purity || p.metalPurity || '').toLowerCase().replace(/kt$/i, 'k').replace(/k$/i, '');
+        const carat = String(p.carat || p.goldPurity || p.purity || p.metalPurity || p.silverPurity || '').toLowerCase().replace(/kt$/i, 'k').replace(/k$/i, '');
         return carat.includes(pf);
       });
     }
@@ -222,7 +270,7 @@ export default function Collections({
       default: break;
     }
     return result;
-  }, [products, activeCategoryTab, metalFilter, purityFilter, maxPriceFilter, stoneFilter, genderFilter, occasionFilter, sortFilter, calculatePrice]);
+  }, [products, searchQuery, activeCategoryTab, metalFilter, purityFilter, maxPriceFilter, stoneFilter, genderFilter, occasionFilter, sortFilter, calculatePrice]);
 
   const totalPages = 1;
   const paginatedProducts = useMemo(() => {
@@ -231,17 +279,6 @@ export default function Collections({
 
   // Reset to page 1 when filters change
   useEffect(() => { setCollectionsPage(1); }, [activeCategoryTab, metalFilter, purityFilter, maxPriceFilter, stoneFilter, genderFilter, occasionFilter, sortFilter]);
-
-  // Bidirectional sync for genderFilter state
-  useEffect(() => {
-    if (externalGenderFilter !== undefined && externalGenderFilter !== genderFilter) {
-      setGenderFilter(externalGenderFilter);
-    }
-  }, [externalGenderFilter]);
-
-  useEffect(() => {
-    setExternalGenderFilter?.(genderFilter);
-  }, [genderFilter, setExternalGenderFilter]);
 
   const formatPrice = (price) => {
     if (price === undefined || price === null) return '0';
@@ -739,6 +776,25 @@ export default function Collections({
 
             {/* Right Products panel */}
             <div className="col-span-12 lg:col-span-9 space-y-3 sm:space-y-6 text-left">
+
+              {/* Active Search Query Notice */}
+              {searchQuery && searchQuery.trim() !== '' && (
+                <div className="bg-[#FAF8F6] border border-solid border-[#E6C687]/50 rounded-xl sm:rounded-2xl px-4 py-2.5 flex items-center justify-between gap-3 text-xs shadow-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#C8A646]">🔍</span>
+                    <span className="text-gray-700">Searching for: <strong className="text-[#4A126D]">"{searchQuery}"</strong> ({filteredJewellery.length} results)</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (typeof setSearchQuery === 'function') setSearchQuery('');
+                      triggerAudio('click');
+                    }}
+                    className="text-[10px] uppercase font-bold text-gray-400 hover:text-red-600 transition-colors cursor-pointer border border-solid border-gray-200 rounded-lg px-2 py-1 bg-white"
+                  >
+                    ✕ Clear Search
+                  </button>
+                </div>
+              )}
 
               {/* Sorting Header Row */}
               <div className="flex flex-row justify-between items-center gap-2 sm:gap-4 bg-white border border-[#DDA0DD]/15 rounded-xl sm:rounded-2xl py-2 sm:py-3 px-3 sm:px-6 shadow-[0_4px_16px_rgba(63,31,84,0.03)] text-[9px] sm:text-xs">

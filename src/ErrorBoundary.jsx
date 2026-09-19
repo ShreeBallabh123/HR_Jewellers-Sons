@@ -37,9 +37,17 @@ export class ErrorBoundary extends React.Component {
           <h1 className="serif-luxury text-2xl sm:text-3xl font-extrabold tracking-wider gold-metallic-text uppercase mb-3">
             Maison Care Required
           </h1>
-          <p className="text-xs tracking-widest text-[#DDA0DD]/80 max-w-md mx-auto leading-relaxed mb-6 font-sans normal-case">
+          <p className="text-xs tracking-widest text-[#DDA0DD]/80 max-w-md mx-auto leading-relaxed mb-4 font-sans normal-case">
             A boutique runtime exception has occurred. Our master artisans are already notified.
           </p>
+          {this.state.error && (
+            <div className="bg-black/50 border border-pink-500/30 rounded-xl p-3 max-w-lg mx-auto mb-6 text-left overflow-auto max-h-40">
+              <p className="text-pink-400 font-mono text-[11px] font-bold">{this.state.error?.toString()}</p>
+              {this.state.error?.stack && (
+                <pre className="text-zinc-400 font-mono text-[9px] mt-1 whitespace-pre-wrap leading-tight">{this.state.error.stack}</pre>
+              )}
+            </div>
+          )}
           <div className="flex flex-wrap items-center justify-center gap-4">
             <button
               onClick={() => { this.setState({ hasError: false, error: null }); window.location.href = '/'; }}

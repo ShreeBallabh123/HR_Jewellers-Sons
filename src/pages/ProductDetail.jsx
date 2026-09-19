@@ -82,6 +82,11 @@ export default function ProductDetail({
     goldRate14k = 45788,
     silverRate = 92000,
     silverRate1kg = 92000,
+    silverRate925 = 85100,
+    silverRateNormal = 82800,
+    silverRate1g = 92,
+    silverRate925PerGram = 85.1,
+    silverRateNormalPerGram = 82.8,
     platinumRate = 3500,
     lastUpdated,
     publishedAt,
@@ -582,19 +587,22 @@ export default function ProductDetail({
               {/* Tax Info */}
               <p className="text-[10px] text-[#888888] tracking-wider font-light uppercase">MRP inclusive of all taxes &amp; delivery insurance</p>
 
-              {/* Today's Metal Rate Notice */}
-              <div className="bg-[#FAF8F6] border border-solid border-[#E7DED2]/60 rounded-xl p-3.5 space-y-1.5 max-w-sm text-left">
-                <div className="flex justify-between items-center text-[10px] font-extrabold uppercase tracking-wider text-[#8A6623]">
-                  <span>{activeRateLabel}</span>
-                  <span className="text-[#C8A646]">₹{activeRatePerGram.toLocaleString('en-IN')} / g</span>
-                </div>
-                {(publishedAt || lastUpdated) && (
-                  <div className="flex justify-between items-center text-[8.5px] text-zinc-400 font-bold uppercase tracking-widest">
-                    <span>Last Updated</span>
-                    <span>{formatDateSafe(publishedAt || lastUpdated)}</span>
+              {/* Today's Metal Rate Notice - Only shown for live dynamic priced items, hidden for fixed price / silver articles */}
+              {(detailProduct?.priceCalculationMode === 'dynamic' || (computedPrices?.isLive && detailProduct?.priceCalculationMode !== 'manual')) && 
+                !(detailProduct?.category || '').toLowerCase().includes('article') && (
+                <div className="bg-[#FAF8F6] border border-solid border-[#E7DED2]/60 rounded-xl p-3.5 space-y-1.5 max-w-sm text-left">
+                  <div className="flex justify-between items-center text-[10px] font-extrabold uppercase tracking-wider text-[#8A6623]">
+                    <span>{activeRateLabel}</span>
+                    <span className="text-[#C8A646]">₹{activeRatePerGram.toLocaleString('en-IN')} / g</span>
                   </div>
-                )}
-              </div>
+                  {(publishedAt || lastUpdated) && (
+                    <div className="flex justify-between items-center text-[8.5px] text-zinc-400 font-bold uppercase tracking-widest">
+                      <span>Last Updated</span>
+                      <span>{formatDateSafe(publishedAt || lastUpdated)}</span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* EMI Information */}
               <p className="text-xs text-[#5E5E5E] font-light leading-relaxed">
@@ -705,25 +713,40 @@ export default function ProductDetail({
                           }}
                           className="w-full bg-white text-[#181818] border border-[#E7DED2] rounded-lg py-3 pl-4 pr-10 text-xs font-semibold focus:outline-none focus:border-gray-800 transition-colors duration-300 appearance-none cursor-pointer font-sans"
                         >
-                          {isChain && (detailProduct?.chainSizes && detailProduct.chainSizes.length > 0
-                            ? detailProduct.chainSizes
-                            : ['12"', '14"', '16"', '18"', '20"', '22"', '24"', '26"', '28"', '30"', '32"', '34"', '36"']
+                          {isChain && (
+                            (Array.isArray(detailProduct?.chainSizes) && detailProduct.chainSizes.length > 0
+                              ? detailProduct.chainSizes
+                              : typeof detailProduct?.chainSizes === 'string' && detailProduct.chainSizes.trim()
+                              ? detailProduct.chainSizes.split(',').map(s => s.trim()).filter(Boolean)
+                              : ['12"', '14"', '16"', '18"', '20"', '22"', '24"', '26"', '28"', '30"', '32"', '34"', '36"']
+                            )
                           ).map((sz) => (
                             <option key={sz} value={sz}>{sz} Length</option>
                           ))}
 
-                          {isBangle && (detailProduct?.bangleSizes && detailProduct.bangleSizes.length > 0
-                            ? detailProduct.bangleSizes
-                            : ['1-2', '1-4', '1-6', '1-8', '2-0', '2-2', '2-4', '2-6', '2-8', '3-0', '3-2', '3-4']
+                          {isBangle && (
+                            (Array.isArray(detailProduct?.bangleSizes) && detailProduct.bangleSizes.length > 0
+                              ? detailProduct.bangleSizes
+                              : typeof detailProduct?.bangleSizes === 'string' && detailProduct.bangleSizes.trim()
+                              ? detailProduct.bangleSizes.split(',').map(s => s.trim()).filter(Boolean)
+                              : ['1-2', '1-4', '1-6', '1-8', '2-0', '2-2', '2-4', '2-6', '2-8', '3-0', '3-2', '3-4']
+                            )
                           ).map((sz) => (
                             <option key={sz} value={sz}>{sz} Bangle Size</option>
                           ))}
 
-                          {isRing && (detailProduct?.ringSizes || Array.from({ length: 34 - 6 + 1 }, (_, i) => {
-                            const num = 6 + i;
-                            return num < 10 ? `0${num}` : `${num}`;
-                          })).map((sz) => (
-                            <option key={sz} value={sz}>{sz} IND</option>
+                          {isRing && (
+                            (Array.isArray(detailProduct?.ringSizes) && detailProduct.ringSizes.length > 0
+                              ? detailProduct.ringSizes
+                              : typeof detailProduct?.ringSizes === 'string' && detailProduct.ringSizes.trim()
+                              ? detailProduct.ringSizes.split(',').map(s => s.trim()).filter(Boolean)
+                              : Array.from({ length: 34 - 6 + 1 }, (_, i) => {
+                                  const num = 6 + i;
+                                  return num < 10 ? `0${num}` : `${num}`;
+                                })
+                            )
+                          ).map((sz) => (
+                            <option key={sz} value={sz}>{sz} {/^\d+$/.test(sz) ? 'IND' : ''}</option>
                           ))}
                         </select>
 
@@ -1032,6 +1055,9 @@ export default function ProductDetail({
                 const rawMaking = Number(detailProduct.makingChargeValue || detailProduct.makingCharges || 0);
                 if (detailProduct.makingChargeType === 'percentage') {
                   makingChargesVal = Math.round(metalValue * (rawMaking / 100));
+                } else if (detailProduct.makingChargeType === 'per_gram' || detailProduct.makingChargeType === 'weight') {
+                  const wt = Number(detailProduct.goldWeight || detailProduct.silverWeight || detailProduct.netWeight || detailProduct.weight || 0);
+                  makingChargesVal = Math.round(wt * rawMaking);
                 } else {
                   makingChargesVal = Math.round(rawMaking);
                 }
@@ -1071,10 +1097,10 @@ export default function ProductDetail({
                       {netWeight > 0 && (
                         <div className="flex justify-between items-center py-1">
                           <span>
-                            {displayCarat} {isSilver ? 'Silver' : isPlatinum ? 'Platinum' : 'Gold'}{netWeight > 0 ? ` (${netWeight}g @ ₹${metalRatePerGram.toLocaleString('en-IN')}/g)` : ''}
+                            {displayCarat} {isSilver ? 'Silver' : isPlatinum ? 'Platinum' : 'Gold'}{netWeight > 0 ? ` (${netWeight}g @ ₹${(Number(metalRatePerGram) || 0).toLocaleString('en-IN')}/g)` : ''}
                           </span>
                           <span className="font-semibold font-mono text-gray-900">
-                            ₹{metalValue.toLocaleString('en-IN')}
+                            ₹{(Number(metalValue) || 0).toLocaleString('en-IN')}
                           </span>
                         </div>
                       )}
@@ -1095,11 +1121,11 @@ export default function ProductDetail({
                           <div className="space-x-2 font-mono">
                             {discountOffDiamond > 0 && (
                               <span className="text-gray-400 line-through">
-                                ₹{baseDiamondValue.toLocaleString('en-IN')}
+                                ₹{(Number(baseDiamondValue) || 0).toLocaleString('en-IN')}
                               </span>
                             )}
                             <span className="font-semibold text-gray-900">
-                              ₹{diamondVal.toLocaleString('en-IN')}
+                              ₹{(Number(diamondVal) || 0).toLocaleString('en-IN')}
                             </span>
                           </div>
                         </div>
@@ -1110,11 +1136,11 @@ export default function ProductDetail({
                         <div className="flex justify-between items-center py-1">
                           <div className="flex items-center gap-2">
                             <span>
-                              Polki {detailProduct.polki ? `(${detailProduct.polki}${String(detailProduct.polki).toLowerCase().includes('ct') || String(detailProduct.polki).toLowerCase().includes('g') ? '' : 'ct'})` : ''}
+                              Polki {detailProduct.polki ? `(${detailProduct.polki}g)` : ''}
                             </span>
                           </div>
                           <div className="font-mono font-semibold text-gray-900">
-                            ₹{polkiVal.toLocaleString('en-IN')}
+                            ₹{(Number(polkiVal) || 0).toLocaleString('en-IN')}
                           </div>
                         </div>
                       )}
@@ -1126,7 +1152,7 @@ export default function ProductDetail({
                             Gemstones / Pearls {detailProduct.gemstoneCarat || detailProduct.stoneCarat ? `(${detailProduct.gemstoneCarat || detailProduct.stoneCarat}ct)` : ''}
                           </span>
                           <span className="font-mono font-semibold text-gray-900">
-                            ₹{stoneVal.toLocaleString('en-IN')}
+                            ₹{(Number(stoneVal) || 0).toLocaleString('en-IN')}
                           </span>
                         </div>
                       )}
@@ -1145,15 +1171,23 @@ export default function ProductDetail({
                           <div className="space-x-2 font-mono">
                             {discountOffMaking > 0 && (
                               <span className="text-gray-400 line-through">
-                                ₹{baseMakingCharges.toLocaleString('en-IN')}
+                                ₹{(Number(baseMakingCharges) || 0).toLocaleString('en-IN')}
                               </span>
                             )}
                             <span className="font-semibold text-gray-900">
-                              ₹{makingChargesVal.toLocaleString('en-IN')}
+                              ₹{(Number(makingChargesVal) || 0).toLocaleString('en-IN')}
                             </span>
                           </div>
                         </div>
                       )}
+
+                      {/* Taxable Amount Row */}
+                      <div className="flex justify-between items-center py-1 text-gray-600">
+                        <span>Taxable Amount</span>
+                        <span className="font-semibold font-mono text-gray-800">
+                          ₹{(Number(taxableAmountDisplay) || 0).toLocaleString('en-IN')}
+                        </span>
+                      </div>
 
                       {/* Item Discount Row */}
                       {itemDiscountAmt > 0 && (
@@ -1165,24 +1199,16 @@ export default function ProductDetail({
                             </span>
                           </span>
                           <span className="font-semibold font-mono text-[#006361]">
-                            -₹{itemDiscountAmt.toLocaleString('en-IN')}
+                            -₹{(Number(itemDiscountAmt) || 0).toLocaleString('en-IN')}
                           </span>
                         </div>
                       )}
-
-                      {/* Taxable Amount Row */}
-                      <div className="flex justify-between items-center py-1 text-gray-500">
-                        <span>Taxable Amount</span>
-                        <span className="font-semibold font-mono text-gray-700">
-                          ₹{taxableAmountDisplay.toLocaleString('en-IN')}
-                        </span>
-                      </div>
 
                       {/* GST Row */}
                       <div className="flex justify-between items-center py-1">
                         <span>GST ({Math.round(productGstRate * 100)}%)</span>
                         <span className="font-semibold font-mono text-gray-900">
-                          ₹{discountedGst.toLocaleString('en-IN')}
+                          ₹{(Number(discountedGst) || 0).toLocaleString('en-IN')}
                         </span>
                       </div>
 
@@ -1192,7 +1218,7 @@ export default function ProductDetail({
                       <div className="flex justify-between items-center text-sm font-bold text-gray-900">
                         <span>Final Price (incl. GST)</span>
                         <span className="font-mono text-base font-bold">
-                          ₹{totalDisplay.toLocaleString('en-IN')}
+                          ₹{(Number(totalDisplay) || 0).toLocaleString('en-IN')}
                         </span>
                       </div>
 
@@ -1200,7 +1226,7 @@ export default function ProductDetail({
                       {saveAmount > 0 && (
                         <div className="flex justify-between items-center py-1 text-[11px] text-[#006361] font-semibold">
                           <span>🎉 You Save</span>
-                          <span className="font-mono">₹{saveAmount.toLocaleString('en-IN')}</span>
+                          <span className="font-mono">₹{(Number(saveAmount) || 0).toLocaleString('en-IN')}</span>
                         </div>
                       )}
                     </div>

@@ -68,7 +68,8 @@ export default function Admin() {
       const currentVaultPass = StorageService.get('hrj_admin_password', 'admin123');
 
       if (
-        (lowerEmail === 'hrjewellersbkn@gmail.com' ||
+        (lowerEmail === 'hrjewellerssons@gmail.com' ||
+         lowerEmail === 'hrjewellersbkn@gmail.com' ||
          lowerEmail === 'admin@hrjewellers.com' ||
          lowerEmail === 'kiradoshreeballabh@gmail.com' ||
          lowerEmail === 'admin@gmail.com' ||

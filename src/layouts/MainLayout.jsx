@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import CartDrawer from '../components/CartDrawer';
+import CustomerAccountModal from '../components/CustomerAccountModal';
 import { useCart } from '../hooks/useCart';
 
 export default function MainLayout({
@@ -19,9 +20,19 @@ export default function MainLayout({
   setMaxPriceFilter,
   navigateToPDP,
   genderFilter,
-  setGenderFilter
+  setGenderFilter,
+  searchQuery,
+  setSearchQuery
 }) {
   const { cartOpen, setCartOpen } = useCart();
+  const [customerAccountOpen, setCustomerAccountOpen] = useState(false);
+  const [customerAccountTab, setCustomerAccountTab] = useState('orders');
+
+  const openCustomerAccount = (tab = 'orders') => {
+    setCustomerAccountTab(tab);
+    setCustomerAccountOpen(true);
+    triggerAudio?.('click');
+  };
 
   return (
     <div className="font-sans min-h-screen relative overflow-x-clip bg-[#FBF9FF] text-[#4A126D] selection:bg-[#4A126D]/10 selection:text-[#4A126D]">
@@ -41,6 +52,9 @@ export default function MainLayout({
         navigateToPDP={navigateToPDP}
         genderFilter={genderFilter}
         setGenderFilter={setGenderFilter}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        openCustomerAccount={openCustomerAccount}
       />
 
       {/* Main Content Area */}
@@ -79,12 +93,35 @@ export default function MainLayout({
         <Footer
           navigateTo={navigateTo}
           handleCategoryNav={(cat) => {
-            changeCategoryTab(cat === 'gold' ? 'Collections' : cat.charAt(0).toUpperCase() + cat.slice(1));
+            if (cat === 'silver-earrings') {
+              if (typeof setMetalFilter === 'function') setMetalFilter('silver');
+              changeCategoryTab('Earrings');
+            } else if (cat === 'silver') {
+              if (typeof setMetalFilter === 'function') setMetalFilter('silver');
+              changeCategoryTab('Collections');
+            } else if (cat === 'gold') {
+              if (typeof setMetalFilter === 'function') setMetalFilter('gold');
+              changeCategoryTab('Collections');
+            } else if (cat === 'platinum') {
+              if (typeof setMetalFilter === 'function') setMetalFilter('platinum');
+              changeCategoryTab('Collections');
+            } else {
+              changeCategoryTab(cat.charAt(0).toUpperCase() + cat.slice(1));
+            }
             navigateTo('collections');
           }}
           triggerAudio={triggerAudio}
         />
       </div>
+
+      {/* Customer Account, Order History, Live Tracking & Reorder Modal */}
+      <CustomerAccountModal
+        isOpen={customerAccountOpen}
+        onClose={() => setCustomerAccountOpen(false)}
+        triggerAudio={triggerAudio}
+        navigateTo={navigateTo}
+        initialTab={customerAccountTab}
+      />
 
       {/* Shopping Bag Drawer Overlay */}
       <CartDrawer 

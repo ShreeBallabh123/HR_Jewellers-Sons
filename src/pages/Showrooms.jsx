@@ -36,7 +36,7 @@ export default function Showrooms({
               <div className="space-y-4 text-xs font-light text-gray-600 leading-relaxed">
                 <p>📍 <strong>Showroom Address:</strong> 4-D-37, Near Murti Circle, J.N.V. Colony, Bikaner, Rajasthan (334001)</p>
                 <p>📞 <strong>Direct Showroom Phone:</strong> +91 97838 43978</p>
-                <p>✉️ <strong>Electronic Support:</strong> notifications@hrjewellers.com</p>
+                <p>✉️ <strong>Electronic Support:</strong> hrjewellerssons@gmail.com</p>
                 <p>⏰ <strong>Visiting Hours:</strong> Monday - Sunday (11:00 AM - 08:30 PM)</p>
               </div>
             </div>

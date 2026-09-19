@@ -64,7 +64,7 @@ export default function LoginForm({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="hrjewellersbkn@gmail.com"
+            placeholder="hrjewellerssons@gmail.com"
             className="luxury-input flex-1 bg-transparent border-none outline-none px-4 text-[16px] text-[#2F2F2F] placeholder-[#8D8D8D]/50 font-sans outline-none focus:ring-0 focus:outline-none"
             required
             disabled={submitting}

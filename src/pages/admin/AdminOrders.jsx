@@ -63,8 +63,16 @@ export default function AdminOrders({
   const [orderSort, setOrderSort] = useState('latest');
 
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
+  const [invoiceModalOrder, setInvoiceModalOrder] = useState(null);
+  const [manualInvoiceNo, setManualInvoiceNo] = useState('');
 
-  const handleDownloadInvoice = (order) => {
+  const handleOpenInvoiceModal = (order) => {
+    setInvoiceModalOrder(order);
+    const defaultNo = order.customInvoiceNo || order.invoiceNo || `HRJ/${new Date().getFullYear()}/${(order.id || '').slice(0, 6).toUpperCase()}`;
+    setManualInvoiceNo(defaultNo);
+  };
+
+  const handleDownloadInvoice = (order, customNo) => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
       alert("Please allow popups to download/print invoices");
@@ -72,6 +80,7 @@ export default function AdminOrders({
     }
 
     const orderId = order.id || 'N/A';
+    const finalInvoiceNumber = customNo || manualInvoiceNo || order.customInvoiceNo || order.invoiceNo || `#${orderId.slice(0, 8).toUpperCase()}`;
     const dateStr = safeFormatDateTime(order.createdDate || order.date);
     const recipient = order.recipientName || 'Valued Customer';
     const mobile = order.mobile || 'N/A';
@@ -99,7 +108,7 @@ export default function AdminOrders({
     printWindow.document.write(`
       <html>
         <head>
-          <title>Invoice - ${orderId}</title>
+          <title>Invoice - ${finalInvoiceNumber}</title>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap');
             body {
@@ -111,7 +120,7 @@ export default function AdminOrders({
               -webkit-print-color-adjust: exact;
             }
             .invoice-card {
-              max-w: 800px;
+              max-width: 800px;
               margin: 0 auto;
               border: 1px solid #EAEAEA;
               padding: 40px;
@@ -262,13 +271,14 @@ export default function AdminOrders({
                 <div class="company-details">
                   BIS Hallmarked Luxury Boutique<br/>
                   4-D-37, Near Murti Circle, J.N.V. Colony, Bikaner, Rajasthan (334001)<br/>
-                  Contact: +91 97838 43978 | info@hrjewellers.com
+                  Contact: +91 97838 43978 | hrjewellerssons@gmail.com<br/>
+                  <strong style="color: #111;">GSTIN: 08AASFH1262R1ZM</strong> | State: 08-Rajasthan
                 </div>
               </div>
               <div class="invoice-title-section">
                 <div class="invoice-title">TAX INVOICE</div>
                 <div class="invoice-meta">
-                  <b>Invoice No:</b> #${orderId.slice(0, 8).toUpperCase()}<br/>
+                  <b>Invoice No:</b> ${finalInvoiceNumber.startsWith('#') ? finalInvoiceNumber : `#${finalInvoiceNumber}`}<br/>
                   <b>Date:</b> ${dateStr}<br/>
                   <b>Payment Mode:</b> ${method}
                 </div>
@@ -652,9 +662,9 @@ export default function AdminOrders({
                       </td>
                       <td className="py-3.5 text-right space-x-2">
                         <button
-                          onClick={() => handleDownloadInvoice(order)}
+                          onClick={() => handleOpenInvoiceModal(order)}
                           className="p-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 cursor-pointer border-none"
-                          title="Download Invoice"
+                          title="Generate / Download Invoice"
                         >
                           <Download className="w-4 h-4" />
                         </button>
@@ -1059,6 +1069,84 @@ export default function AdminOrders({
                 className="px-5 py-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-850 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-955 text-[10px] uppercase font-bold tracking-widest cursor-pointer border-none font-bold text-center"
               >
                 Close View
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Manual Type Invoice Number Generator Modal */}
+      {invoiceModalOrder && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#181820] border border-solid border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl space-y-5 animate-scale-up text-left">
+            <div className="flex items-start justify-between border-b border-solid border-zinc-100 dark:border-zinc-850 pb-4">
+              <div>
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#C8A646] block mb-1">
+                  Tax Invoice Generator
+                </span>
+                <h3 className="text-base font-black text-zinc-900 dark:text-zinc-100">
+                  Generate Invoice for Order
+                </h3>
+              </div>
+              <button
+                onClick={() => setInvoiceModalOrder(null)}
+                className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-zinc-900 border-none cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Order Details Brief */}
+            <div className="bg-zinc-50 dark:bg-zinc-900 p-3.5 rounded-xl space-y-1.5 text-xs">
+              <div className="flex justify-between">
+                <span className="text-zinc-400 font-medium">Customer:</span>
+                <span className="font-bold text-zinc-800 dark:text-zinc-200">{invoiceModalOrder.recipientName || 'Valued Client'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-400 font-medium">Order Total:</span>
+                <span className="font-mono font-extrabold text-[#C8A646]">₹{Number(invoiceModalOrder.total || invoiceModalOrder.totalAmount || 0).toLocaleString('en-IN')}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-400 font-medium">GSTIN:</span>
+                <span className="font-mono font-bold text-zinc-600 dark:text-zinc-400">08AASFH1262R1ZM</span>
+              </div>
+            </div>
+
+            {/* Manual Invoice Number Field */}
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider block">
+                Invoice Number (Manual Type / Custom Edit)
+              </label>
+              <input
+                type="text"
+                value={manualInvoiceNo}
+                onChange={(e) => setManualInvoiceNo(e.target.value)}
+                placeholder="e.g. HRJ/2026/001 or #LWXDMSJL"
+                className="w-full h-11 px-4 bg-zinc-50 dark:bg-zinc-900 border border-solid border-zinc-300 dark:border-zinc-700 rounded-xl font-mono text-sm font-bold text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-[#C8A646]"
+              />
+              <p className="text-[10px] text-zinc-400 font-medium">
+                You can enter any custom invoice number format. It will be printed on the official GST invoice.
+              </p>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setInvoiceModalOrder(null)}
+                className="px-4 py-2.5 rounded-xl border border-solid border-zinc-200 dark:border-zinc-700 text-xs font-bold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 cursor-pointer bg-transparent"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleDownloadInvoice(invoiceModalOrder, manualInvoiceNo);
+                  setInvoiceModalOrder(null);
+                }}
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#C8A646] to-[#E6C687] text-white text-xs font-extrabold uppercase tracking-wider shadow-md hover:brightness-105 cursor-pointer border-none"
+              >
+                Print Tax Invoice
               </button>
             </div>
           </div>

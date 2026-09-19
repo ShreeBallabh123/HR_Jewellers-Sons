@@ -452,52 +452,104 @@ export default function ProductForm({
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             {/* Dynamic Purity Dropdown based on selected metal */}
             {isSilverProduct ? (
-              <FloatingSelect
-                id="prod-silver-purity-form"
-                label="Silver Purity"
-                field="silverPurity"
-                value={getVal('silverPurity') || getVal('carat') || '925 Sterling Silver'}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  updateFields({ silverPurity: val, carat: val, metalPurity: val });
-                }}
-              >
-                <option value="925 Sterling Silver">925 Sterling Silver</option>
-                <option value="Normal Silver">Normal Silver</option>
-                <option value="999 Silver">999 Silver</option>
-              </FloatingSelect>
+              <div className="space-y-2">
+                <FloatingSelect
+                  id="prod-silver-purity-form"
+                  label="Silver Purity"
+                  field="silverPurity"
+                  value={getVal('silverPurity') || getVal('carat') || '925 Sterling Silver'}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    updateFields({ silverPurity: val, carat: val, metalPurity: val });
+                  }}
+                >
+                  <option value="925 Sterling Silver">925 Sterling Silver</option>
+                  <option value="Normal Silver">Normal Silver</option>
+                  <option value="999 Silver">999 Silver (Fine Silver)</option>
+                  <option value="Custom">Custom Purity</option>
+                </FloatingSelect>
+
+                {getVal('silverPurity') === 'Custom' && (
+                  <FloatingInput
+                    id="prod-custom-silver-purity"
+                    label="Custom Silver Purity"
+                    placeholder="e.g. 900 Silver, 800 Silver, 99.9% Bar"
+                    field="customSilverPurity"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      updateFields({ customSilverPurity: val, carat: val, metalPurity: val });
+                    }}
+                  />
+                )}
+              </div>
             ) : isPlatinumProduct ? (
-              <FloatingSelect
-                id="prod-platinum-purity-form"
-                label="Platinum Purity"
-                field="platinumPurity"
-                value={getVal('platinumPurity') || getVal('carat') || '950 Platinum'}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  updateFields({ platinumPurity: val, carat: val, metalPurity: val });
-                }}
-              >
-                <option value="950 Platinum">950 Pure Platinum</option>
-              </FloatingSelect>
+              <div className="space-y-2">
+                <FloatingSelect
+                  id="prod-platinum-purity-form"
+                  label="Platinum Purity"
+                  field="platinumPurity"
+                  value={getVal('platinumPurity') || getVal('carat') || '950 Platinum'}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    updateFields({ platinumPurity: val, carat: val, metalPurity: val });
+                  }}
+                >
+                  <option value="950 Platinum">950 Pure Platinum</option>
+                  <option value="Custom">Custom Platinum Purity</option>
+                </FloatingSelect>
+
+                {getVal('platinumPurity') === 'Custom' && (
+                  <FloatingInput
+                    id="prod-custom-platinum-purity"
+                    label="Custom Platinum Purity"
+                    placeholder="e.g. 900 Platinum, 999 Platinum"
+                    field="customPlatinumPurity"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      updateFields({ customPlatinumPurity: val, carat: val, metalPurity: val });
+                    }}
+                  />
+                )}
+              </div>
             ) : (
-              <FloatingSelect
-                id="prod-gold-purity-form"
-                label="Carat & Purity"
-                field="carat"
-                value={getVal('goldPurity') || getVal('carat') || '22K'}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  updateFields({ carat: val, goldPurity: val, metalPurity: val });
-                }}
-              >
-                <option value="">Select Carat & Purity</option>
-                <option value="9K">9K</option>
-                <option value="14K">14K</option>
-                <option value="18K">18K</option>
-                <option value="20K">20K</option>
-                <option value="22K">22K</option>
-                <option value="24K">24K (Pure Gold)</option>
-              </FloatingSelect>
+              <div className="space-y-2">
+                <FloatingSelect
+                  id="prod-gold-purity-form"
+                  label="Carat & Purity"
+                  field="carat"
+                  value={getVal('goldPurity') || getVal('carat') || '22K'}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    updateFields({ carat: val, goldPurity: val, metalPurity: val });
+                  }}
+                >
+                  <option value="">Select Carat &amp; Purity</option>
+                  <option value="24K">24K (Pure Gold - 100%)</option>
+                  <option value="22K">22K (Standard Hallmark - 91.6%)</option>
+                  <option value="20K">20K (Traditional Kundan - 83.3%)</option>
+                  <option value="18K">18K (Diamond/Ornaments - 75.0%)</option>
+                  <option value="14K">14K (Modern Daily - 58.3%)</option>
+                  <option value="9K">9K (Trending / Budget - 37.5%)</option>
+                  <option value="925 Sterling Silver">925 Sterling Silver (92.5%)</option>
+                  <option value="Normal Silver">Normal Silver</option>
+                  <option value="999 Silver">999 Silver (Pure Silver - 99.9%)</option>
+                  <option value="950 Platinum">950 Platinum (95.0%)</option>
+                  <option value="Custom">Custom Purity / Karat</option>
+                </FloatingSelect>
+
+                {(getVal('carat') === 'Custom' || getVal('goldPurity') === 'Custom') && (
+                  <FloatingInput
+                    id="prod-custom-gold-purity"
+                    label="Custom Carat & Purity"
+                    placeholder="e.g. 21K, 10K, 23K, 916 Hallmark"
+                    field="customCarat"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      updateFields({ customCarat: val, metalPurity: val });
+                    }}
+                  />
+                )}
+              </div>
             )}
 
             {/* Dynamic Net Weight Input */}
@@ -615,15 +667,19 @@ export default function ProductForm({
               <option value="Platinum Plated Silver">Platinum Plated Silver</option>
               <option value="Rose Gold Plated Silver">Rose Gold Plated Silver</option>
               <option value="Gold Plated Silver">Gold Plated Silver</option>
-              <option value="Custom">Custom</option>
+              <option value="Two-Tone Gold">Two-Tone Gold</option>
+              <option value="Antique Gold / Kundan Finish">Antique Gold / Kundan Finish</option>
+              <option value="Oxidised Silver">Oxidised Silver</option>
+              <option value="Black Rhodium">Black Rhodium</option>
+              <option value="Custom">Custom Color / Finishing</option>
             </FloatingSelect>
 
             {/* Custom Metal Color/Finish Text Input */}
-            {getVal('metalColor') === 'Custom' && (
+            {(getVal('metalColor') === 'Custom' || getVal('customMetalColor')) && (
               <FloatingInput
                 id="prod-custom-metal-color-form"
                 label="Custom Metal Color / Finish"
-                placeholder="Enter custom color or finish (e.g. Oxidised, Antique Finish, Matte Finish, Black Rhodium)"
+                placeholder="Enter custom color or finish (e.g. Antique Finish, Matte Finish, Black Rhodium, Two-Tone)"
                 field="customMetalColor"
                 required={getVal('metalColor') === 'Custom'}
               />
@@ -821,62 +877,125 @@ export default function ProductForm({
             </FloatingSelect>
 
             {getVal('priceCalculationMode', 'manual') === 'manual' ? (
-              <FloatingInput
-                id="prod-price-form"
-                label="Fixed Selling Price (INR)"
-                field="price"
-                type="number"
-                required={getVal('priceCalculationMode', 'manual') === 'manual'}
-              />
+              <>
+                <FloatingInput
+                  id="prod-price-form"
+                  label="Fixed Selling Price (INR)"
+                  field="price"
+                  type="number"
+                  required={getVal('priceCalculationMode', 'manual') === 'manual'}
+                />
+                <FloatingInput
+                  id="prod-discount-manual-form"
+                  label="Discount Off Item"
+                  field="discountPercent"
+                  type="number"
+                  min="0"
+                  max="100"
+                  suffix="% OFF"
+                />
+              </>
             ) : (
               <>
                 {/* Context-aware Purity Selection */}
                 {isSilverProduct ? (
-                  <FloatingSelect
-                    id="prod-silver-purity-dyn-form"
-                    label="Silver Purity"
-                    field="silverPurity"
-                    value={getVal('silverPurity') || getVal('carat') || '925 Sterling Silver'}
-                    onChange={(e) => {
-                      const p = e.target.value;
-                      updateFields({ silverPurity: p, carat: p, metalPurity: p });
-                    }}
-                  >
-                    <option value="925 Sterling Silver">925 Sterling Silver</option>
-                    <option value="Normal Silver">Normal Silver</option>
-                    <option value="999 Silver">999 Silver</option>
-                  </FloatingSelect>
+                  <div className="space-y-2">
+                    <FloatingSelect
+                      id="prod-silver-purity-dyn-form"
+                      label="Silver Purity"
+                      field="silverPurity"
+                      value={getVal('silverPurity') || getVal('carat') || '925 Sterling Silver'}
+                      onChange={(e) => {
+                        const p = e.target.value;
+                        updateFields({ silverPurity: p, carat: p, metalPurity: p });
+                      }}
+                    >
+                      <option value="925 Sterling Silver">925 Sterling Silver (92.5%)</option>
+                      <option value="Normal Silver">Normal Silver</option>
+                      <option value="999 Silver">999 Silver (Fine Silver)</option>
+                      <option value="Custom">Custom Purity</option>
+                    </FloatingSelect>
+
+                    {getVal('silverPurity') === 'Custom' && (
+                      <FloatingInput
+                        id="prod-custom-silver-purity-dyn"
+                        label="Custom Silver Purity"
+                        placeholder="e.g. 900 Silver, 800 Silver"
+                        field="customSilverPurity"
+                        onChange={(e) => {
+                          const p = e.target.value;
+                          updateFields({ customSilverPurity: p, carat: p, metalPurity: p });
+                        }}
+                      />
+                    )}
+                  </div>
                 ) : isPlatinumProduct ? (
-                  <FloatingSelect
-                    id="prod-plat-purity-dyn-form"
-                    label="Platinum Purity"
-                    field="platinumPurity"
-                    value={getVal('platinumPurity') || '950 Platinum'}
-                    onChange={(e) => {
-                      const p = e.target.value;
-                      updateFields({ platinumPurity: p, carat: p, metalPurity: p });
-                    }}
-                  >
-                    <option value="950 Platinum">950 Pure Platinum</option>
-                  </FloatingSelect>
+                  <div className="space-y-2">
+                    <FloatingSelect
+                      id="prod-plat-purity-dyn-form"
+                      label="Platinum Purity"
+                      field="platinumPurity"
+                      value={getVal('platinumPurity') || '950 Platinum'}
+                      onChange={(e) => {
+                        const p = e.target.value;
+                        updateFields({ platinumPurity: p, carat: p, metalPurity: p });
+                      }}
+                    >
+                      <option value="950 Platinum">950 Pure Platinum</option>
+                      <option value="Custom">Custom Platinum Purity</option>
+                    </FloatingSelect>
+
+                    {getVal('platinumPurity') === 'Custom' && (
+                      <FloatingInput
+                        id="prod-custom-plat-purity-dyn"
+                        label="Custom Platinum Purity"
+                        placeholder="e.g. 900 Platinum, 999 Platinum"
+                        field="customPlatinumPurity"
+                        onChange={(e) => {
+                          const p = e.target.value;
+                          updateFields({ customPlatinumPurity: p, carat: p, metalPurity: p });
+                        }}
+                      />
+                    )}
+                  </div>
                 ) : (
-                  <FloatingSelect
-                    id="prod-purity-form"
-                    label="Gold Purity (Karat)"
-                    field="goldPurity"
-                    value={getVal('goldPurity') || getVal('carat') || '22K'}
-                    onChange={(e) => {
-                      const p = e.target.value;
-                      updateFields({ goldPurity: p, carat: p, metalPurity: p });
-                    }}
-                  >
-                    <option value="24K">24K (Pure Gold)</option>
-                    <option value="22K">22K (Standard Hallmark)</option>
-                    <option value="20K">20K (Traditional Kundan)</option>
-                    <option value="18K">18K (Diamond/Ornaments)</option>
-                    <option value="14K">14K (Modern Daily)</option>
-                    <option value="9K">9K</option>
-                  </FloatingSelect>
+                  <div className="space-y-2">
+                    <FloatingSelect
+                      id="prod-purity-form"
+                      label="Metal Purity (Karat)"
+                      field="goldPurity"
+                      value={getVal('goldPurity') || getVal('carat') || '22K'}
+                      onChange={(e) => {
+                        const p = e.target.value;
+                        updateFields({ goldPurity: p, carat: p, metalPurity: p });
+                      }}
+                    >
+                      <option value="24K">24K (Pure Gold - 100%)</option>
+                      <option value="22K">22K (Standard Hallmark - 91.6%)</option>
+                      <option value="20K">20K (Traditional Kundan - 83.3%)</option>
+                      <option value="18K">18K (Diamond/Ornaments - 75.0%)</option>
+                      <option value="14K">14K (Modern Daily - 58.3%)</option>
+                      <option value="9K">9K (Trending / Budget - 37.5%)</option>
+                      <option value="925 Sterling Silver">925 Sterling Silver (92.5%)</option>
+                      <option value="Normal Silver">Normal Silver</option>
+                      <option value="999 Silver">999 Silver (Pure Silver - 99.9%)</option>
+                      <option value="950 Platinum">950 Platinum (95.0%)</option>
+                      <option value="Custom">Custom Purity / Karat</option>
+                    </FloatingSelect>
+
+                    {(getVal('goldPurity') === 'Custom' || getVal('carat') === 'Custom') && (
+                      <FloatingInput
+                        id="prod-custom-gold-purity-dyn"
+                        label="Custom Carat & Purity"
+                        placeholder="e.g. 21K, 10K, 23K, 916 Hallmark"
+                        field="customCarat"
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateFields({ customCarat: val, metalPurity: val });
+                        }}
+                      />
+                    )}
+                  </div>
                 )}
 
                 {/* Context-aware Net Weight Input */}
@@ -915,8 +1034,8 @@ export default function ProductForm({
                 ) : (
                   <FloatingInput
                     id="prod-gold-weight-form"
-                    label="Gold Net Weight (grams)"
-                    placeholder="Enter Gold Net Weight (grams)"
+                    label="Metal Net Weight (grams)"
+                    placeholder="Enter Metal Net Weight (grams)"
                     field="goldWeight"
                     type="number"
                     step="0.001"
@@ -935,12 +1054,15 @@ export default function ProductForm({
             {/* Hallmark / Certificate Multi-Select Checkboxes */}
             <div className="space-y-1.5 text-left col-span-1 sm:col-span-1">
               <label className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase block">
-                Certificate / Hallmark
+                Certificate &amp; Hallmark <span className="text-zinc-400 font-normal lowercase">(Multi-Select)</span>
               </label>
               <div className="bg-zinc-50 dark:bg-zinc-900 border border-solid border-zinc-200 dark:border-zinc-800 rounded-xl p-2.5 space-y-2">
                 {[
-                  'BIS Hallmark Certificate',
+                  'BIS Hallmark Government Certified',
                   'IGI Diamond Certificate',
+                  '925 Silver Authenticity Certificate',
+                  'BIS Hallmark 750 (18K)',
+                  'BIS Hallmark 916 (22K)',
                   'Uncertified / Custom'
                 ].map((cert) => {
                   const isChecked = activeCertificates.includes(cert);
@@ -955,10 +1077,26 @@ export default function ProductForm({
                         onChange={() => toggleCertificate(cert)}
                         className="w-4 h-4 rounded border-zinc-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
                       />
-                      <span className="text-[11px]">{cert}</span>
+                      <span className="text-[11px] leading-tight">{cert}</span>
                     </label>
                   );
                 })}
+
+                {/* Custom Certificate Input if Uncertified / Custom is checked */}
+                {activeCertificates.includes('Uncertified / Custom') && (
+                  <div className="pt-2 border-t border-solid border-zinc-200 dark:border-zinc-800">
+                    <input
+                      type="text"
+                      placeholder="Enter custom certificate name..."
+                      value={getVal('customCertificate', '')}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        updateField('customCertificate', val);
+                      }}
+                      className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-amber-500 font-medium"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -973,15 +1111,36 @@ export default function ProductForm({
               >
                 <option value="percentage">Percentage (%) of Metal Value</option>
                 <option value="fixed">Fixed Amount (₹)</option>
+                <option value="per_gram">Making on Metal Weight (₹ per Gram)</option>
               </FloatingSelect>
 
               <FloatingInput
                 id="prod-making-charge-value"
-                label={`Making Charge ${getVal('makingChargeType', 'percentage') === 'percentage' ? '(%)' : '(₹)'}`}
+                label={
+                  getVal('makingChargeType', 'percentage') === 'percentage'
+                    ? 'Making Charge (%)'
+                    : getVal('makingChargeType') === 'per_gram' || getVal('makingChargeType') === 'weight'
+                    ? 'Making Charge (₹/g)'
+                    : 'Making Charge (₹)'
+                }
+                placeholder={
+                  getVal('makingChargeType', 'percentage') === 'percentage'
+                    ? 'Enter Making Charge (%)'
+                    : getVal('makingChargeType') === 'per_gram' || getVal('makingChargeType') === 'weight'
+                    ? 'Enter ₹ per Gram (e.g. 650)'
+                    : 'Enter Total Making Charge (₹)'
+                }
                 field="makingChargeValue"
                 type="number"
                 step="0.1"
                 min="0"
+                suffix={
+                  getVal('makingChargeType', 'percentage') === 'percentage'
+                    ? '%'
+                    : getVal('makingChargeType') === 'per_gram' || getVal('makingChargeType') === 'weight'
+                    ? '₹/g'
+                    : '₹'
+                }
                 onChange={(e) => {
                   const mv = e.target.value === '' ? '' : Number(e.target.value);
                   updateFields({ makingChargeValue: mv, makingCharges: mv });
@@ -1204,25 +1363,24 @@ export default function ProductForm({
                   onChange={(e) => {
                     const type = e.target.value;
                     if (type === 'rings') {
-                      const defaultRings = Array.from({ length: 34 - 6 + 1 }, (_, i) => { const num = 6 + i; return num < 10 ? `0${num}` : `${num}`; });
                       if (editingProduct) {
-                        setEditingProduct({ ...editingProduct, ringSizes: defaultRings, bangleSizes: [], chainSizes: [] });
+                        setEditingProduct({ ...editingProduct, ringSizes: editingProduct.ringSizes || [], bangleSizes: [], chainSizes: [] });
                       } else {
-                        setNewProduct({ ...newProduct, ringSizes: defaultRings, bangleSizes: [], chainSizes: [] });
+                        setNewProduct({ ...newProduct, ringSizes: newProduct.ringSizes || [], bangleSizes: [], chainSizes: [] });
                       }
                     } else if (type === 'bangles') {
                       const defaultBangles = ['2-4', '2-6'];
                       if (editingProduct) {
-                        setEditingProduct({ ...editingProduct, ringSizes: [], bangleSizes: defaultBangles, chainSizes: [] });
+                        setEditingProduct({ ...editingProduct, ringSizes: [], bangleSizes: editingProduct.bangleSizes || defaultBangles, chainSizes: [] });
                       } else {
-                        setNewProduct({ ...newProduct, ringSizes: [], bangleSizes: defaultBangles, chainSizes: [] });
+                        setNewProduct({ ...newProduct, ringSizes: [], bangleSizes: newProduct.bangleSizes || defaultBangles, chainSizes: [] });
                       }
                     } else if (type === 'chains') {
                       const defaultChains = ['16"', '18"', '20"'];
                       if (editingProduct) {
-                        setEditingProduct({ ...editingProduct, ringSizes: [], bangleSizes: [], chainSizes: defaultChains });
+                        setEditingProduct({ ...editingProduct, ringSizes: [], bangleSizes: [], chainSizes: editingProduct.chainSizes || defaultChains });
                       } else {
-                        setNewProduct({ ...newProduct, ringSizes: [], bangleSizes: [], chainSizes: defaultChains });
+                        setNewProduct({ ...newProduct, ringSizes: [], bangleSizes: [], chainSizes: newProduct.chainSizes || defaultChains });
                       }
                     } else {
                       if (editingProduct) {
@@ -1247,7 +1405,9 @@ export default function ProductForm({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-[#E6C687]"></span>
-                      <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Available Ring Sizes (IND)</h4>
+                      <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">
+                        Available Ring Sizes (IND) {currentRingSizes.length > 0 ? `(${currentRingSizes.length} Selected)` : '(Click to Select)'}
+                      </h4>
                     </div>
                     <div className="flex gap-2">
                       <button
@@ -1294,11 +1454,7 @@ export default function ProductForm({
                           type="button"
                           onClick={() => {
                             let updatedSizes = [];
-                            const defaultSizes = Array.from({ length: 34 - 6 + 1 }, (_, i) => {
-                              const num = 6 + i;
-                              return num < 10 ? `0${num}` : `${num}`;
-                            });
-                            const baseSizes = currentRingSizes.length > 0 ? currentRingSizes : defaultSizes;
+                            const baseSizes = Array.isArray(currentRingSizes) ? currentRingSizes : [];
 
                             if (baseSizes.includes(szStr)) {
                               updatedSizes = baseSizes.filter(s => s !== szStr);
@@ -1314,14 +1470,52 @@ export default function ProductForm({
                           }}
                           className={`h-8 border border-solid flex items-center justify-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-zinc-950 text-white border-zinc-950 dark:bg-zinc-100 dark:text-zinc-955 dark:border-zinc-100 font-extrabold'
-                              : 'bg-transparent text-zinc-400 border-zinc-200 dark:border-zinc-800 dark:text-zinc-600 hover:border-zinc-450'
+                              ? 'bg-zinc-950 text-white border-zinc-950 dark:bg-zinc-100 dark:text-zinc-955 dark:border-zinc-100 font-extrabold shadow-sm'
+                              : 'bg-transparent text-zinc-400 border-zinc-200 dark:border-zinc-800 dark:text-zinc-600 hover:border-zinc-450 hover:text-zinc-700'
                           }`}
                         >
                           {szStr}
                         </button>
                       );
                     })}
+                  </div>
+
+                  {/* Custom Ring Size Input */}
+                  <div className="pt-2 flex items-center gap-2 max-w-sm">
+                    <input
+                      id="custom-ring-size-input"
+                      type="text"
+                      placeholder="Add custom ring size (e.g. 05.5, Free Size, US 7)"
+                      className="flex-1 h-9 bg-white dark:bg-zinc-900 border border-solid border-zinc-200 dark:border-zinc-800 rounded-lg px-3 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-amber-500 font-semibold"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const val = e.target.value.trim();
+                          if (val && !currentRingSizes.includes(val)) {
+                            const updated = [...currentRingSizes, val];
+                            if (editingProduct) setEditingProduct({ ...editingProduct, ringSizes: updated });
+                            else setNewProduct({ ...newProduct, ringSizes: updated });
+                            e.target.value = '';
+                          }
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const input = document.getElementById('custom-ring-size-input');
+                        const val = input?.value?.trim();
+                        if (val && !currentRingSizes.includes(val)) {
+                          const updated = [...currentRingSizes, val];
+                          if (editingProduct) setEditingProduct({ ...editingProduct, ringSizes: updated });
+                          else setNewProduct({ ...newProduct, ringSizes: updated });
+                          if (input) input.value = '';
+                        }
+                      }}
+                      className="px-3 h-9 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-bold uppercase tracking-wider cursor-pointer border-none"
+                    >
+                      + Add
+                    </button>
                   </div>
                 </div>
               )}
