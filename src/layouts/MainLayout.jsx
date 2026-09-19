@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import CartDrawer from '../components/CartDrawer';
@@ -27,6 +27,31 @@ export default function MainLayout({
   const { cartOpen, setCartOpen } = useCart();
   const [customerAccountOpen, setCustomerAccountOpen] = useState(false);
   const [customerAccountTab, setCustomerAccountTab] = useState('orders');
+
+  useEffect(() => {
+    // Check if ?track= is in URL on mount
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('track')) {
+        setCustomerAccountTab('track');
+        setCustomerAccountOpen(true);
+      }
+    } catch (e) {
+      console.warn("URL search param error:", e);
+    }
+
+    // Listen for custom event 'hrj-open-account'
+    const handleOpenAccount = (e) => {
+      const tab = e?.detail?.tab || 'orders';
+      setCustomerAccountTab(tab);
+      setCustomerAccountOpen(true);
+    };
+
+    window.addEventListener('hrj-open-account', handleOpenAccount);
+    return () => {
+      window.removeEventListener('hrj-open-account', handleOpenAccount);
+    };
+  }, []);
 
   const openCustomerAccount = (tab = 'orders') => {
     setCustomerAccountTab(tab);

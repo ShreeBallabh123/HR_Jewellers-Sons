@@ -36,50 +36,89 @@ export default async function handler(req, res) {
   let html;
 
   if (type === 'new_order') {
-    subject = `New Order Receipt #${data.orderId} - HR Jewellers & Sons`;
+    subject = `Official Tax Invoice & Order Confirmation #${data.orderId} - HR Jewellers & Sons`;
+    const subtotal = data.subtotal || Math.round(data.total / 1.03);
+    const gstAmount = data.gst || Math.round(data.total - subtotal);
+    const itemsList = Array.isArray(data.items) ? data.items : [];
+
     html = `
-      <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 25px; border: 1px solid #D4AF37; background-color: #0B0605; color: #F5E6C4;">
-        <h2 style="color: #D4AF37; font-family: serif; font-weight: normal; letter-spacing: 0.15em; text-align: center;">HR JEWELLERS & SONS</h2>
-        <p style="text-align: center; font-size: 10px; color: #D4AF37; letter-spacing: 0.25em;">OM SHANTI · BIKANERI TRADITIONAL ARTISTRY</p>
-        <hr style="border: 0; border-top: 1px solid rgba(212, 175, 85, 0.35); margin: 20px 0;" />
-        <h3 style="color: #fff; font-family: serif; font-weight: normal;">Patron Order Confirmed</h3>
-        <p style="font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.6;">Thank you for shopping with us! Here are your order details:</p>
-        
-        <div style="background-color: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,85,0.15); padding: 15px; border-radius: 12px; margin: 15px 0; font-size: 12px; line-height: 1.6;">
-          <p style="margin: 3px 0;"><strong>Order ID:</strong> <span style="color: #D4AF37;">${data.orderId}</span></p>
-          <p style="margin: 3px 0;"><strong>Customer Name:</strong> ${data.name}</p>
-          <p style="margin: 3px 0;"><strong>Phone:</strong> ${data.phone}</p>
-          <p style="margin: 3px 0;"><strong>Delivery Address:</strong> ${data.address}</p>
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 650px; margin: auto; padding: 30px; border: 1px solid #D4AF37; background-color: #0A0A0A; color: #F5E6C4; border-radius: 16px;">
+        <!-- Header -->
+        <div style="text-align: center; border-bottom: 2px solid #D4AF37; padding-bottom: 20px;">
+          <h1 style="color: #D4AF37; font-family: 'Playfair Display', Georgia, serif; font-size: 26px; font-weight: bold; letter-spacing: 0.15em; margin: 0;">HR JEWELLERS & SONS</h1>
+          <p style="font-size: 10px; color: #E6C687; letter-spacing: 0.3em; margin: 6px 0 0 0; text-transform: uppercase;">Tradition of Trust Since 1996 · Bikaner, Rajasthan</p>
+          <p style="font-size: 11px; color: rgba(255,255,255,0.7); margin: 6px 0 0 0;">
+            GSTIN: <strong style="color: #D4AF37;">08AASFH1262R1ZM</strong> | State: 08-Rajasthan | Email: hrjewellerssons@gmail.com
+          </p>
         </div>
 
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; color: rgba(255,255,255,0.85);">
+        <!-- Order Summary Box -->
+        <div style="background-color: rgba(212,175,55,0.05); border: 1px solid rgba(212,175,55,0.25); border-radius: 12px; padding: 20px; margin: 25px 0;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+            <span style="font-size: 12px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.1em;">TAX INVOICE / ORDER ID:</span>
+            <strong style="color: #D4AF37; font-family: monospace; font-size: 15px; letter-spacing: 0.05em;">#${data.orderId}</strong>
+          </div>
+          <div style="border-top: 1px solid rgba(212,175,55,0.15); padding-top: 12px; font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.9);">
+            <p style="margin: 3px 0;"><strong>Customer Name:</strong> ${data.name || 'Valued Patron'}</p>
+            <p style="margin: 3px 0;"><strong>Mobile:</strong> ${data.phone || 'N/A'}</p>
+            <p style="margin: 3px 0;"><strong>Delivery / Pickup Destination:</strong> ${data.address || 'Showroom Collection'}</p>
+            <p style="margin: 3px 0;"><strong>Payment Mode:</strong> <span style="color: #10B981; font-weight: bold;">${(data.paymentMethod || 'Online / Verified').toUpperCase()}</span></p>
+          </div>
+        </div>
+
+        <!-- 1-Click Track Button -->
+        <div style="text-align: center; margin: 25px 0;">
+          <a href="https://hrjewellers.in/?track=${data.orderId}" style="background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%); color: #000; font-weight: 800; font-size: 13px; text-decoration: none; padding: 14px 28px; border-radius: 10px; display: inline-block; letter-spacing: 0.15em; text-transform: uppercase; box-shadow: 0 4px 15px rgba(212,175,55,0.3);">
+            🚚 Track Live Order Status
+          </a>
+        </div>
+
+        <!-- Items Table -->
+        <h3 style="color: #D4AF37; font-family: 'Playfair Display', Georgia, serif; font-size: 16px; margin: 25px 0 10px 0; border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 8px;">
+          Purchased Jewellery Items
+        </h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px; color: rgba(255,255,255,0.9);">
           <thead>
-            <tr style="border-bottom: 2px solid #D4AF37; text-align: left;">
-              <th style="padding: 10px 5px; color: #D4AF37;">Product</th>
-              <th style="padding: 10px 5px; color: #D4AF37;">Weight</th>
-              <th style="padding: 10px 5px; text-align: right; color: #D4AF37;">Qty</th>
-              <th style="padding: 10px 5px; text-align: right; color: #D4AF37;">Price</th>
+            <tr style="border-bottom: 1px solid #D4AF37; text-align: left; color: #E6C687; font-size: 11px; text-transform: uppercase;">
+              <th style="padding: 8px 4px;">Item Description</th>
+              <th style="padding: 8px 4px;">Purity / Weight</th>
+              <th style="padding: 8px 4px; text-align: center;">Qty</th>
+              <th style="padding: 8px 4px; text-align: right;">Amount (INR)</th>
             </tr>
           </thead>
           <tbody>
-            ${data.items.map(item => `
-              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <td style="padding: 10px 5px; font-weight: bold;">${item.name}</td>
-                <td style="padding: 10px 5px; color: rgba(255,255,255,0.5);">${item.weight}</td>
-                <td style="padding: 10px 5px; text-align: right;">${item.quantity}</td>
-                <td style="padding: 10px 5px; text-align: right; color: #D4AF37; font-weight: bold;">₹${(item.price * item.quantity).toLocaleString('en-IN')}</td>
+            ${itemsList.map(item => `
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <td style="padding: 10px 4px; font-weight: 600;">${item.name}</td>
+                <td style="padding: 10px 4px; color: rgba(255,255,255,0.6);">${item.carat || item.weight || 'BIS 916 Hallmarked'}</td>
+                <td style="padding: 10px 4px; text-align: center;">${item.quantity || 1}</td>
+                <td style="padding: 10px 4px; text-align: right; color: #D4AF37; font-weight: bold;">₹${((item.price || 0) * (item.quantity || 1)).toLocaleString('en-IN')}</td>
               </tr>
             `).join('')}
           </tbody>
         </table>
-        
-        <h3 style="text-align: right; color: #D4AF37; margin-top: 25px; font-family: serif; font-size: 18px; font-weight: normal;">
-          Total Amount: ₹${data.total.toLocaleString('en-IN')}
-        </h3>
-        
+
+        <!-- Tax & Total Calculation -->
+        <div style="margin-top: 20px; border-top: 1px solid rgba(212,175,55,0.25); padding-top: 15px; font-size: 13px; line-height: 1.8;">
+          <div style="display: flex; justify-content: space-between; color: rgba(255,255,255,0.7);">
+            <span>Taxable Subtotal:</span>
+            <span>₹${Number(subtotal).toLocaleString('en-IN')}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; color: rgba(255,255,255,0.7);">
+            <span>GST (3% Jewelry Tax):</span>
+            <span>₹${Number(gstAmount).toLocaleString('en-IN')}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; color: #D4AF37; font-size: 17px; font-weight: bold; margin-top: 8px; border-top: 2px solid #D4AF37; padding-top: 8px;">
+            <span>Grand Total:</span>
+            <span>₹${Number(data.total).toLocaleString('en-IN')}</span>
+          </div>
+        </div>
+
+        <!-- Footer Notice -->
         <hr style="border: 0; border-top: 1px solid rgba(212, 175, 85, 0.25); margin: 30px 0 15px 0;" />
-        <p style="font-size: 10px; color: rgba(255,255,255,0.4); text-align: center; letter-spacing: 0.1em; line-height: 1.5;">
-          Om Shanti · HR Jewellers & Sons, Tilak Nagar, Bikaner (Raj.) · Since 1996
+        <p style="font-size: 11px; color: rgba(255,255,255,0.5); text-align: center; line-height: 1.6; margin: 0;">
+          All jewellery certified by Bureau of Indian Standards (BIS Hallmarked).<br/>
+          For customer support or custom modifications, call/WhatsApp: <strong style="color: #D4AF37;">+91 97838 43978</strong>
         </p>
       </div>
     `;

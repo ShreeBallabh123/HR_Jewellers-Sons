@@ -39,6 +39,8 @@ export default function CustomerAccountModal({
   const [trackingQuery, setTrackingQuery] = useState('');
   const [selectedTrackOrder, setSelectedTrackOrder] = useState(null);
   const [trackError, setTrackError] = useState('');
+  const [copiedOrderId, setCopiedOrderId] = useState('');
+  const [copiedLink, setCopiedLink] = useState(false);
 
   // Subscribe to live orders
   useEffect(() => {
@@ -63,6 +65,53 @@ export default function CustomerAccountModal({
     setActiveTab(initialTab);
   }, [initialTab]);
 
+  // Read URL ?track= param and custom events on open
+  useEffect(() => {
+    if (!isOpen) return;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const trackParam = params.get('track');
+      if (trackParam) {
+        setTrackingQuery(trackParam);
+        setActiveTab('track');
+      }
+    } catch (e) {
+      console.warn("Error reading track param:", e);
+    }
+  }, [isOpen]);
+
+  // Auto-find order when tracking query is set or allOrders update
+  useEffect(() => {
+    if (trackingQuery && allOrders.length > 0 && !selectedTrackOrder) {
+      const cleanQ = trackingQuery.trim().toLowerCase().replace('#', '').replace(/\s+/g, '');
+      const found = allOrders.find(o => {
+        const orderId = String(o.id || '').toLowerCase();
+        const phone = String(o.mobile || o.recipientMobile || o.phone || '').replace(/\D/g, '');
+        return orderId.includes(cleanQ) || (phone && phone.includes(cleanQ));
+      });
+      if (found) {
+        setSelectedTrackOrder(found);
+      }
+    }
+  }, [allOrders, trackingQuery, selectedTrackOrder]);
+
+  const handleCopyId = (id) => {
+    if (!id) return;
+    navigator.clipboard?.writeText(id);
+    setCopiedOrderId(id);
+    triggerAudio?.('click');
+    setTimeout(() => setCopiedOrderId(''), 3000);
+  };
+
+  const handleCopyTrackLink = (id) => {
+    if (!id) return;
+    const url = `https://hrjewellers.in/?track=${id}`;
+    navigator.clipboard?.writeText(url);
+    setCopiedLink(true);
+    triggerAudio?.('click');
+    setTimeout(() => setCopiedLink(false), 3000);
+  };
+
   // Filter orders for the current customer
   const customerOrders = useMemo(() => {
     const localPlacedIds = StorageService.get('hrj_my_order_ids', []);
@@ -70,7 +119,7 @@ export default function CustomerAccountModal({
     const email = (customerProfile.email || '').trim().toLowerCase();
 
     return allOrders.filter(order => {
-      const orderPhone = String(order.mobile || order.recipientMobile || '').replace(/\D/g, '');
+      const orderPhone = String(order.mobile || order.recipientMobile || order.phone || '').replace(/\D/g, '');
       const orderEmail = String(order.email || '').toLowerCase().trim();
       const isLocal = localPlacedIds.includes(order.id);
       const isPhoneMatch = phone && orderPhone && (orderPhone.endsWith(phone) || phone.endsWith(orderPhone));
@@ -119,7 +168,7 @@ export default function CustomerAccountModal({
     const cleanQ = q.replace('#', '').replace(/\s+/g, '');
     const found = allOrders.find(o => {
       const orderId = String(o.id || '').toLowerCase();
-      const phone = String(o.mobile || o.recipientMobile || '').replace(/\D/g, '');
+      const phone = String(o.mobile || o.recipientMobile || o.phone || '').replace(/\D/g, '');
       return orderId.includes(cleanQ) || (phone && phone.includes(cleanQ));
     });
 
@@ -301,6 +350,13 @@ export default function CustomerAccountModal({
                               <span className="font-mono text-xs font-extrabold text-zinc-900 dark:text-white">
                                 #{order.id?.slice(0, 8).toUpperCase()}
                               </span>
+                              <button
+                                onClick={() => handleCopyId(order.id)}
+                                className="px-2 py-0.5 rounded bg-zinc-100 hover:bg-zinc-200 dark:bg-white/10 dark:hover:bg-white/20 text-[9px] font-bold text-zinc-700 dark:text-zinc-200 border-none cursor-pointer transition-colors"
+                                title="Copy Full Order ID"
+                              >
+                                {copiedOrderId === order.id ? '✓ Copied' : '📋 Copy ID'}
+                              </button>
                               <span className={`text-[9px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border ${badgeStyle}`}>
                                 {order.orderStatus || 'Pending'}
                               </span>
@@ -432,13 +488,27 @@ export default function CustomerAccountModal({
                         <span className="text-[10px] uppercase font-bold text-[#C8A646] tracking-widest block">
                           Tracking Details
                         </span>
-                        <h4 className="text-sm font-black text-zinc-900 dark:text-white">
-                          Order #{selectedTrackOrder.id?.slice(0, 8).toUpperCase()}
-                        </h4>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <h4 className="text-sm font-black text-zinc-900 dark:text-white font-mono">
+                            #{selectedTrackOrder.id}
+                          </h4>
+                          <button
+                            onClick={() => handleCopyId(selectedTrackOrder.id)}
+                            className="px-2 py-0.5 rounded bg-[#C8A646]/15 hover:bg-[#C8A646]/25 text-[10px] font-bold text-[#C8A646] border-none cursor-pointer transition-colors"
+                          >
+                            {copiedOrderId === selectedTrackOrder.id ? '✓ Copied ID' : '📋 Copy ID'}
+                          </button>
+                          <button
+                            onClick={() => handleCopyTrackLink(selectedTrackOrder.id)}
+                            className="px-2 py-0.5 rounded bg-zinc-100 dark:bg-white/10 hover:bg-zinc-200 text-[10px] font-bold text-zinc-700 dark:text-zinc-200 border-none cursor-pointer transition-colors"
+                          >
+                            {copiedLink ? '✓ Link Copied' : '🔗 Copy Link'}
+                          </button>
+                        </div>
                       </div>
 
                       <div className="text-right">
-                        <span className="text-[9px] uppercase font-bold text-zinc-400 block">Estimated Status</span>
+                        <span className="text-[9px] uppercase font-bold text-zinc-400 block">Current Status</span>
                         <span className="text-xs font-extrabold uppercase text-[#C8A646]">
                           {selectedTrackOrder.orderStatus || 'Processing'}
                         </span>

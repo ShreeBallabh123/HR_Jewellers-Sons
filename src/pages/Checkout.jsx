@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../hooks/useCart';
 import { bookingApi } from '../api/booking.api';
 import { requestAndSaveToken } from '../utils/notifications';
+import { StorageService } from '../services/StorageService';
 
 export default function Checkout({ navigateTo, triggerAudio }) {
   const { cartItems, cartTotal, handleUpdateQuantity, handleRemoveFromCart, clearCart } = useCart();
@@ -33,6 +34,7 @@ export default function Checkout({ navigateTo, triggerAudio }) {
   const [placedOrderId, setPlacedOrderId] = useState('');
   const [placedOrderTotal, setPlacedOrderTotal] = useState(0);
   const [submittingOrder, setSubmittingOrder] = useState(false);
+  const [copiedId, setCopiedId] = useState(false);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -43,6 +45,19 @@ export default function Checkout({ navigateTo, triggerAudio }) {
       document.body.removeChild(script);
     };
   }, []);
+
+  const handleCopyOrderId = () => {
+    if (!placedOrderId) return;
+    navigator.clipboard?.writeText(placedOrderId);
+    setCopiedId(true);
+    triggerAudio?.('click');
+    setTimeout(() => setCopiedId(false), 3000);
+  };
+
+  const handleTrackLive = () => {
+    triggerAudio?.('click');
+    window.dispatchEvent(new CustomEvent('hrj-open-account', { detail: { tab: 'track', orderId: placedOrderId } }));
+  };
 
   const handleRazorpayPayment = async () => {
     if (cartItems.length === 0) return;
@@ -135,6 +150,47 @@ export default function Checkout({ navigateTo, triggerAudio }) {
               setPlacedOrderTotal(orderPayload.total);
               const result = await bookingApi.createOrder(orderPayload);
               requestAndSaveToken(deliveryForm.mobile).catch(err => console.error("Error registering notification token:", err));
+
+              // Persist order ID and customer profile locally
+              try {
+                const existingIds = StorageService.get('hrj_my_order_ids', []);
+                if (!existingIds.includes(result.id)) {
+                  StorageService.set('hrj_my_order_ids', [result.id, ...existingIds]);
+                }
+                StorageService.set('hrj_customer_profile', {
+                  name: deliveryForm.recipientName,
+                  mobile: deliveryForm.mobile,
+                  email: deliveryForm.email,
+                  city: deliveryForm.storeCity || 'Bikaner',
+                  address: deliveryForm.apartment ? `${deliveryForm.apartment}, ${deliveryForm.street}, ${deliveryForm.locality}` : '',
+                  pincode: deliveryForm.pincode
+                });
+              } catch (saveErr) {
+                console.warn("Storage save error:", saveErr);
+              }
+
+              // Dispatch official GST invoice email to customer & store admin
+              fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'new_order',
+                  recipient: deliveryForm.email || 'hrjewellerssons@gmail.com',
+                  data: {
+                    orderId: result.id,
+                    name: deliveryForm.recipientName,
+                    phone: deliveryForm.mobile,
+                    email: deliveryForm.email,
+                    address: orderPayload.address || (deliveryType === 'store' ? `Store Pickup: ${deliveryForm.storeBranch}` : 'Showroom Collection'),
+                    paymentMethod: 'Razorpay Online Payment',
+                    items: orderPayload.items,
+                    subtotal: orderPayload.subtotal,
+                    gst: orderPayload.gst,
+                    total: orderPayload.total
+                  }
+                })
+              }).catch(emailErr => console.warn("Email dispatch error:", emailErr));
+
               setPlacedOrderId(result.id);
               setOrderPlaced(true);
               clearCart();
@@ -221,6 +277,47 @@ export default function Checkout({ navigateTo, triggerAudio }) {
       setPlacedOrderTotal(orderPayload.total);
       const result = await bookingApi.createOrder(orderPayload);
       requestAndSaveToken(deliveryForm.mobile).catch(err => console.error("Error registering notification token:", err));
+
+      // Persist order ID and customer profile locally
+      try {
+        const existingIds = StorageService.get('hrj_my_order_ids', []);
+        if (!existingIds.includes(result.id)) {
+          StorageService.set('hrj_my_order_ids', [result.id, ...existingIds]);
+        }
+        StorageService.set('hrj_customer_profile', {
+          name: deliveryForm.recipientName,
+          mobile: deliveryForm.mobile,
+          email: deliveryForm.email,
+          city: deliveryForm.storeCity || 'Bikaner',
+          address: deliveryForm.apartment ? `${deliveryForm.apartment}, ${deliveryForm.street}, ${deliveryForm.locality}` : '',
+          pincode: deliveryForm.pincode
+        });
+      } catch (saveErr) {
+        console.warn("Storage save error:", saveErr);
+      }
+
+      // Dispatch official GST invoice email to customer & store admin
+      fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'new_order',
+          recipient: deliveryForm.email || 'hrjewellerssons@gmail.com',
+          data: {
+            orderId: result.id,
+            name: deliveryForm.recipientName,
+            phone: deliveryForm.mobile,
+            email: deliveryForm.email,
+            address: orderPayload.address || (deliveryType === 'store' ? `Store Pickup: ${deliveryForm.storeBranch}` : 'Showroom Collection'),
+            paymentMethod: checkoutForm.method === 'cod' ? 'Cash on Delivery / Showroom' : checkoutForm.method,
+            items: orderPayload.items,
+            subtotal: orderPayload.subtotal,
+            gst: orderPayload.gst,
+            total: orderPayload.total
+          }
+        })
+      }).catch(emailErr => console.warn("Email dispatch error:", emailErr));
+
       setPlacedOrderId(result.id);
       setOrderPlaced(true);
       clearCart();
@@ -234,47 +331,93 @@ export default function Checkout({ navigateTo, triggerAudio }) {
 
   if (orderPlaced) {
     return (
-      <div className="bg-[#FAF8F6] min-h-screen py-16 px-6 sm:px-12 flex items-center justify-center font-sans text-gray-800 text-left select-none">
-        <div className="max-w-md w-full bg-white border border-gray-150 rounded-3xl p-8 text-center space-y-6 shadow-xl relative overflow-hidden">
-          {/* Subtle gold line on top */}
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#B8893C] to-[#E6C687]"></div>
+      <div className="bg-[#FAF8F6] min-h-screen py-16 px-4 sm:px-12 flex items-center justify-center font-sans text-gray-800 text-left select-none">
+        <div className="max-w-lg w-full bg-white border border-gray-150 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-2xl relative overflow-hidden">
+          {/* Subtle gold top line */}
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#B8893C] via-[#E6C687] to-[#B8893C]"></div>
           
-          <div className="w-16 h-16 bg-[#B8893C]/10 rounded-full flex items-center justify-center text-3xl mx-auto text-[#B8893C]">
+          <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto shadow-inner border border-emerald-200">
             ✓
           </div>
           
-          <div className="space-y-2">
-            <h2 className="serif-luxury text-xl font-bold text-[#031838] tracking-wide uppercase">Order Placed Successfully</h2>
-            <p className="text-xs text-gray-400">Thank you for choosing HR Jewellers &amp; Sons. Your order has been registered securely.</p>
+          <div className="space-y-1.5">
+            <h2 className="serif-luxury text-xl font-bold text-[#031838] tracking-wide uppercase">
+              Order Confirmed &amp; Registered!
+            </h2>
+            <p className="text-xs text-gray-500">
+              Thank you for trusting HR Jewellers &amp; Sons. Your order has been registered securely.
+            </p>
           </div>
 
+          {/* Prominent Order ID Box with 1-Click Copy */}
+          <div className="bg-gradient-to-br from-[#FAF8F5] to-[#F5EFE6] border-2 border-dashed border-[#B8893C]/40 rounded-2xl p-4 text-center space-y-2">
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#B8893C] block">
+              Your Unique Order ID
+            </span>
+            <div className="flex items-center justify-center gap-2">
+              <span className="font-mono text-lg sm:text-xl font-black text-[#031838] tracking-wider select-all bg-white px-3.5 py-1.5 rounded-xl border border-solid border-gray-200 shadow-xs">
+                #{placedOrderId}
+              </span>
+              <button
+                onClick={handleCopyOrderId}
+                className="px-3 py-2 rounded-xl bg-[#031838] hover:bg-[#031838]/90 text-white text-xs font-bold transition-all shadow-sm cursor-pointer border-none flex items-center gap-1.5 shrink-0"
+                title="Copy Order ID"
+              >
+                {copiedId ? <span>✓ Copied!</span> : <span>📋 Copy ID</span>}
+              </button>
+            </div>
+            <p className="text-[10px] text-gray-400 font-medium">
+              Save this Order ID or use your phone number to track anytime in Customer Lounge.
+            </p>
+          </div>
+
+          {/* Email Confirmation Notice Banner */}
+          <div className="bg-emerald-50 border border-emerald-200/80 rounded-xl p-3.5 text-left flex items-start gap-2.5">
+            <span className="text-base">✉️</span>
+            <div className="text-[11px] text-emerald-900 leading-relaxed font-medium">
+              <strong>Official Tax Invoice &amp; Live Tracking Link</strong> have been sent to{' '}
+              <span className="font-bold underline text-emerald-950">{deliveryForm.email || 'your email'}</span>.
+            </div>
+          </div>
+
+          {/* Order Details Breakdown */}
           <div className="bg-gray-50 rounded-2xl p-4 text-xs space-y-2 text-left border border-gray-100 font-medium">
             <div className="flex justify-between text-gray-500">
-              <span>Order Reference ID</span>
-              <span className="font-mono font-bold text-[#031838] select-all">{placedOrderId}</span>
-            </div>
-            <div className="flex justify-between text-gray-500">
-              <span>Recipient Name</span>
+              <span>Customer Name</span>
               <span className="font-bold text-[#031838]">{deliveryForm.recipientName}</span>
             </div>
             <div className="flex justify-between text-gray-500">
               <span>Contact Mobile</span>
               <span className="font-bold text-[#031838]">{deliveryForm.mobile}</span>
             </div>
+            <div className="flex justify-between text-gray-500">
+              <span>Delivery Method</span>
+              <span className="font-bold text-[#031838] capitalize">
+                {deliveryType === 'store' ? `Showroom Pickup (${deliveryForm.storeBranch})` : 'Insured Home Delivery'}
+              </span>
+            </div>
             <div className="flex justify-between text-gray-500 border-t border-gray-150 pt-2 mt-2">
-              <span className="text-[#031838] font-bold">Total Amount</span>
+              <span className="text-[#031838] font-bold">Total Amount (Incl. GST)</span>
               <span className="font-bold text-base text-[#B8893C]">₹ {placedOrderTotal.toLocaleString('en-IN')}</span>
             </div>
           </div>
 
-          <p className="text-[11px] text-gray-400 italic">Our store manager will contact you on WhatsApp/Mobile shortly to share receipt details and schedule delivery.</p>
+          {/* Action Buttons: Track & Continue */}
+          <div className="space-y-2.5 pt-2">
+            <button
+              onClick={handleTrackLive}
+              className="w-full py-3.5 bg-gradient-to-r from-[#B8893C] to-[#E6C687] hover:brightness-110 text-white text-xs uppercase font-black tracking-widest rounded-xl transition-all shadow-md cursor-pointer border-none flex items-center justify-center gap-2"
+            >
+              <span>🚚</span> Track Live Order Status
+            </button>
 
-          <button
-            onClick={() => navigateTo('home')}
-            className="w-full py-3.5 bg-gradient-to-r from-[#B8893C] to-[#E6C687] hover:brightness-110 text-white text-xs uppercase font-black tracking-widest rounded-xl transition-all shadow-md cursor-pointer border-none"
-          >
-            Continue to Showroom
-          </button>
+            <button
+              onClick={() => navigateTo('home')}
+              className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-[#031838] text-xs uppercase font-bold tracking-wider rounded-xl transition-all cursor-pointer border-none"
+            >
+              ← Back to Showroom
+            </button>
+          </div>
         </div>
       </div>
     );
