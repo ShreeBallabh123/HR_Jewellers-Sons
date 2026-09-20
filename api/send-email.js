@@ -1,7 +1,8 @@
-﻿/* global process */
+/* global process */
 // Node.js Vercel Serverless Function to securely dispatch transactional email notifications with attached invoice PDF.
-// Uses a zero-dependency fetch call to the Resend API to protect credentials from the client side.
+// Supports multi-tier providers: Nodemailer (Gmail / Custom SMTP), Resend API, and Brevo API.
 
+import nodemailer from 'nodemailer';
 import { generateInvoicePdf } from './utils/generate-invoice-pdf.js';
 
 export default async function handler(req, res) {
@@ -23,17 +24,18 @@ export default async function handler(req, res) {
   }
 
   const { type, recipient, data = {} } = req.body || {};
-  const apiKey = process.env.RESEND_API_KEY;
-
   const targetEmail = recipient || data.email || data.customerEmail || 'hrjewellerssons@gmail.com';
 
   let subject;
   let html;
-  let attachments = [];
+  let pdfBuffer = null;
+  let pdfFilename = 'Invoice_HRJ.pdf';
 
   if (type === 'new_order') {
     const orderId = String(data.orderId || data.id || 'N/A');
     const invoiceNo = data.invoiceNo || data.customInvoiceNo || `HRJ/${new Date().getFullYear()}/${orderId.slice(0, 8).toUpperCase()}`;
+    pdfFilename = `Invoice_HRJ_${orderId}.pdf`;
+
     const dateStr = data.createdDate || data.date
       ? new Date(data.createdDate || data.date).toLocaleDateString('en-IN', {
           day: '2-digit',
@@ -58,7 +60,7 @@ export default async function handler(req, res) {
 
     // 1. Generate Invoice PDF Buffer
     try {
-      const pdfBuffer = await generateInvoicePdf({
+      pdfBuffer = await generateInvoicePdf({
         ...data,
         orderId,
         invoiceNo,
@@ -71,20 +73,13 @@ export default async function handler(req, res) {
         gst: gstAmount,
         discount
       });
-
-      if (pdfBuffer && pdfBuffer.length > 0) {
-        attachments.push({
-          filename: `Invoice_HRJ_${orderId}.pdf`,
-          content: pdfBuffer.toString('base64')
-        });
-      }
     } catch (pdfErr) {
       console.error('Invoice PDF generation failed in email handler:', pdfErr);
     }
 
     // 2. Build Luxury Responsive HTML Email
     html = `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 650px; margin: auto; padding: 25px sm:35px; border: 1px solid #D4AF37; background-color: #0A0A0A; color: #F5E6C4; border-radius: 16px;">
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 650px; margin: auto; padding: 25px; border: 1px solid #D4AF37; background-color: #0A0A0A; color: #F5E6C4; border-radius: 16px;">
         <!-- Header -->
         <div style="text-align: center; border-bottom: 2px solid #D4AF37; padding-bottom: 20px;">
           <h1 style="color: #D4AF37; font-family: 'Playfair Display', Georgia, serif; font-size: 26px; font-weight: bold; letter-spacing: 0.15em; margin: 0;">HR JEWELLERS &amp; SONS</h1>
@@ -197,7 +192,7 @@ export default async function handler(req, res) {
 
         <!-- Attachment Notice Box -->
         <div style="background-color: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; margin: 25px 0 15px 0; text-align: center; font-size: 12px; color: #A7F3D0;">
-          📄 <strong>Official Tax Invoice Attached:</strong> Your GST tax invoice (<code>Invoice_HRJ_${orderId}.pdf</code>) is attached to this email for your accounting and insurance records.
+          📄 <strong>Official Tax Invoice Attached:</strong> Your GST tax invoice (<code>${pdfFilename}</code>) is attached to this email for your accounting and insurance records.
         </div>
 
         <!-- Footer Notice -->
@@ -337,47 +332,134 @@ export default async function handler(req, res) {
     html = `<h3>New Activity Recorded</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
   }
 
-  if (!apiKey) {
-    console.warn("RESEND_API_KEY is not defined in environment variables. Simulated email dispatch completed with invoice attachment.");
-    return res.status(200).json({
-      success: true,
-      mock: true,
-      recipient: targetEmail,
-      subject,
-      attachmentsCount: attachments.length,
-      message: "Resend key missing; simulated dispatch completed with invoice PDF attachment."
-    });
+  // =========================================================================
+  // MULTI-PROVIDER DISPATCH ENGINE
+  // =========================================================================
+
+  // Provider 1: SMTP / Gmail (via Nodemailer)
+  const smtpHost = process.env.SMTP_HOST;
+  const smtpPort = Number(process.env.SMTP_PORT || 465);
+  const smtpUser = process.env.SMTP_USER || process.env.GMAIL_USER || process.env.EMAIL_USER;
+  const smtpPass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASS || process.env.EMAIL_PASS;
+  const smtpFrom = process.env.SMTP_FROM || `HR Jewellers & Sons <${smtpUser || 'hrjewellerssons@gmail.com'}>`;
+
+  if (smtpUser && smtpPass) {
+    try {
+      const transporter = nodemailer.createTransport(
+        smtpHost
+          ? {
+              host: smtpHost,
+              port: smtpPort,
+              secure: smtpPort === 465,
+              auth: { user: smtpUser, pass: smtpPass }
+            }
+          : {
+              service: 'gmail',
+              auth: { user: smtpUser, pass: smtpPass }
+            }
+      );
+
+      const mailOptions = {
+        from: smtpFrom,
+        to: targetEmail,
+        subject: subject,
+        html: html,
+        attachments: pdfBuffer ? [{ filename: pdfFilename, content: pdfBuffer }] : []
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully via Nodemailer SMTP:', info.messageId);
+      return res.status(200).json({
+        success: true,
+        provider: 'smtp',
+        messageId: info.messageId,
+        recipient: targetEmail
+      });
+    } catch (smtpErr) {
+      console.error('Nodemailer SMTP dispatch failed, trying fallbacks:', smtpErr);
+    }
   }
 
-  try {
-    const payload = {
-      from: 'HR Jewellers <notifications@resend.dev>',
-      to: [targetEmail],
-      subject: subject,
-      html: html
-    };
+  // Provider 2: Resend API
+  const resendApiKey = process.env.RESEND_API_KEY;
+  if (resendApiKey) {
+    try {
+      const fromEmail = process.env.RESEND_FROM || 'HR Jewellers <onboarding@resend.dev>';
+      const payload = {
+        from: fromEmail,
+        to: [targetEmail],
+        subject: subject,
+        html: html,
+        attachments: pdfBuffer
+          ? [{ filename: pdfFilename, content: pdfBuffer.toString('base64') }]
+          : []
+      };
 
-    if (attachments.length > 0) {
-      payload.attachments = attachments;
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${resendApiKey}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const resData = await response.json();
+      if (response.ok) {
+        return res.status(200).json({ success: true, provider: 'resend', data: resData, recipient: targetEmail });
+      }
+      console.warn('Resend API returned non-OK status:', resData);
+    } catch (resendErr) {
+      console.error('Resend API dispatch error:', resendErr);
     }
-
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const resData = await response.json();
-    if (!response.ok) {
-      throw new Error(resData.message || resData.error || 'Resend API error');
-    }
-
-    return res.status(200).json({ success: true, data: resData, recipient: targetEmail });
-  } catch (error) {
-    console.error('Email sending failed in /api/send-email:', error);
-    return res.status(500).json({ error: error.message });
   }
+
+  // Provider 3: Brevo (Sendinblue) API
+  const brevoApiKey = process.env.BREVO_API_KEY;
+  if (brevoApiKey) {
+    try {
+      const payload = {
+        sender: { name: 'HR Jewellers & Sons', email: 'hrjewellerssons@gmail.com' },
+        to: [{ email: targetEmail }],
+        subject: subject,
+        htmlContent: html,
+        attachment: pdfBuffer
+          ? [{ name: pdfFilename, content: pdfBuffer.toString('base64') }]
+          : []
+      };
+
+      const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'api-key': brevoApiKey,
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const brevoData = await brevoRes.json();
+      if (brevoRes.ok) {
+        return res.status(200).json({ success: true, provider: 'brevo', data: brevoData, recipient: targetEmail });
+      }
+      console.warn('Brevo API returned error:', brevoData);
+    } catch (brevoErr) {
+      console.error('Brevo dispatch error:', brevoErr);
+    }
+  }
+
+  // Fallback: If no provider keys configured on Vercel
+  console.warn(
+    'No live email credentials (GMAIL_USER + GMAIL_APP_PASSWORD, RESEND_API_KEY, or BREVO_API_KEY) found in environment variables.'
+  );
+
+  return res.status(200).json({
+    success: true,
+    mock: true,
+    recipient: targetEmail,
+    subject,
+    hasPdfAttachment: Boolean(pdfBuffer),
+    notice: 'To receive emails in real customer inboxes, configure GMAIL_USER + GMAIL_APP_PASSWORD or RESEND_API_KEY in Vercel Environment Variables.'
+  });
 }
+

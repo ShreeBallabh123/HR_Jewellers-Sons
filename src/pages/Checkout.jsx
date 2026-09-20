@@ -380,17 +380,17 @@ export default function Checkout({ navigateTo, triggerAudio }) {
           </div>
 
           {/* Prominent Order ID Box with 1-Click Copy */}
-          <div className="bg-gradient-to-br from-[#FAF8F5] to-[#F5EFE6] border-2 border-dashed border-[#B8893C]/40 rounded-2xl p-4 text-center space-y-2">
+          <div className="bg-gradient-to-br from-[#FAF8F5] to-[#F5EFE6] border-2 border-dashed border-[#B8893C]/40 rounded-2xl p-4 text-center space-y-2.5">
             <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#B8893C] block">
               Your Unique Order ID
             </span>
-            <div className="flex items-center justify-center gap-2">
-              <span className="font-mono text-lg sm:text-xl font-black text-[#031838] tracking-wider select-all bg-white px-3.5 py-1.5 rounded-xl border border-solid border-gray-200 shadow-xs">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 max-w-full">
+              <span className="font-mono text-xs sm:text-sm font-bold text-[#031838] select-all bg-white px-3 py-2 rounded-xl border border-solid border-gray-200 shadow-xs break-all text-center">
                 #{placedOrderId}
               </span>
               <button
                 onClick={handleCopyOrderId}
-                className="px-3 py-2 rounded-xl bg-[#031838] hover:bg-[#031838]/90 text-white text-xs font-bold transition-all shadow-sm cursor-pointer border-none flex items-center gap-1.5 shrink-0"
+                className="px-4 py-2 rounded-xl bg-[#031838] hover:bg-[#031838]/90 text-white text-xs font-bold transition-all shadow-sm cursor-pointer border-none flex items-center justify-center gap-1.5 shrink-0 active:scale-95"
                 title="Copy Order ID"
               >
                 {copiedId ? <span>✓ Copied!</span> : <span>📋 Copy ID</span>}
@@ -535,8 +535,16 @@ export default function Checkout({ navigateTo, triggerAudio }) {
                     {cartItems.map(item => (
                       <div key={item.id} className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row gap-4 sm:gap-6 relative">
                         {/* Product Image */}
-                        <div className="w-full sm:w-32 h-32 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0">
-                          <img src={item.img || item.image} alt={item.name} className="w-full h-full object-contain" />
+                        <div className="w-full sm:w-32 h-32 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center border border-gray-100">
+                          <img 
+                            src={item.img || item.image || 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300&q=80'} 
+                            alt="" 
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300&q=80';
+                            }}
+                            className="w-full h-full object-cover" 
+                          />
                         </div>
 
                         {/* Product Info */}

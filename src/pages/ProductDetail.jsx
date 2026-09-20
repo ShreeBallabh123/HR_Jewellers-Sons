@@ -1926,45 +1926,45 @@ export default function ProductDetail({
               <div className="p-5 sm:p-6 overflow-y-auto space-y-4 flex-1">
                 
                 {/* 3-Step Milestone Stepper */}
-                <div className="flex items-center justify-between px-2 pt-0.5">
+                <div className="flex items-center justify-between px-1 sm:px-2 pt-0.5">
                   {/* Step 1 */}
-                  <div className="flex flex-col items-center text-center w-28 shrink-0">
-                    <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-[#B8893C] via-[#C8A646] to-[#8C6226] text-white flex items-center justify-center shadow-md ring-4 ring-[#FAF6F0]">
-                      <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-[#181818] text-[#E6C687] text-[10px] font-extrabold flex items-center justify-center border border-[#E6C687] shadow-xs">1</span>
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <div className="flex-1 min-w-0 max-w-[100px] flex flex-col items-center text-center">
+                    <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#B8893C] via-[#C8A646] to-[#8C6226] text-white flex items-center justify-center shadow-md ring-2 sm:ring-4 ring-[#FAF6F0] shrink-0">
+                      <span className="absolute -top-1.5 -left-1.5 w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full bg-[#181818] text-[#E6C687] text-[9px] sm:text-[10px] font-extrabold flex items-center justify-center border border-[#E6C687] shadow-xs">1</span>
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" />
                       </svg>
                     </div>
-                    <span className="text-[11px] sm:text-[12px] font-bold text-[#181818] mt-2 leading-tight font-serif">Pay<br/>Monthly</span>
+                    <span className="text-[10px] sm:text-[12px] font-bold text-[#181818] mt-1.5 sm:mt-2 leading-tight font-serif">Pay<br/>Monthly</span>
                   </div>
 
                   {/* Dotted Connector 1 */}
-                  <div className="flex-1 h-0 border-t-2 border-dashed border-[#DFC9A5] mx-2 -mt-6"></div>
+                  <div className="flex-1 h-0 border-t-2 border-dashed border-[#DFC9A5] mx-1 sm:mx-2 -mt-5 sm:-mt-6 min-w-[12px]"></div>
 
                   {/* Step 2 */}
-                  <div className="flex flex-col items-center text-center w-28 shrink-0">
-                    <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-[#B8893C] via-[#C8A646] to-[#8C6226] text-white flex items-center justify-center shadow-md ring-4 ring-[#FAF6F0]">
-                      <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-[#181818] text-[#E6C687] text-[10px] font-extrabold flex items-center justify-center border border-[#E6C687] shadow-xs">2</span>
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <div className="flex-1 min-w-0 max-w-[100px] flex flex-col items-center text-center">
+                    <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#B8893C] via-[#C8A646] to-[#8C6226] text-white flex items-center justify-center shadow-md ring-2 sm:ring-4 ring-[#FAF6F0] shrink-0">
+                      <span className="absolute -top-1.5 -left-1.5 w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full bg-[#181818] text-[#E6C687] text-[9px] sm:text-[10px] font-extrabold flex items-center justify-center border border-[#E6C687] shadow-xs">2</span>
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.386l4.41-2.585c.827-.486 1.054-1.567.355-2.266L11.16 3.659A2.25 2.25 0 009.568 3z" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
                       </svg>
                     </div>
-                    <span className="text-[11px] sm:text-[12px] font-bold text-[#181818] mt-2 leading-tight font-serif">Get Special<br/>Discounts</span>
+                    <span className="text-[10px] sm:text-[12px] font-bold text-[#181818] mt-1.5 sm:mt-2 leading-tight font-serif">Get Special<br/>Discounts</span>
                   </div>
 
                   {/* Dotted Connector 2 */}
-                  <div className="flex-1 h-0 border-t-2 border-dashed border-[#DFC9A5] mx-2 -mt-6"></div>
+                  <div className="flex-1 h-0 border-t-2 border-dashed border-[#DFC9A5] mx-1 sm:mx-2 -mt-5 sm:-mt-6 min-w-[12px]"></div>
 
                   {/* Step 3 */}
-                  <div className="flex flex-col items-center text-center w-28 shrink-0">
-                    <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-[#B8893C] via-[#C8A646] to-[#8C6226] text-white flex items-center justify-center shadow-md ring-4 ring-[#FAF6F0]">
-                      <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-[#181818] text-[#E6C687] text-[10px] font-extrabold flex items-center justify-center border border-[#E6C687] shadow-xs">3</span>
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <div className="flex-1 min-w-0 max-w-[100px] flex flex-col items-center text-center">
+                    <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#B8893C] via-[#C8A646] to-[#8C6226] text-white flex items-center justify-center shadow-md ring-2 sm:ring-4 ring-[#FAF6F0] shrink-0">
+                      <span className="absolute -top-1.5 -left-1.5 w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full bg-[#181818] text-[#E6C687] text-[9px] sm:text-[10px] font-extrabold flex items-center justify-center border border-[#E6C687] shadow-xs">3</span>
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                       </svg>
                     </div>
-                    <span className="text-[11px] sm:text-[12px] font-bold text-[#181818] mt-2 leading-tight font-serif">Redeem &amp;<br/>Purchase</span>
+                    <span className="text-[10px] sm:text-[12px] font-bold text-[#181818] mt-1.5 sm:mt-2 leading-tight font-serif">Redeem &amp;<br/>Purchase</span>
                   </div>
                 </div>
 

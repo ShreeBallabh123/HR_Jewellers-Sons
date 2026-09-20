@@ -71,9 +71,13 @@ export default function CartDrawer({ isOpen, onClose, navigateTo }) {
                   {/* Thumbnail */}
                   <div className="w-20 h-20 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center border border-gray-100">
                     <img 
-                      src={item.img || item.image} 
-                      alt={item.name} 
-                      className="w-full h-full object-contain mix-blend-multiply" 
+                      src={item.img || item.image || 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300&q=80'} 
+                      alt="" 
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300&q=80';
+                      }}
+                      className="w-full h-full object-cover" 
                     />
                   </div>
 

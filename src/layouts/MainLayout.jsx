@@ -61,29 +61,31 @@ export default function MainLayout({
 
   return (
     <div className="font-sans min-h-screen relative overflow-x-clip bg-[#FBF9FF] text-[#4A126D] selection:bg-[#4A126D]/10 selection:text-[#4A126D]">
-      {/* Navigation Header */}
-      <Navbar
-        currentPage={currentPage}
-        navigateTo={navigateTo}
-        changeCategoryTab={changeCategoryTab}
-        soundEnabled={soundEnabled}
-        toggleSound={toggleSound}
-        triggerAudio={triggerAudio}
-        setConsultationModal={setConsultationModal}
-        setCoinPurityTab={setCoinPurityTab}
-        setCoinWeightFilter={setCoinWeightFilter}
-        setMetalFilter={setMetalFilter}
-        setMaxPriceFilter={setMaxPriceFilter}
-        navigateToPDP={navigateToPDP}
-        genderFilter={genderFilter}
-        setGenderFilter={setGenderFilter}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        openCustomerAccount={openCustomerAccount}
-      />
+      {/* Navigation Header (Distraction-free checkout mode hides main header) */}
+      {currentPage !== 'checkout' && (
+        <Navbar
+          currentPage={currentPage}
+          navigateTo={navigateTo}
+          changeCategoryTab={changeCategoryTab}
+          soundEnabled={soundEnabled}
+          toggleSound={toggleSound}
+          triggerAudio={triggerAudio}
+          setConsultationModal={setConsultationModal}
+          setCoinPurityTab={setCoinPurityTab}
+          setCoinWeightFilter={setCoinWeightFilter}
+          setMetalFilter={setMetalFilter}
+          setMaxPriceFilter={setMaxPriceFilter}
+          navigateToPDP={navigateToPDP}
+          genderFilter={genderFilter}
+          setGenderFilter={setGenderFilter}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          openCustomerAccount={openCustomerAccount}
+        />
+      )}
 
       {/* Main Content Area */}
-      <div className="pt-[116px] lg:pt-[150px]">
+      <div className={currentPage === 'checkout' ? 'pt-0' : 'pt-[116px] lg:pt-[150px]'}>
         {children}
       </div>
 
@@ -113,31 +115,33 @@ export default function MainLayout({
         </a>
       </div>
 
-      {/* Footer Details */}
-      <div className="w-full">
-        <Footer
-          navigateTo={navigateTo}
-          handleCategoryNav={(cat) => {
-            if (cat === 'silver-earrings') {
-              if (typeof setMetalFilter === 'function') setMetalFilter('silver');
-              changeCategoryTab('Earrings');
-            } else if (cat === 'silver') {
-              if (typeof setMetalFilter === 'function') setMetalFilter('silver');
-              changeCategoryTab('Collections');
-            } else if (cat === 'gold') {
-              if (typeof setMetalFilter === 'function') setMetalFilter('gold');
-              changeCategoryTab('Collections');
-            } else if (cat === 'platinum') {
-              if (typeof setMetalFilter === 'function') setMetalFilter('platinum');
-              changeCategoryTab('Collections');
-            } else {
-              changeCategoryTab(cat.charAt(0).toUpperCase() + cat.slice(1));
-            }
-            navigateTo('collections');
-          }}
-          triggerAudio={triggerAudio}
-        />
-      </div>
+      {/* Footer Details (Hidden on dedicated checkout flow) */}
+      {currentPage !== 'checkout' && (
+        <div className="w-full">
+          <Footer
+            navigateTo={navigateTo}
+            handleCategoryNav={(cat) => {
+              if (cat === 'silver-earrings') {
+                if (typeof setMetalFilter === 'function') setMetalFilter('silver');
+                changeCategoryTab('Earrings');
+              } else if (cat === 'silver') {
+                if (typeof setMetalFilter === 'function') setMetalFilter('silver');
+                changeCategoryTab('Collections');
+              } else if (cat === 'gold') {
+                if (typeof setMetalFilter === 'function') setMetalFilter('gold');
+                changeCategoryTab('Collections');
+              } else if (cat === 'platinum') {
+                if (typeof setMetalFilter === 'function') setMetalFilter('platinum');
+                changeCategoryTab('Collections');
+              } else {
+                changeCategoryTab(cat.charAt(0).toUpperCase() + cat.slice(1));
+              }
+              navigateTo('collections');
+            }}
+            triggerAudio={triggerAudio}
+          />
+        </div>
+      )}
 
       {/* Customer Account, Order History, Live Tracking & Reorder Modal */}
       <CustomerAccountModal
