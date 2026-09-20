@@ -4,6 +4,42 @@ import { bookingApi } from '../api/booking.api';
 import { requestAndSaveToken } from '../utils/notifications';
 import { StorageService } from '../services/StorageService';
 
+const loadRazorpaySDK = () => {
+  return new Promise((resolve) => {
+    if (typeof window !== 'undefined' && window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const existing = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+    if (existing) {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      existing.addEventListener('load', () => resolve(true));
+      existing.addEventListener('error', () => resolve(false));
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if (window.Razorpay) {
+          clearInterval(interval);
+          resolve(true);
+        } else if (attempts > 30) {
+          clearInterval(interval);
+          resolve(Boolean(window.Razorpay));
+        }
+      }, 100);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 export default function Checkout({ navigateTo, triggerAudio }) {
   const { cartItems, cartTotal, handleUpdateQuantity, handleRemoveFromCart, clearCart } = useCart();
 
@@ -39,13 +75,7 @@ export default function Checkout({ navigateTo, triggerAudio }) {
   const [copiedId, setCopiedId] = useState(false);
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
+    loadRazorpaySDK();
   }, []);
 
   const handleCopyOrderId = () => {
@@ -93,11 +123,13 @@ export default function Checkout({ navigateTo, triggerAudio }) {
 
   const handleRazorpayPayment = async () => {
     if (cartItems.length === 0) return;
-    if (!window.Razorpay) {
-      alert("Razorpay payment gateway failed to load. Please check your internet connection.");
+    setSubmittingOrder(true);
+    const isReady = await loadRazorpaySDK();
+    if (!isReady || !window.Razorpay) {
+      setSubmittingOrder(false);
+      alert("Razorpay payment gateway could not be loaded. Please check your internet connection and try again.");
       return;
     }
-    setSubmittingOrder(true);
     try {
       const orderTotalAmount = cartTotal;
       if (!orderTotalAmount || isNaN(orderTotalAmount) || orderTotalAmount <= 0) {
