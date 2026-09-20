@@ -10,9 +10,6 @@ import BookingForm from '../forms/BookingForm';
 import banner1 from '../assets/banner_1.png';
 import banner2 from '../assets/banner_2.webp';
 
-const ITEMS_PER_PAGE = 12;
-
-
 function BannerCarousel({ banners }) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -55,6 +52,277 @@ function BannerCarousel({ banners }) {
   );
 }
 
+// -------------------------------------------------------------
+// Granular, Collision-Free Category & Metal Matchers
+// -------------------------------------------------------------
+function isProductSilver(p) {
+  const catType = String(p.categoryType || '').toLowerCase();
+  const metal = String(p.metal || '').toLowerCase();
+  const metalType = String(p.metalType || '').toLowerCase();
+  const metalColor = String(p.metalColor || '').toLowerCase();
+  const carat = String(p.carat || p.metalPurity || p.goldPurity || p.silverPurity || '').toLowerCase();
+  const cat = String(p.category || '').toLowerCase();
+  const subCat = String(p.subCategory || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+  const desc = String(p.desc || p.description || '').toLowerCase();
+
+  return (
+    catType.includes('silver') ||
+    metal.includes('silver') ||
+    metalType.includes('silver') ||
+    metalColor.includes('silver') ||
+    carat.includes('925') ||
+    carat.includes('92.5') ||
+    carat.includes('999') ||
+    cat.includes('silver') ||
+    subCat.includes('silver') ||
+    name.includes('silver') ||
+    desc.includes('silver') ||
+    desc.includes('925')
+  );
+}
+
+function isProductGold(p) {
+  if (isProductSilver(p)) return false;
+  const catType = String(p.categoryType || '').toLowerCase();
+  const metal = String(p.metal || '').toLowerCase();
+  const metalType = String(p.metalType || '').toLowerCase();
+  const metalColor = String(p.metalColor || '').toLowerCase();
+  const carat = String(p.carat || p.metalPurity || p.goldPurity || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+
+  if (metal.includes('platinum') || metalType.includes('platinum') || catType.includes('platinum') || name.includes('platinum')) {
+    return false;
+  }
+
+  return (
+    catType === 'gold' ||
+    metal.includes('gold') ||
+    metalColor.includes('gold') ||
+    carat.includes('k') ||
+    carat.includes('kt') ||
+    carat.includes('916') ||
+    carat.includes('750') ||
+    carat.includes('585') ||
+    (!catType && !metal && !metalType)
+  );
+}
+
+function isProductPlatinum(p) {
+  const catType = String(p.categoryType || '').toLowerCase();
+  const metal = String(p.metal || '').toLowerCase();
+  const metalType = String(p.metalType || '').toLowerCase();
+  const metalColor = String(p.metalColor || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+  const carat = String(p.carat || '').toLowerCase();
+
+  return (
+    catType.includes('platinum') ||
+    metal.includes('platinum') ||
+    metalType.includes('platinum') ||
+    metalColor.includes('platinum') ||
+    name.includes('platinum') ||
+    carat.includes('950')
+  );
+}
+
+function isProductDiamond(p) {
+  const stone = String(p.stone || p.gemstone || p.diamondShape || '').toLowerCase();
+  const clarity = String(p.diamondClarity || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+  const desc = String(p.desc || p.description || '').toLowerCase();
+  return stone.includes('diamond') || clarity.length > 0 || name.includes('diamond') || desc.includes('diamond');
+}
+
+function isProductEarring(p) {
+  const cat = String(p.category || '').toLowerCase();
+  const subCat = String(p.subCategory || '').toLowerCase();
+  const catType = String(p.categoryType || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+
+  // Guard against chains, necklaces, or finger rings incorrectly matched
+  if ((name.includes('chain') || name.includes('necklace') || name.includes('longset')) && !name.includes('earring') && !name.includes('jhumk')) {
+    return false;
+  }
+
+  if (cat.includes('earring') || subCat.includes('earring') || catType.includes('earring')) {
+    return true;
+  }
+
+  return (
+    name.includes('earring') ||
+    name.includes('ear ring') ||
+    name.includes('jhumk') ||
+    name.includes('jhumka') ||
+    name.includes('stud') ||
+    name.includes('bali') ||
+    name.includes('tops') ||
+    name.includes('sui dhaga') ||
+    name.includes('hoop') ||
+    name.includes('tassel drop earring')
+  );
+}
+
+function isProductRing(p) {
+  const cat = String(p.category || '').toLowerCase();
+  const subCat = String(p.subCategory || '').toLowerCase();
+  const catType = String(p.categoryType || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+
+  // Guard against earrings with "ring" in word
+  if (cat.includes('earring') || subCat.includes('earring') || isProductEarring(p)) {
+    return false;
+  }
+  if (cat.includes('nose') || name.includes('nose') || name.includes('nath')) {
+    return false;
+  }
+
+  if (cat === 'rings' || cat === 'ring' || subCat === 'rings' || subCat === 'ring' || catType === 'rings' || catType === 'ring') {
+    return true;
+  }
+
+  return (
+    name.includes('ring') ||
+    name.includes('anguthi') ||
+    name.includes('band') ||
+    name.includes('solitaire ring') ||
+    name.includes('cocktail ring')
+  );
+}
+
+function isProductNecklaceOrChain(p) {
+  const cat = String(p.category || '').toLowerCase();
+  const subCat = String(p.subCategory || '').toLowerCase();
+  const catType = String(p.categoryType || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+
+  if (cat.includes('necklace') || cat.includes('chain') || subCat.includes('necklace') || subCat.includes('chain') || catType.includes('necklace') || catType.includes('chain')) {
+    return true;
+  }
+
+  return (
+    name.includes('necklace') ||
+    name.includes('chain') ||
+    name.includes('choker') ||
+    name.includes('haar') ||
+    name.includes('kanthla') ||
+    name.includes('longset') ||
+    name.includes('chain set') ||
+    name.includes('necklace set')
+  );
+}
+
+function isProductPendant(p) {
+  const cat = String(p.category || '').toLowerCase();
+  const subCat = String(p.subCategory || '').toLowerCase();
+  const catType = String(p.categoryType || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+
+  return (
+    cat.includes('pendant') ||
+    subCat.includes('pendant') ||
+    catType.includes('pendant') ||
+    name.includes('pendant') ||
+    name.includes('locket')
+  );
+}
+
+function isProductBangle(p) {
+  const cat = String(p.category || '').toLowerCase();
+  const subCat = String(p.subCategory || '').toLowerCase();
+  const catType = String(p.categoryType || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+
+  return (
+    cat.includes('bangle') ||
+    subCat.includes('bangle') ||
+    catType.includes('bangle') ||
+    name.includes('bangle') ||
+    name.includes('kada') ||
+    name.includes('chuda')
+  );
+}
+
+function isProductBracelet(p) {
+  const cat = String(p.category || '').toLowerCase();
+  const subCat = String(p.subCategory || '').toLowerCase();
+  const catType = String(p.categoryType || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+
+  return (
+    cat.includes('bracelet') ||
+    subCat.includes('bracelet') ||
+    catType.includes('bracelet') ||
+    name.includes('bracelet')
+  );
+}
+
+function isProductMangalsutra(p) {
+  const cat = String(p.category || '').toLowerCase();
+  const subCat = String(p.subCategory || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+
+  return (
+    cat.includes('mangalsutra') ||
+    subCat.includes('mangalsutra') ||
+    name.includes('mangalsutra')
+  );
+}
+
+function isProductAnklet(p) {
+  const cat = String(p.category || '').toLowerCase();
+  const subCat = String(p.subCategory || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+
+  return (
+    cat.includes('anklet') ||
+    subCat.includes('anklet') ||
+    cat.includes('payal') ||
+    name.includes('anklet') ||
+    name.includes('payal')
+  );
+}
+
+function isProductNosePin(p) {
+  const cat = String(p.category || '').toLowerCase();
+  const subCat = String(p.subCategory || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+
+  return (
+    cat.includes('nose') ||
+    subCat.includes('nose') ||
+    name.includes('nose pin') ||
+    name.includes('nath') ||
+    name.includes('laung')
+  );
+}
+
+function isProductSolitaire(p) {
+  const cat = String(p.category || '').toLowerCase();
+  const subCat = String(p.subCategory || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+
+  return (
+    cat.includes('solitaire') ||
+    subCat.includes('solitaire') ||
+    name.includes('solitaire')
+  );
+}
+
+function isProductKids(p) {
+  const cat = String(p.category || '').toLowerCase();
+  const subCat = String(p.subCategory || '').toLowerCase();
+  const name = String(p.name || '').toLowerCase();
+
+  return (
+    cat.includes('kid') ||
+    subCat.includes('kid') ||
+    cat.includes('baby') ||
+    name.includes('kid') ||
+    name.includes('baby')
+  );
+}
+
 export default function Collections({
   activeCategoryTab: initialCategoryTab = 'Collections',
   setActiveCategoryTab: onCategoryTabChange,
@@ -71,7 +339,7 @@ export default function Collections({
   navigateToPDP,
   triggerAudio: triggerAudioProp,
 }) {
-  // Data from context — no prop drilling
+  // Data from context
   const { products = [], categories = [], loading: catalogLoading } = useProducts();
   const { wishlistItems = [], toggleWishlist } = useWishlist();
   const { calculatePrice } = useRates();
@@ -81,10 +349,10 @@ export default function Collections({
 
   const metalTypeOptions = [
     { id: 'gold', label: 'GOLD', icon: '🥇', bg: 'linear-gradient(135deg, #FFF8E7, #FFF0B3)', border: '#C8960C', text: '#A07820' },
+    { id: 'silver', label: 'ALL SILVER', icon: '🥈', bg: 'linear-gradient(135deg, #F8FAFC, #E2E8F0)', border: '#94A3B8', text: '#475569' },
     { id: '925 silver', label: '925 SILVER', icon: '🥈', bg: 'linear-gradient(135deg, #F0F4F8, #D9E2EC)', border: '#627D98', text: '#334E68' },
     { id: 'normal silver', label: 'NORMAL SILVER', icon: '🪙', bg: 'linear-gradient(135deg, #F7FAFC, #E2E8F0)', border: '#718096', text: '#4A5568' },
     { id: '999 silver', label: '999 SILVER', icon: '🌟', bg: 'linear-gradient(135deg, #F0FFF4, #C6F6D5)', border: '#38A169', text: '#22543D' },
-    { id: 'silver', label: 'ALL SILVER', icon: '🥈', bg: 'linear-gradient(135deg, #F8FAFC, #E2E8F0)', border: '#94A3B8', text: '#475569' },
     { id: 'rose gold', label: 'ROSE GOLD', icon: '🌸', bg: 'linear-gradient(135deg, #FFF5F5, #FED7D7)', border: '#E53E3E', text: '#9B2C2C' },
     { id: 'white gold', label: 'WHITE GOLD', icon: '⚪', bg: 'linear-gradient(135deg, #F7FAFC, #EDF2F7)', border: '#A0AEC0', text: '#4A5568' },
     { id: 'platinum', label: 'PLATINUM', icon: '💎', bg: 'linear-gradient(135deg, #FAF5FF, #E9D8FD)', border: '#805AD5', text: '#553C9A' },
@@ -103,48 +371,122 @@ export default function Collections({
     'Plain Gold'
   ];
 
-  // All filter state (self-contained)
-  const [activeCategoryTab, setActiveCategoryTab] = useState(initialCategoryTab);
+  // All filter state (self-contained with 2-way sync)
+  const [activeCategoryTab, setActiveCategoryTab] = useState(initialCategoryTab || 'Collections');
   const [metalFilter, setMetalFilter] = useState(externalMetalFilter || 'all');
   const [purityFilter, setPurityFilter] = useState(externalPurityFilter || 'all');
   const [maxPriceFilter, setMaxPriceFilter] = useState(externalMaxPrice || 100000000);
   const [priceFilter, setPriceFilter] = useState('all');
-  const [typeFilter, setTypeFilter] = useState('all');
   const [genderFilter, setGenderFilter] = useState(externalGenderFilter || 'all');
   const [stoneFilter, setStoneFilter] = useState('all');
   const [occasionFilter, setOccasionFilter] = useState('all');
   const [sortFilter, setSortFilter] = useState('popularity');
-  const [collectionsPage, setCollectionsPage] = useState(1);
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [customDesignOpen, setCustomDesignOpen] = useState(false);
   const [consultationModal, setConsultationModal] = useState(false);
   const isCatalogDark = false;
 
-  // Sync external filter props when they change (from nav bar clicks)
+  // Sync external filter props when they change
   useEffect(() => { if (externalMetalFilter !== undefined) setMetalFilter(externalMetalFilter); }, [externalMetalFilter]);
   useEffect(() => { if (externalPurityFilter !== undefined) setPurityFilter(externalPurityFilter); }, [externalPurityFilter]);
   useEffect(() => { if (externalMaxPrice !== undefined) setMaxPriceFilter(externalMaxPrice); }, [externalMaxPrice]);
   useEffect(() => { if (externalGenderFilter !== undefined) setGenderFilter(externalGenderFilter); }, [externalGenderFilter]);
-  useEffect(() => { setActiveCategoryTab(initialCategoryTab); }, [initialCategoryTab]);
+  useEffect(() => { if (initialCategoryTab !== undefined) setActiveCategoryTab(initialCategoryTab); }, [initialCategoryTab]);
 
+  // Synchronized Filter Setters
   const changeCategoryTab = (tab) => {
     setActiveCategoryTab(tab);
-    setCollectionsPage(1);
     onCategoryTabChange?.(tab);
   };
 
-  // Build categoryFilters from Firestore categories + static list
-  const categoryFilters = useMemo(() => {
-    const base = ['Collections', 'Rings', 'Earrings', 'Necklaces', 'Pendants', 'Bangles', 'Bracelets', 'Mangalsutra', 'Anklets', 'Nose Pins', 'Solitaires', 'Kids Jewellery', 'Silver'];
-    const fromDB = (categories || []).map(c => c.name || c.label || c.id).filter(Boolean);
-    return [...new Set([...base, ...fromDB])];
-  }, [categories]);
+  const handleSetMetalFilter = (val) => {
+    const nextVal = val === metalFilter ? 'all' : val;
+    setMetalFilter(nextVal);
+    setExternalMetalFilter?.(nextVal);
+    // Reset purity filter if incompatible
+    setPurityFilter('all');
+    setExternalPurityFilter?.('all');
+  };
 
+  const handleSetPurityFilter = (val) => {
+    const nextVal = val === purityFilter ? 'all' : val;
+    setPurityFilter(nextVal);
+    setExternalPurityFilter?.(nextVal);
+  };
+
+  const handleSetGenderFilter = (val) => {
+    const nextVal = val === genderFilter ? 'all' : val;
+    setGenderFilter(nextVal);
+    setExternalGenderFilter?.(nextVal);
+  };
+
+  const resetAllFilters = () => {
+    triggerAudio('click');
+    setActiveCategoryTab('Collections');
+    onCategoryTabChange?.('Collections');
+    setMetalFilter('all');
+    setExternalMetalFilter?.('all');
+    setPurityFilter('all');
+    setExternalPurityFilter?.('all');
+    setMaxPriceFilter(100000000);
+    setExternalMaxPrice?.(100000000);
+    setPriceFilter('all');
+    setGenderFilter('all');
+    setExternalGenderFilter?.('all');
+    setStoneFilter('all');
+    setOccasionFilter('all');
+  };
+
+  // Primary Category options list
+  const primaryCategories = useMemo(() => [
+    { id: 'Collections', label: 'All Collections', icon: '✨' },
+    { id: 'Earrings', label: 'Earrings', icon: '💎' },
+    { id: 'Rings', label: 'Rings', icon: '💍' },
+    { id: 'Necklaces', label: 'Necklaces & Chains', icon: '📿' },
+    { id: 'Pendants', label: 'Pendants', icon: '✨' },
+    { id: 'Bangles', label: 'Bangles', icon: '💫' },
+    { id: 'Bracelets', label: 'Bracelets', icon: '✨' },
+    { id: 'Mangalsutra', label: 'Mangalsutra', icon: '👑' },
+    { id: 'Silver', label: 'Silver Collection', icon: '🥈' },
+    { id: 'Solitaires', label: 'Solitaires', icon: '💎' },
+    { id: 'Kids Jewellery', label: 'Kids Jewellery', icon: '👶' },
+  ], []);
+
+  // Determine current metal mode for dynamic purity options
+  const isSilverActive = ['silver', 'all silver', '925 silver', '925 sterling silver', 'normal silver', '999 silver'].includes(metalFilter.toLowerCase());
+  const isPlatinumActive = metalFilter.toLowerCase() === 'platinum';
+
+  const purityOptions = useMemo(() => {
+    if (isSilverActive) {
+      return [
+        { label: 'All Silver Purity', val: 'all' },
+        { label: '925 Sterling Silver (92.5%)', val: '925' },
+        { label: '999 Fine Silver (99.9%)', val: '999' },
+        { label: 'Normal Silver', val: 'normal silver' }
+      ];
+    }
+    if (isPlatinumActive) {
+      return [
+        { label: 'All Platinum', val: 'all' },
+        { label: '950 Platinum', val: '950' }
+      ];
+    }
+    return [
+      { label: 'All Gold Purity', val: 'all' },
+      { label: '14K (58.5%)', val: '14K' },
+      { label: '18K (75.0%)', val: '18K' },
+      { label: '20K (83.3%)', val: '20K' },
+      { label: '22K (91.6%)', val: '22K' },
+      { label: '24K (99.9%)', val: '24K' }
+    ];
+  }, [isSilverActive, isPlatinumActive]);
+
+  // Main Filter Pipeline
   const filteredJewellery = useMemo(() => {
     let result = [...(products || [])].filter(p => p.name && p.name.trim() !== '');
 
-    // 1. Search Query Filter (from Navbar or input)
+    // 1. Search Query Filter
     if (searchQuery && searchQuery.trim() !== '') {
       const q = searchQuery.toLowerCase().trim();
       result = result.filter(p => {
@@ -155,59 +497,70 @@ export default function Collections({
         const metal = String(p.metal || p.metalType || '').toLowerCase();
         const purity = String(p.carat || p.metalPurity || p.goldPurity || p.silverPurity || '').toLowerCase();
         const sku = String(p.sku || '').toLowerCase();
-        return name.includes(q) || cat.includes(q) || subCat.includes(q) || desc.includes(q) || metal.includes(q) || purity.includes(q) || sku.includes(q);
+        return (
+          name.includes(q) ||
+          cat.includes(q) ||
+          subCat.includes(q) ||
+          desc.includes(q) ||
+          metal.includes(q) ||
+          purity.includes(q) ||
+          sku.includes(q)
+        );
       });
     }
 
-    // 2. Active Category Tab Filter
-    if (activeCategoryTab && activeCategoryTab !== 'Collections') {
+    // 2. Category Filter (Clean, Exact, Non-Leaking)
+    if (activeCategoryTab && activeCategoryTab !== 'Collections' && activeCategoryTab !== 'all') {
       const tab = activeCategoryTab.toLowerCase().trim();
       result = result.filter(p => {
+        if (tab === 'silver' || tab === 'silver collection') {
+          return isProductSilver(p);
+        }
+        if (tab === 'silver-earrings' || tab === 'silver earrings') {
+          return isProductSilver(p) && isProductEarring(p);
+        }
+        if (tab === 'earrings' || tab === 'earring') {
+          return isProductEarring(p);
+        }
+        if (tab === 'rings' || tab === 'ring') {
+          return isProductRing(p);
+        }
+        if (tab === 'necklaces' || tab === 'necklace' || tab === 'chains' || tab === 'chain') {
+          return isProductNecklaceOrChain(p);
+        }
+        if (tab === 'pendants' || tab === 'pendant') {
+          return isProductPendant(p);
+        }
+        if (tab === 'bracelets' || tab === 'bracelet') {
+          return isProductBracelet(p);
+        }
+        if (tab === 'bangles' || tab === 'bangle') {
+          return isProductBangle(p);
+        }
+        if (tab === 'mangalsutra' || tab === 'mangalsutras') {
+          return isProductMangalsutra(p);
+        }
+        if (tab === 'anklets' || tab === 'anklet') {
+          return isProductAnklet(p);
+        }
+        if (tab === 'nose pins' || tab === 'nose pin' || tab === 'nosepins') {
+          return isProductNosePin(p);
+        }
+        if (tab === 'solitaires' || tab === 'solitaire') {
+          return isProductSolitaire(p);
+        }
+        if (tab === 'kids jewellery' || tab === 'kids') {
+          return isProductKids(p);
+        }
+
         const cat = String(p.category || '').toLowerCase();
         const subCat = String(p.subCategory || '').toLowerCase();
         const name = String(p.name || '').toLowerCase();
-        const catType = String(p.categoryType || '').toLowerCase();
-        const metal = String(p.metal || '').toLowerCase();
-        const metalType = String(p.metalType || '').toLowerCase();
-        const carat = String(p.carat || p.metalPurity || p.goldPurity || p.silverPurity || '').toLowerCase();
-
-        const isSilverProd = catType.includes('silver') || metal.includes('silver') || metalType.includes('silver') ||
-                             carat.includes('925') || carat.includes('92.5') || carat.includes('999') ||
-                             cat.includes('silver') || subCat.includes('silver') || name.includes('silver');
-
-        if (tab === 'silver') {
-          return isSilverProd;
-        }
-
-        if (tab === 'silver-earrings' || tab === 'silver earrings') {
-          const isEarring = cat.includes('earring') || subCat.includes('earring') || name.includes('earring') || 
-                            catType.includes('earring') || /jhumk/i.test(name) || /stud/i.test(name) || 
-                            /bali/i.test(name) || /drop/i.test(name) || /hoop/i.test(name) || /jhumk/i.test(subCat);
-          return isEarring && isSilverProd;
-        }
-
-        if (tab === 'earrings' || tab === 'earring') {
-          return cat.includes('earring') || subCat.includes('earring') || name.includes('earring') || 
-                 catType.includes('earring') || /jhumk/i.test(name) || /stud/i.test(name) || 
-                 /bali/i.test(name) || /drop/i.test(name) || /hoop/i.test(name) || /jhumk/i.test(subCat);
-        }
-
-        if (tab === 'necklace' || tab === 'necklaces') {
-          return cat.includes('necklace') || subCat.includes('necklace') || name.includes('necklace') || catType.includes('necklace') || /chain/i.test(name) || /choker/i.test(name) || /haar/i.test(name);
-        }
-
-        if (tab === 'bracelets' || tab === 'bracelet') {
-          return cat.includes('bracelet') || subCat.includes('bracelet') || name.includes('bracelet') || catType.includes('bracelet');
-        }
-
-        if (tab === 'bangles' || tab === 'bangle') {
-          return cat.includes('bangle') || subCat.includes('bangle') || name.includes('bangle') || catType.includes('bangle') || /kada/i.test(name);
-        }
-
-        return cat.includes(tab) || subCat.includes(tab) || name.includes(tab) || catType.includes(tab);
+        return cat.includes(tab) || subCat.includes(tab) || name.includes(tab);
       });
     }
 
+    // 3. Metal Filter
     if (metalFilter !== 'all') {
       const mf = metalFilter.toLowerCase().trim();
       result = result.filter(p => {
@@ -216,27 +569,24 @@ export default function Collections({
         const metalType = String(p.metalType || '').toLowerCase();
         const metalColor = String(p.metalColor || '').toLowerCase();
         const carat = String(p.carat || p.goldPurity || p.metalPurity || p.silverPurity || '').toLowerCase();
-        const cat = String(p.category || '').toLowerCase();
         const name = String(p.name || '').toLowerCase();
 
-        const isProductSilver = catType.includes('silver') || metal.includes('silver') || metalType.includes('silver') || 
-                                metalColor.includes('silver') || carat.includes('925') || carat.includes('92.5') || 
-                                carat.includes('999') || cat.includes('silver') || name.includes('silver');
+        const isSilver = isProductSilver(p);
 
         if (mf === 'silver' || mf === 'all silver' || mf === 'silver (all)') {
-          return isProductSilver;
+          return isSilver;
         }
         if (mf === '925 silver' || mf === '925 sterling silver' || mf === '925' || mf === '92.5') {
-          return catType.includes('925') || carat.includes('925') || carat.includes('92.5') || name.includes('925') || metal.includes('925') || metalType.includes('925');
+          return isSilver && (catType.includes('925') || carat.includes('925') || carat.includes('92.5') || name.includes('925') || metal.includes('925') || metalType.includes('925'));
         }
         if (mf === '999 silver' || mf === '999') {
-          return catType.includes('999') || carat.includes('999') || name.includes('999') || metal.includes('999') || metalType.includes('999');
+          return isSilver && (catType.includes('999') || carat.includes('999') || name.includes('999') || metal.includes('999') || metalType.includes('999'));
         }
         if (mf === 'normal silver') {
-          return catType.includes('normal silver') || (isProductSilver && !catType.includes('925') && !carat.includes('925') && !carat.includes('92.5') && !catType.includes('999') && !carat.includes('999'));
+          return isSilver && !carat.includes('925') && !carat.includes('92.5') && !carat.includes('999') && !catType.includes('925') && !catType.includes('999');
         }
         if (mf === 'gold' || mf === 'plain gold') {
-          return !isProductSilver && (catType === 'gold' || metal.includes('gold') || metalColor.includes('gold') || carat.includes('k') || carat.includes('kt') || (!catType && !metal && !metalType));
+          return isProductGold(p);
         }
         if (mf === 'rose gold') {
           return metalColor.includes('rose') || metal.includes('rose') || name.includes('rose');
@@ -245,40 +595,75 @@ export default function Collections({
           return metalColor.includes('white') || metal.includes('white') || name.includes('white');
         }
         if (mf === 'platinum') {
-          return metalColor.includes('platinum') || metal.includes('platinum') || name.includes('platinum');
+          return isProductPlatinum(p);
         }
         return catType.includes(mf) || metal.includes(mf) || metalType.includes(mf) || metalColor.includes(mf) || name.includes(mf);
       });
     }
 
+    // 4. Purity Filter
     if (purityFilter !== 'all') {
       const pf = purityFilter.toLowerCase().replace(/kt$/i, 'k').replace(/k$/i, '');
       result = result.filter(p => {
         const carat = String(p.carat || p.goldPurity || p.purity || p.metalPurity || p.silverPurity || '').toLowerCase().replace(/kt$/i, 'k').replace(/k$/i, '');
-        return carat.includes(pf);
+        const catType = String(p.categoryType || '').toLowerCase();
+        const name = String(p.name || '').toLowerCase();
+        return carat.includes(pf) || catType.includes(pf) || name.includes(pf);
       });
     }
 
-    if (maxPriceFilter < 100000000) result = result.filter(p => calculatePrice(p).total <= maxPriceFilter);
-    if (stoneFilter !== 'all') result = result.filter(p => String(p.stone || p.gemstone || p.diamondShape || '').toLowerCase().includes(stoneFilter.toLowerCase()));
-    if (genderFilter !== 'all') result = result.filter(p => String(p.gender || '').toLowerCase().includes(genderFilter.toLowerCase()));
-    if (occasionFilter !== 'all') result = result.filter(p => String(p.occasion || '').toLowerCase().includes(occasionFilter.toLowerCase()));
-    switch (sortFilter) {
-      case 'price_low': result.sort((a, b) => calculatePrice(a).total - calculatePrice(b).total); break;
-      case 'price_high': result.sort((a, b) => calculatePrice(b).total - calculatePrice(a).total); break;
-      case 'newest': result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)); break;
-      default: break;
+    // 5. Price, Stone, Gender, Occasion
+    if (maxPriceFilter < 100000000) {
+      result = result.filter(p => calculatePrice(p).total <= maxPriceFilter);
     }
+    if (stoneFilter !== 'all') {
+      result = result.filter(p => String(p.stone || p.gemstone || p.diamondShape || '').toLowerCase().includes(stoneFilter.toLowerCase()));
+    }
+    if (genderFilter !== 'all') {
+      result = result.filter(p => String(p.gender || '').toLowerCase().includes(genderFilter.toLowerCase()));
+    }
+    if (occasionFilter !== 'all') {
+      result = result.filter(p => String(p.occasion || '').toLowerCase().includes(occasionFilter.toLowerCase()));
+    }
+
+    // 6. Sorting
+    switch (sortFilter) {
+      case 'price_low':
+        result.sort((a, b) => calculatePrice(a).total - calculatePrice(b).total);
+        break;
+      case 'price_high':
+        result.sort((a, b) => calculatePrice(b).total - calculatePrice(a).total);
+        break;
+      case 'newest':
+        result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        break;
+      default:
+        break;
+    }
+
     return result;
-  }, [products, searchQuery, activeCategoryTab, metalFilter, purityFilter, maxPriceFilter, stoneFilter, genderFilter, occasionFilter, sortFilter, calculatePrice]);
+  }, [
+    products,
+    searchQuery,
+    activeCategoryTab,
+    metalFilter,
+    purityFilter,
+    maxPriceFilter,
+    stoneFilter,
+    genderFilter,
+    occasionFilter,
+    sortFilter,
+    calculatePrice
+  ]);
 
-  const totalPages = 1;
-  const paginatedProducts = useMemo(() => {
-    return filteredJewellery;
-  }, [filteredJewellery]);
-
-  // Reset to page 1 when filters change
-  useEffect(() => { setCollectionsPage(1); }, [activeCategoryTab, metalFilter, purityFilter, maxPriceFilter, stoneFilter, genderFilter, occasionFilter, sortFilter]);
+  const hasActiveFilters =
+    (activeCategoryTab && activeCategoryTab !== 'Collections') ||
+    metalFilter !== 'all' ||
+    purityFilter !== 'all' ||
+    priceFilter !== 'all' ||
+    genderFilter !== 'all' ||
+    stoneFilter !== 'all' ||
+    occasionFilter !== 'all';
 
   const formatPrice = (price) => {
     if (price === undefined || price === null) return '0';
@@ -288,18 +673,18 @@ export default function Collections({
   return (
     <>
       {/* SORT + FILTER STICKY BAR FOR MOBILE ONLY */}
-
       <div className={`lg:hidden fixed bottom-0 left-0 w-full z-30 border-t flex items-center justify-center shadow-[0_-4px_20px_rgba(0,0,0,0.12)] backdrop-blur-md transition-colors duration-500 ${isCatalogDark
         ? "bg-[#1D0E29]/95 border-gold/15 text-white shadow-2xl"
         : "bg-[#FCFAFF]/95 border-[#DDA0DD]/20 text-[#4A126D]"
         }`}>
-        {/* Pincode */}
+        {/* Reset / Status */}
         <button
+          onClick={resetAllFilters}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[9px] font-bold uppercase tracking-widest border-r bg-transparent border-none active:bg-black/5 transition-colors ${isCatalogDark ? "border-gold/15 text-white active:bg-white/5" : "border-[#DDA0DD]/20 text-[#4A126D] active:bg-black/5"
             }`}
         >
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-          Pincode
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.5" /></svg>
+          Reset
         </button>
         {/* Sort */}
         <button
@@ -317,7 +702,7 @@ export default function Collections({
             }`}
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
-          Filter
+          Filter {hasActiveFilters && '●'}
         </button>
       </div>
 
@@ -339,7 +724,6 @@ export default function Collections({
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
               className="fixed bottom-0 left-0 right-0 z-[61] bg-white rounded-t-2xl shadow-2xl max-h-[50vh] overflow-hidden"
             >
-              {/* Drag handle */}
               <div className="flex justify-center pt-2 pb-1">
                 <div className="w-10 h-1 rounded-full bg-gray-300" />
               </div>
@@ -391,7 +775,6 @@ export default function Collections({
               className="fixed bottom-0 left-0 right-0 z-[61] bg-white rounded-t-2xl shadow-2xl flex flex-col"
               style={{ maxHeight: '85vh' }}
             >
-              {/* Drag handle */}
               <div className="flex justify-center pt-2 pb-1 shrink-0">
                 <div className="w-10 h-1 rounded-full bg-gray-300" />
               </div>
@@ -403,7 +786,7 @@ export default function Collections({
                 </h3>
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={() => { setMetalFilter('all'); setPurityFilter('all'); setMaxPriceFilter(100000000); setPriceFilter('all'); setTypeFilter('all'); setGenderFilter('all'); setStoneFilter('all'); setOccasionFilter('all'); }}
+                    onClick={resetAllFilters}
                     className="text-[8px] uppercase tracking-widest font-black text-[#DDA0DD] hover:text-[#4A126D] transition-colors cursor-pointer bg-transparent border-none"
                   >
                     Clear All
@@ -417,7 +800,35 @@ export default function Collections({
               {/* Scrollable Filter Body */}
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4 text-left" style={{ scrollbarWidth: 'thin', scrollbarColor: '#DDA0DD transparent' }}>
 
-                {/* METAL TYPE — Quick Select */}
+                {/* 1. CATEGORY */}
+                <div className="border-b border-gray-100 pb-3">
+                  <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Category</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {primaryCategories.map(cat => {
+                      const isActive = activeCategoryTab.toLowerCase() === cat.id.toLowerCase() || (cat.id === 'Collections' && (activeCategoryTab === 'Collections' || !activeCategoryTab));
+                      return (
+                        <button
+                          key={cat.id}
+                          onClick={() => {
+                            triggerAudio('click');
+                            if (cat.id === 'Silver') {
+                              changeCategoryTab('Silver');
+                              handleSetMetalFilter('silver');
+                            } else {
+                              changeCategoryTab(cat.id);
+                            }
+                          }}
+                          className={`px-3 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer border-solid flex items-center gap-1 ${isActive ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}
+                        >
+                          <span>{cat.icon}</span>
+                          <span>{cat.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 2. METAL TYPE */}
                 <div className="border-b border-gray-100 pb-3">
                   <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Metal Type</span>
                   <div className="grid grid-cols-2 gap-2">
@@ -426,14 +837,14 @@ export default function Collections({
                       return (
                         <button
                           key={opt.id}
-                          onClick={() => setMetalFilter(prev => prev === opt.id ? 'all' : opt.id)}
-                          className={`relative flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${isActive ? 'shadow-[0_4px_12px_rgba(0,0,0,0.12)]' : 'border-gray-200 bg-white'}`}
+                          onClick={() => handleSetMetalFilter(opt.id)}
+                          className={`relative flex flex-col items-center justify-center gap-1 py-2 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${isActive ? 'shadow-[0_4px_12px_rgba(0,0,0,0.12)]' : 'border-gray-200 bg-white'}`}
                           style={{
                             borderColor: isActive ? opt.border : '#E5E7EB',
                             background: isActive ? opt.bg : 'white'
                           }}
                         >
-                          <span className="text-xl">{opt.icon}</span>
+                          <span className="text-lg">{opt.icon}</span>
                           <span className="text-[9px] font-extrabold tracking-wide font-sans text-center" style={{ color: isActive ? opt.text : '#6B7280' }}>
                             {opt.label}
                           </span>
@@ -448,7 +859,25 @@ export default function Collections({
                   </div>
                 </div>
 
-                {/* PRICE */}
+                {/* 3. DYNAMIC PURITY */}
+                <div className="border-b border-gray-100 pb-3">
+                  <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">
+                    {isSilverActive ? 'Silver Purity' : isPlatinumActive ? 'Platinum Purity' : 'Gold Purity'}
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {purityOptions.map(p => (
+                      <button
+                        key={p.val}
+                        onClick={() => handleSetPurityFilter(p.val)}
+                        className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer border-solid ${purityFilter === p.val ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 4. PRICE */}
                 <div className="border-b border-gray-100 pb-3">
                   <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Price</span>
                   <div className="space-y-1.5">
@@ -471,9 +900,11 @@ export default function Collections({
                               if (isChecked) {
                                 setPriceFilter('all');
                                 setMaxPriceFilter(100000000);
+                                setExternalMaxPrice?.(100000000);
                               } else {
                                 setPriceFilter(label);
                                 setMaxPriceFilter(val);
+                                setExternalMaxPrice?.(val);
                               }
                             }} 
                             className="accent-[#4A126D] w-3 h-3 cursor-pointer" 
@@ -485,38 +916,12 @@ export default function Collections({
                   </div>
                 </div>
 
-                {/* METAL */}
-                <div className="border-b border-gray-100 pb-3">
-                  <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Metal</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {metalRadioList.map(m => (
-                      <button key={m} onClick={() => setMetalFilter(m.toLowerCase())}
-                        className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer border-solid ${metalFilter === m.toLowerCase() ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
-                        {m}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* GOLD PURITY */}
-                <div className="border-b border-gray-100 pb-3">
-                  <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Gold Purity</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {['All', '14K', '18K', '20K', '22K', '24K'].map(p => (
-                      <button key={p} onClick={() => setPurityFilter(p === 'All' ? 'all' : p)}
-                        className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer border-solid ${purityFilter === (p === 'All' ? 'all' : p) ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
-                        {p}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* GENDER */}
+                {/* 5. GENDER */}
                 <div className="border-b border-gray-100 pb-3">
                   <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Gender</span>
                   <div className="flex flex-wrap gap-1.5">
                     {['All', 'Women', 'Men', 'Unisex'].map(g => (
-                      <button key={g} onClick={() => setGenderFilter(g.toLowerCase())}
+                      <button key={g} onClick={() => handleSetGenderFilter(g.toLowerCase())}
                         className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer border-solid ${genderFilter === g.toLowerCase() ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
                         {g}
                       </button>
@@ -524,7 +929,7 @@ export default function Collections({
                   </div>
                 </div>
 
-                {/* STONES */}
+                {/* 6. STONES */}
                 <div className="border-b border-gray-100 pb-3">
                   <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Stones</span>
                   <div className="flex flex-wrap gap-1.5">
@@ -537,8 +942,8 @@ export default function Collections({
                   </div>
                 </div>
 
-                {/* OCCASION */}
-                <div className="border-b border-gray-100 pb-3">
+                {/* 7. OCCASION */}
+                <div className="pb-3">
                   <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Occasion</span>
                   <div className="flex flex-wrap gap-1.5">
                     {['Everyday Wear', 'Festive', 'Wedding', 'Engagement', 'Anniversary', 'Gifting', 'Workwear', 'Romantic', 'Vacation', 'Special Occasion', 'Valentine'].map(o => (
@@ -547,22 +952,6 @@ export default function Collections({
                         {o}
                       </button>
                     ))}
-                  </div>
-                </div>
-
-                {/* CATEGORY */}
-                <div className="pb-3">
-                  <span className="text-[9px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2">Category</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {categoryFilters.map(cat => {
-                      const isActive = activeCategoryTab === cat;
-                      return (
-                        <button key={cat} onClick={() => changeCategoryTab(cat)}
-                          className={`px-2.5 py-1 rounded-full text-[9px] font-semibold border transition-all cursor-pointer border-solid ${isActive ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#4A126D]'}`}>
-                          {cat}
-                        </button>
-                      );
-                    })}
                   </div>
                 </div>
 
@@ -575,7 +964,7 @@ export default function Collections({
                   className="w-full py-3 rounded-xl bg-[#4A126D] text-white text-[10px] uppercase font-bold tracking-widest shadow-lg hover:bg-[#DDA0DD] transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 border-none font-bold"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                  Apply Filters
+                  Apply Filters ({filteredJewellery.length} items)
                 </button>
               </div>
             </motion.div>
@@ -589,7 +978,38 @@ export default function Collections({
         {/* Full-width Banner Carousel */}
         <BannerCarousel banners={[banner1, banner2]} />
 
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-8 lg:px-12 space-y-4 sm:space-y-12 animate-slide-up pt-4 sm:pt-10">
+        <div className="max-w-[1600px] mx-auto px-3 sm:px-8 lg:px-12 space-y-4 sm:space-y-8 animate-slide-up pt-4 sm:pt-8">
+
+          {/* Top Interactive Category Bar */}
+          <div className="w-full overflow-x-auto no-scrollbar pb-1">
+            <div className="flex items-center gap-2 min-w-max">
+              {primaryCategories.map((cat) => {
+                const isSelected = activeCategoryTab.toLowerCase() === cat.id.toLowerCase() || (cat.id === 'Collections' && (activeCategoryTab === 'Collections' || !activeCategoryTab));
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => {
+                      triggerAudio('click');
+                      if (cat.id === 'Silver') {
+                        changeCategoryTab('Silver');
+                        handleSetMetalFilter('silver');
+                      } else {
+                        changeCategoryTab(cat.id);
+                      }
+                    }}
+                    className={`flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 cursor-pointer border select-none ${
+                      isSelected
+                        ? 'bg-[#4A126D] text-white border-[#4A126D] shadow-md scale-105'
+                        : 'bg-white text-gray-700 border-gray-200 hover:border-[#4A126D]/50 hover:text-[#4A126D]'
+                    }`}
+                  >
+                    <span>{cat.icon}</span>
+                    <span>{cat.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Split Layout: Sidebar Filters (left) & Products Grid (right) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-6 lg:gap-8 items-start text-left">
@@ -603,7 +1023,7 @@ export default function Collections({
                   <span className="text-[10px] sm:text-sm">✨</span> Filters
                 </h3>
                 <button
-                  onClick={() => { setMetalFilter('all'); setPurityFilter('all'); setMaxPriceFilter(100000000); setPriceFilter('all'); setTypeFilter('all'); setGenderFilter('all'); setStoneFilter('all'); setOccasionFilter('all'); }}
+                  onClick={resetAllFilters}
                   className="text-[7px] sm:text-[9px] uppercase tracking-widest font-black text-[#DDA0DD] hover:text-[#4A126D] transition-colors cursor-pointer border border-solid border-[#DDA0DD]/30 rounded-md sm:rounded-lg px-1.5 sm:px-2 py-0.5 sm:py-1 bg-transparent"
                 >
                   Clear All
@@ -612,16 +1032,49 @@ export default function Collections({
 
               <div className="px-3 sm:px-5 py-2 sm:py-4 space-y-0 lg:max-h-[calc(100vh-180px)] lg:overflow-y-auto text-left" style={{ scrollbarWidth: 'thin', scrollbarColor: '#DDA0DD transparent' }}>
 
-                {/* METAL TYPE — Quick Select */}
+                {/* 1. CATEGORY */}
+                <div className="border-b border-gray-100 py-1.5 sm:py-3 text-left">
+                  <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-1.5 sm:mb-2.5">Category</span>
+                  <div className="space-y-1 sm:space-y-1.5">
+                    {primaryCategories.map(cat => {
+                      const isActive = activeCategoryTab.toLowerCase() === cat.id.toLowerCase() || (cat.id === 'Collections' && (activeCategoryTab === 'Collections' || !activeCategoryTab));
+                      return (
+                        <label key={cat.id} className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group">
+                          <input 
+                            type="radio" 
+                            name="desktop-cat" 
+                            checked={isActive} 
+                            onChange={() => {
+                              triggerAudio('click');
+                              if (cat.id === 'Silver') {
+                                changeCategoryTab('Silver');
+                                handleSetMetalFilter('silver');
+                              } else {
+                                changeCategoryTab(cat.id);
+                              }
+                            }} 
+                            className="accent-[#4A126D] w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 cursor-pointer" 
+                          />
+                          <span className={`text-[9px] sm:text-[11px] font-sans leading-none flex items-center gap-1.5 ${isActive ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>
+                            <span>{cat.icon}</span>
+                            <span>{cat.label}</span>
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 2. METAL TYPE — Quick Select & Radio */}
                 <div className="border-b border-gray-100 py-2 sm:py-3 text-left">
                   <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-2 sm:mb-3">Metal Type</span>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-2 mb-3">
                     {metalTypeOptions.map((opt) => {
                       const isActive = metalFilter === opt.id;
                       return (
                         <button
                           key={opt.id}
-                          onClick={() => setMetalFilter(prev => prev === opt.id ? 'all' : opt.id)}
+                          onClick={() => handleSetMetalFilter(opt.id)}
                           className={`relative flex flex-col items-center justify-center gap-1 py-2 sm:py-2.5 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden ${isActive ? 'shadow-[0_4px_14px_rgba(0,0,0,0.12)]' : 'border-gray-200 hover:border-gray-300'}`}
                           style={{
                             borderColor: isActive ? opt.border : '#E5E7EB',
@@ -641,9 +1094,45 @@ export default function Collections({
                       );
                     })}
                   </div>
+
+                  <div className="space-y-1 sm:space-y-2">
+                    {metalRadioList.map(m => (
+                      <label key={m} className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group">
+                        <input 
+                          type="radio" 
+                          name="metal" 
+                          checked={metalFilter === m.toLowerCase()} 
+                          onChange={() => handleSetMetalFilter(m.toLowerCase())} 
+                          className="accent-[#4A126D] w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 cursor-pointer" 
+                        />
+                        <span className={`text-[9px] sm:text-[11px] font-sans leading-none ${metalFilter === m.toLowerCase() ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{m}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
 
-                {/* PRICE */}
+                {/* 3. DYNAMIC PURITY */}
+                <div className="border-b border-gray-100 py-1.5 sm:py-3 text-left">
+                  <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-1.5 sm:mb-2.5">
+                    {isSilverActive ? 'Silver Purity' : isPlatinumActive ? 'Platinum Purity' : 'Gold Purity'}
+                  </span>
+                  <div className="space-y-1 sm:space-y-2">
+                    {purityOptions.map(p => (
+                      <label key={p.val} className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group">
+                        <input 
+                          type="radio" 
+                          name="purity" 
+                          checked={purityFilter === p.val} 
+                          onChange={() => handleSetPurityFilter(p.val)} 
+                          className="accent-[#4A126D] w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 cursor-pointer" 
+                        />
+                        <span className={`text-[9px] sm:text-[11px] font-sans leading-none ${purityFilter === p.val ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{p.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 4. PRICE */}
                 <div className="border-b border-gray-100 py-1.5 sm:py-3 text-left">
                   <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-1.5 sm:mb-2.5">Price</span>
                   <div className="space-y-1 sm:space-y-2">
@@ -666,9 +1155,11 @@ export default function Collections({
                               if (isChecked) {
                                 setPriceFilter('all');
                                 setMaxPriceFilter(100000000);
+                                setExternalMaxPrice?.(100000000);
                               } else {
                                 setPriceFilter(label);
                                 setMaxPriceFilter(val);
+                                setExternalMaxPrice?.(val);
                               }
                             }} 
                             className="accent-[#4A126D] w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 cursor-pointer" 
@@ -680,46 +1171,20 @@ export default function Collections({
                   </div>
                 </div>
 
-                {/* METAL */}
-                <div className="border-b border-gray-100 py-1.5 sm:py-3 text-left">
-                  <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-1.5 sm:mb-2.5">Metal</span>
-                  <div className="space-y-1 sm:space-y-2">
-                    {metalRadioList.map(m => (
-                      <label key={m} className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group">
-                        <input type="radio" name="metal" checked={metalFilter === m.toLowerCase()} onChange={() => setMetalFilter(m.toLowerCase())} className="accent-[#4A126D] w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 cursor-pointer" />
-                        <span className={`text-[9px] sm:text-[11px] font-sans leading-none ${metalFilter === m.toLowerCase() ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{m}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* GOLD PURITY */}
-                <div className="border-b border-gray-100 py-1.5 sm:py-3 text-left">
-                  <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-1.5 sm:mb-2.5">Gold Purity</span>
-                  <div className="space-y-1 sm:space-y-2">
-                    {['All', '14K', '18K', '20K', '22K', '24K'].map(p => (
-                      <label key={p} className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group">
-                        <input type="radio" name="purity" checked={purityFilter === (p === 'All' ? 'all' : p)} onChange={() => setPurityFilter(p === 'All' ? 'all' : p)} className="accent-[#4A126D] w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 cursor-pointer" />
-                        <span className={`text-[9px] sm:text-[11px] font-sans leading-none ${purityFilter === (p === 'All' ? 'all' : p) ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{p}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* GENDER */}
+                {/* 5. GENDER */}
                 <div className="border-b border-gray-100 py-1.5 sm:py-3 text-left">
                   <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-1.5 sm:mb-2.5">Gender</span>
                   <div className="space-y-1 sm:space-y-2">
                     {['All', 'Women', 'Men', 'Unisex'].map(g => (
                       <label key={g} className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group">
-                        <input type="radio" name="gender" checked={genderFilter === g.toLowerCase()} onChange={() => setGenderFilter(g.toLowerCase())} className="accent-[#4A126D] w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 cursor-pointer" />
+                        <input type="radio" name="gender" checked={genderFilter === g.toLowerCase()} onChange={() => handleSetGenderFilter(g.toLowerCase())} className="accent-[#4A126D] w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 cursor-pointer" />
                         <span className={`text-[9px] sm:text-[11px] font-sans leading-none ${genderFilter === g.toLowerCase() ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{g}</span>
                       </label>
                     ))}
                   </div>
                 </div>
 
-                {/* STONES */}
+                {/* 6. STONES */}
                 <div className="border-b border-gray-100 py-1.5 sm:py-3 text-left">
                   <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-1.5 sm:mb-2.5">Stones</span>
                   <div className="space-y-1 sm:space-y-2">
@@ -732,7 +1197,7 @@ export default function Collections({
                   </div>
                 </div>
 
-                {/* OCCASION */}
+                {/* 7. OCCASION */}
                 <div className="border-b border-gray-100 py-1.5 sm:py-3 text-left">
                   <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-1.5 sm:mb-2.5">Occasion</span>
                   <div className="space-y-1 sm:space-y-2">
@@ -742,22 +1207,6 @@ export default function Collections({
                         <span className={`text-[9px] sm:text-[11px] font-sans leading-none ${occasionFilter === o ? 'text-[#4A126D] font-bold' : 'text-gray-600 group-hover:text-[#4A126D]'}`}>{o}</span>
                       </label>
                     ))}
-                  </div>
-                </div>
-
-                {/* CATEGORY */}
-                <div className="border-b border-gray-100 py-1.5 sm:py-3 text-left">
-                  <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-extrabold text-[#1B1B1B] block mb-1.5 sm:mb-2.5">Category</span>
-                  <div className="flex flex-wrap gap-1 sm:gap-1.5">
-                    {categoryFilters.map(cat => {
-                      const isActive = activeCategoryTab === cat;
-                      return (
-                        <button key={cat} onClick={() => changeCategoryTab(cat)}
-                          className={`px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[7px] sm:text-[9px] uppercase tracking-widest font-bold transition-all duration-300 border border-solid cursor-pointer ${isActive ? 'bg-[#4A126D] text-white border-[#4A126D]' : 'bg-[#FCFAFF] text-gray-600 border-gray-200 hover:border-[#4A126D] hover:text-[#4A126D]'}`}>
-                          {cat}
-                        </button>
-                      );
-                    })}
                   </div>
                 </div>
 
@@ -775,7 +1224,7 @@ export default function Collections({
             </aside>
 
             {/* Right Products panel */}
-            <div className="col-span-12 lg:col-span-9 space-y-3 sm:space-y-6 text-left">
+            <div className="col-span-12 lg:col-span-9 space-y-3 sm:space-y-4 text-left">
 
               {/* Active Search Query Notice */}
               {searchQuery && searchQuery.trim() !== '' && (
@@ -826,6 +1275,69 @@ export default function Collections({
                 </div>
               </div>
 
+              {/* Active Filter Badges / Chips Bar */}
+              {hasActiveFilters && (
+                <div className="bg-white/80 border border-[#DDA0DD]/20 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 flex flex-wrap items-center gap-2 text-left">
+                  <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-gray-400">Active Filters:</span>
+                  
+                  {activeCategoryTab && activeCategoryTab !== 'Collections' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-[#4A126D]/10 text-[#4A126D] border border-[#4A126D]/20">
+                      Category: {activeCategoryTab}
+                      <button onClick={() => changeCategoryTab('Collections')} className="hover:text-red-600 ml-0.5 cursor-pointer bg-transparent border-none text-[11px] font-bold">✕</button>
+                    </span>
+                  )}
+                  
+                  {metalFilter !== 'all' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-[#C8960C]/15 text-[#916700] border border-[#C8960C]/30">
+                      Metal: {metalFilter.toUpperCase()}
+                      <button onClick={() => handleSetMetalFilter('all')} className="hover:text-red-600 ml-0.5 cursor-pointer bg-transparent border-none text-[11px] font-bold">✕</button>
+                    </span>
+                  )}
+                  
+                  {purityFilter !== 'all' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                      Purity: {purityFilter}
+                      <button onClick={() => handleSetPurityFilter('all')} className="hover:text-red-600 ml-0.5 cursor-pointer bg-transparent border-none text-[11px] font-bold">✕</button>
+                    </span>
+                  )}
+                  
+                  {priceFilter !== 'all' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                      Price: {priceFilter}
+                      <button onClick={() => { setPriceFilter('all'); setMaxPriceFilter(100000000); setExternalMaxPrice?.(100000000); }} className="hover:text-red-600 ml-0.5 cursor-pointer bg-transparent border-none text-[11px] font-bold">✕</button>
+                    </span>
+                  )}
+                  
+                  {genderFilter !== 'all' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                      Gender: {genderFilter}
+                      <button onClick={() => handleSetGenderFilter('all')} className="hover:text-red-600 ml-0.5 cursor-pointer bg-transparent border-none text-[11px] font-bold">✕</button>
+                    </span>
+                  )}
+                  
+                  {stoneFilter !== 'all' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                      Stone: {stoneFilter}
+                      <button onClick={() => setStoneFilter('all')} className="hover:text-red-600 ml-0.5 cursor-pointer bg-transparent border-none text-[11px] font-bold">✕</button>
+                    </span>
+                  )}
+                  
+                  {occasionFilter !== 'all' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                      Occasion: {occasionFilter}
+                      <button onClick={() => setOccasionFilter('all')} className="hover:text-red-600 ml-0.5 cursor-pointer bg-transparent border-none text-[11px] font-bold">✕</button>
+                    </span>
+                  )}
+                  
+                  <button
+                    onClick={resetAllFilters}
+                    className="text-[10px] sm:text-xs font-bold text-red-600 hover:underline cursor-pointer bg-transparent border-none ml-auto"
+                  >
+                    Clear All ✕
+                  </button>
+                </div>
+              )}
+
               {catalogLoading ? (
                 /* Shimmer loading state */
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-6">
@@ -854,16 +1366,10 @@ export default function Collections({
                   </div>
                   <h3 className="serif-luxury font-medium text-xl">No Masterpieces Found</h3>
                   <p className="text-xs max-w-xs mx-auto leading-relaxed normal-case text-gray-550">
-                    We are currently crafting new designs or applying filter adjustments for the <span className="font-semibold text-[#DDA0DD]">{activeCategoryTab}</span> collection.
+                    No items match the active combination of <span className="font-semibold text-[#DDA0DD]">{activeCategoryTab}</span> {metalFilter !== 'all' && `(${metalFilter.toUpperCase()})`} filters.
                   </p>
                   <button
-                    onClick={() => {
-                      triggerAudio('click');
-                      changeCategoryTab('Collections');
-                      setMetalFilter('all');
-                      setPurityFilter('all');
-                      setMaxPriceFilter(100000000);
-                    }}
+                    onClick={resetAllFilters}
                     className="px-6 py-2.5 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 shadow-md cursor-pointer border bg-[#4A126D] text-white hover:bg-[#DDA0DD] border-transparent font-bold"
                   >
                     Reset All Filters
@@ -871,143 +1377,125 @@ export default function Collections({
                 </div>
               ) : (
                 /* Normal Listing State */
-                <>
-                  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-5 animate-fade-in text-left">
-                    {paginatedProducts.map((prod) => {
-                      const isWishlisted = wishlistItems.some(w => w.id === prod.id);
-                      const isNecklace = String(prod.category || '').toLowerCase().includes('necklace') || 
-                                         String(prod.subCategory || '').toLowerCase().includes('necklace') || 
-                                         String(prod.name || '').toLowerCase().includes('necklace') ||
-                                         String(prod.name || '').toLowerCase().includes('set') ||
-                                         String(prod.name || '').toLowerCase().includes('longset') ||
-                                         String(prod.name || '').toLowerCase().includes('kanthla') ||
-                                         String(prod.name || '').toLowerCase().includes('chain') ||
-                                         String(prod.name || '').toLowerCase().includes('pendant') ||
-                                         String(prod.name || '').toLowerCase().includes('haar') ||
-                                         String(prod.name || '').toLowerCase().includes('mangalsutra') ||
-                                         String(prod.category || '').toLowerCase().includes('chain') ||
-                                         String(prod.category || '').toLowerCase().includes('pendant') ||
-                                         String(prod.category || '').toLowerCase().includes('mangalsutra');
-                      return (
-                        <div
-                          key={prod.id}
-                          onClick={() => navigateToPDP(prod)}
-                          className="group rounded-xl sm:rounded-3xl p-2 sm:p-5 flex flex-col justify-between border border-solid border-[#EAEAEA] transition-all duration-300 relative cursor-pointer overflow-hidden bg-white text-[#1B1B1B] shadow-sm hover:shadow-[0_15px_30px_rgba(0,0,0,0.06)] hover:border-[#DDA0DD]/45 hover:-translate-y-1.5 h-auto text-left"
-                        >
-                          {/* Image & Overlays */}
-                          <div className="aspect-square rounded-xl sm:rounded-[1.5rem] overflow-hidden relative bg-white border border-solid border-[#DDA0DD]/5 shrink-0 text-center">
+                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-5 animate-fade-in text-left">
+                  {filteredJewellery.map((prod) => {
+                    const isWishlisted = wishlistItems.some(w => w.id === prod.id);
+                    return (
+                      <div
+                        key={prod.id}
+                        onClick={() => navigateToPDP(prod)}
+                        className="group rounded-xl sm:rounded-3xl p-2 sm:p-5 flex flex-col justify-between border border-solid border-[#EAEAEA] transition-all duration-300 relative cursor-pointer overflow-hidden bg-white text-[#1B1B1B] shadow-sm hover:shadow-[0_15px_30px_rgba(0,0,0,0.06)] hover:border-[#DDA0DD]/45 hover:-translate-y-1.5 h-auto text-left"
+                      >
+                        {/* Image & Overlays */}
+                        <div className="aspect-square rounded-xl sm:rounded-[1.5rem] overflow-hidden relative bg-white border border-solid border-[#DDA0DD]/5 shrink-0 text-center">
+                          {prod.img ? (
+                            <img
+                              src={prod.img}
+                              alt={prod.name}
+                              className="w-full h-full object-contain p-4 scale-100 group-hover:scale-110 transition-transform duration-[1200ms] ease-out mix-blend-multiply"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-tr from-[#FAF8F5] to-[#F3EEE7] flex flex-col items-center justify-center space-y-2 border border-dashed border-[#DDA0DD]/20 rounded-xl">
+                              <span className="text-3xl animate-float-gentle">{prod.fallback || '✨'}</span>
+                              <span className="text-[8px] tracking-widest text-[#BCA057] uppercase font-bold">Awaiting Curation</span>
+                            </div>
+                          )}
 
-                            {prod.img ? (
-                              <img
-                                src={prod.img}
-                                alt={prod.name}
-                                className="w-full h-full object-contain p-4 scale-100 group-hover:scale-110 transition-transform duration-[1200ms] ease-out mix-blend-multiply"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gradient-to-tr from-[#FAF8F5] to-[#F3EEE7] flex flex-col items-center justify-center space-y-2 border border-dashed border-[#DDA0DD]/20 rounded-xl">
-                                <span className="text-3xl animate-float-gentle">{prod.fallback || '✨'}</span>
-                                <span className="text-[8px] tracking-widest text-[#BCA057] uppercase font-bold">Awaiting Curation</span>
-                              </div>
-                            )}
+                          {prod.badge && (
+                            <span className="absolute top-1.5 left-1.5 sm:top-3 sm:left-3 bg-[#1B1B1B] text-[#DDA0DD] text-[6px] sm:text-[8px] font-bold px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full tracking-wider uppercase border border-solid border-[#DDA0DD]/30 z-20 shadow-sm animate-pulse-slow">
+                              {prod.badge}
+                            </span>
+                          )}
 
-                            {prod.badge && (
-                              <span className="absolute top-1.5 left-1.5 sm:top-3 sm:left-3 bg-[#1B1B1B] text-[#DDA0DD] text-[6px] sm:text-[8px] font-bold px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full tracking-wider uppercase border border-solid border-[#DDA0DD]/30 z-20 shadow-sm animate-pulse-slow">
-                                {prod.badge}
-                              </span>
-                            )}
-
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                triggerAudio('click');
-                                toggleWishlist(prod);
-                              }}
-                              className="absolute top-1.5 right-1.5 sm:top-3 sm:right-3 p-1.5 sm:p-2.5 rounded-full bg-white/90 backdrop-blur-md hover:bg-white text-[#1B1B1B] shadow-md transition-all duration-300 hover:scale-105 active:scale-95 z-20 focus:outline-none cursor-pointer border-none"
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              triggerAudio('click');
+                              toggleWishlist(prod);
+                            }}
+                            className="absolute top-1.5 right-1.5 sm:top-3 sm:right-3 p-1.5 sm:p-2.5 rounded-full bg-white/90 backdrop-blur-md hover:bg-white text-[#1B1B1B] shadow-md transition-all duration-300 hover:scale-105 active:scale-95 z-20 focus:outline-none cursor-pointer border-none"
+                          >
+                            <svg
+                              className={`w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 transition-colors duration-300 ${isWishlisted ? 'text-[#DDA0DD] fill-current scale-110' : 'text-gray-400 fill-none'}`}
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              viewBox="0 0 24 24"
                             >
-                              <svg
-                                className={`w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 transition-colors duration-300 ${isWishlisted ? 'text-[#DDA0DD] fill-current scale-110' : 'text-gray-400 fill-none'
-                                  }`}
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                viewBox="0 0 24 24"
-                              >
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                              </svg>
-                            </button>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                          </button>
+                        </div>
+
+                        {/* Metadata Details */}
+                        <div className="space-y-1 sm:space-y-2 mt-1.5 sm:mt-4 flex-1 flex flex-col justify-between text-left">
+                          <div className="space-y-0.5 sm:space-y-1 text-left">
+                            <span className="text-[7px] sm:text-[9px] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[#DDA0DD] font-bold block text-left">
+                              {prod.subCategory || prod.category}
+                            </span>
+                            <h3 className="serif-luxury font-bold text-[10px] sm:text-base leading-tight sm:leading-snug group-hover:text-[#DDA0DD] transition-colors duration-300 line-clamp-2 text-[#1B1B1B] text-left">
+                              {prod.name}
+                            </h3>
+                            <p className="text-[8px] sm:text-[10px] font-sans font-light leading-relaxed normal-case text-[#666666]/90 hidden sm:line-clamp-2 text-left">
+                              {prod.desc}
+                            </p>
                           </div>
 
-                          {/* Metadata Details */}
-                          <div className="space-y-1 sm:space-y-2 mt-1.5 sm:mt-4 flex-1 flex flex-col justify-between text-left">
-                            <div className="space-y-0.5 sm:space-y-1 text-left">
-                              <span className="text-[7px] sm:text-[9px] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[#DDA0DD] font-bold block text-left">
-                                {prod.subCategory || prod.category}
+                          <div className="pt-1 sm:pt-2.5 border-t border-gray-100/80 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mt-auto w-full">
+                            <div className="flex flex-wrap items-baseline gap-1.5">
+                              <span className="font-extrabold text-[10px] sm:text-sm text-[#DDA0DD] tracking-wide font-sans">
+                                ₹{formatPrice(calculatePrice(prod).total)}
                               </span>
-                              <h3 className="serif-luxury font-bold text-[10px] sm:text-base leading-tight sm:leading-snug group-hover:text-[#DDA0DD] transition-colors duration-300 line-clamp-2 text-[#1B1B1B] text-left">
-                                {prod.name}
-                              </h3>
-                              <p className="text-[8px] sm:text-[10px] font-sans font-light leading-relaxed normal-case text-[#666666]/90 hidden sm:line-clamp-2 text-left">
-                                {prod.desc}
-                              </p>
+                              {(prod.discountPercent === undefined || prod.discountPercent === null || prod.discountPercent === '' || Number(prod.discountPercent) > 0) && (
+                                <>
+                                  <span className="text-[7.5px] sm:text-[10px] line-through text-gray-400 font-sans">
+                                    ₹{formatPrice(Math.round(calculatePrice(prod).total / (1 - (Number(prod.discountPercent) || 20) / 100)))}
+                                  </span>
+                                  <span className="text-[7px] sm:text-[9.5px] text-[#4CAF50] font-extrabold tracking-wide font-sans uppercase">
+                                    {Number(prod.discountPercent) || 20}% OFF
+                                  </span>
+                                </>
+                              )}
                             </div>
-
-                            <div className="pt-1 sm:pt-2.5 border-t border-gray-100/80 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mt-auto w-full">
-                              <div className="flex flex-wrap items-baseline gap-1.5">
-                                <span className="font-extrabold text-[10px] sm:text-sm text-[#DDA0DD] tracking-wide font-sans">
-                                  ₹{formatPrice(calculatePrice(prod).total)}
-                                </span>
-                                {(prod.discountPercent === undefined || prod.discountPercent === null || prod.discountPercent === '' || Number(prod.discountPercent) > 0) && (
-                                  <>
-                                    <span className="text-[7.5px] sm:text-[10px] line-through text-gray-400 font-sans">
-                                      ₹{formatPrice(Math.round(calculatePrice(prod).total / (1 - (Number(prod.discountPercent) || 20) / 100)))}
-                                    </span>
-                                    <span className="text-[7px] sm:text-[9.5px] text-[#4CAF50] font-extrabold tracking-wide font-sans uppercase">
-                                      {Number(prod.discountPercent) || 20}% OFF
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                              <span className="text-[6px] sm:text-[8.5px] font-semibold px-1.5 sm:px-2.5 py-0.5 rounded-full uppercase tracking-widest bg-[#DDA0DD]/10 text-[#DDA0DD] border border-solid border-[#DDA0DD]/20 hidden sm:inline whitespace-nowrap">
-                                {prod.carat || '22K Gold'}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Actions */}
-                          <div className="mt-1.5 sm:mt-4 pt-0 sm:pt-1 flex items-center gap-1.5 sm:gap-2">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                triggerAudio('click');
-                                setConsultationModal(true);
-                              }}
-                              className="w-9 h-9 sm:w-12 sm:h-12 border border-solid border-[#4CAF50] bg-transparent hover:bg-[#4CAF50]/5 rounded-lg sm:rounded-xl flex items-center justify-center cursor-pointer focus:outline-none shrink-0 transition-colors duration-300"
-                              title="Book Video Call"
-                            >
-                              <svg className="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 text-[#4CAF50]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
-                              </svg>
-                            </button>
-
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                triggerAudio('click');
-                                navigateToPDP(prod);
-                              }}
-                              className="flex-grow h-9 sm:h-12 border border-solid border-gray-200 hover:border-gray-400 bg-white text-gray-800 hover:text-black font-semibold text-[9px] sm:text-xs rounded-lg sm:rounded-xl transition-all duration-300 cursor-pointer focus:outline-none flex items-center justify-center font-sans"
-                            >
-                              View Details
-                            </button>
+                            <span className="text-[6px] sm:text-[8.5px] font-semibold px-1.5 sm:px-2.5 py-0.5 rounded-full uppercase tracking-widest bg-[#DDA0DD]/10 text-[#DDA0DD] border border-solid border-[#DDA0DD]/20 hidden sm:inline whitespace-nowrap">
+                              {prod.carat || '22K Gold'}
+                            </span>
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                </>
+
+                        {/* Actions */}
+                        <div className="mt-1.5 sm:mt-4 pt-0 sm:pt-1 flex items-center gap-1.5 sm:gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              triggerAudio('click');
+                              setConsultationModal(true);
+                            }}
+                            className="w-9 h-9 sm:w-12 sm:h-12 border border-solid border-[#4CAF50] bg-transparent hover:bg-[#4CAF50]/5 rounded-lg sm:rounded-xl flex items-center justify-center cursor-pointer focus:outline-none shrink-0 transition-colors duration-300"
+                            title="Book Video Call"
+                          >
+                            <svg className="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 text-[#4CAF50]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
+                          </button>
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              triggerAudio('click');
+                              navigateToPDP(prod);
+                            }}
+                            className="flex-grow h-9 sm:h-12 border border-solid border-gray-200 hover:border-gray-400 bg-white text-gray-800 hover:text-black font-semibold text-[9px] sm:text-xs rounded-lg sm:rounded-xl transition-all duration-300 cursor-pointer focus:outline-none flex items-center justify-center font-sans"
+                          >
+                            View Details
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
           </div>
-
 
         </div>
       </div>
