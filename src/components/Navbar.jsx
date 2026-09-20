@@ -510,7 +510,7 @@ export default function Navbar({
                     💎 Up To 50% Off On Making Charges On Diamond Jewellery
                   </button>
                   <button
-                    onClick={() => { triggerAudio('click'); setMetalFilter('gold'); changeCategoryTab('Collections'); navigateTo('collections'); }}
+                    onClick={() => { triggerAudio('click'); changeCategoryTab('Collections', 'gold'); if (typeof setMetalFilter === 'function') setMetalFilter('gold'); navigateTo('collections'); }}
                     className="w-full text-left px-5 py-3 text-[12px] font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer leading-snug focus:outline-none border-none bg-transparent"
                   >
                     🥇 Up To 20% Off On Making Charges On Plain Gold Jewellery
@@ -811,10 +811,10 @@ export default function Navbar({
                           setMobileMenuOpen(false);
                           setGenderFilter('all');
                           if (item.tab === 'Silver') {
-                            setMetalFilter('silver');
-                            changeCategoryTab('Collections');
+                            changeCategoryTab('Silver', 'silver');
+                            if (typeof setMetalFilter === 'function') setMetalFilter('silver');
                           } else {
-                            changeCategoryTab(item.tab);
+                            changeCategoryTab(item.tab, 'all');
                           }
                           navigateTo('collections');
                         }}

@@ -122,19 +122,23 @@ export default function MainLayout({
             navigateTo={navigateTo}
             handleCategoryNav={(cat) => {
               if (cat === 'silver-earrings') {
+                changeCategoryTab('Earrings', 'silver');
                 if (typeof setMetalFilter === 'function') setMetalFilter('silver');
-                changeCategoryTab('Earrings');
               } else if (cat === 'silver') {
+                changeCategoryTab('Silver', 'silver');
                 if (typeof setMetalFilter === 'function') setMetalFilter('silver');
-                changeCategoryTab('Collections');
               } else if (cat === 'gold') {
+                changeCategoryTab('Collections', 'gold');
                 if (typeof setMetalFilter === 'function') setMetalFilter('gold');
-                changeCategoryTab('Collections');
               } else if (cat === 'platinum') {
+                changeCategoryTab('Collections', 'platinum');
                 if (typeof setMetalFilter === 'function') setMetalFilter('platinum');
-                changeCategoryTab('Collections');
+              } else if (cat === 'diamond') {
+                changeCategoryTab('Diamond', 'all');
+              } else if (cat === 'bridal') {
+                changeCategoryTab('Bridal', 'all');
               } else {
-                changeCategoryTab(cat.charAt(0).toUpperCase() + cat.slice(1));
+                changeCategoryTab(cat.charAt(0).toUpperCase() + cat.slice(1), 'all');
               }
               navigateTo('collections');
             }}

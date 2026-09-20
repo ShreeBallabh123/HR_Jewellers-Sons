@@ -313,9 +313,13 @@ function AppContent() {
       <MainLayout
         currentPage={currentPage}
         navigateTo={navigateTo}
-        changeCategoryTab={(tab) => {
+        changeCategoryTab={(tab, optMetal) => {
           setActiveCategoryTab(tab);
-          setMetalFilter('all');
+          if (optMetal !== undefined) {
+            setMetalFilter(optMetal);
+          } else {
+            setMetalFilter('all');
+          }
           setGenderFilter('all');
         }}
         soundEnabled={soundEnabled}
