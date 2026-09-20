@@ -96,9 +96,24 @@ class LuxurySynth {
   }
 }
 
-const Home = lazyWithRetry(() => import('./pages/Home'), 'Home');
+import Home from './pages/Home';
 const Collections = lazyWithRetry(() => import('./pages/Collections'), 'Collections');
 const ProductDetail = lazyWithRetry(() => import('./pages/ProductDetail'), 'ProductDetail');
+
+// Preload primary routes in background during idle time for instantaneous switching
+if (typeof window !== 'undefined') {
+  const prefetchCorePages = () => {
+    import('./pages/Collections');
+    import('./pages/ProductDetail');
+    import('./pages/Savings');
+    import('./pages/Checkout');
+  };
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(prefetchCorePages, { timeout: 2500 });
+  } else {
+    setTimeout(prefetchCorePages, 1200);
+  }
+}
 const GoldReserve = lazyWithRetry(() => import('./pages/GoldReserve'), 'GoldReserve');
 const Offers = lazyWithRetry(() => import('./pages/Offers'), 'Offers');
 const GoldCoins = lazyWithRetry(() => import('./pages/GoldCoins'), 'GoldCoins');
@@ -317,7 +332,14 @@ function AppContent() {
         setSearchQuery={setSearchQuery}
       >
         {/* Suspense Wrapper for Page Components Lazy Loading */}
-        <React.Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center font-bold text-xs uppercase tracking-widest text-[#4A126D]">Loading Boutique Workspace...</div>}>
+        <React.Suspense fallback={
+          <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-3.5 select-none animate-fade-in">
+            <div className="w-9 h-9 border-2 border-[#C8A646] border-t-transparent rounded-full animate-spin"></div>
+            <span className="serif-luxury text-[11px] font-bold uppercase tracking-[0.25em] text-[#031838] animate-pulse">
+              HR JEWELLERS &amp; SONS
+            </span>
+          </div>
+        }>
           
           {currentPage === 'home' && (
             <Home 

@@ -77,6 +77,13 @@ export const bookingApi = {
     }, onError);
   },
 
+  // Fetch all orders once (for manual refresh / instant sync)
+  async getOrders() {
+    const q = query(collection(db, 'orders'), orderBy('createdDate', 'desc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  },
+
   // Update order status
   async updateOrderStatus(orderId, orderStatus) {
     const docRef = doc(db, 'orders', orderId);

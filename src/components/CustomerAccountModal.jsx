@@ -34,6 +34,23 @@ export default function CustomerAccountModal({
   // Orders from Firestore & local placed orders
   const [allOrders, setAllOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Manual refresh orders and sync status
+  const handleRefreshOrders = async () => {
+    setIsRefreshing(true);
+    triggerAudio?.('click');
+    try {
+      const freshOrders = await bookingApi.getOrders();
+      if (Array.isArray(freshOrders)) {
+        setAllOrders(freshOrders);
+      }
+    } catch (err) {
+      console.error("Refresh orders error:", err);
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 600);
+    }
+  };
 
   // Tracking query state
   const [trackingQuery, setTrackingQuery] = useState('');
@@ -244,12 +261,25 @@ export default function CustomerAccountModal({
             </div>
           </div>
 
-          <button
-            onClick={() => { triggerAudio?.('click'); onClose(); }}
-            className="w-9 h-9 rounded-full bg-zinc-200/60 dark:bg-white/10 hover:bg-zinc-300 dark:hover:bg-white/20 text-zinc-700 dark:text-white flex items-center justify-center border-none cursor-pointer transition-colors"
-          >
-            ✕
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleRefreshOrders}
+              disabled={isRefreshing}
+              className="h-9 px-3.5 rounded-full bg-zinc-200/60 dark:bg-white/10 hover:bg-[#C8A646]/20 text-zinc-700 dark:text-zinc-200 hover:text-[#C8A646] flex items-center gap-1.5 border-none cursor-pointer text-xs font-bold font-sans transition-all active:scale-95 disabled:opacity-50"
+              title="Refresh Orders & Status"
+            >
+              <span className={`inline-block ${isRefreshing ? 'animate-spin' : ''}`}>🔄</span>
+              <span className="hidden sm:inline">{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
+            </button>
+
+            <button
+              onClick={() => { triggerAudio?.('click'); onClose(); }}
+              className="w-9 h-9 rounded-full bg-zinc-200/60 dark:bg-white/10 hover:bg-zinc-300 dark:hover:bg-white/20 text-zinc-700 dark:text-white flex items-center justify-center border-none cursor-pointer transition-colors text-sm font-bold"
+              title="Close"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         {/* Navigation Tabs */}
@@ -474,13 +504,25 @@ export default function CustomerAccountModal({
               ══════════════════════════════════════════════════════════════ */}
           {activeTab === 'track' && (
             <div className="space-y-6">
-              <div className="space-y-1">
-                <h4 className="text-xs font-black uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
-                  Track Your Boutique Order
-                </h4>
-                <p className="text-[11px] text-zinc-500 font-medium">
-                  Enter your Order ID (e.g. LWXDMSJL) or 10-digit registered mobile number.
-                </p>
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <h4 className="text-xs font-black uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+                    Track Your Boutique Order
+                  </h4>
+                  <p className="text-[11px] text-zinc-500 font-medium">
+                    Enter your Order ID (e.g. LWXDMSJL) or 10-digit registered mobile number.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRefreshOrders}
+                  disabled={isRefreshing}
+                  className="px-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-white/10 text-zinc-600 dark:text-zinc-300 hover:text-[#C8A646] text-[11px] font-bold border-none cursor-pointer flex items-center gap-1.5 transition-all shadow-2xs hover:bg-[#C8A646]/10"
+                  title="Refresh status"
+                >
+                  <span className={`text-xs ${isRefreshing ? 'animate-spin' : ''}`}>🔄</span>
+                  <span className="hidden sm:inline">{isRefreshing ? 'Syncing...' : 'Sync'}</span>
+                </button>
               </div>
 
               {/* Search Bar */}
