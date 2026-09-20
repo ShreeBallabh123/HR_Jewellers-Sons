@@ -255,7 +255,7 @@ export default function Navbar({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                   </svg>
                 </button>
-                <div className="absolute top-full left-0 mt-3 bg-white text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.12)] border border-solid border-[#ECECEC] rounded-2xl p-2 min-w-[210px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-[12px] normal-case font-sans select-none font-semibold flex flex-col gap-1">
+                <div className="absolute top-full left-0 mt-3 bg-white text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.12)] border border-solid border-[#ECECEC] rounded-2xl p-2 min-w-[210px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-[12px] normal-case font-sans select-none font-semibold flex flex-col gap-1 whitespace-normal">
                   <button
                     onClick={() => { triggerAudio('click'); navigateTo('savings'); }}
                     className="w-full text-left px-4 py-2.5 font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer border-none bg-transparent flex items-center justify-between"
@@ -337,7 +337,7 @@ export default function Navbar({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                   </svg>
                 </button>
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white text-gray-800 shadow-[0_12px_40px_rgba(0,0,0,0.08)] border border-solid border-[#ECECEC] rounded-2xl py-6 px-7 min-w-[420px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex gap-8 text-[12px] normal-case font-sans select-none text-left font-semibold">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white text-gray-800 shadow-[0_12px_40px_rgba(0,0,0,0.08)] border border-solid border-[#ECECEC] rounded-2xl py-6 px-7 min-w-[420px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex gap-8 text-[12px] normal-case font-sans select-none text-left font-semibold whitespace-normal">
                   <div className="flex flex-col space-y-1 flex-1">
                     <h4 className="font-bold text-[13px] text-[#1A1A1A] border-b border-solid border-gray-100 pb-2 mb-1">Gifts For Special Someone</h4>
                     {[
@@ -387,7 +387,7 @@ export default function Navbar({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                   </svg>
                 </button>
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white text-gray-800 shadow-[0_12px_40px_rgba(0,0,0,0.08)] border border-solid border-[#ECECEC] rounded-2xl py-6 px-7 min-w-[480px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 grid grid-cols-3 gap-x-6 gap-y-4 text-[12px] normal-case font-sans select-none text-left font-semibold">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white text-gray-800 shadow-[0_12px_40px_rgba(0,0,0,0.08)] border border-solid border-[#ECECEC] rounded-2xl py-6 px-7 min-w-[480px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 grid grid-cols-3 gap-x-6 gap-y-4 text-[12px] normal-case font-sans select-none text-left font-semibold whitespace-normal">
                   {/* 24K Gold */}
                   <div className="flex flex-col space-y-2.5">
                     <button
@@ -498,20 +498,20 @@ export default function Navbar({
                   className="hover:text-[#D58B8B] transition-colors duration-300 cursor-pointer h-full flex items-center gap-1 focus:outline-none text-[#D58B8B] whitespace-nowrap shrink-0 border-none bg-transparent"
                 >
                   <span className="whitespace-nowrap">Offers</span>
-                  <svg className="w-3 h-3 text-[#D58B8B] shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 text-[#D58B8B] group-hover:rotate-180 transition-transform duration-300 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                   </svg>
                 </button>
-                <div className="absolute top-full right-0 mt-3 bg-white text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.08)] border border-solid border-[#ECECEC] rounded-2xl py-2.5 px-1 min-w-[340px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-[12px] normal-case font-sans select-none font-semibold">
+                <div className="absolute top-full right-0 mt-3 bg-white text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.12)] border border-solid border-[#ECECEC] rounded-2xl p-2 w-[340px] max-w-[90vw] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-[12px] normal-case font-sans select-none font-semibold flex flex-col gap-1 whitespace-normal text-left">
                   <button
                     onClick={() => { triggerAudio('click'); setMaxPriceFilter(100000000); changeCategoryTab('Collections'); navigateTo('collections'); }}
-                    className="w-full text-left px-5 py-3 text-[12px] font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer leading-snug focus:outline-none border-none bg-transparent"
+                    className="w-full text-left px-4 py-2.5 text-[12px] font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer leading-snug focus:outline-none border-none bg-transparent whitespace-normal block"
                   >
                     💎 Up To 50% Off On Making Charges On Diamond Jewellery
                   </button>
                   <button
                     onClick={() => { triggerAudio('click'); changeCategoryTab('Collections', 'gold'); if (typeof setMetalFilter === 'function') setMetalFilter('gold'); navigateTo('collections'); }}
-                    className="w-full text-left px-5 py-3 text-[12px] font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer leading-snug focus:outline-none border-none bg-transparent"
+                    className="w-full text-left px-4 py-2.5 text-[12px] font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer leading-snug focus:outline-none border-none bg-transparent whitespace-normal block"
                   >
                     🥇 Up To 20% Off On Making Charges On Plain Gold Jewellery
                   </button>

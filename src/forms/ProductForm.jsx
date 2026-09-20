@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useMemo } from 'react';
-import { AlertTriangle, Calculator, Sparkles, TrendingUp, CheckCircle2 } from 'lucide-react';
+import React, { createContext, useContext, useMemo, useState } from 'react';
+import { AlertTriangle, Calculator, Sparkles, TrendingUp, CheckCircle2, ChevronDown, ChevronUp, Gem } from 'lucide-react';
 import { useRates } from '../hooks/useRates';
 import { calculateDynamicPrice, formatINR } from '../utils/pricing';
 
@@ -267,6 +267,16 @@ export default function ProductForm({
     });
   };
 
+  // Diamond data presence detection for accordion state
+  const hasDiamondData = Boolean(
+    getVal('diamondShape') || getVal('diamondWeight') || getVal('diamondColor') || 
+    getVal('diamondClarity') || getVal('diamondCut') || getVal('diamondQuantity') || 
+    getVal('diamondValue') || getVal('stoneCarat') || getVal('beadsCarat') || 
+    getVal('pearlsCarat') || getVal('gemstoneCarat') || getVal('polki') || 
+    getVal('polkiValue') || getVal('pearlsValue') || getVal('discountOffDiamond')
+  );
+  const [isDiamondOpen, setIsDiamondOpen] = useState(hasDiamondData);
+
   const contextValue = {
     getVal,
     updateField,
@@ -400,7 +410,34 @@ export default function ProductForm({
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className={`grid grid-cols-1 ${getVal('jewelryType') === 'Custom' ? 'sm:grid-cols-4' : 'sm:grid-cols-3'} gap-4`}>
+            <FloatingSelect
+              id="prod-jewelry-type-form"
+              label="Jewellery Type"
+              field="jewelryType"
+            >
+              <option value="">Select Jewellery Type</option>
+              <option value="CZ Gold Jewelry">CZ Gold Jewelry</option>
+              <option value="Diamond Gold Jewelry">Diamond Gold Jewelry</option>
+              <option value="Plain Gold Jewelry">Plain Gold Jewelry</option>
+              <option value="Labgrown Diamond Jewelry">Labgrown Diamond Jewelry</option>
+              <option value="Labgrown Silver Jewelry">Labgrown Silver Jewelry</option>
+              <option value="Imported Silver Jewelry">Imported Silver Jewelry</option>
+              <option value="Traditional Silver Jewelry">Traditional Silver Jewelry</option>
+              <option value="Modern Gold Jewelry">Modern Gold Jewelry</option>
+              <option value="Modern Silver Jewelry">Modern Silver Jewelry</option>
+              <option value="Custom">Custom</option>
+            </FloatingSelect>
+
+            {getVal('jewelryType') === 'Custom' && (
+              <FloatingInput
+                id="prod-custom-jewelry-type-form"
+                label="Custom Jewellery Type"
+                field="customJewelryType"
+                placeholder="Enter custom jewellery type"
+              />
+            )}
+
             <FloatingSelect
               id="prod-gender-form"
               label="Gender"
@@ -687,156 +724,193 @@ export default function ProductForm({
           </div>
         </div>
 
-        {/* Section: Diamonds & Gemstones Details */}
-        <div className="space-y-4 pt-4 border-t border-solid border-zinc-100 dark:border-zinc-850 text-left">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-[#E6C687]"></span>
-            <h4 className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">Diamonds &amp; Stone Details</h4>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-6 gap-4">
-            <FloatingSelect
-              id="prod-diamondShape-form"
-              label="Diamond Shape"
-              field="diamondShape"
-            >
-              <option value="">Select Diamond Shape</option>
-              <option value="Round">Round</option>
-              <option value="Princess">Princess</option>
-              <option value="Cushion">Cushion</option>
-              <option value="Oval">Oval</option>
-              <option value="Emerald">Emerald</option>
-              <option value="Pear">Pear</option>
-              <option value="Marquise">Marquise</option>
-              <option value="Radiant">Radiant</option>
-              <option value="Asscher">Asscher</option>
-              <option value="Heart">Heart</option>
-            </FloatingSelect>
+        {/* Section: Diamonds & Gemstones Details (Collapsible Accordion Dropdown) */}
+        <div className="pt-4 border-t border-solid border-zinc-100 dark:border-zinc-850 text-left">
+          <button
+            type="button"
+            onClick={() => setIsDiamondOpen(prev => !prev)}
+            className="w-full flex items-center justify-between p-3.5 rounded-xl bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-900/80 dark:hover:bg-zinc-850 border border-solid border-zinc-200 dark:border-zinc-800 transition-all cursor-pointer select-none text-left"
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="w-6 h-6 rounded-lg bg-[#B8893C]/15 dark:bg-[#E6C687]/15 flex items-center justify-center text-[#B8893C] dark:text-[#E6C687]">
+                <Gem className="w-3.5 h-3.5" />
+              </span>
+              <div>
+                <h4 className="text-xs font-bold tracking-wider text-zinc-900 dark:text-zinc-100 uppercase flex items-center gap-2">
+                  Diamonds &amp; Stone Details
+                  <span className="text-[9px] font-normal text-zinc-400 dark:text-zinc-500 lowercase">
+                    (Optional for plain jewellery)
+                  </span>
+                </h4>
+                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">
+                  {isDiamondOpen ? 'Click arrow to collapse section' : 'Click arrow to expand and add Diamond, Polki, Pearls & Gemstone parameters'}
+                </p>
+              </div>
+            </div>
 
-            <FloatingInput
-              id="prod-diamondWeight-form"
-              label="Diamond Weight"
-              field="diamondWeight"
-            />
+            <div className="flex items-center gap-2">
+              {hasDiamondData && (
+                <span className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 text-[9px] font-bold">
+                  ✓ Configured
+                </span>
+              )}
+              <div className="w-6 h-6 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center border border-solid border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 transition-transform duration-200">
+                {isDiamondOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              </div>
+            </div>
+          </button>
 
-            <FloatingSelect
-              id="prod-diamondColor-form"
-              label="Color Grade"
-              field="diamondColor"
-            >
-              <option value="">Select Color Grade</option>
-              <option value="EF">EF</option>
-              <option value="GH">GH</option>
-              <option value="HI">HI</option>
-              <option value="IJ">IJ</option>
-              <option value="JK">JK</option>
-              <option value="KL">KL</option>
-              <option value="LM">LM</option>
-              <option value="NZ">NZ</option>
-              <option value="DF">DF</option>
-            </FloatingSelect>
+          {isDiamondOpen && (
+            <div className="space-y-4 mt-4 pt-2">
+              <div className="grid grid-cols-2 sm:grid-cols-6 gap-4">
+                <FloatingSelect
+                  id="prod-diamondShape-form"
+                  label="Diamond Shape"
+                  field="diamondShape"
+                >
+                  <option value="">Select Diamond Shape</option>
+                  <option value="Round">Round</option>
+                  <option value="Princess">Princess</option>
+                  <option value="Cushion">Cushion</option>
+                  <option value="Oval">Oval</option>
+                  <option value="Emerald">Emerald</option>
+                  <option value="Pear">Pear</option>
+                  <option value="Marquise">Marquise</option>
+                  <option value="Radiant">Radiant</option>
+                  <option value="Asscher">Asscher</option>
+                  <option value="Heart">Heart</option>
+                </FloatingSelect>
 
-            <FloatingSelect
-              id="prod-diamondClarity-form"
-              label="Clarity Grade"
-              field="diamondClarity"
-            >
-              <option value="">Select Clarity Grade</option>
-              <option value="FL">FL</option>
-              <option value="IF">IF</option>
-              <option value="VVS1">VVS1</option>
-              <option value="VVS2">VVS2</option>
-              <option value="VS1">VS1</option>
-              <option value="VS2">VS2</option>
-              <option value="SI1">SI1</option>
-              <option value="SI2">SI2</option>
-              <option value="I1">I1</option>
-              <option value="I2">I2</option>
-              <option value="I3">I3</option>
-            </FloatingSelect>
+                <FloatingInput
+                  id="prod-diamondWeight-form"
+                  label="Diamond Weight"
+                  field="diamondWeight"
+                />
 
-            <FloatingSelect
-              id="prod-diamondCut-form"
-              label="Cut Grade"
-              field="diamondCut"
-            >
-              <option value="">Select Cut Grade</option>
-              <option value="Excellent">Excellent</option>
-              <option value="Very Good">Very Good</option>
-              <option value="Good">Good</option>
-              <option value="Fair">Fair</option>
-              <option value="Poor">Poor</option>
-            </FloatingSelect>
+                <FloatingSelect
+                  id="prod-diamondColor-form"
+                  label="Color Grade"
+                  field="diamondColor"
+                >
+                  <option value="">Select Color Grade</option>
+                  <option value="EF">EF</option>
+                  <option value="GH">GH</option>
+                  <option value="HI">HI</option>
+                  <option value="IJ">IJ</option>
+                  <option value="JK">JK</option>
+                  <option value="KL">KL</option>
+                  <option value="LM">LM</option>
+                  <option value="NZ">NZ</option>
+                  <option value="DF">DF</option>
+                </FloatingSelect>
 
-            <FloatingInput
-              id="prod-diamondQuantity-form"
-              label="Diamond Pcs"
-              field="diamondQuantity"
-            />
-          </div>
+                <FloatingSelect
+                  id="prod-diamondClarity-form"
+                  label="Clarity Grade"
+                  field="diamondClarity"
+                >
+                  <option value="">Select Clarity Grade</option>
+                  <option value="FL">FL</option>
+                  <option value="IF">IF</option>
+                  <option value="VVS1">VVS1</option>
+                  <option value="VVS2">VVS2</option>
+                  <option value="VS1">VS1</option>
+                  <option value="VS2">VS2</option>
+                  <option value="SI1">SI1</option>
+                  <option value="SI2">SI2</option>
+                  <option value="I1">I1</option>
+                  <option value="I2">I2</option>
+                  <option value="I3">I3</option>
+                </FloatingSelect>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <FloatingInput
-              id="prod-diamondValue-form"
-              label="Diamond Value"
-              field="diamondValue"
-              type="number"
-            />
+                <FloatingSelect
+                  id="prod-diamondCut-form"
+                  label="Cut Grade"
+                  field="diamondCut"
+                >
+                  <option value="">Select Cut Grade</option>
+                  <option value="Excellent">Excellent</option>
+                  <option value="Very Good">Very Good</option>
+                  <option value="Good">Good</option>
+                  <option value="Fair">Fair</option>
+                  <option value="Poor">Poor</option>
+                </FloatingSelect>
 
-            <FloatingInput
-              id="prod-stoneCarat-form"
-              label="Stone weight"
-              field="stoneCarat"
-            />
+                <FloatingInput
+                  id="prod-diamondQuantity-form"
+                  label="Diamond Pcs"
+                  field="diamondQuantity"
+                />
+              </div>
 
-            <FloatingInput
-              id="prod-beadsCarat-form"
-              label="Beads weight"
-              field="beadsCarat"
-            />
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <FloatingInput
+                  id="prod-diamondValue-form"
+                  label="Diamond Value (₹)"
+                  field="diamondValue"
+                  type="number"
+                  min="0"
+                />
 
-            <FloatingInput
-              id="prod-pearlsCarat-form"
-              label="Pearls weight"
-              field="pearlsCarat"
-            />
+                <FloatingInput
+                  id="prod-stoneCarat-form"
+                  label="Stone weight"
+                  field="stoneCarat"
+                />
 
-            <FloatingInput
-              id="prod-gemstoneCarat-form"
-              label="Gemstone weight"
-              field="gemstoneCarat"
-            />
+                <FloatingInput
+                  id="prod-beadsCarat-form"
+                  label="Beads weight"
+                  field="beadsCarat"
+                />
 
-            <FloatingInput
-              id="prod-polki-form"
-              label="Polki weight"
-              field="polki"
-            />
+                <FloatingInput
+                  id="prod-pearlsCarat-form"
+                  label="Pearls weight"
+                  field="pearlsCarat"
+                />
 
-            <FloatingInput
-              id="prod-polkiValue-form"
-              label="Polki Value"
-              field="polkiValue"
-              type="number"
-            />
+                <FloatingInput
+                  id="prod-gemstoneCarat-form"
+                  label="Gemstone weight"
+                  field="gemstoneCarat"
+                />
 
-            <FloatingInput
-              id="prod-pearlsValue-form"
-              label="Other Value"
-              field="pearlsValue"
-              type="number"
-            />
+                <FloatingInput
+                  id="prod-polki-form"
+                  label="Polki weight"
+                  field="polki"
+                />
 
-            <FloatingInput
-              id="prod-discountOffDiamond-form"
-              label="Discount Off Diamond"
-              field="discountOffDiamond"
-              type="number"
-              min="0"
-              max="100"
-              suffix="% OFF"
-              className="col-span-2"
-            />
-          </div>
+                <FloatingInput
+                  id="prod-polkiValue-form"
+                  label="Polki Value (₹)"
+                  field="polkiValue"
+                  type="number"
+                  min="0"
+                />
+
+                <FloatingInput
+                  id="prod-pearlsValue-form"
+                  label="Pearls / Gemstone Value (₹)"
+                  field="pearlsValue"
+                  type="number"
+                  min="0"
+                />
+
+                <FloatingInput
+                  id="prod-discountOffDiamond-form"
+                  label="Discount Off Diamond"
+                  field="discountOffDiamond"
+                  type="number"
+                  min="0"
+                  max="100"
+                  suffix="% OFF"
+                  className="col-span-2"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Section: Pricing & Commercial details */}
@@ -1149,26 +1223,20 @@ export default function ProductForm({
 
               <FloatingInput
                 id="prod-stone-price"
-                label="Stone / Diamond Price (₹)"
+                label="Stone / Gemstone Charges (₹)"
                 field="stonePrice"
                 type="number"
                 min="0"
-                onChange={(e) => {
-                  const sp = e.target.value === '' ? '' : Number(e.target.value);
-                  updateFields({ stonePrice: sp, diamondValue: sp });
-                }}
+                placeholder="Enter stone charges (₹)"
               />
 
               <FloatingInput
                 id="prod-other-charges"
-                label="Other Charges / Pearls (₹)"
+                label="Other Additional Charges (₹)"
                 field="otherCharges"
                 type="number"
                 min="0"
-                onChange={(e) => {
-                  const oc = e.target.value === '' ? '' : Number(e.target.value);
-                  updateFields({ otherCharges: oc, pearlsValue: oc });
-                }}
+                placeholder="Enter other charges (₹)"
               />
 
               <FloatingInput
@@ -1310,14 +1378,16 @@ export default function ProductForm({
                 <div className="bg-white/80 dark:bg-zinc-800/60 p-2.5 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60">
                   <span className="text-[9px] text-zinc-400 font-bold uppercase block">Stones &amp; Other</span>
                   <span className="font-extrabold text-zinc-900 dark:text-zinc-100 font-mono">
-                    ₹{(liveBreakdown.stonePrice + liveBreakdown.otherCharges)?.toLocaleString('en-IN')}
+                    ₹{((liveBreakdown.totalStoneValue !== undefined ? liveBreakdown.totalStoneValue : (liveBreakdown.stonePrice || 0)) + (liveBreakdown.otherCharges || 0))?.toLocaleString('en-IN')}
                   </span>
                 </div>
 
                 <div className="bg-white/80 dark:bg-zinc-800/60 p-2.5 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60">
-                  <span className="text-[9px] text-zinc-400 font-bold uppercase block">Discount ({liveBreakdown.discountPercent}%)</span>
-                  <span className="font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
-                    -₹{liveBreakdown.discountAmount?.toLocaleString('en-IN')}
+                  <span className="text-[9px] text-zinc-400 font-bold uppercase block">
+                    {liveBreakdown.discountPercent > 0 ? `Orig. MRP (${liveBreakdown.discountPercent}% OFF)` : 'Discount'}
+                  </span>
+                  <span className={`font-extrabold font-mono ${liveBreakdown.discountPercent > 0 ? 'text-gray-500 line-through' : 'text-zinc-500'}`}>
+                    {liveBreakdown.discountPercent > 0 ? `₹${liveBreakdown.originalTotal?.toLocaleString('en-IN')}` : '0% (None)'}
                   </span>
                 </div>
 

@@ -139,8 +139,9 @@ export function calculateDynamicPrice(product, rates = {}) {
   const makingValue      = safeParseFloat(product.makingChargeValue || product.makingCharges || 0);
   const diamondVal       = safeParseFloat(product.diamondValue || 0);
   const polkiVal         = safeParseFloat(product.polkiValue || 0);
-  const otherVal         = safeParseFloat(product.pearlsValue || product.stonePrice || 0);
-  const stonePriceVal    = diamondVal + polkiVal + otherVal;
+  const pearlsVal        = safeParseFloat(product.pearlsValue || 0);
+  const stonePriceVal    = safeParseFloat(product.stonePrice || 0);
+  const totalStoneVal    = diamondVal + polkiVal + pearlsVal + stonePriceVal;
   const otherChargesVal  = safeParseFloat(product.otherCharges || 0);
   const gstPct           = safeParseFloat(product.gstPercentage || product.gstPercent || 3);
   const discountPercent  = safeParseFloat(product.discountPercent ?? product.discountOffItem ?? 0);
@@ -195,18 +196,19 @@ export function calculateDynamicPrice(product, rates = {}) {
   }
 
   // ── 6. Subtotal, Discount, Taxable Amount & GST ──────────────────────────
-  const subtotal = metalValue + makingCharge + stonePriceVal + otherChargesVal;
+  const subtotal = metalValue + makingCharge + totalStoneVal + otherChargesVal;
   
-  // Apply discount if configured
-  const discountAmount = discountPercent > 0 ? subtotal * (discountPercent / 100) : 0;
-  const taxableAmount  = Math.max(0, subtotal - discountAmount);
-  
-  const gst   = taxableAmount * (gstPct / 100);
-  const total = taxableAmount + gst;
+  const gst   = subtotal * (gstPct / 100);
+  const total = Math.round(subtotal + gst);
 
-  // Undiscounted total (for display of crossed-out original MRP)
-  const originalGst   = subtotal * (gstPct / 100);
-  const originalTotal = subtotal + originalGst;
+  // When discount is configured:
+  // Selling price remains the actual calculated total, and original crossed-out MRP is increased
+  let originalTotal  = total;
+  let discountAmount = 0;
+  if (discountPercent > 0 && discountPercent < 100) {
+    originalTotal  = Math.round(total / (1 - (discountPercent / 100)));
+    discountAmount = Math.max(0, originalTotal - total);
+  }
 
   return {
     goldValue:       Math.round(metalValue), // Backward-compatible alias
@@ -215,15 +217,17 @@ export function calculateDynamicPrice(product, rates = {}) {
     makingCharge:    Math.round(makingCharge),
     diamondValue:    Math.round(diamondVal),
     polkiValue:      Math.round(polkiVal),
-    stonePrice:      Math.round(otherVal),
+    pearlsValue:     Math.round(pearlsVal),
+    stonePrice:      Math.round(stonePriceVal),
+    totalStoneValue: Math.round(totalStoneVal),
     otherCharges:    Math.round(otherChargesVal),
     subtotal:        Math.round(subtotal),
     discountPercent,
     discountAmount:  Math.round(discountAmount),
-    taxableAmount:   Math.round(taxableAmount),
+    taxableAmount:   Math.round(subtotal),
     gst:             Math.round(gst),
-    total:           Math.round(total),
-    originalTotal:   Math.round(originalTotal),
+    total,
+    originalTotal,
     metalType,
     isLive:          true,
     purity,
@@ -247,20 +251,23 @@ export function calculateManualBreakdown(product) {
 
   const diamondVal      = safeParseFloat(product.diamondValue || 0);
   const polkiVal        = safeParseFloat(product.polkiValue || 0);
-  const otherVal        = safeParseFloat(product.pearlsValue || product.stonePrice || 0);
+  const pearlsVal       = safeParseFloat(product.pearlsValue || 0);
+  const stonePriceVal   = safeParseFloat(product.stonePrice || 0);
   const makingChargeVal = safeParseFloat(product.makingChargeValue || product.makingCharges || 0);
   const otherChargesVal = safeParseFloat(product.otherCharges || 0);
 
   const subtotal        = rawPrice;
-  const discountAmount  = discountPercent > 0 ? subtotal * (discountPercent / 100) : 0;
-  const taxableAmount   = Math.max(0, subtotal - discountAmount);
-  const gst             = Math.round(taxableAmount * gstRate);
-  const total           = Math.round(taxableAmount + gst);
+  const gst             = Math.round(subtotal * gstRate);
+  const total           = Math.round(subtotal + gst);
 
-  const originalGst     = Math.round(subtotal * gstRate);
-  const originalTotal   = Math.round(subtotal + originalGst);
+  let originalTotal     = total;
+  let discountAmount    = 0;
+  if (discountPercent > 0 && discountPercent < 100) {
+    originalTotal  = Math.round(total / (1 - (discountPercent / 100)));
+    discountAmount = Math.max(0, originalTotal - total);
+  }
 
-  const goldVal = Math.max(0, subtotal - diamondVal - polkiVal - otherVal - makingChargeVal - otherChargesVal);
+  const goldVal = Math.max(0, subtotal - diamondVal - polkiVal - pearlsVal - stonePriceVal - makingChargeVal - otherChargesVal);
 
   return {
     goldValue:       Math.round(goldVal),
@@ -269,12 +276,14 @@ export function calculateManualBreakdown(product) {
     makingCharge:    Math.round(makingChargeVal),
     diamondValue:    Math.round(diamondVal),
     polkiValue:      Math.round(polkiVal),
-    stonePrice:      Math.round(otherVal),
+    pearlsValue:     Math.round(pearlsVal),
+    stonePrice:      Math.round(stonePriceVal),
+    totalStoneValue: Math.round(diamondVal + polkiVal + pearlsVal + stonePriceVal),
     otherCharges:    Math.round(otherChargesVal),
     subtotal:        Math.round(subtotal),
     discountPercent,
     discountAmount:  Math.round(discountAmount),
-    taxableAmount:   Math.round(taxableAmount),
+    taxableAmount:   Math.round(subtotal),
     gst,
     total,
     originalTotal,

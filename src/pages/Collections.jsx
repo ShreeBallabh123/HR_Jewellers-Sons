@@ -323,6 +323,87 @@ function isProductKids(p) {
   );
 }
 
+function isProductMatchGender(p, targetGender) {
+  if (!targetGender || targetGender === 'all') return true;
+  const filter = String(targetGender).toLowerCase().trim();
+  const prodGender = String(p.gender || '').toLowerCase().trim();
+  const name = String(p.name || '').toLowerCase();
+  const cat = String(p.category || '').toLowerCase();
+  const subCat = String(p.subCategory || '').toLowerCase();
+  const desc = String(p.desc || p.description || '').toLowerCase();
+
+  // If explicitly set to Unisex, it matches all adult genders
+  if (prodGender === 'unisex') return true;
+
+  if (filter === 'men' || filter === 'man' || filter === 'male' || filter === 'for men') {
+    // Strictly exclude explicit women/female items
+    if (prodGender === 'women' || prodGender === 'female' || prodGender === 'girl' || prodGender === 'ladies') {
+      return false;
+    }
+    // Check if item is explicitly marked for men or has men/gents/male in text
+    return (
+      prodGender === 'men' ||
+      prodGender === 'man' ||
+      prodGender === 'male' ||
+      prodGender === 'gents' ||
+      prodGender === 'gent' ||
+      prodGender === 'boy' ||
+      prodGender === 'boys' ||
+      name.includes('men') ||
+      name.includes('gents') ||
+      name.includes('male') ||
+      cat.includes('men') ||
+      cat.includes('gents') ||
+      subCat.includes('men') ||
+      subCat.includes('gents') ||
+      desc.includes('for men') ||
+      desc.includes('mens') ||
+      desc.includes("men's") ||
+      desc.includes('gents')
+    );
+  }
+
+  if (filter === 'women' || filter === 'woman' || filter === 'female' || filter === 'for women' || filter === 'ladies') {
+    // Strictly exclude explicit men/male items
+    if (prodGender === 'men' || prodGender === 'male' || prodGender === 'gents') {
+      return false;
+    }
+    return (
+      prodGender === 'women' ||
+      prodGender === 'woman' ||
+      prodGender === 'female' ||
+      prodGender === 'ladies' ||
+      prodGender === 'lady' ||
+      prodGender === 'girl' ||
+      prodGender === 'girls' ||
+      name.includes('women') ||
+      name.includes('ladies') ||
+      name.includes('female') ||
+      cat.includes('women') ||
+      subCat.includes('women') ||
+      desc.includes('for women') ||
+      desc.includes('womens') ||
+      desc.includes("women's") ||
+      desc.includes('ladies') ||
+      // In Indian jewellery catalogues, items without explicit gender default to women unless marked for men/kids
+      (!prodGender && !name.includes('mens') && !name.includes("men's") && !name.includes('gents') && !isProductKids(p))
+    );
+  }
+
+  if (filter === 'kids' || filter === 'kid' || filter === 'baby' || filter === 'children' || filter === 'for kids') {
+    return (
+      prodGender === 'kids' ||
+      prodGender === 'kid' ||
+      prodGender === 'baby' ||
+      prodGender === 'children' ||
+      prodGender === 'child' ||
+      isProductKids(p)
+    );
+  }
+
+  return prodGender.includes(filter) || name.includes(filter) || cat.includes(filter);
+}
+
 export default function Collections({
   activeCategoryTab: initialCategoryTab = 'Collections',
   setActiveCategoryTab: onCategoryTabChange,
@@ -552,6 +633,9 @@ export default function Collections({
         if (tab === 'kids jewellery' || tab === 'kids') {
           return isProductKids(p);
         }
+        if (tab === 'diamond' || tab === 'diamonds' || tab === 'diamond jewellery') {
+          return isProductDiamond(p);
+        }
 
         const cat = String(p.category || '').toLowerCase();
         const subCat = String(p.subCategory || '').toLowerCase();
@@ -597,6 +681,9 @@ export default function Collections({
         if (mf === 'platinum') {
           return isProductPlatinum(p);
         }
+        if (mf === 'diamond') {
+          return isProductDiamond(p);
+        }
         return catType.includes(mf) || metal.includes(mf) || metalType.includes(mf) || metalColor.includes(mf) || name.includes(mf);
       });
     }
@@ -620,7 +707,7 @@ export default function Collections({
       result = result.filter(p => String(p.stone || p.gemstone || p.diamondShape || '').toLowerCase().includes(stoneFilter.toLowerCase()));
     }
     if (genderFilter !== 'all') {
-      result = result.filter(p => String(p.gender || '').toLowerCase().includes(genderFilter.toLowerCase()));
+      result = result.filter(p => isProductMatchGender(p, genderFilter));
     }
     if (occasionFilter !== 'all') {
       result = result.filter(p => String(p.occasion || '').toLowerCase().includes(occasionFilter.toLowerCase()));
@@ -1445,13 +1532,13 @@ export default function Collections({
                               <span className="font-extrabold text-[10px] sm:text-sm text-[#DDA0DD] tracking-wide font-sans">
                                 ₹{formatPrice(calculatePrice(prod).total)}
                               </span>
-                              {(prod.discountPercent === undefined || prod.discountPercent === null || prod.discountPercent === '' || Number(prod.discountPercent) > 0) && (
+                              {Number(prod.discountPercent) > 0 && (
                                 <>
                                   <span className="text-[7.5px] sm:text-[10px] line-through text-gray-400 font-sans">
-                                    ₹{formatPrice(Math.round(calculatePrice(prod).total / (1 - (Number(prod.discountPercent) || 20) / 100)))}
+                                    ₹{formatPrice(calculatePrice(prod).originalTotal || Math.round(calculatePrice(prod).total / (1 - Number(prod.discountPercent) / 100)))}
                                   </span>
                                   <span className="text-[7px] sm:text-[9.5px] text-[#4CAF50] font-extrabold tracking-wide font-sans uppercase">
-                                    {Number(prod.discountPercent) || 20}% OFF
+                                    {Number(prod.discountPercent)}% OFF
                                   </span>
                                 </>
                               )}

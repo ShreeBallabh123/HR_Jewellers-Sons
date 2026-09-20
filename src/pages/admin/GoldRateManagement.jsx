@@ -152,6 +152,8 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
     '20k': DEFAULT_PURITY_PERCENTAGES['20K'],
     '18k': DEFAULT_PURITY_PERCENTAGES['18K'],
     '14k': DEFAULT_PURITY_PERCENTAGES['14K'],
+    'silver925': 92.50,
+    'silverNormal': 90.00,
   });
 
   const [loading, setLoading]           = useState(true);
@@ -171,12 +173,16 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
           '20k': Number(data.purityPercentages?.['20k'] ?? DEFAULT_PURITY_PERCENTAGES['20K']),
           '18k': Number(data.purityPercentages?.['18k'] ?? DEFAULT_PURITY_PERCENTAGES['18K']),
           '14k': Number(data.purityPercentages?.['14k'] ?? DEFAULT_PURITY_PERCENTAGES['14K']),
+          'silver925': Number(data.purityPercentages?.['silver925'] ?? data.purityPercentages?.['925'] ?? 92.50),
+          'silverNormal': Number(data.purityPercentages?.['silverNormal'] ?? data.purityPercentages?.['normal'] ?? 90.00),
         };
         setPercentages(storedPercentages);
 
         const rate24k = data.goldRate24k || '';
         const derived = rate24k ? deriveRates(rate24k, storedPercentages) : {};
         const baseSilver = data.silverRate || '';
+        const derived925 = baseSilver ? Math.round(baseSilver * (storedPercentages.silver925 / 100)) : '';
+        const derivedNormal = baseSilver ? Math.round(baseSilver * (storedPercentages.silverNormal / 100)) : '';
 
         setDraftRates({
           goldRate24k:      rate24k,
@@ -185,8 +191,8 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
           goldRate18k:      data.goldRate18k || derived.goldRate18k || '',
           goldRate14k:      data.goldRate14k || derived.goldRate14k || '',
           silverRate:       baseSilver,
-          silverRate925:    data.silverRate925 || (baseSilver ? Math.round(baseSilver * 0.925) : ''),
-          silverRateNormal: data.silverRateNormal || (baseSilver ? Math.round(baseSilver * 0.90) : ''),
+          silverRate925:    data.silverRate925 || derived925,
+          silverRateNormal: data.silverRateNormal || derivedNormal,
           platinumRate:     data.platinumRate || '',
         });
         setLoading(false);
@@ -235,26 +241,40 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
   const handle999SilverChange = (val) => {
     const update = { ...draftRates, silverRate: val };
     if (autoDerive && val > 0) {
-      update.silverRate925 = Math.round(val * 0.925);
-      update.silverRateNormal = Math.round(val * 0.90);
+      const p925 = Number(percentages.silver925 ?? 92.50);
+      const pNormal = Number(percentages.silverNormal ?? 90.00);
+      update.silverRate925 = Math.round(val * (p925 / 100));
+      update.silverRateNormal = Math.round(val * (pNormal / 100));
     }
     setDraftRates(update);
   };
 
-  // Percentage change handler for specific karat
+  // Percentage change handler for specific karat / silver purity
   const handlePercentageChange = (karatKey, pctVal) => {
     const updatedPercentages = { ...percentages, [karatKey]: pctVal };
     setPercentages(updatedPercentages);
 
-    if (autoDerive && draftRates.goldRate24k > 0) {
-      const derived = recalculateFrom24k(draftRates.goldRate24k, updatedPercentages);
-      setDraftRates(prev => ({
-        ...prev,
-        goldRate22k: derived.goldRate22k,
-        goldRate20k: derived.goldRate20k,
-        goldRate18k: derived.goldRate18k,
-        goldRate14k: derived.goldRate14k,
-      }));
+    if (autoDerive) {
+      if (['22k', '20k', '18k', '14k'].includes(karatKey) && draftRates.goldRate24k > 0) {
+        const derived = recalculateFrom24k(draftRates.goldRate24k, updatedPercentages);
+        setDraftRates(prev => ({
+          ...prev,
+          goldRate22k: derived.goldRate22k,
+          goldRate20k: derived.goldRate20k,
+          goldRate18k: derived.goldRate18k,
+          goldRate14k: derived.goldRate14k,
+        }));
+      } else if (karatKey === 'silver925' && draftRates.silverRate > 0) {
+        setDraftRates(prev => ({
+          ...prev,
+          silverRate925: Math.round(draftRates.silverRate * (pctVal / 100)),
+        }));
+      } else if (karatKey === 'silverNormal' && draftRates.silverRate > 0) {
+        setDraftRates(prev => ({
+          ...prev,
+          silverRateNormal: Math.round(draftRates.silverRate * (pctVal / 100)),
+        }));
+      }
     }
   };
 
@@ -266,10 +286,12 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
     setSaving(true);
     try {
       const baseSilver = draftRates.silverRate ? Number(draftRates.silverRate) : 0;
+      const p925 = Number(percentages.silver925 ?? 92.50);
+      const pNormal = Number(percentages.silverNormal ?? 90.00);
       const payload = {
         ...draftRates,
-        silverRate925: baseSilver > 0 ? Math.round(baseSilver * 0.925) : '',
-        silverRateNormal: baseSilver > 0 ? Math.round(baseSilver * 0.90) : '',
+        silverRate925: draftRates.silverRate925 || (baseSilver > 0 ? Math.round(baseSilver * (p925 / 100)) : ''),
+        silverRateNormal: draftRates.silverRateNormal || (baseSilver > 0 ? Math.round(baseSilver * (pNormal / 100)) : ''),
         purityPercentages: percentages,
       };
       await goldRateService.saveRates(payload, adminUser?.email || 'admin');
@@ -291,10 +313,12 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
     setPublishing(true);
     try {
       const baseSilver = draftRates.silverRate ? Number(draftRates.silverRate) : 0;
+      const p925 = Number(percentages.silver925 ?? 92.50);
+      const pNormal = Number(percentages.silverNormal ?? 90.00);
       const payload = {
         ...draftRates,
-        silverRate925: baseSilver > 0 ? Math.round(baseSilver * 0.925) : '',
-        silverRateNormal: baseSilver > 0 ? Math.round(baseSilver * 0.90) : '',
+        silverRate925: draftRates.silverRate925 || (baseSilver > 0 ? Math.round(baseSilver * (p925 / 100)) : ''),
+        silverRateNormal: draftRates.silverRateNormal || (baseSilver > 0 ? Math.round(baseSilver * (pNormal / 100)) : ''),
         purityPercentages: percentages,
       };
       await goldRateService.publishRates(payload, adminUser?.email || 'admin');
@@ -488,7 +512,7 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* 999 Fine Silver (Base) */}
-              <div className="space-y-3">
+              <div>
                 <RateInputCard
                   id="rate-silver-999"
                   label="999 Fine Silver (Master Base Rate)"
@@ -500,32 +524,6 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
                   unit="₹ / kg"
                   accentColor="blue"
                 />
-
-                {/* Auto-Formula Card for 925 & Normal Silver */}
-                <div className="bg-slate-50 dark:bg-zinc-900 border border-solid border-slate-200 dark:border-zinc-800 rounded-xl p-3.5 text-[11px] space-y-2 select-none shadow-xs">
-                  <div className="text-[9px] font-extrabold uppercase tracking-wider text-zinc-400 flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-[#C8A646]" />
-                    Auto-Calculated Silver Purities (Formula Driven)
-                  </div>
-                  <div className="flex items-center justify-between border-t border-solid border-slate-200/60 dark:border-zinc-800 pt-2">
-                    <span className="font-bold text-zinc-600 dark:text-zinc-300 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                      925 Sterling Silver (92.5%):
-                    </span>
-                    <span className="font-mono font-extrabold text-cyan-600 dark:text-cyan-400 text-xs">
-                      {draftRates.silverRate ? `₹${formatINR(Math.round(draftRates.silverRate * 0.925))} / kg (≈ ₹${formatINR(Math.round(draftRates.silverRate * 0.925 / 1000))} / g)` : '—'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between border-t border-solid border-slate-200/60 dark:border-zinc-800 pt-2">
-                    <span className="font-bold text-zinc-600 dark:text-zinc-300 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-slate-500" />
-                      Normal Silver (90.0%):
-                    </span>
-                    <span className="font-mono font-extrabold text-slate-600 dark:text-slate-400 text-xs">
-                      {draftRates.silverRate ? `₹${formatINR(Math.round(draftRates.silverRate * 0.90))} / kg (≈ ₹${formatINR(Math.round(draftRates.silverRate * 0.90 / 1000))} / g)` : '—'}
-                    </span>
-                  </div>
-                </div>
               </div>
 
               {/* Platinum Rate */}
@@ -541,6 +539,43 @@ export default function GoldRateManagement({ setAdminNotification, adminUser }) 
                   accentColor="purple"
                 />
               </div>
+            </div>
+
+            {/* Derived Silver Purities (925 Sterling Silver & Normal Silver) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              {/* 925 Sterling Silver */}
+              <RateInputCard
+                id="rate-silver-925"
+                label="925 Sterling Silver"
+                sublabel="Fine Hallmark Jewellery (92.5%)"
+                karat="925"
+                percentage={percentages.silver925}
+                onPercentageChange={(pct) => handlePercentageChange('silver925', pct)}
+                badge="925 STERLING"
+                value={draftRates.silverRate925}
+                onChange={(v) => setDraftRates({ ...draftRates, silverRate925: v })}
+                unit="₹ / kg"
+                accentColor="cyan"
+                disabled={autoDerive}
+                baseRate24k={draftRates.silverRate}
+              />
+
+              {/* Normal Silver */}
+              <RateInputCard
+                id="rate-silver-normal"
+                label="Normal Silver"
+                sublabel="Standard Silver Articles & Ornaments (90.0%)"
+                karat="Normal"
+                percentage={percentages.silverNormal}
+                onPercentageChange={(pct) => handlePercentageChange('silverNormal', pct)}
+                badge="900 NORMAL"
+                value={draftRates.silverRateNormal}
+                onChange={(v) => setDraftRates({ ...draftRates, silverRateNormal: v })}
+                unit="₹ / kg"
+                accentColor="slate"
+                disabled={autoDerive}
+                baseRate24k={draftRates.silverRate}
+              />
             </div>
           </div>
 

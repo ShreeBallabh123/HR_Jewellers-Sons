@@ -1341,9 +1341,9 @@ export default function ProductDetail({
                         <div className="flex gap-3 overflow-x-auto pb-2 pt-1 scrollbar-thin scrollbar-thumb-[#E7DED2] scrollbar-track-transparent snap-x">
                           {fallbackSimilar.map((item) => {
                             const finalItemPrice = calculatePrice(item).total;
-                            const itemDiscount = item.discountPercent !== undefined && item.discountPercent !== null && item.discountPercent !== '' ? Number(item.discountPercent) : 20;
-                            const itemHasDiscount = item.discountPercent === undefined || item.discountPercent === null || item.discountPercent === '' || Number(item.discountPercent) > 0;
-                            const itemOriginalPrice = itemHasDiscount ? Math.round(finalItemPrice / (1 - itemDiscount / 100)) : finalItemPrice;
+                            const itemDiscount = Number(item.discountPercent) || 0;
+                            const itemHasDiscount = itemDiscount > 0;
+                            const itemOriginalPrice = itemHasDiscount ? (calculatePrice(item).originalTotal || Math.round(finalItemPrice / (1 - itemDiscount / 100))) : finalItemPrice;
 
                             return (
                               <div
@@ -1887,8 +1887,8 @@ export default function ProductDetail({
       {/* Gold Mine 11 + 1 Plan Popup Modal (HR Jewellers Royal Gold Luxury Theme) */}
       {planModalOpen && (() => {
         const planRawPrice = Math.max(0, Number(computedProductPrice || detailProduct?.price || 0));
-        // Calculate recommended monthly amount by dividing product value by 11 months
-        const planRecommendedMonthly = planRawPrice > 0 ? Math.round(planRawPrice / 11) : 2000;
+        // Calculate recommended monthly amount by dividing product value by 12 months (11 paid + 1 bonus = 12 total)
+        const planRecommendedMonthly = planRawPrice > 0 ? Math.round(planRawPrice / 12) : 2000;
         const planTotalPayment = planRecommendedMonthly * 11;
         const planFree12thBonus = planRecommendedMonthly;
         const planTotalMaturity = planRecommendedMonthly * 12;

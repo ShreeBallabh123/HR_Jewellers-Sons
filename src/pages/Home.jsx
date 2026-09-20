@@ -653,11 +653,12 @@ export default function Home({
                 />
               </div>
 
-              {/* Clay Whispers Card */}
+              {/* Clay Whispers Card -> Redirects to Diamond Jewellery */}
               <div
                 onClick={() => {
                   triggerAudio('click');
-                  if (changeCategoryTab) changeCategoryTab('Pendants');
+                  if (typeof setMetalFilter === 'function') setMetalFilter('all');
+                  if (changeCategoryTab) changeCategoryTab('Diamond');
                   navigateTo('collections');
                 }}
                 className="relative group overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 cursor-pointer aspect-[4/3] text-center"
@@ -760,10 +761,13 @@ export default function Home({
                 className="lg:col-span-7 flex flex-col justify-between space-y-6 lg:space-y-0 text-center"
               >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full text-center">
-                  {/* Card 1 */}
+                  {/* Card 1: Layered Necklaces */}
                   <div
                     onClick={() => {
                       triggerAudio('click');
+                      if (typeof setMetalFilter === 'function') setMetalFilter('all');
+                      if (typeof setGenderFilter === 'function') setGenderFilter('women');
+                      if (typeof setMaxPriceFilter === 'function') setMaxPriceFilter(100000000);
                       if (changeCategoryTab) changeCategoryTab('Necklaces');
                       navigateTo('collections');
                     }}
@@ -786,11 +790,14 @@ export default function Home({
                     </div>
                   </div>
 
-                  {/* Card 2 */}
+                  {/* Card 2: Coveted Styles */}
                   <div
                     onClick={() => {
                       triggerAudio('click');
-                      if (changeCategoryTab) changeCategoryTab('All');
+                      if (typeof setMetalFilter === 'function') setMetalFilter('all');
+                      if (typeof setGenderFilter === 'function') setGenderFilter('all');
+                      if (typeof setMaxPriceFilter === 'function') setMaxPriceFilter(100000000);
+                      if (changeCategoryTab) changeCategoryTab('Collections');
                       navigateTo('collections');
                     }}
                     className="bg-[#FFF0F2] rounded-3xl p-5 flex flex-col justify-between shadow-sm border border-solid border-pink-100/30 hover:-translate-y-1.5 hover:shadow-md transition-all duration-300 group text-left cursor-pointer select-none"
@@ -812,12 +819,14 @@ export default function Home({
                     </div>
                   </div>
 
-                  {/* Card 3 */}
+                  {/* Card 3: HR Man */}
                   <div
                     onClick={() => {
                       triggerAudio('click');
-                      if (setGenderFilter) setGenderFilter('Men');
-                      if (changeCategoryTab) changeCategoryTab('Men');
+                      if (typeof setMetalFilter === 'function') setMetalFilter('all');
+                      if (typeof setGenderFilter === 'function') setGenderFilter('men');
+                      if (typeof setMaxPriceFilter === 'function') setMaxPriceFilter(100000000);
+                      if (changeCategoryTab) changeCategoryTab('Collections');
                       navigateTo('collections');
                     }}
                     className="bg-[#FFF0F2] rounded-3xl p-5 flex flex-col justify-between shadow-sm border border-solid border-pink-100/30 hover:-translate-y-1.5 hover:shadow-md transition-all duration-300 group text-left cursor-pointer select-none"
@@ -887,6 +896,9 @@ export default function Home({
                     <button
                       onClick={() => {
                         triggerAudio('shimmer');
+                        if (typeof setMetalFilter === 'function') setMetalFilter('all');
+                        if (typeof setGenderFilter === 'function') setGenderFilter('all');
+                        if (changeCategoryTab) changeCategoryTab('Collections');
                         if (setMaxPriceFilter) setMaxPriceFilter(10000);
                         navigateTo('collections');
                       }}
@@ -905,6 +917,9 @@ export default function Home({
                     <button
                       onClick={() => {
                         triggerAudio('shimmer');
+                        if (typeof setMetalFilter === 'function') setMetalFilter('all');
+                        if (typeof setGenderFilter === 'function') setGenderFilter('all');
+                        if (changeCategoryTab) changeCategoryTab('Collections');
                         if (setMaxPriceFilter) setMaxPriceFilter(30000);
                         navigateTo('collections');
                       }}
@@ -923,6 +938,9 @@ export default function Home({
                     <button
                       onClick={() => {
                         triggerAudio('shimmer');
+                        if (typeof setMetalFilter === 'function') setMetalFilter('all');
+                        if (typeof setGenderFilter === 'function') setGenderFilter('all');
+                        if (changeCategoryTab) changeCategoryTab('Collections');
                         if (setMaxPriceFilter) setMaxPriceFilter(50000);
                         navigateTo('collections');
                       }}

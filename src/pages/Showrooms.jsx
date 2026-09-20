@@ -1,13 +1,15 @@
 import React from 'react';
 
 export default function Showrooms({
-  categories,
-  loungeSuccess,
-  consultationPassCode,
-  consultationForm,
-  setConsultationForm,
-  handleLoungeBookingSubmit
+  categories = [],
+  loungeSuccess = false,
+  consultationPassCode = '',
+  consultationForm = { name: '', phone: '', date: '', type: 'Solitaire Festival Consultation' },
+  setConsultationForm = () => {},
+  handleLoungeBookingSubmit = (e) => e.preventDefault()
 }) {
+  const safeForm = consultationForm || { name: '', phone: '', date: '', type: 'Solitaire Festival Consultation' };
+
   return (
     <div className="transition-colors duration-500 min-h-screen pb-8 bg-[#FCFAFF] text-[#4A126D]">
       <div className="max-w-4xl mx-auto px-6 pt-12 space-y-12 animate-slide-up text-center">
@@ -69,8 +71,8 @@ export default function Showrooms({
                     type="text"
                     required
                     placeholder="e.g. Suryaveer Singh"
-                    value={consultationForm.name}
-                    onChange={(e) => setConsultationForm({ ...consultationForm, name: e.target.value })}
+                    value={safeForm.name || ''}
+                    onChange={(e) => setConsultationForm({ ...safeForm, name: e.target.value })}
                     className="w-full bg-[#FBF9FF] border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#4A126D] focus:ring-1 focus:ring-[#4A126D]/20 transition-all"
                   />
                 </div>
@@ -82,8 +84,8 @@ export default function Showrooms({
                       type="tel"
                       required
                       placeholder="e.g. 9783843978"
-                      value={consultationForm.phone}
-                      onChange={(e) => setConsultationForm({ ...consultationForm, phone: e.target.value })}
+                      value={safeForm.phone || ''}
+                      onChange={(e) => setConsultationForm({ ...safeForm, phone: e.target.value })}
                       className="w-full bg-[#FBF9FF] border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#4A126D] focus:ring-1 focus:ring-[#4A126D]/20 transition-all"
                     />
                   </div>
@@ -93,8 +95,8 @@ export default function Showrooms({
                       id="lounge-date"
                       type="date"
                       required
-                      value={consultationForm.date}
-                      onChange={(e) => setConsultationForm({ ...consultationForm, date: e.target.value })}
+                      value={safeForm.date || ''}
+                      onChange={(e) => setConsultationForm({ ...safeForm, date: e.target.value })}
                       className="w-full bg-[#FBF9FF] border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-[#4A126D] focus:ring-1 focus:ring-[#4A126D]/20 transition-all"
                     />
                   </div>
@@ -103,15 +105,20 @@ export default function Showrooms({
                   <label htmlFor="lounge-type" className="text-[9px] uppercase tracking-wider text-[#4A126D]/75 font-bold block mb-1">Select Category of Interest</label>
                   <select
                     id="lounge-type"
-                    value={consultationForm.type}
-                    onChange={(e) => setConsultationForm({ ...consultationForm, type: e.target.value })}
+                    value={safeForm.type || 'Solitaire Festival Consultation'}
+                    onChange={(e) => setConsultationForm({ ...safeForm, type: e.target.value })}
                     className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-[#4A126D] focus:ring-1 focus:ring-[#4A126D]/20 transition-all cursor-pointer"
                   >
                     <option value="Solitaire Festival Consultation">Solitaire Festival Consultation</option>
                     <option value="Custom Design Consultation">Custom Design Consultation</option>
-                    {categories.map(cat => (
-                      <option key={cat.id} value={cat.name}>{cat.name}</option>
-                    ))}
+                    {Array.isArray(categories) && categories.map(cat => {
+                      const catName = typeof cat === 'object' ? (cat?.name || '') : String(cat);
+                      const catId = typeof cat === 'object' ? (cat?.id || catName) : cat;
+                      if (!catName) return null;
+                      return (
+                        <option key={catId} value={catName}>{catName}</option>
+                      );
+                    })}
                   </select>
                 </div>
                 <button

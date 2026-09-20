@@ -68,6 +68,8 @@ function getDefaultRates() {
       '20k': 83.33,
       '18k': 75.00,
       '14k': 58.33,
+      'silver925': 92.50,
+      'silverNormal': 90.00,
     },
     silverRate:       defaultSilver,
     silverRate925:    Math.round(defaultSilver * 0.925),
@@ -87,6 +89,8 @@ function buildRatePayload(ratesData, adminEmail, publish, publishedAt = null) {
   const p20 = Number(ratesData.purityPercentages?.['20k'] ?? ratesData.purityPercentages?.['20K'] ?? 83.33);
   const p18 = Number(ratesData.purityPercentages?.['18k'] ?? ratesData.purityPercentages?.['18K'] ?? 75.00);
   const p14 = Number(ratesData.purityPercentages?.['14k'] ?? ratesData.purityPercentages?.['14K'] ?? 58.33);
+  const pSilver925 = Number(ratesData.purityPercentages?.['silver925'] ?? ratesData.purityPercentages?.['925'] ?? 92.50);
+  const pSilverNormal = Number(ratesData.purityPercentages?.['silverNormal'] ?? ratesData.purityPercentages?.['normal'] ?? 90.00);
   const baseSilver = Number(ratesData.silverRate) || 92000;
 
   return {
@@ -101,10 +105,12 @@ function buildRatePayload(ratesData, adminEmail, publish, publishedAt = null) {
       '20k': p20,
       '18k': p18,
       '14k': p14,
+      'silver925': pSilver925,
+      'silverNormal': pSilverNormal,
     },
     silverRate:       baseSilver,
-    silverRate925:    Number(ratesData.silverRate925)    || Math.round(baseSilver * 0.925),
-    silverRateNormal: Number(ratesData.silverRateNormal) || Math.round(baseSilver * 0.90),
+    silverRate925:    Number(ratesData.silverRate925)    || Math.round(baseSilver * (pSilver925 / 100)),
+    silverRateNormal: Number(ratesData.silverRateNormal) || Math.round(baseSilver * (pSilverNormal / 100)),
     platinumRate:     Number(ratesData.platinumRate) || 3500,
     lastUpdated:      now,
     updatedBy:        adminEmail,
