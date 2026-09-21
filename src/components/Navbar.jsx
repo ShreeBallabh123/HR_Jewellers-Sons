@@ -510,13 +510,27 @@ export default function Navbar({
                 </button>
                 <div className="absolute top-full right-0 mt-3 bg-white text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.12)] border border-solid border-[#ECECEC] rounded-2xl p-2 w-[340px] max-w-[90vw] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-[12px] normal-case font-sans select-none font-semibold flex flex-col gap-1 whitespace-normal text-left">
                   <button
-                    onClick={() => { triggerAudio('click'); setMaxPriceFilter(100000000); changeCategoryTab('Collections'); navigateTo('collections'); }}
+                    onClick={() => {
+                      triggerAudio('click');
+                      if (typeof setMetalFilter === 'function') setMetalFilter('all');
+                      if (typeof setGenderFilter === 'function') setGenderFilter('all');
+                      if (typeof setMaxPriceFilter === 'function') setMaxPriceFilter(100000000);
+                      changeCategoryTab('Diamond', 'all', 'all');
+                      navigateTo('collections');
+                    }}
                     className="w-full text-left px-4 py-2.5 text-[12px] font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer leading-snug focus:outline-none border-none bg-transparent whitespace-normal block"
                   >
                     💎 Up To 50% Off On Making Charges On Diamond Jewellery
                   </button>
                   <button
-                    onClick={() => { triggerAudio('click'); changeCategoryTab('Collections', 'gold'); if (typeof setMetalFilter === 'function') setMetalFilter('gold'); navigateTo('collections'); }}
+                    onClick={() => {
+                      triggerAudio('click');
+                      if (typeof setMetalFilter === 'function') setMetalFilter('gold');
+                      if (typeof setGenderFilter === 'function') setGenderFilter('all');
+                      if (typeof setMaxPriceFilter === 'function') setMaxPriceFilter(100000000);
+                      changeCategoryTab('Collections', 'gold', 'all');
+                      navigateTo('collections');
+                    }}
                     className="w-full text-left px-4 py-2.5 text-[12px] font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer leading-snug focus:outline-none border-none bg-transparent whitespace-normal block"
                   >
                     🥇 Up To 20% Off On Making Charges On Plain Gold Jewellery

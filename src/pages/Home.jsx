@@ -105,8 +105,9 @@ const promoBanners = [
     id: 1,
     img: bannerGold20,
     alt: "Up to 20% OFF on Making Charges on Plain Gold Jewellery",
-    link: "offers",
-    tab: "Collections"
+    link: "collections",
+    tab: "Collections",
+    metal: "gold"
   },
   {
     id: 2,
@@ -124,7 +125,7 @@ const promoBanners = [
     id: 4,
     img: bannerDiamond50,
     alt: "Up to 50% OFF on Making Charges on Diamond Jewellery",
-    link: "offers",
+    link: "collections",
     tab: "Diamond"
   }
 ];
@@ -539,10 +540,29 @@ export default function Home({
                   onClick={() => {
                     triggerAudio('click');
                     const banner = promoBanners[currentPromoSlide];
-                    if (banner.tab) {
-                      changeCategoryTab(banner.tab);
+                    if (banner.id === 1) {
+                      // Up to 20% OFF on Making Charges on Plain Gold Jewellery -> Collections (Gold)
+                      if (typeof setMetalFilter === 'function') setMetalFilter('gold');
+                      if (typeof setGenderFilter === 'function') setGenderFilter('all');
+                      if (typeof setMaxPriceFilter === 'function') setMaxPriceFilter(100000000);
+                      if (changeCategoryTab) changeCategoryTab('Collections', 'gold', 'all');
+                      navigateTo('collections');
+                    } else if (banner.id === 4) {
+                      // Up to 50% OFF on Making Charges on Diamond Jewellery -> Collections (Diamond)
+                      if (typeof setMetalFilter === 'function') setMetalFilter('all');
+                      if (typeof setGenderFilter === 'function') setGenderFilter('all');
+                      if (typeof setMaxPriceFilter === 'function') setMaxPriceFilter(100000000);
+                      if (changeCategoryTab) changeCategoryTab('Diamond', 'all', 'all');
+                      navigateTo('collections');
+                    } else {
+                      if (banner.tab) {
+                        changeCategoryTab(banner.tab, banner.metal || 'all', banner.gender || 'all');
+                      }
+                      if (banner.metal && typeof setMetalFilter === 'function') {
+                        setMetalFilter(banner.metal);
+                      }
+                      navigateTo(banner.link);
                     }
-                    navigateTo(banner.link);
                   }}
                   className="absolute inset-0 w-full h-full text-left group cursor-pointer"
                 >
