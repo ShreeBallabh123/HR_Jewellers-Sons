@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { ShoppingBag } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 
 export default function CartDrawer({ isOpen, onClose, navigateTo }) {
@@ -29,7 +30,7 @@ export default function CartDrawer({ isOpen, onClose, navigateTo }) {
       {/* Dark Blur Overlay */}
       <div 
         onClick={onClose}
-        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 animate-fade-in"
+        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 animate-fade-in" 
       />
 
       {/* Drawer Panel */}
@@ -55,7 +56,9 @@ export default function CartDrawer({ isOpen, onClose, navigateTo }) {
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           {cartItems.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center space-y-4 py-12">
-              <span className="text-4xl text-[#B8893C]/40">💍</span>
+              <div className="w-14 h-14 rounded-full bg-[#B8893C]/10 flex items-center justify-center text-[#B8893C]">
+                <ShoppingBag className="w-7 h-7" />
+              </div>
               <p className="text-sm font-medium text-gray-400 font-sans">Your Shopping Bag is empty</p>
               <button 
                 onClick={() => { onClose(); navigateTo('collections'); }}
@@ -161,9 +164,9 @@ export default function CartDrawer({ isOpen, onClose, navigateTo }) {
                 onClose();
                 navigateTo('checkout');
               }}
-              className="w-full h-12 bg-gradient-to-r from-[#B8893C] via-[#D5A75C] to-[#B8893C] hover:brightness-110 text-white font-bold text-xs uppercase tracking-[0.2em] rounded-lg shadow-md transition-all duration-300 active:scale-99 flex items-center justify-center cursor-pointer border-none font-semibold font-sans mt-2"
+              className="w-full py-3.5 bg-gradient-to-r from-[#B8893C] to-[#E6C687] hover:brightness-105 text-[#031838] font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-md cursor-pointer border-none"
             >
-              CONFIRM BAG CHECKOUT
+              Proceed to Checkout
             </button>
           </div>
         )}

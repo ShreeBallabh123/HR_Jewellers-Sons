@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Mail, Download, Truck, Tag } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { bookingApi } from '../api/booking.api';
 import { requestAndSaveToken } from '../utils/notifications';
@@ -435,7 +436,7 @@ export default function Checkout({ navigateTo, triggerAudio }) {
 
           {/* Email Confirmation Notice Banner */}
           <div className="bg-emerald-50 border border-emerald-200/80 rounded-xl p-3.5 text-left flex items-start gap-2.5">
-            <span className="text-base">✉️</span>
+            <Mail className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
             <div className="text-[11px] text-emerald-900 leading-relaxed font-medium">
               <strong>Official GST Tax Invoice &amp; Live Tracking Link</strong> have been dispatched to{' '}
               <span className="font-bold underline text-emerald-950">{deliveryForm.email || 'your registered email'}</span>.
@@ -478,7 +479,7 @@ export default function Checkout({ navigateTo, triggerAudio }) {
                 </>
               ) : (
                 <>
-                  <span>📄</span> Download Tax Invoice (PDF)
+                  <Download className="w-4 h-4" /> <span>Download Tax Invoice (PDF)</span>
                 </>
               )}
             </button>
@@ -487,7 +488,7 @@ export default function Checkout({ navigateTo, triggerAudio }) {
               onClick={handleTrackLive}
               className="w-full py-3 bg-[#031838] hover:bg-[#031838]/90 text-white text-xs uppercase font-bold tracking-wider rounded-xl transition-all shadow-sm cursor-pointer border-none flex items-center justify-center gap-2"
             >
-              <span>🚚</span> Track Live Order Status
+              <Truck className="w-4 h-4" /> <span>Track Live Order Status</span>
             </button>
 
             <button
@@ -909,7 +910,10 @@ export default function Checkout({ navigateTo, triggerAudio }) {
 
               {/* Apply Voucher */}
               {checkoutFlowStep === 1 && (
-                <p className="text-[11px] text-[#006361] font-semibold cursor-pointer">🏷️ Apply Voucher / Gift Card</p>
+                <p className="text-[11px] text-[#006361] font-semibold cursor-pointer flex items-center gap-1">
+                  <Tag className="w-3.5 h-3.5" />
+                  <span>Apply Voucher / Gift Card</span>
+                </p>
               )}
 
               <div className="border-t border-gray-100 pt-3">

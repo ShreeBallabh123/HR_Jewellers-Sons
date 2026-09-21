@@ -1,5 +1,23 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Sparkles, 
+  Gem, 
+  CircleDot, 
+  Crown, 
+  Circle, 
+  Heart, 
+  Bell, 
+  Star, 
+  Award, 
+  User, 
+  Coins, 
+  Baby, 
+  Disc,
+  SlidersHorizontal,
+  Search,
+  PenTool
+} from 'lucide-react';
 import { useProducts } from '../hooks/useProducts';
 import { useWishlist } from '../hooks/useWishlist';
 import { useRates } from '../hooks/useRates';
@@ -483,14 +501,108 @@ export default function Collections({
   const triggerAudio = (type) => { try { triggerAudioProp?.(type); } catch { /* noop */ } };
 
   const metalTypeOptions = [
-    { id: 'gold', label: 'GOLD', icon: '🥇', bg: 'linear-gradient(135deg, #FFF8E7, #FFF0B3)', border: '#C8960C', text: '#A07820' },
-    { id: 'silver', label: 'ALL SILVER', icon: '🥈', bg: 'linear-gradient(135deg, #F8FAFC, #E2E8F0)', border: '#94A3B8', text: '#475569' },
-    { id: '925 silver', label: '925 SILVER', icon: '🥈', bg: 'linear-gradient(135deg, #F0F4F8, #D9E2EC)', border: '#627D98', text: '#334E68' },
-    { id: 'normal silver', label: 'NORMAL SILVER', icon: '🪙', bg: 'linear-gradient(135deg, #F7FAFC, #E2E8F0)', border: '#718096', text: '#4A5568' },
-    { id: '999 silver', label: '999 SILVER', icon: '🌟', bg: 'linear-gradient(135deg, #F0FFF4, #C6F6D5)', border: '#38A169', text: '#22543D' },
-    { id: 'rose gold', label: 'ROSE GOLD', icon: '🌸', bg: 'linear-gradient(135deg, #FFF5F5, #FED7D7)', border: '#E53E3E', text: '#9B2C2C' },
-    { id: 'white gold', label: 'WHITE GOLD', icon: '⚪', bg: 'linear-gradient(135deg, #F7FAFC, #EDF2F7)', border: '#A0AEC0', text: '#4A5568' },
-    { id: 'platinum', label: 'PLATINUM', icon: '💎', bg: 'linear-gradient(135deg, #FAF5FF, #E9D8FD)', border: '#805AD5', text: '#553C9A' },
+    { 
+      id: 'gold', 
+      label: 'GOLD', 
+      icon: (
+        <svg className="w-4 h-4 text-[#C8960C]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v10M9 9h6" strokeLinecap="round" />
+        </svg>
+      ), 
+      bg: 'linear-gradient(135deg, #FFF8E7, #FFF0B3)', 
+      border: '#C8960C', 
+      text: '#A07820' 
+    },
+    { 
+      id: 'silver', 
+      label: 'ALL SILVER', 
+      icon: (
+        <svg className="w-4 h-4 text-[#64748B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="3" y="6" width="18" height="12" rx="3" />
+          <path d="M8 12h8" strokeLinecap="round" />
+        </svg>
+      ), 
+      bg: 'linear-gradient(135deg, #F8FAFC, #E2E8F0)', 
+      border: '#94A3B8', 
+      text: '#475569' 
+    },
+    { 
+      id: '925 silver', 
+      label: '925 SILVER', 
+      icon: (
+        <svg className="w-4 h-4 text-[#475569]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" strokeLinejoin="round" />
+        </svg>
+      ), 
+      bg: 'linear-gradient(135deg, #F0F4F8, #D9E2EC)', 
+      border: '#627D98', 
+      text: '#334E68' 
+    },
+    { 
+      id: 'normal silver', 
+      label: 'NORMAL SILVER', 
+      icon: (
+        <svg className="w-4 h-4 text-[#718096]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="8" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      ), 
+      bg: 'linear-gradient(135deg, #F7FAFC, #E2E8F0)', 
+      border: '#718096', 
+      text: '#4A5568' 
+    },
+    { 
+      id: '999 silver', 
+      label: '999 SILVER', 
+      icon: (
+        <svg className="w-4 h-4 text-[#2E7D32]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" strokeLinejoin="round" />
+        </svg>
+      ), 
+      bg: 'linear-gradient(135deg, #F0FFF4, #C6F6D5)', 
+      border: '#38A169', 
+      text: '#22543D' 
+    },
+    { 
+      id: 'rose gold', 
+      label: 'ROSE GOLD', 
+      icon: (
+        <svg className="w-4 h-4 text-[#C53030]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 21a9 9 0 0 0 9-9c0-4.97-4.03-9-9-9s-9 4.03-9 9a9 9 0 0 0 9 9z" />
+          <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z" />
+        </svg>
+      ), 
+      bg: 'linear-gradient(135deg, #FFF5F5, #FED7D7)', 
+      border: '#E53E3E', 
+      text: '#9B2C2C' 
+    },
+    { 
+      id: 'white gold', 
+      label: 'WHITE GOLD', 
+      icon: (
+        <svg className="w-4 h-4 text-[#718096]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="9" />
+          <circle cx="12" cy="12" r="5" strokeDasharray="2 2" />
+        </svg>
+      ), 
+      bg: 'linear-gradient(135deg, #F7FAFC, #EDF2F7)', 
+      border: '#A0AEC0', 
+      text: '#4A5568' 
+    },
+    { 
+      id: 'platinum', 
+      label: 'PLATINUM', 
+      icon: (
+        <svg className="w-4 h-4 text-[#6B46C1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M6 3h12l4 6-10 12L2 9z" strokeLinejoin="round" />
+          <path d="M2 9h20M10 3l2 6 2-6M6 9l6 12 6-12" />
+        </svg>
+      ), 
+      bg: 'linear-gradient(135deg, #FAF5FF, #E9D8FD)', 
+      border: '#805AD5', 
+      text: '#553C9A' 
+    },
   ];
 
   const metalRadioList = [
@@ -573,19 +685,19 @@ export default function Collections({
     setOccasionFilter('all');
   };
 
-  // Primary Category options list
+  // Primary Category options list with luxury SVG icons
   const primaryCategories = useMemo(() => [
-    { id: 'Collections', label: 'All Collections', icon: '✨' },
-    { id: 'Earrings', label: 'Earrings', icon: '💎' },
-    { id: 'Rings', label: 'Rings', icon: '💍' },
-    { id: 'Necklaces', label: 'Necklaces & Chains', icon: '📿' },
-    { id: 'Pendants', label: 'Pendants', icon: '✨' },
-    { id: 'Bangles', label: 'Bangles', icon: '💫' },
-    { id: 'Bracelets', label: 'Bracelets', icon: '✨' },
-    { id: 'Mangalsutra', label: 'Mangalsutra', icon: '👑' },
-    { id: 'Silver', label: 'Silver Collection', icon: '🥈' },
-    { id: 'Solitaires', label: 'Solitaires', icon: '💎' },
-    { id: 'Kids Jewellery', label: 'Kids Jewellery', icon: '👶' },
+    { id: 'Collections', label: 'All Collections', icon: <Sparkles className="w-3.5 h-3.5" /> },
+    { id: 'Earrings', label: 'Earrings', icon: <Sparkles className="w-3.5 h-3.5" /> },
+    { id: 'Rings', label: 'Rings', icon: <CircleDot className="w-3.5 h-3.5" /> },
+    { id: 'Necklaces', label: 'Necklaces & Chains', icon: <Crown className="w-3.5 h-3.5" /> },
+    { id: 'Pendants', label: 'Pendants', icon: <Gem className="w-3.5 h-3.5" /> },
+    { id: 'Bangles', label: 'Bangles', icon: <Circle className="w-3.5 h-3.5" /> },
+    { id: 'Bracelets', label: 'Bracelets', icon: <Disc className="w-3.5 h-3.5" /> },
+    { id: 'Mangalsutra', label: 'Mangalsutra', icon: <Heart className="w-3.5 h-3.5" /> },
+    { id: 'Silver', label: 'Silver Collection', icon: <Award className="w-3.5 h-3.5" /> },
+    { id: 'Solitaires', label: 'Solitaires', icon: <Gem className="w-3.5 h-3.5" /> },
+    { id: 'Kids Jewellery', label: 'Kids Jewellery', icon: <Baby className="w-3.5 h-3.5" /> },
   ], []);
 
   // Determine current metal mode for dynamic purity options
@@ -923,7 +1035,8 @@ export default function Collections({
               {/* Header */}
               <div className="px-4 pb-2 flex justify-between items-center border-b border-gray-100 shrink-0">
                 <h3 className="text-sm font-bold text-[#4A126D] serif-luxury flex items-center gap-1.5">
-                  <span className="text-xs">✨</span> Filters
+                  <Sparkles className="w-3.5 h-3.5 text-[#C8A646]" />
+                  <span>Filters</span>
                 </h3>
                 <div className="flex items-center gap-3">
                   <button
@@ -1160,8 +1273,9 @@ export default function Collections({
 
               {/* Header */}
               <div className="flex justify-between items-center border-b border-gray-100 px-3 sm:px-5 py-2 sm:py-3 sticky top-0 bg-white z-10 rounded-t-xl sm:rounded-t-3xl">
-                <h3 className="serif-luxury text-xs sm:text-base font-bold text-[#4A126D] flex items-center gap-1 tracking-wide">
-                  <span className="text-[10px] sm:text-sm">✨</span> Filters
+                <h3 className="serif-luxury text-xs sm:text-base font-bold text-[#4A126D] flex items-center gap-1.5 tracking-wide">
+                  <Sparkles className="w-3.5 h-3.5 text-[#C8A646]" />
+                  <span>Filters</span>
                 </h3>
                 <button
                   onClick={resetAllFilters}
@@ -1355,8 +1469,9 @@ export default function Collections({
                 <div className="pt-2 sm:pt-4 text-center space-y-1.5 sm:space-y-2">
                   <p className="text-[7px] sm:text-[9px] text-gray-400 font-light leading-relaxed font-sans">Can't find your dream piece? Request bespoke craftsmanship.</p>
                   <button onClick={() => { triggerAudio('shimmer'); setCustomDesignOpen(true); }}
-                    className="w-full py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl bg-[#4A126D]/10 hover:bg-[#4A126D] text-[#4A126D] hover:text-white border border-solid border-[#4A126D]/30 hover:border-transparent text-[7px] sm:text-[8.5px] uppercase font-bold tracking-widest transition-all duration-300 cursor-pointer font-bold">
-                    ✍️ Create Custom Design
+                    className="w-full py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl bg-[#4A126D]/10 hover:bg-[#4A126D] text-[#4A126D] hover:text-white border border-solid border-[#4A126D]/30 hover:border-transparent text-[7px] sm:text-[8.5px] uppercase font-bold tracking-widest transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5">
+                    <PenTool className="w-3 h-3" />
+                    <span>Create Custom Design</span>
                   </button>
                 </div>
 
@@ -1371,7 +1486,7 @@ export default function Collections({
               {searchQuery && searchQuery.trim() !== '' && (
                 <div className="bg-[#FAF8F6] border border-solid border-[#E6C687]/50 rounded-xl sm:rounded-2xl px-4 py-2.5 flex items-center justify-between gap-3 text-xs shadow-xs">
                   <div className="flex items-center gap-2">
-                    <span className="text-[#C8A646]">🔍</span>
+                    <Search className="w-3.5 h-3.5 text-[#C8A646]" />
                     <span className="text-gray-700">Searching for: <strong className="text-[#4A126D]">"{searchQuery}"</strong> ({filteredJewellery.length} results)</span>
                   </div>
                   <button
@@ -1411,7 +1526,8 @@ export default function Collections({
                     onClick={() => { triggerAudio('shimmer'); setCustomDesignOpen(true); }}
                     className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-1.5 rounded-lg sm:rounded-xl bg-gold/10 hover:bg-gold text-gold hover:text-white border border-solid border-gold hover:border-transparent text-[8px] sm:text-[9px] uppercase font-bold tracking-widest transition-all duration-300 cursor-pointer shadow-sm ml-auto whitespace-nowrap"
                   >
-                    ✍️ <span className="hidden xs:inline">Custom </span>Design
+                    <PenTool className="w-3 h-3" />
+                    <span className="hidden xs:inline">Custom </span>Design
                   </button>
                 </div>
               </div>
@@ -1502,8 +1618,8 @@ export default function Collections({
               ) : filteredJewellery.length === 0 ? (
                 /* Empty state */
                 <div className="py-20 px-6 text-center border border-solid rounded-[2.5rem] shadow-sm max-w-md mx-auto space-y-5 animate-fade-in bg-white border-[#FBF9FF] text-[#4A126D]">
-                  <div className="w-16 h-16 bg-[#FBF9FF]/10 border border-solid border-[#DDA0DD]/30 rounded-full flex items-center justify-center mx-auto text-[#DDA0DD] text-2xl shadow-inner animate-float-gentle">
-                    ✨
+                  <div className="w-16 h-16 bg-[#FBF9FF]/10 border border-solid border-[#DDA0DD]/30 rounded-full flex items-center justify-center mx-auto text-[#DDA0DD] shadow-inner animate-float-gentle">
+                    <Sparkles className="w-7 h-7 text-[#DDA0DD]" />
                   </div>
                   <h3 className="serif-luxury font-medium text-xl">No Masterpieces Found</h3>
                   <p className="text-xs max-w-xs mx-auto leading-relaxed normal-case text-gray-550">
@@ -1537,7 +1653,7 @@ export default function Collections({
                             />
                           ) : (
                             <div className="w-full h-full bg-gradient-to-tr from-[#FAF8F5] to-[#F3EEE7] flex flex-col items-center justify-center space-y-2 border border-dashed border-[#DDA0DD]/20 rounded-xl">
-                              <span className="text-3xl animate-float-gentle">{prod.fallback || '✨'}</span>
+                              <Gem className="w-8 h-8 text-[#C8A646] animate-float-gentle" />
                               <span className="text-[8px] tracking-widest text-[#BCA057] uppercase font-bold">Awaiting Curation</span>
                             </div>
                           )}

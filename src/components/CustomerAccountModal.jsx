@@ -1,5 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Package, 
+  Truck, 
+  User, 
+  ShoppingBag, 
+  RotateCcw, 
+  FileText, 
+  CheckCircle2, 
+  Gem, 
+  Gift, 
+  Edit3, 
+  AlertTriangle, 
+  Download,
+  MapPin,
+  Building2
+} from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
 import { bookingApi } from '../api/booking.api';
@@ -224,11 +240,11 @@ export default function CustomerAccountModal({
     if (s === 'delivered') activeIndex = 4;
 
     const steps = [
-      { title: 'Order Placed', desc: 'Securely received & registered', icon: '📝' },
-      { title: 'Showroom Confirmed', desc: 'Verified by boutique manager', icon: '✓' },
-      { title: 'Artisan Crafting & BIS 916', desc: 'Laser hallmark certification check', icon: '💎' },
-      { title: 'Dispatched in Secure Transit', desc: 'Insured transit / ready for pickup', icon: '🚚' },
-      { title: 'Delivered', desc: 'Safely handed over to customer', icon: '🎁' }
+      { title: 'Order Placed', desc: 'Securely received & registered', icon: <FileText className="w-3.5 h-3.5" /> },
+      { title: 'Showroom Confirmed', desc: 'Verified by boutique manager', icon: <CheckCircle2 className="w-3.5 h-3.5" /> },
+      { title: 'Artisan Crafting & BIS 916', desc: 'Laser hallmark certification check', icon: <Gem className="w-3.5 h-3.5" /> },
+      { title: 'Dispatched in Secure Transit', desc: 'Insured transit / ready for pickup', icon: <Truck className="w-3.5 h-3.5" /> },
+      { title: 'Delivered', desc: 'Safely handed over to customer', icon: <Gift className="w-3.5 h-3.5" /> }
     ];
 
     return { steps, activeIndex, isCancelled };
@@ -292,7 +308,7 @@ export default function CustomerAccountModal({
                 : 'border-transparent text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'
             }`}
           >
-            <span>📦</span>
+            <Package className="w-4 h-4" />
             <span>My Orders ({customerOrders.length})</span>
           </button>
 
@@ -304,7 +320,7 @@ export default function CustomerAccountModal({
                 : 'border-transparent text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'
             }`}
           >
-            <span>🚚</span>
+            <Truck className="w-4 h-4" />
             <span>Live Order Tracking</span>
           </button>
 
@@ -316,7 +332,7 @@ export default function CustomerAccountModal({
                 : 'border-transparent text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'
             }`}
           >
-            <span>⚙️</span>
+            <User className="w-4 h-4" />
             <span>Shopping Profile</span>
           </button>
         </div>
@@ -352,7 +368,9 @@ export default function CustomerAccountModal({
                 </div>
               ) : customerOrders.length === 0 ? (
                 <div className="py-12 text-center space-y-4 bg-zinc-50 dark:bg-white/5 rounded-3xl p-6 border border-dashed border-zinc-200 dark:border-white/10">
-                  <div className="text-4xl">🛍️</div>
+                  <div className="w-12 h-12 rounded-full bg-[#C8A646]/10 text-[#C8A646] flex items-center justify-center mx-auto">
+                    <ShoppingBag className="w-6 h-6" />
+                  </div>
                   <div className="space-y-1">
                     <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200">No Orders Found Yet</p>
                     <p className="text-xs text-zinc-400 max-w-sm mx-auto">
@@ -449,8 +467,18 @@ export default function CustomerAccountModal({
 
                         {/* Order Action Buttons: Reorder & Track */}
                         <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-solid border-zinc-100 dark:border-white/10">
-                          <span className="text-[10px] text-zinc-400 font-medium">
-                            {order.deliveryType === 'store' ? '🏬 Showroom Pickup' : `📍 Deliver to ${order.pincode || 'Address'}`}
+                          <span className="text-[10px] text-zinc-400 font-medium inline-flex items-center gap-1">
+                            {order.deliveryType === 'store' ? (
+                              <>
+                                <Building2 className="w-3 h-3 text-[#C8A646]" />
+                                <span>Showroom Pickup</span>
+                              </>
+                            ) : (
+                              <>
+                                <MapPin className="w-3 h-3 text-[#C8A646]" />
+                                <span>Deliver to {order.pincode || 'Address'}</span>
+                              </>
+                            )}
                           </span>
 
                           <div className="flex flex-wrap items-center gap-2">
@@ -477,9 +505,10 @@ export default function CustomerAccountModal({
                                 setActiveTab('track');
                                 triggerAudio?.('click');
                               }}
-                              className="px-3.5 py-1.5 rounded-xl border border-solid border-[#C8A646]/30 text-[#C8A646] hover:bg-[#C8A646]/10 text-[11px] font-bold uppercase tracking-wider cursor-pointer bg-transparent transition-colors"
+                              className="px-3.5 py-1.5 rounded-xl border border-solid border-[#C8A646]/30 text-[#C8A646] hover:bg-[#C8A646]/10 text-[11px] font-bold uppercase tracking-wider cursor-pointer bg-transparent transition-colors flex items-center gap-1.5"
                             >
-                              🚚 Track
+                              <Truck className="w-3.5 h-3.5" />
+                              <span>Track</span>
                             </button>
 
                             {/* 1-Click Reorder Button ("Again order kr ske") */}
@@ -487,7 +516,8 @@ export default function CustomerAccountModal({
                               onClick={() => handleReorder(order)}
                               className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-[#C8A646] to-[#E6C687] text-white text-[11px] font-extrabold uppercase tracking-wider shadow-xs hover:brightness-105 cursor-pointer border-none transition-all flex items-center gap-1.5"
                             >
-                              <span>🔁</span> Buy Again
+                              <RotateCcw className="w-3.5 h-3.5" />
+                              <span>Buy Again</span>
                             </button>
                           </div>
                         </div>
@@ -589,8 +619,9 @@ export default function CustomerAccountModal({
 
                     {/* Stepper Timeline */}
                     {isCancelled ? (
-                      <div className="p-4 rounded-2xl bg-rose-50 text-rose-700 font-bold text-xs text-center border border-rose-200">
-                        ⚠️ This order was cancelled. If you have questions, please contact our support at +91 97838 43978.
+                      <div className="p-4 rounded-2xl bg-rose-50 text-rose-700 font-bold text-xs text-center border border-rose-200 flex items-center justify-center gap-2">
+                        <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                        <span>This order was cancelled. If you have questions, please contact our support at +91 97838 43978.</span>
                       </div>
                     ) : (
                       <div className="space-y-4">
@@ -671,7 +702,7 @@ export default function CustomerAccountModal({
                             </>
                           ) : (
                             <>
-                              <span>📄</span>
+                              <Download className="w-3.5 h-3.5" />
                               <span>Download Official Tax Invoice (PDF)</span>
                             </>
                           )}
@@ -701,9 +732,10 @@ export default function CustomerAccountModal({
                 {!isEditingProfile && (
                   <button
                     onClick={() => setIsEditingProfile(true)}
-                    className="text-xs font-bold text-[#C8A646] hover:underline cursor-pointer bg-transparent border-none"
+                    className="text-xs font-bold text-[#C8A646] hover:underline cursor-pointer bg-transparent border-none flex items-center gap-1.5"
                   >
-                    Edit Profile ✏️
+                    <span>Edit Profile</span>
+                    <Edit3 className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
@@ -822,8 +854,9 @@ export default function CustomerAccountModal({
 
         {/* Modal Footer */}
         <div className="px-6 py-3.5 bg-[#FAF8F5] dark:bg-[#1A0B26] border-t border-solid border-zinc-100 dark:border-white/10 flex items-center justify-between text-xs shrink-0">
-          <span className="text-[10px] text-zinc-400 font-medium">
-            💎 HR Jewellers &amp; Sons • Established 1996
+          <span className="text-[10px] text-zinc-400 font-medium inline-flex items-center gap-1.5">
+            <Gem className="w-3 h-3 text-[#C8A646]" />
+            <span>HR Jewellers &amp; Sons • Established 1996</span>
           </span>
           <button
             onClick={() => { triggerAudio?.('click'); onClose(); }}

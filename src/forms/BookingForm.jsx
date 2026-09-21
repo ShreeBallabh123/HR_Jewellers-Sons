@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Sparkles, Image, CheckCircle2 } from 'lucide-react';
 import { useBooking } from '../hooks/useBooking';
 import { ImageUploadService } from '../services/ImageUploadService';
 
@@ -117,12 +118,14 @@ export default function BookingForm({
   if (formSuccess) {
     return (
       <div className="text-center py-6">
-        <span className="text-4xl block mb-3">✨</span>
+        <div className="w-12 h-12 rounded-full bg-[#C8A646]/15 flex items-center justify-center mx-auto mb-3 text-[#C8A646]">
+          <CheckCircle2 className="w-7 h-7" />
+        </div>
         <h4 className="serif-luxury text-lg font-bold text-gold">Request Submitted Successfully</h4>
         <p className="text-xs text-zinc-500 mt-2">Our showroom representatives will reach out to you via WhatsApp shortly.</p>
         <button
           onClick={() => setFormSuccess(false)}
-          className="mt-6 px-5 py-2 bg-gradient-to-r from-gold to-[#DDA0DD] text-navy text-[10px] uppercase font-bold tracking-widest rounded-lg border-none"
+          className="mt-6 px-5 py-2 bg-gradient-to-r from-gold to-[#DDA0DD] text-navy text-[10px] uppercase font-bold tracking-widest rounded-lg border-none cursor-pointer"
         >
           Book Another
         </button>
@@ -281,7 +284,7 @@ export default function BookingForm({
                 onChange={handleFileChange}
                 className="absolute inset-0 opacity-0 cursor-pointer"
               />
-              <span className="text-lg block mb-1">🖼️</span>
+              <Image className="w-6 h-6 mx-auto mb-1 text-zinc-400" />
               <span className="text-[10px] text-zinc-400 block">
                 {selectedFiles.length > 0 ? `Selected ${selectedFiles.length} file(s)` : 'Choose image file(s) or drag here'}
               </span>

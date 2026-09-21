@@ -1,4 +1,5 @@
 import React from 'react';
+import { Coins, MapPin, Phone, Mail, Clock } from 'lucide-react';
 
 const TERMS_DATA = [
   {
@@ -367,7 +368,7 @@ export default function TermsAndConditions({
                     {sec.hasSavingScheme && (
                       <div className="mt-6 border border-[#DDA0DD]/25 rounded-2xl p-5 bg-[#FCFAFF] space-y-4">
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm">🪙</span>
+                          <Coins className="w-4 h-4 text-[#C8A646]" />
                           <h4 className="serif-luxury text-xs font-bold text-[#4A126D] tracking-wide uppercase">
                             11+1 GRP Gold Mine Systematic Savings Rules
                           </h4>
@@ -413,20 +414,32 @@ export default function TermsAndConditions({
                         <p className="font-bold text-[#4A126D] font-sans">{sec.contactInfo.brand}</p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 font-sans">
                           <div className="space-y-1.5">
-                            <p className="text-[11px] text-gray-500 uppercase tracking-wider font-bold">📍 Registered Address</p>
+                            <p className="text-[11px] text-gray-500 uppercase tracking-wider font-bold flex items-center gap-1.5">
+                              <MapPin className="w-3.5 h-3.5 text-[#C8A646]" />
+                              <span>Registered Address</span>
+                            </p>
                             <p className="font-normal">{sec.contactInfo.address}</p>
                           </div>
                           <div className="space-y-1.5">
-                            <p className="text-[11px] text-gray-500 uppercase tracking-wider font-bold">📞 Phone Contacts</p>
+                            <p className="text-[11px] text-gray-500 uppercase tracking-wider font-bold flex items-center gap-1.5">
+                              <Phone className="w-3.5 h-3.5 text-[#C8A646]" />
+                              <span>Phone Contacts</span>
+                            </p>
                             <p className="font-semibold text-[#4A126D]">{sec.contactInfo.phone}</p>
                           </div>
                           <div className="space-y-1.5">
-                            <p className="text-[11px] text-gray-500 uppercase tracking-wider font-bold">✉️ Electronic Email</p>
+                            <p className="text-[11px] text-gray-500 uppercase tracking-wider font-bold flex items-center gap-1.5">
+                              <Mail className="w-3.5 h-3.5 text-[#C8A646]" />
+                              <span>Electronic Email</span>
+                            </p>
                             <p className="font-medium text-[#4A126D]">{sec.contactInfo.email}</p>
                             <p className="text-[10px] text-gray-400">CC: {sec.contactInfo.backupEmail}</p>
                           </div>
                           <div className="space-y-1.5">
-                            <p className="text-[11px] text-gray-500 uppercase tracking-wider font-bold">⏰ Operating Hours</p>
+                            <p className="text-[11px] text-gray-500 uppercase tracking-wider font-bold flex items-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5 text-[#C8A646]" />
+                              <span>Operating Hours</span>
+                            </p>
                             <p className="font-normal">{sec.contactInfo.hours}</p>
                           </div>
                         </div>

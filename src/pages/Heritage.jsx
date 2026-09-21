@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Sparkles } from 'lucide-react';
 import heritageBg from '../assets/heritage_palace_interior.png';
 import royalIndianBride from '../assets/royal_indian_bride.png';
 import familySignet from '../assets/family_signet.png';
@@ -348,7 +349,7 @@ export default function Heritage({
 
                   <div className="flex justify-between items-center">
                     <span className="serif-luxury text-sm font-bold text-[#DDA0DD] tracking-widest">{card.num}</span>
-                    <span className="text-gold group-hover:animate-pulse">✨</span>
+                    <Sparkles className="w-4 h-4 text-gold group-hover:animate-pulse" />
                   </div>
 
                   <h3 className="serif-luxury text-lg font-bold group-hover:text-[#DDA0DD] transition-colors">

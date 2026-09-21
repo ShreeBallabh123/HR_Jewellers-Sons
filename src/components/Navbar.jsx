@@ -1,5 +1,23 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import ReactDOM from 'react-dom';
+import { 
+  Sparkles, 
+  Gem, 
+  Crown, 
+  CircleDot, 
+  Circle, 
+  Heart, 
+  Bell, 
+  Star, 
+  Award, 
+  Gift, 
+  Coins, 
+  User, 
+  Baby, 
+  Disc,
+  Package,
+  Truck
+} from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
 import { useRates } from '../hooks/useRates';
@@ -261,7 +279,7 @@ export default function Navbar({
                     className="w-full text-left px-4 py-2.5 font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer border-none bg-transparent flex items-center justify-between"
                   >
                     <span className="flex items-center gap-2">
-                      <span className="text-[#C8A646]">💰</span>
+                      <Coins className="w-4 h-4 text-[#C8A646]" />
                       <span>Gold Mine (11+1)</span>
                     </span>
                     <span className="text-[8px] font-bold text-[#C8A646] bg-[#C8A646]/10 px-1.5 py-0.5 rounded-full">POPULAR</span>
@@ -270,7 +288,7 @@ export default function Navbar({
                     onClick={() => { triggerAudio('click'); navigateTo('gold-reserve'); }}
                     className="w-full text-left px-4 py-2.5 font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer border-none bg-transparent flex items-center gap-2"
                   >
-                    <span className="text-[#C8A646]">✨</span>
+                    <Sparkles className="w-4 h-4 text-[#C8A646]" />
                     <span>Gold Reserve</span>
                   </button>
                 </div>
@@ -367,10 +385,10 @@ export default function Navbar({
                   </div>
 
                   <div className="flex flex-col items-center justify-center bg-[#FAF9F7] rounded-2xl p-4 min-w-[160px]">
-                    <div className="bg-gradient-to-br from-[#D58B8B] to-[#C8A646] rounded-xl p-4 text-center text-white w-full shadow-sm">
+                    <div className="bg-gradient-to-br from-[#D58B8B] to-[#C8A646] rounded-xl p-4 text-center text-white w-full shadow-sm flex flex-col items-center">
                       <p className="text-[9px] uppercase tracking-wider font-semibold opacity-90">HR Jewellers &amp; Sons</p>
                       <p className="text-[10px] font-bold mt-0.5">Gift Cards</p>
-                      <div className="text-2xl mt-1">💍</div>
+                      <Gift className="w-6 h-6 mt-1.5 text-white/95" />
                     </div>
                     <p className="text-[10px] text-gray-500 text-center mt-2 leading-snug font-medium">Available in denominations<br />starting from <strong className="text-[#1A1A1A]">₹500</strong> to <strong className="text-[#1A1A1A]">₹50,000</strong></p>
                   </div>
@@ -520,7 +538,10 @@ export default function Navbar({
                     }}
                     className="w-full text-left px-4 py-2.5 text-[12px] font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer leading-snug focus:outline-none border-none bg-transparent whitespace-normal block"
                   >
-                    💎 Up To 50% Off On Making Charges On Diamond Jewellery
+                    <span className="inline-flex items-center gap-2">
+                      <Gem className="w-3.5 h-3.5 text-[#C8A646] shrink-0" />
+                      <span>Up To 50% Off On Making Charges On Diamond Jewellery</span>
+                    </span>
                   </button>
                   <button
                     onClick={() => {
@@ -533,7 +554,10 @@ export default function Navbar({
                     }}
                     className="w-full text-left px-4 py-2.5 text-[12px] font-semibold text-gray-800 hover:bg-[#FAF9F7] hover:text-[#C8A646] transition-colors rounded-xl cursor-pointer leading-snug focus:outline-none border-none bg-transparent whitespace-normal block"
                   >
-                    🥇 Up To 20% Off On Making Charges On Plain Gold Jewellery
+                    <span className="inline-flex items-center gap-2">
+                      <Award className="w-3.5 h-3.5 text-[#C8A646] shrink-0" />
+                      <span>Up To 20% Off On Making Charges On Plain Gold Jewellery</span>
+                    </span>
                   </button>
                 </div>
               </div>
@@ -727,14 +751,14 @@ export default function Navbar({
                     onClick={() => { setMobileMenuOpen(false); openCustomerAccount?.('orders'); }}
                     className="flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white text-[11px] font-bold border border-white/10 transition-all cursor-pointer"
                   >
-                    <span>📦</span>
+                    <Package className="w-3.5 h-3.5 text-[#E6C687]" />
                     <span>My Orders</span>
                   </button>
                   <button
                     onClick={() => { setMobileMenuOpen(false); openCustomerAccount?.('track'); }}
                     className="flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl bg-[#C8A646]/20 hover:bg-[#C8A646]/30 active:scale-95 text-[#E6C687] text-[11px] font-bold border border-[#C8A646]/30 transition-all cursor-pointer"
                   >
-                    <span>🚚</span>
+                    <Truck className="w-3.5 h-3.5 text-[#E6C687]" />
                     <span>Track Order</span>
                   </button>
                 </div>
@@ -760,9 +784,21 @@ export default function Navbar({
 
               {/* Gender Quick Nav: For Men, For Women, For Kids */}
               {[
-                { label: 'For Men', gender: 'men', icon: '👔' },
-                { label: 'For Women', gender: 'women', icon: '✨' },
-                { label: 'For Kids', gender: 'kids', icon: '🧸' },
+                { 
+                  label: 'For Men', 
+                  gender: 'men', 
+                  icon: <User className="w-4 h-4 text-[#C8A646]" /> 
+                },
+                { 
+                  label: 'For Women', 
+                  gender: 'women', 
+                  icon: <Sparkles className="w-4 h-4 text-[#C8A646]" /> 
+                },
+                { 
+                  label: 'For Kids', 
+                  gender: 'kids', 
+                  icon: <Baby className="w-4 h-4 text-[#C8A646]" /> 
+                },
               ].map(item => (
                 <button
                   key={item.label}
@@ -776,7 +812,7 @@ export default function Navbar({
                   }}
                   className="flex items-center w-full text-left px-4 py-3 rounded-xl active:bg-zinc-50 hover:bg-[#C8A646]/5 border-none cursor-pointer transition-colors"
                 >
-                  <span className="text-base mr-3">{item.icon}</span>
+                  <span className="w-7 h-7 rounded-lg bg-[#C8A646]/10 flex items-center justify-center mr-3 shrink-0">{item.icon}</span>
                   <span className="text-[14px] font-bold text-zinc-800">{item.label}</span>
                   <svg className="w-4 h-4 text-zinc-300 ml-auto" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -793,8 +829,8 @@ export default function Navbar({
                   }}
                   className="flex items-center justify-between w-full text-left px-4 py-3.5 rounded-xl bg-gradient-to-r from-amber-500/10 to-[#C8A646]/10 border border-solid border-[#C8A646]/30 cursor-pointer transition-all shadow-xs"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm">💎</span>
+                  <div className="flex items-center gap-2.5">
+                    <Gem className="w-4 h-4 text-[#C8A646]" />
                     <span className="text-[14px] font-black uppercase tracking-wider text-[#1A1A1A]">Our Collection</span>
                   </div>
                   <svg
@@ -812,17 +848,17 @@ export default function Navbar({
                 {mobileOurCollectionsOpen && (
                   <div className="pl-3 pr-1 py-2 space-y-1 mt-1 bg-zinc-50/70 rounded-xl border border-solid border-zinc-100">
                     {[
-                      { label: 'Rings', tab: 'Rings', icon: '💍' },
-                      { label: 'Earrings', tab: 'Earrings', icon: '✨' },
-                      { label: 'Necklaces', tab: 'Necklace', icon: '📿' },
-                      { label: 'Pendants', tab: 'Pendants', icon: '💎' },
-                      { label: 'Bangles', tab: 'Bangles', icon: '💫' },
-                      { label: 'Bracelets', tab: 'Bracelets', icon: '🌟' },
-                      { label: 'Mangalsutras', tab: 'Mangalsutras', icon: '❤️' },
-                      { label: 'Anklets', tab: 'Anklets', icon: '🔔' },
-                      { label: 'Nose Pins', tab: 'Nose Pins', icon: '✦' },
-                      { label: 'Solitaires', tab: 'Solitaires', icon: '💎' },
-                      { label: 'Silver Jewellery', tab: 'Silver', icon: '🥈' },
+                      { label: 'Rings', tab: 'Rings', icon: <CircleDot className="w-3.5 h-3.5 text-[#C8A646]" /> },
+                      { label: 'Earrings', tab: 'Earrings', icon: <Sparkles className="w-3.5 h-3.5 text-[#C8A646]" /> },
+                      { label: 'Necklaces', tab: 'Necklace', icon: <Crown className="w-3.5 h-3.5 text-[#C8A646]" /> },
+                      { label: 'Pendants', tab: 'Pendants', icon: <Gem className="w-3.5 h-3.5 text-[#C8A646]" /> },
+                      { label: 'Bangles', tab: 'Bangles', icon: <Circle className="w-3.5 h-3.5 text-[#C8A646]" /> },
+                      { label: 'Bracelets', tab: 'Bracelets', icon: <Disc className="w-3.5 h-3.5 text-[#C8A646]" /> },
+                      { label: 'Mangalsutras', tab: 'Mangalsutras', icon: <Heart className="w-3.5 h-3.5 text-[#C8A646]" /> },
+                      { label: 'Anklets', tab: 'Anklets', icon: <Bell className="w-3.5 h-3.5 text-[#C8A646]" /> },
+                      { label: 'Nose Pins', tab: 'Nose Pins', icon: <Star className="w-3.5 h-3.5 text-[#C8A646]" /> },
+                      { label: 'Solitaires', tab: 'Solitaires', icon: <Gem className="w-3.5 h-3.5 text-[#C8A646]" /> },
+                      { label: 'Silver Jewellery', tab: 'Silver', icon: <Award className="w-3.5 h-3.5 text-[#94A3B8]" /> },
                     ].map(item => (
                       <button
                         key={item.label}
@@ -840,7 +876,7 @@ export default function Navbar({
                         }}
                         className="flex items-center w-full text-left px-3.5 py-2.5 rounded-lg active:bg-zinc-200 hover:bg-white border-none cursor-pointer transition-colors"
                       >
-                        <span className="text-xs mr-2.5 opacity-80">{item.icon}</span>
+                        <span className="w-6 h-6 rounded-md bg-white border border-gray-100 flex items-center justify-center mr-2.5 shrink-0 shadow-2xs">{item.icon}</span>
                         <span className="text-[13px] font-medium text-zinc-700">{item.label}</span>
                         <svg className="w-3.5 h-3.5 text-zinc-300 ml-auto" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

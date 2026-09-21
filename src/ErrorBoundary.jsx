@@ -62,7 +62,12 @@ export class ErrorBoundary extends React.Component {
         <div className="min-h-screen bg-[#13071C] flex flex-col items-center justify-center p-6 text-center select-none text-white">
           <div className="absolute w-[400px] h-[400px] rounded-full bg-[#DDA0DD]/5 blur-[120px] pointer-events-none" />
           <div className="relative mb-6">
-            <span className="text-5xl block animate-bounce">💎</span>
+            <div className="w-16 h-16 rounded-full bg-[#DDA0DD]/20 flex items-center justify-center mx-auto text-[#DDA0DD] animate-pulse shadow-lg">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 3h12l4 6-10 12L2 9l4-6z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2 9h20M10 3l-2 6 4 12 4-12-2-6" />
+              </svg>
+            </div>
           </div>
           <h1 className="serif-luxury text-2xl sm:text-3xl font-extrabold tracking-wider gold-metallic-text uppercase mb-3">
             {isChunkError ? 'New Storefront Update Available' : 'Maison Care Required'}

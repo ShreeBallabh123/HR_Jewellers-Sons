@@ -1,4 +1,5 @@
 import React from 'react';
+import { MapPin, Phone, Mail, Clock, Check } from 'lucide-react';
 
 export default function Showrooms({
   categories = [],
@@ -36,17 +37,38 @@ export default function Showrooms({
             <div>
               <h3 className="serif-luxury text-xl text-[#4A126D] font-bold mb-4">Flagship Bikaner Showroom</h3>
               <div className="space-y-4 text-xs font-light text-gray-600 leading-relaxed">
-                <p>📍 <strong>Showroom Address:</strong> 4-D-37, Near Murti Circle, J.N.V. Colony, Bikaner, Rajasthan (334001)</p>
-                <p>📞 <strong>Direct Showroom Phone:</strong> +91 97838 43978</p>
-                <p>✉️ <strong>Electronic Support:</strong> hrjewellerssons@gmail.com</p>
-                <p>⏰ <strong>Visiting Hours:</strong> Monday - Sunday (11:00 AM - 08:30 PM)</p>
+                <p className="flex items-start gap-2.5">
+                  <MapPin className="w-4 h-4 text-[#C8A646] shrink-0 mt-0.5" />
+                  <span><strong>Showroom Address:</strong> 4-D-37, Near Murti Circle, J.N.V. Colony, Bikaner, Rajasthan (334001)</span>
+                </p>
+                <p className="flex items-start gap-2.5">
+                  <Phone className="w-4 h-4 text-[#C8A646] shrink-0 mt-0.5" />
+                  <span><strong>Direct Showroom Phone:</strong> +91 97838 43978</span>
+                </p>
+                <p className="flex items-start gap-2.5">
+                  <Mail className="w-4 h-4 text-[#C8A646] shrink-0 mt-0.5" />
+                  <span><strong>Electronic Support:</strong> hrjewellerssons@gmail.com</span>
+                </p>
+                <p className="flex items-start gap-2.5">
+                  <Clock className="w-4 h-4 text-[#C8A646] shrink-0 mt-0.5" />
+                  <span><strong>Visiting Hours:</strong> Monday - Sunday (11:00 AM - 08:30 PM)</span>
+                </p>
               </div>
             </div>
 
             <div className="border-t border-gray-100 pt-6 space-y-2 text-xs font-bold text-gray-800">
-              <p>✓ Secured private lounge suite key</p>
-              <p>✓ Personal master goldsmith adviser</p>
-              <p>✓ In-hand preview of complete catalog</p>
+              <p className="flex items-center gap-2">
+                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Secured private lounge suite key</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Personal master goldsmith adviser</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>In-hand preview of complete catalog</span>
+              </p>
             </div>
           </div>
 

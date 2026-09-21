@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Gem, Scale, Ruler, Copy } from 'lucide-react';
 import { useWishlist } from '../hooks/useWishlist';
 import { useCart } from '../hooks/useCart';
 import { useRates } from '../hooks/useRates';
@@ -341,7 +342,9 @@ export default function ProductDetail({
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-6">
         <div className="text-center space-y-5 max-w-sm">
-          <div className="text-5xl">💎</div>
+          <div className="w-16 h-16 rounded-full bg-[#4A126D]/10 text-[#4A126D] flex items-center justify-center mx-auto shadow-inner">
+            <Gem className="w-8 h-8" />
+          </div>
           <h2 className="text-xl font-bold text-[#4A126D] tracking-tight">No Product Selected</h2>
           <p className="text-sm text-[#4A126D]/60 font-medium leading-relaxed">
             Please browse our collection and select a product to view its details.
@@ -944,7 +947,7 @@ export default function ProductDetail({
                         className="text-gray-400 hover:text-gray-600 transition-colors ml-1 cursor-pointer focus:outline-none border-none bg-transparent"
                         title="Copy SKU"
                       >
-                        📋
+                        <Copy className="w-3 h-3 text-[#C8A646]" />
                       </button>
                     </span>
                   </div>
@@ -953,7 +956,10 @@ export default function ProductDetail({
                     {/* Card 1: METAL */}
                     <div className="bg-[#FAF9F6] border border-[#E7DED2]/60 p-5 rounded-2xl space-y-4 shadow-xs relative">
                       <div className="flex items-center justify-between text-xs font-bold text-[#3F1F54] uppercase tracking-wider border-b border-gray-200/50 pb-2.5">
-                        <span className="flex items-center gap-2">⚖️ Metal</span>
+                        <span className="flex items-center gap-2">
+                          <Scale className="w-3.5 h-3.5 text-[#C8A646]" />
+                          <span>Metal</span>
+                        </span>
                       </div>
                       <div className="space-y-3 text-xs text-gray-600 font-light">
                         <div className="flex justify-between items-center py-0.5 border-b border-gray-100/50">
@@ -974,7 +980,10 @@ export default function ProductDetail({
                     {/* Card 2: DIMENSION */}
                     <div className="bg-[#FAF9F6] border border-[#E7DED2]/60 p-5 rounded-2xl space-y-4 shadow-xs relative">
                       <div className="flex items-center justify-between text-xs font-bold text-[#3F1F54] uppercase tracking-wider border-b border-gray-200/50 pb-2.5">
-                        <span className="flex items-center gap-2">📏 Dimension</span>
+                        <span className="flex items-center gap-2">
+                          <Ruler className="w-3.5 h-3.5 text-[#C8A646]" />
+                          <span>Dimension</span>
+                        </span>
                       </div>
                       <div className="space-y-3 text-xs text-gray-600 font-light text-left">
                         <div className="flex justify-between items-center py-0.5">
@@ -988,7 +997,10 @@ export default function ProductDetail({
                     {(detailProduct.category === 'diamond' || detailProduct.diamondCarat || detailProduct.diamondValue || detailProduct.diamondColor || detailProduct.diamondClarity || detailProduct.diamondShape || detailProduct.diamondQuantity || detailProduct.stoneCarat || detailProduct.beadsCarat || detailProduct.pearlsCarat || detailProduct.gemstoneCarat || detailProduct.polki || detailProduct.polkiValue) && (
                       <div className="bg-[#FAF9F6] border border-[#E7DED2]/60 p-5 rounded-2xl space-y-4 shadow-xs relative">
                         <div className="flex items-center justify-between text-xs font-bold text-[#3F1F54] uppercase tracking-wider border-b border-gray-200/50 pb-2.5">
-                          <span className="flex items-center gap-2">💎 Diamond &amp; Gems</span>
+                          <span className="flex items-center gap-2">
+                            <Gem className="w-3.5 h-3.5 text-[#C8A646]" />
+                            <span>Diamond &amp; Gems</span>
+                          </span>
                         </div>
                         <div className="space-y-3 text-xs text-gray-600 font-light text-left">
                           {(detailProduct.diamondCarat || detailProduct.diamondValue || detailProduct.diamondColor || detailProduct.diamondClarity || detailProduct.diamondShape || detailProduct.diamondQuantity) && (
@@ -1902,7 +1914,7 @@ export default function ProductDetail({
               <div className="flex items-center justify-between px-6 py-4 border-b border-[#E7DED2] bg-[#FAF8F5] shrink-0">
                 <div className="flex items-center gap-3.5">
                   <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#B8893C] to-[#8C6226] flex items-center justify-center text-white text-lg shadow-sm">
-                    💎
+                    <Gem className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <h3 className="text-lg sm:text-xl font-bold text-[#181818] font-serif tracking-tight">

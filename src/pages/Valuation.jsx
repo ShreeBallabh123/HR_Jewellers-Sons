@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Sparkles, Crown } from 'lucide-react';
 import { useRates } from '../hooks/useRates';
 import { motion } from 'framer-motion';
 import luxuryShowroom from '../assets/luxury_showroom.png';
@@ -309,7 +310,7 @@ export default function Valuation({
         {/* Star details or floating elements */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-10 opacity-40">
           <div className="absolute top-12 left-10 text-gold text-lg">✦</div>
-          <div className="absolute bottom-12 right-12 text-gold text-sm">✨</div>
+          <div className="absolute bottom-12 right-12 text-gold"><Sparkles className="w-4 h-4 text-[#DDA0DD]" /></div>
         </div>
 
         <div className="max-w-[1440px] mx-auto relative z-20">
@@ -546,7 +547,7 @@ export default function Valuation({
                       {selectedMetal === 'gold' ? `Gold ${selectedPurity}` : `Silver ${selectedPurity}`}
                     </span>
                   </div>
-                  <span className="text-xl">👑</span>
+                  <Crown className="w-5 h-5 text-[#DDA0DD]" />
                 </div>
 
                 <div className="space-y-3.5 text-[11px] font-mono text-white/80">
