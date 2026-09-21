@@ -768,7 +768,7 @@ export default function Home({
                       if (typeof setMetalFilter === 'function') setMetalFilter('all');
                       if (typeof setGenderFilter === 'function') setGenderFilter('women');
                       if (typeof setMaxPriceFilter === 'function') setMaxPriceFilter(100000000);
-                      if (changeCategoryTab) changeCategoryTab('Necklaces');
+                      if (changeCategoryTab) changeCategoryTab('Necklaces', 'all', 'women');
                       navigateTo('collections');
                     }}
                     className="bg-[#FFF0F2] rounded-3xl p-5 flex flex-col justify-between shadow-sm border border-solid border-pink-100/30 hover:-translate-y-1.5 hover:shadow-md transition-all duration-300 group text-left cursor-pointer select-none"
@@ -797,7 +797,7 @@ export default function Home({
                       if (typeof setMetalFilter === 'function') setMetalFilter('all');
                       if (typeof setGenderFilter === 'function') setGenderFilter('all');
                       if (typeof setMaxPriceFilter === 'function') setMaxPriceFilter(100000000);
-                      if (changeCategoryTab) changeCategoryTab('Collections');
+                      if (changeCategoryTab) changeCategoryTab('Collections', 'all', 'all');
                       navigateTo('collections');
                     }}
                     className="bg-[#FFF0F2] rounded-3xl p-5 flex flex-col justify-between shadow-sm border border-solid border-pink-100/30 hover:-translate-y-1.5 hover:shadow-md transition-all duration-300 group text-left cursor-pointer select-none"
@@ -826,7 +826,7 @@ export default function Home({
                       if (typeof setMetalFilter === 'function') setMetalFilter('all');
                       if (typeof setGenderFilter === 'function') setGenderFilter('men');
                       if (typeof setMaxPriceFilter === 'function') setMaxPriceFilter(100000000);
-                      if (changeCategoryTab) changeCategoryTab('Collections');
+                      if (changeCategoryTab) changeCategoryTab('Collections', 'all', 'men');
                       navigateTo('collections');
                     }}
                     className="bg-[#FFF0F2] rounded-3xl p-5 flex flex-col justify-between shadow-sm border border-solid border-pink-100/30 hover:-translate-y-1.5 hover:shadow-md transition-all duration-300 group text-left cursor-pointer select-none"

@@ -326,11 +326,12 @@ function isProductKids(p) {
 function isProductMatchGender(p, targetGender) {
   if (!targetGender || targetGender === 'all') return true;
   const filter = String(targetGender).toLowerCase().trim();
-  const prodGender = String(p.gender || '').toLowerCase().trim();
+  const prodGender = String(p.gender || p.targetAudience || p.audience || '').toLowerCase().trim();
   const name = String(p.name || '').toLowerCase();
   const cat = String(p.category || '').toLowerCase();
   const subCat = String(p.subCategory || '').toLowerCase();
   const desc = String(p.desc || p.description || '').toLowerCase();
+  const jType = String(p.jewelryType || p.customJewelryType || '').toLowerCase();
 
   // If explicitly set to Unisex, it matches all adult genders
   if (prodGender === 'unisex') return true;
@@ -340,8 +341,8 @@ function isProductMatchGender(p, targetGender) {
     if (prodGender === 'women' || prodGender === 'female' || prodGender === 'girl' || prodGender === 'ladies') {
       return false;
     }
-    // Check if item is explicitly marked for men or has men/gents/male in text
-    return (
+    // Check if item is explicitly marked for men or has men/gents/male/boy in text
+    const isExplicitMen = (
       prodGender === 'men' ||
       prodGender === 'man' ||
       prodGender === 'male' ||
@@ -359,13 +360,65 @@ function isProductMatchGender(p, targetGender) {
       desc.includes('for men') ||
       desc.includes('mens') ||
       desc.includes("men's") ||
-      desc.includes('gents')
+      desc.includes('gents') ||
+      jType.includes('men') ||
+      jType.includes('gents')
     );
+    if (isExplicitMen) return true;
+
+    // For items without explicit gender or unassigned:
+    // Exclude strictly women items
+    const isStrictlyWomenItem = (
+      name.includes('women') ||
+      name.includes('ladies') ||
+      name.includes('mangalsutra') ||
+      name.includes('tanmaniya') ||
+      name.includes('nath') ||
+      name.includes('nose pin') ||
+      name.includes('nosepin') ||
+      name.includes('payal') ||
+      name.includes('anklet') ||
+      name.includes('bichhiya') ||
+      name.includes('toe ring') ||
+      name.includes('jhumka') ||
+      name.includes('jhumki') ||
+      name.includes('chandbali') ||
+      name.includes('maang tikka') ||
+      name.includes('borla') ||
+      name.includes('bridal') ||
+      cat.includes('mangalsutra') ||
+      cat.includes('anklet') ||
+      cat.includes('nose pin')
+    );
+    if (isStrictlyWomenItem) return false;
+
+    // Traditional men-compatible jewellery (Kada, Cuban chains, Signet rings, Rudraksha, Bullion coins/bars)
+    const isMenCompatible = (
+      name.includes('kada') ||
+      name.includes('chain') ||
+      name.includes('bracelet') ||
+      name.includes('rudraksh') ||
+      name.includes('signet') ||
+      name.includes('cufflink') ||
+      name.includes('kurta') ||
+      name.includes('coin') ||
+      name.includes('bar') ||
+      cat.includes('kada') ||
+      cat.includes('chain') ||
+      cat.includes('bracelet') ||
+      cat.includes('coin')
+    );
+
+    return isMenCompatible;
   }
 
   if (filter === 'women' || filter === 'woman' || filter === 'female' || filter === 'for women' || filter === 'ladies') {
     // Strictly exclude explicit men/male items
-    if (prodGender === 'men' || prodGender === 'male' || prodGender === 'gents') {
+    if (prodGender === 'men' || prodGender === 'male' || prodGender === 'gents' || prodGender === 'boy' || prodGender === 'boys') {
+      return false;
+    }
+    // Strictly exclude items with explicit men/gents in name unless unisex
+    if (name.includes('for men') || name.includes('mens ') || name.includes("men's ") || name.includes('gents ')) {
       return false;
     }
     return (
@@ -376,6 +429,7 @@ function isProductMatchGender(p, targetGender) {
       prodGender === 'lady' ||
       prodGender === 'girl' ||
       prodGender === 'girls' ||
+      prodGender === 'unisex' ||
       name.includes('women') ||
       name.includes('ladies') ||
       name.includes('female') ||
@@ -386,7 +440,7 @@ function isProductMatchGender(p, targetGender) {
       desc.includes("women's") ||
       desc.includes('ladies') ||
       // In Indian jewellery catalogues, items without explicit gender default to women unless marked for men/kids
-      (!prodGender && !name.includes('mens') && !name.includes("men's") && !name.includes('gents') && !isProductKids(p))
+      (!prodGender && !isProductKids(p))
     );
   }
 
@@ -1397,7 +1451,7 @@ export default function Collections({
                   
                   {genderFilter !== 'all' && (
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
-                      Gender: {genderFilter}
+                      Gender: {genderFilter === 'men' ? 'For Men' : genderFilter === 'women' ? 'For Women' : genderFilter === 'kids' ? 'For Kids' : genderFilter.charAt(0).toUpperCase() + genderFilter.slice(1)}
                       <button onClick={() => handleSetGenderFilter('all')} className="hover:text-red-600 ml-0.5 cursor-pointer bg-transparent border-none text-[11px] font-bold">✕</button>
                     </span>
                   )}

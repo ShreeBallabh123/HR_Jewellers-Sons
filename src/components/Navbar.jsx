@@ -341,17 +341,23 @@ export default function Navbar({
                   <div className="flex flex-col space-y-1 flex-1">
                     <h4 className="font-bold text-[13px] text-[#1A1A1A] border-b border-solid border-gray-100 pb-2 mb-1">Gifts For Special Someone</h4>
                     {[
-                      { label: 'For HER', price: '2,861' },
-                      { label: 'For HIM', price: '5,820' },
-                      { label: 'For SISTER', price: '5,746' },
-                      { label: 'For BROTHER', price: '5,820' },
-                      { label: 'For MOTHER', price: '5,805' },
-                      { label: 'For FATHER', price: '5,820' },
-                      { label: 'For FRIENDS', price: '4,221' }
+                      { label: 'For HER', price: '2,861', gender: 'women' },
+                      { label: 'For HIM', price: '5,820', gender: 'men' },
+                      { label: 'For SISTER', price: '5,746', gender: 'women' },
+                      { label: 'For BROTHER', price: '5,820', gender: 'men' },
+                      { label: 'For MOTHER', price: '5,805', gender: 'women' },
+                      { label: 'For FATHER', price: '5,820', gender: 'men' },
+                      { label: 'For FRIENDS', price: '4,221', gender: 'all' }
                     ].map((g) => (
                       <button
                         key={g.label}
-                        onClick={() => { triggerAudio('click'); changeCategoryTab('Gifts & Pooja'); navigateTo('collections'); }}
+                        onClick={() => {
+                          triggerAudio('click');
+                          if (typeof setGenderFilter === 'function') setGenderFilter(g.gender || 'all');
+                          if (typeof setMetalFilter === 'function') setMetalFilter('all');
+                          changeCategoryTab('Collections', 'all', g.gender || 'all');
+                          navigateTo('collections');
+                        }}
                         className="text-left hover:text-[#C8A646] hover:translate-x-1 transition-all py-1 cursor-pointer focus:outline-none border-none bg-transparent"
                       >
                         <span className="font-bold text-[12px] text-gray-800 block">{g.label}</span>
@@ -751,7 +757,7 @@ export default function Navbar({
                     setMobileMenuOpen(false);
                     setMetalFilter('all');
                     setGenderFilter(item.gender);
-                    changeCategoryTab('Collections');
+                    changeCategoryTab('Collections', 'all', item.gender);
                     navigateTo('collections');
                   }}
                   className="flex items-center w-full text-left px-4 py-3 rounded-xl active:bg-zinc-50 hover:bg-[#C8A646]/5 border-none cursor-pointer transition-colors"
